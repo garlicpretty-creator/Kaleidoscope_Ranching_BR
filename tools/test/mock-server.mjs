@@ -67,6 +67,17 @@ const TAGS = new Map([
   ["kaleidoscope_cookery:iron_kitchen_knife", ["kaleidoscope_cookery:kitchen_knife"]],
 ]);
 
+// Stack sizes, durability and tags of the pack's own items come from the
+// generated item files, so tests see what the game would.
+for (const file of readdirSync(join(root, "packs/BP/items"))) {
+  const item = JSON.parse(readFileSync(join(root, "packs/BP/items", file), "utf8"))["minecraft:item"];
+  const id = item.description.identifier;
+  const c = item.components ?? {};
+  if (c["minecraft:max_stack_size"] !== undefined) MAX_STACK.set(id, c["minecraft:max_stack_size"]);
+  if (c["minecraft:durability"]) DURABLE.set(id, c["minecraft:durability"].max_durability);
+  if (c["minecraft:tags"]) TAGS.set(id, c["minecraft:tags"].tags);
+}
+
 /** Lets tests declare non-default stack sizes (e.g. generated Ranching items). */
 export function __setMaxStack(typeId, max) {
   MAX_STACK.set(typeId, max);
@@ -81,7 +92,7 @@ export class ItemStack {
     this.durability = max ? { damage: 0, maxDurability: max, getDamageChance: () => 100 } : undefined;
   }
   get maxAmount() {
-    return this.durability ? 1 : MAX_STACK.get(this.typeId) ?? 64;
+    return MAX_STACK.get(this.typeId) ?? (this.durability ? 1 : 64);
   }
   getComponent(id) {
     if (id === "minecraft:durability") return this.durability;
@@ -533,6 +544,12 @@ export const system = {
   afterEvents: { scriptEventReceive: new Signal() },
   beforeEvents: { startup: new Signal() },
 };
+
+/** Test helper: places a block with the given states. */
+export function __place(dimension, location, typeId, states = {}) {
+  dimension.blocks.set(`${location.x},${location.y},${location.z}`, new BlockPermutation(typeId, states));
+  return dimension.getBlock(location);
+}
 
 /** Advances game time, running queued callbacks and intervals. */
 export function __advance(ticks) {

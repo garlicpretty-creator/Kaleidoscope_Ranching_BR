@@ -73,8 +73,8 @@ registerEntityInteraction({
 | id | 優先度 | 條件 |
 | --- | --- | --- |
 | `m1:breeding` | 50 | 手持該物種的繁殖食物點成年動物 |
-| `m3:milking` | 50 | 手持擠奶桶點成年母畜 |
-| `m3:nursing` | 50 | 手持奶瓶點幼體 |
+| `m3:milking` | 50 | 手持擠奶桶點會產奶的動物 |
+| `m3:nursing` | 50 | 手持奶瓶點哺乳類幼體 |
 | `m1:dye_sheep` | 60 | 手持染料點羊 |
 | `m1:shear_sheep` | 60 | 手持剪刀點未剪毛的成年羊 |
 | `m2:care` | 100 | 蹲下空手、毛刷、記事本、耳標、該物種的零食 |
@@ -114,6 +114,12 @@ M1 在懷孕的母畜上寫兩個動態屬性：`kaleidoscope_ranching:pregnant_
 
 語言檔、`item_texture.json`、`terrain_texture.json`、`blocks.json` 由 `node tools/gen_shared.mjs` 組成：登錄表裡非 M2 的物品與方塊名稱，加上 `tools/fragments/<里程碑>/` 下各里程碑生成器寫的片段。同一個鍵被兩處定義時會報錯。各里程碑的生成器只能寫自己的片段，不要直接寫最終檔。
 
-## 8. 資料表
+## 8. M3 的方塊
+
+M3 的方塊用四個自訂元件：`kaleidoscope_ranching:butcher_rack`、`nest_box`、`incubator`、`station`。`station` 是通用加工引擎，用方塊自己的識別碼到 `data/processing.js` 找配方；新的加工方塊只要登錄配方並在方塊 JSON 加上這個元件即可。玩法規則見 `docs/M3_說明.md`。
+
+方塊資料（`core/blockStore.js`）會記錄寫入它的方塊種類，所以方塊被指令替換時，新方塊不會讀到舊資料。
+
+## 9. 資料表
 
 `scripts/data/` 是所有識別碼的唯一來源。新增物品或方塊時先登錄到 `items.js`、`blocks.js`，並填上 `owner`（由哪個里程碑的生成器產出檔案；省略代表樂牧主生成器），然後執行 `npm run validate`。驗證會比對登錄表、`packs/BP/items`、`packs/BP/blocks` 與貼圖索引；驗證不過的合併請求不要合併。生成的檔案請不要手改。

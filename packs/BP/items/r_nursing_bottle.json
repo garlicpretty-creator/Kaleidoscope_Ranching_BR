@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:nursing_bottle",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_nursing_bottle",
+      "minecraft:max_stack_size": 1,
+      "minecraft:durability": {
+        "max_durability": 32
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { startConversion } from "./systems/conversion.js";
 import { startVanillaParity } from "./systems/vanillaParity.js";
 import "./care_init.js";
 import { connectCareCore } from "./systems/careBridge.js";
+import { startM3 } from "./systems/m3.js";
 
 connectToCookery();
 
@@ -18,3 +19,6 @@ startVanillaParity();
 
 // M2: care core (registers its own components and events on import)
 connectCareCore();
+
+// M3: carcasses, butcher rack, milking, nests, processing
+startM3();

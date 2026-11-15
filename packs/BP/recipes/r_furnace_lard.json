@@ -1,0 +1,13 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_furnace_lard"
+    },
+    "tags": [
+      "furnace"
+    ],
+    "input": "kaleidoscope_ranching:pork_fat",
+    "output": "kaleidoscope_ranching:lard"
+  }
+}

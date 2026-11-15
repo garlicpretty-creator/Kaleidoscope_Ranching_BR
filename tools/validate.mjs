@@ -266,6 +266,26 @@ for (const { path, data } of blockFiles) {
     }
   }
 }
+const blockBones = new Map();
+for (const path of walk(join(rp, "models")).filter((p) => p.endsWith(".json"))) {
+  for (const geo of readJson(path)["minecraft:geometry"] ?? []) {
+    blockBones.set(geo.description.identifier, new Set((geo.bones ?? []).map((bone) => bone.name)));
+  }
+}
+for (const { path, data } of blockFiles) {
+  const geometry = data.components?.["minecraft:geometry"];
+  const id = typeof geometry === "string" ? geometry : geometry?.identifier;
+  if (!id || id.startsWith("minecraft:")) continue;
+  const bones = blockBones.get(id);
+  if (!bones) {
+    fail(`${relative(root, path)}: unknown geometry ${id}`);
+    continue;
+  }
+  for (const bone of Object.keys(geometry?.bone_visibility ?? {})) {
+    if (!bones.has(bone)) fail(`${relative(root, path)}: bone_visibility names missing bone "${bone}"`);
+  }
+}
+
 for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(terrainAtlas)]) {
   const file = typeof entry.textures === "string" ? entry.textures : entry.textures?.[0];
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);

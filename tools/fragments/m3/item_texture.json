@@ -1,0 +1,249 @@
+{
+  "resource_pack_name": "kaleidoscope_ranching",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "kr_cow_milk": {
+      "textures": "textures/items/ranching/cow_milk"
+    },
+    "kr_cow_milk_fine": {
+      "textures": "textures/items/ranching/cow_milk_fine"
+    },
+    "kr_cow_milk_superb": {
+      "textures": "textures/items/ranching/cow_milk_superb"
+    },
+    "kr_goat_milk": {
+      "textures": "textures/items/ranching/goat_milk"
+    },
+    "kr_goat_milk_fine": {
+      "textures": "textures/items/ranching/goat_milk_fine"
+    },
+    "kr_goat_milk_superb": {
+      "textures": "textures/items/ranching/goat_milk_superb"
+    },
+    "kr_buffalo_milk": {
+      "textures": "textures/items/ranching/buffalo_milk"
+    },
+    "kr_buffalo_milk_fine": {
+      "textures": "textures/items/ranching/buffalo_milk_fine"
+    },
+    "kr_buffalo_milk_superb": {
+      "textures": "textures/items/ranching/buffalo_milk_superb"
+    },
+    "kr_yak_milk": {
+      "textures": "textures/items/ranching/yak_milk"
+    },
+    "kr_yak_milk_fine": {
+      "textures": "textures/items/ranching/yak_milk_fine"
+    },
+    "kr_yak_milk_superb": {
+      "textures": "textures/items/ranching/yak_milk_superb"
+    },
+    "kr_egg_fine": {
+      "textures": "textures/items/ranching/egg_fine"
+    },
+    "kr_egg_superb": {
+      "textures": "textures/items/ranching/egg_superb"
+    },
+    "kr_duck_egg": {
+      "textures": "textures/items/ranching/duck_egg"
+    },
+    "kr_duck_egg_fine": {
+      "textures": "textures/items/ranching/duck_egg_fine"
+    },
+    "kr_duck_egg_superb": {
+      "textures": "textures/items/ranching/duck_egg_superb"
+    },
+    "kr_goose_egg": {
+      "textures": "textures/items/ranching/goose_egg"
+    },
+    "kr_goose_egg_fine": {
+      "textures": "textures/items/ranching/goose_egg_fine"
+    },
+    "kr_goose_egg_superb": {
+      "textures": "textures/items/ranching/goose_egg_superb"
+    },
+    "kr_fertilized_chicken_egg": {
+      "textures": "textures/items/ranching/fertilized_chicken_egg"
+    },
+    "kr_fertilized_duck_egg": {
+      "textures": "textures/items/ranching/fertilized_duck_egg"
+    },
+    "kr_fertilized_goose_egg": {
+      "textures": "textures/items/ranching/fertilized_goose_egg"
+    },
+    "kr_butter": {
+      "textures": "textures/items/ranching/butter"
+    },
+    "kr_cream": {
+      "textures": "textures/items/ranching/cream"
+    },
+    "kr_ghee": {
+      "textures": "textures/items/ranching/ghee"
+    },
+    "kr_yogurt": {
+      "textures": "textures/items/ranching/yogurt"
+    },
+    "kr_fresh_cheese": {
+      "textures": "textures/items/ranching/fresh_cheese"
+    },
+    "kr_aged_cheese_wheel": {
+      "textures": "textures/items/ranching/aged_cheese_wheel"
+    },
+    "kr_cheese_slice": {
+      "textures": "textures/items/ranching/cheese_slice"
+    },
+    "kr_whey": {
+      "textures": "textures/items/ranching/whey"
+    },
+    "kr_salted_duck_egg": {
+      "textures": "textures/items/ranching/salted_duck_egg"
+    },
+    "kr_century_egg": {
+      "textures": "textures/items/ranching/century_egg"
+    },
+    "kr_cow_carcass": {
+      "textures": "textures/items/ranching/cow_carcass"
+    },
+    "kr_sheep_carcass": {
+      "textures": "textures/items/ranching/sheep_carcass"
+    },
+    "kr_goat_carcass": {
+      "textures": "textures/items/ranching/goat_carcass"
+    },
+    "kr_pig_carcass": {
+      "textures": "textures/items/ranching/pig_carcass"
+    },
+    "kr_chicken_carcass": {
+      "textures": "textures/items/ranching/chicken_carcass"
+    },
+    "kr_rabbit_carcass": {
+      "textures": "textures/items/ranching/rabbit_carcass"
+    },
+    "kr_duck_carcass": {
+      "textures": "textures/items/ranching/duck_carcass"
+    },
+    "kr_goose_carcass": {
+      "textures": "textures/items/ranching/goose_carcass"
+    },
+    "kr_buffalo_carcass": {
+      "textures": "textures/items/ranching/buffalo_carcass"
+    },
+    "kr_yak_carcass": {
+      "textures": "textures/items/ranching/yak_carcass"
+    },
+    "kr_buffalo_meat": {
+      "textures": "textures/items/ranching/buffalo_meat"
+    },
+    "kr_cooked_buffalo_meat": {
+      "textures": "textures/items/ranching/cooked_buffalo_meat"
+    },
+    "kr_yak_meat": {
+      "textures": "textures/items/ranching/yak_meat"
+    },
+    "kr_cooked_yak_meat": {
+      "textures": "textures/items/ranching/cooked_yak_meat"
+    },
+    "kr_duck_meat": {
+      "textures": "textures/items/ranching/duck_meat"
+    },
+    "kr_cooked_duck_meat": {
+      "textures": "textures/items/ranching/cooked_duck_meat"
+    },
+    "kr_goose_meat": {
+      "textures": "textures/items/ranching/goose_meat"
+    },
+    "kr_cooked_goose_meat": {
+      "textures": "textures/items/ranching/cooked_goose_meat"
+    },
+    "kr_beef_brisket": {
+      "textures": "textures/items/ranching/beef_brisket"
+    },
+    "kr_beef_shank": {
+      "textures": "textures/items/ranching/beef_shank"
+    },
+    "kr_beef_sirloin": {
+      "textures": "textures/items/ranching/beef_sirloin"
+    },
+    "kr_pork_belly": {
+      "textures": "textures/items/ranching/pork_belly"
+    },
+    "kr_pork_ribs": {
+      "textures": "textures/items/ranching/pork_ribs"
+    },
+    "kr_pork_trotter": {
+      "textures": "textures/items/ranching/pork_trotter"
+    },
+    "kr_lamb_chop": {
+      "textures": "textures/items/ranching/lamb_chop"
+    },
+    "kr_lamb_leg": {
+      "textures": "textures/items/ranching/lamb_leg"
+    },
+    "kr_chicken_leg": {
+      "textures": "textures/items/ranching/chicken_leg"
+    },
+    "kr_chicken_wing": {
+      "textures": "textures/items/ranching/chicken_wing"
+    },
+    "kr_duck_leg": {
+      "textures": "textures/items/ranching/duck_leg"
+    },
+    "kr_goose_leg": {
+      "textures": "textures/items/ranching/goose_leg"
+    },
+    "kr_rabbit_leg": {
+      "textures": "textures/items/ranching/rabbit_leg"
+    },
+    "kr_large_bone": {
+      "textures": "textures/items/ranching/large_bone"
+    },
+    "kr_chicken_frame": {
+      "textures": "textures/items/ranching/chicken_frame"
+    },
+    "kr_raw_hide": {
+      "textures": "textures/items/ranching/raw_hide"
+    },
+    "kr_sheep_skin": {
+      "textures": "textures/items/ranching/sheep_skin"
+    },
+    "kr_pig_skin": {
+      "textures": "textures/items/ranching/pig_skin"
+    },
+    "kr_beef_tallow": {
+      "textures": "textures/items/ranching/beef_tallow"
+    },
+    "kr_mutton_tallow": {
+      "textures": "textures/items/ranching/mutton_tallow"
+    },
+    "kr_pork_fat": {
+      "textures": "textures/items/ranching/pork_fat"
+    },
+    "kr_lard": {
+      "textures": "textures/items/ranching/lard"
+    },
+    "kr_cattle_horn": {
+      "textures": "textures/items/ranching/cattle_horn"
+    },
+    "kr_billy_goat_horn": {
+      "textures": "textures/items/ranching/billy_goat_horn"
+    },
+    "kr_down": {
+      "textures": "textures/items/ranching/down"
+    },
+    "kr_yak_hair": {
+      "textures": "textures/items/ranching/yak_hair"
+    },
+    "kr_dried_yak_dung": {
+      "textures": "textures/items/ranching/dried_yak_dung"
+    },
+    "kr_milking_pail": {
+      "textures": "textures/items/ranching/milking_pail"
+    },
+    "kr_nursing_bottle": {
+      "textures": "textures/items/ranching/nursing_bottle"
+    },
+    "kr_cowbell": {
+      "textures": "textures/items/ranching/cowbell"
+    }
+  }
+}
