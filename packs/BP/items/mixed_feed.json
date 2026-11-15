@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:mixed_feed",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_mixed_feed",
+      "minecraft:tags": {
+        "tags": [
+          "kaleidoscope_ranching:feed"
+        ]
+      }
+    }
+  }
+}

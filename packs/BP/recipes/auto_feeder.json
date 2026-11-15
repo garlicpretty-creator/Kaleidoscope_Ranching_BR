@@ -1,0 +1,27 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:auto_feeder"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "I I",
+      "IHI"
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "H": {
+        "item": "minecraft:hopper"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:auto_feeder",
+      "count": 1
+    }
+  }
+}

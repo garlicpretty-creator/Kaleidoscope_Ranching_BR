@@ -1,0 +1,35 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:feed_mixer",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_feed_mixer_side"
+        },
+        "up": {
+          "texture": "kr_feed_mixer_top"
+        },
+        "down": {
+          "texture": "kr_planks"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.0
+      },
+      "minecraft:map_color": "#9a6a3a",
+      "minecraft:crafting_table": {
+        "table_name": "tile.kaleidoscope_ranching:feed_mixer.name",
+        "crafting_tags": [
+          "kaleidoscope_ranching_feed_mixer"
+        ]
+      }
+    }
+  }
+}

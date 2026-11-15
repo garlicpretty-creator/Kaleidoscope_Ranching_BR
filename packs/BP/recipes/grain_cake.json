@@ -1,0 +1,25 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:grain_cake"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:wheat_seeds",
+        "count": 2
+      },
+      {
+        "item": "minecraft:wheat",
+        "count": 1
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:grain_cake",
+      "count": 2
+    }
+  }
+}

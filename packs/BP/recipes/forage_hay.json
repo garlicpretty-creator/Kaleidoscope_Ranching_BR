@@ -1,0 +1,21 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:forage_hay"
+    },
+    "tags": [
+      "kaleidoscope_ranching_chaff_cutter"
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:hay_block",
+        "count": 1
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:forage",
+      "count": 12
+    }
+  }
+}

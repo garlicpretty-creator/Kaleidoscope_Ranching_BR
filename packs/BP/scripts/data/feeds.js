@@ -1,30 +1,49 @@
-// Feed table for 1.0.0.
-//
-// A trough satisfies an animal's feed need when it holds an item whose `groups`
-// include that animal's `feedGroup` (see animals.js). The highest tier present
-// is the one used for that day's quality roll.
-//
-// Identifiers without a namespace belong to `kaleidoscope_ranching:`.
+// Feed table. Each feed item gives `units` of a trough "kind".
+// Trough state `kaleidoscope_ranching:kind`: 0 empty, then the ids below.
+// Tier (乾草 1 / 混合 2 / 精飼料 3) is used by M3 for milk & egg quality.
 
-export const FEED_GROUPS = ["grazer", "poultry", "omnivore"];
+export const KIND = {
+  EMPTY: 0,
+  GRASS: 1, // 乾草·飼草 (ruminants, rabbits)
+  GRAIN: 2, // 穀粒 (poultry)
+  VEG: 3, // 蔬菜·廚餘 (pigs, rabbits)
+  MIXED: 4, // 混合飼料 (everyone)
+  CONCENTRATE: 5, // 精飼料 (everyone)
+};
 
-export const FEED_TIERS = { hay: 1, mixed: 2, premium: 3 };
+export const KIND_TIER = {
+  [KIND.GRASS]: 1,
+  [KIND.GRAIN]: 1,
+  [KIND.VEG]: 1,
+  [KIND.MIXED]: 2,
+  [KIND.CONCENTRATE]: 3,
+};
 
-export const FEEDS = [
-  { item: "minecraft:wheat", tier: FEED_TIERS.hay, groups: ["grazer", "omnivore"] },
-  { item: "minecraft:hay_block", tier: FEED_TIERS.hay, groups: ["grazer"], servings: 9 },
-  { item: "minecraft:wheat_seeds", tier: FEED_TIERS.hay, groups: ["poultry"] },
-  { item: "forage", tier: FEED_TIERS.hay, groups: ["grazer", "omnivore"] },
-  { item: "swill", tier: FEED_TIERS.mixed, groups: ["omnivore"] },
-  { item: "mixed_feed", tier: FEED_TIERS.mixed, groups: ["grazer", "poultry", "omnivore"] },
-  { item: "premium_feed", tier: FEED_TIERS.premium, groups: ["grazer", "poultry", "omnivore"] },
-];
+/** itemId → { kind, units } */
+export const FEEDS = {
+  "kaleidoscope_ranching:forage": { kind: KIND.GRASS, units: 1 },
+  "kaleidoscope_ranching:alfalfa": { kind: KIND.GRASS, units: 1 },
+  "minecraft:wheat": { kind: KIND.GRASS, units: 1 },
+  "minecraft:hay_block": { kind: KIND.GRASS, units: 9 },
 
-/** Radius, in blocks, within which a trough feeds or waters animals. */
-export const TROUGH_RADIUS = 8;
+  "minecraft:wheat_seeds": { kind: KIND.GRAIN, units: 1 },
+  "minecraft:beetroot_seeds": { kind: KIND.GRAIN, units: 1 },
+  "minecraft:pumpkin_seeds": { kind: KIND.GRAIN, units: 1 },
+  "minecraft:melon_seeds": { kind: KIND.GRAIN, units: 1 },
+  "minecraft:torchflower_seeds": { kind: KIND.GRAIN, units: 1 },
 
-/** Most animals one trough settles per day, to bound the cost of a settlement. */
-export const TROUGH_MAX_ANIMALS = 24;
+  "minecraft:carrot": { kind: KIND.VEG, units: 1 },
+  "minecraft:potato": { kind: KIND.VEG, units: 1 },
+  "minecraft:beetroot": { kind: KIND.VEG, units: 1 },
+  "minecraft:apple": { kind: KIND.VEG, units: 1 },
 
-/** Manure piles within trough range above which the cleanliness need fails. */
-export const MANURE_LIMIT = 6;
+  "kaleidoscope_ranching:mixed_feed": { kind: KIND.MIXED, units: 1 },
+  "kaleidoscope_ranching:concentrate_feed": { kind: KIND.CONCENTRATE, units: 1 },
+};
+
+/** External feeds registered at runtime (M5 API will call this). */
+export function registerFeed(itemId, kind, units = 1) {
+  if (FEEDS[itemId]) return false; // built-ins win (企劃書 API 規則)
+  FEEDS[itemId] = { kind, units };
+  return true;
+}

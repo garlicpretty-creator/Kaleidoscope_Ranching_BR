@@ -1,0 +1,33 @@
+{
+  "format_version": "1.21.40",
+  "kaleidoscope_ranching:trough": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:water_trough": {
+    "sound": "stone"
+  },
+  "kaleidoscope_ranching:auto_waterer": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:auto_feeder": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:chaff_cutter": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:feed_mixer": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:salt_lick": {
+    "sound": "stone"
+  },
+  "kaleidoscope_ranching:compost_bin": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:alfalfa_crop": {
+    "sound": "grass"
+  },
+  "kaleidoscope_ranching:manure": {
+    "sound": "gravel"
+  }
+}

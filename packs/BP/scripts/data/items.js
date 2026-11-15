@@ -1,8 +1,13 @@
 // Item registry for 1.0.0: the single source of truth for item identifiers and
 // display names. Item JSON and language files are generated from this table.
 //
-// Every entry is [id, zh_TW name, en_US name, category]. Identifiers are
-// written without the `kaleidoscope_ranching:` namespace.
+// Every entry is [id, zh_TW name, en_US name, category, owner?]. Identifiers
+// are written without the `kaleidoscope_ranching:` namespace.
+//
+// `owner` says which milestone generates the item's JSON, icon and name:
+// "m2" items come from tools/m2/gen_content.py; every other item is generated
+// by tools/gen_items.mjs. The registry still lists M2 items so every table can
+// be checked against one list of identifiers.
 
 export const NAMESPACE = "kaleidoscope_ranching";
 
@@ -112,32 +117,36 @@ const BYPRODUCTS = [
   ["billy_goat_horn", "羊角", "Billy Goat Horn", "byproduct"],
   ["down", "羽絨", "Down", "byproduct"],
   ["yak_hair", "氂牛毛", "Yak Hair", "byproduct"],
-  ["pig_bristle", "豬鬃", "Pig Bristle", "byproduct"],
-  ["manure", "糞便", "Manure", "byproduct"],
+  ["pig_bristle", "豬鬃", "Pig Bristle", "byproduct", "m2"],
+  ["manure_item", "糞便", "Manure", "byproduct", "m2"],
   ["dried_yak_dung", "乾氂牛糞", "Dried Yak Dung", "byproduct"],
-  ["fertilizer", "肥料", "Fertilizer", "byproduct"],
+  ["fertilizer", "肥料", "Fertilizer", "byproduct", "m2"],
 ];
 
 const FEED = [
-  ["alfalfa", "苜蓿", "Alfalfa", "feed"],
-  ["alfalfa_seeds", "苜蓿種子", "Alfalfa Seeds", "feed"],
-  ["forage", "飼草", "Forage", "feed"],
-  ["mixed_feed", "混合飼料", "Mixed Feed", "feed"],
-  ["premium_feed", "精飼料", "Premium Feed", "feed"],
-  ["swill", "廚餘飼料", "Swill", "feed"],
+  ["alfalfa", "苜蓿", "Alfalfa", "feed", "m2"],
+  ["alfalfa_seeds", "苜蓿種子", "Alfalfa Seeds", "feed", "m2"],
+  ["forage", "飼草", "Forage", "feed", "m2"],
+  ["mixed_feed", "混合飼料", "Mixed Feed", "feed", "m2"],
+  ["concentrate_feed", "精飼料", "Concentrate Feed", "feed", "m2"],
 ];
 
-const TREATS = ANIMAL_NAMES.map(([id, zh, en]) => [`${id}_treat`, `${zh}零食`, `${en} Treat`, "treat"]);
+const TREATS = [
+  ["alfalfa_cake", "苜蓿草餅", "Alfalfa Cake", "treat", "m2"],
+  ["grain_cake", "穀物糕", "Grain Cake", "treat", "m2"],
+  ["beet_sugar_cube", "甜菜糖塊", "Beet Sugar Cube", "treat", "m2"],
+  ["carrot_chips", "胡蘿蔔脆片", "Carrot Chips", "treat", "m2"],
+];
 
 const TOOLS = [
   ["milking_pail", "擠奶桶", "Milking Pail", "tool"],
-  ["brush", "毛刷", "Brush", "tool"],
-  ["cowbell", "牧鈴", "Cowbell", "tool"],
-  ["ranch_notebook", "牧場記事本", "Ranch Notebook", "tool"],
-  ["ear_tag", "耳標", "Ear Tag", "tool"],
   ["nursing_bottle", "奶瓶", "Nursing Bottle", "tool"],
-  ["feed_bag", "飼料袋", "Feed Bag", "tool"],
-  ["pitchfork", "糞叉", "Pitchfork", "tool"],
+  ["cowbell", "牧鈴", "Cowbell", "tool"],
+  ["brush", "毛刷", "Brush", "tool", "m2"],
+  ["ranch_notebook", "牧場記事本", "Ranch Notebook", "tool", "m2"],
+  ["ear_tag", "耳標", "Ear Tag", "tool", "m2"],
+  ["feed_bag", "飼料袋", "Feed Bag", "tool", "m2"],
+  ["manure_fork", "糞叉", "Manure Fork", "tool", "m2"],
 ];
 
 export const ITEMS = [
@@ -152,7 +161,7 @@ export const ITEMS = [
   ...FEED,
   ...TREATS,
   ...TOOLS,
-].map(([id, zh, en, category]) => ({ id, zh, en, category }));
+].map(([id, zh, en, category, owner = "ranching"]) => ({ id, zh, en, category, owner }));
 
 /** All three tier identifiers for a tiered base item, plain tier first. */
 export function tierIds(baseId) {

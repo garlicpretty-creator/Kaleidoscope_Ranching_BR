@@ -1,0 +1,485 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.water_trough",
+        "texture_width": 16,
+        "texture_height": 16
+      },
+      "bones": [
+        {
+          "name": "frame",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -8
+              ],
+              "size": [
+                16,
+                7,
+                1
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    16,
+                    7
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    16,
+                    7
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "uv_size": [
+                    16,
+                    1
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "uv_size": [
+                    16,
+                    1
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                -8,
+                0,
+                7
+              ],
+              "size": [
+                16,
+                7,
+                1
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    16,
+                    7
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    16,
+                    7
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    15,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    15,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    0,
+                    15
+                  ],
+                  "uv_size": [
+                    16,
+                    1
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    0,
+                    15
+                  ],
+                  "uv_size": [
+                    16,
+                    1
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                -8,
+                0,
+                -7
+              ],
+              "size": [
+                1,
+                7,
+                14
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    0,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    1,
+                    9
+                  ],
+                  "uv_size": [
+                    14,
+                    7
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    1,
+                    9
+                  ],
+                  "uv_size": [
+                    14,
+                    7
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    0,
+                    1
+                  ],
+                  "uv_size": [
+                    1,
+                    14
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    0,
+                    1
+                  ],
+                  "uv_size": [
+                    1,
+                    14
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                7,
+                0,
+                -7
+              ],
+              "size": [
+                1,
+                7,
+                14
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    15,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    15,
+                    9
+                  ],
+                  "uv_size": [
+                    1,
+                    7
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    1,
+                    9
+                  ],
+                  "uv_size": [
+                    14,
+                    7
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    1,
+                    9
+                  ],
+                  "uv_size": [
+                    14,
+                    7
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    15,
+                    1
+                  ],
+                  "uv_size": [
+                    1,
+                    14
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    15,
+                    1
+                  ],
+                  "uv_size": [
+                    1,
+                    14
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                -7,
+                0,
+                -7
+              ],
+              "size": [
+                14,
+                2,
+                14
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    1,
+                    14
+                  ],
+                  "uv_size": [
+                    14,
+                    2
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    1,
+                    14
+                  ],
+                  "uv_size": [
+                    14,
+                    2
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    1,
+                    14
+                  ],
+                  "uv_size": [
+                    14,
+                    2
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    1,
+                    14
+                  ],
+                  "uv_size": [
+                    14,
+                    2
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    1,
+                    1
+                  ],
+                  "uv_size": [
+                    14,
+                    14
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    1,
+                    1
+                  ],
+                  "uv_size": [
+                    14,
+                    14
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "water",
+          "parent": "frame",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -7,
+                2,
+                -7
+              ],
+              "size": [
+                14,
+                3,
+                14
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    1,
+                    11
+                  ],
+                  "uv_size": [
+                    14,
+                    3
+                  ],
+                  "material_instance": "water"
+                },
+                "south": {
+                  "uv": [
+                    1,
+                    11
+                  ],
+                  "uv_size": [
+                    14,
+                    3
+                  ],
+                  "material_instance": "water"
+                },
+                "east": {
+                  "uv": [
+                    1,
+                    11
+                  ],
+                  "uv_size": [
+                    14,
+                    3
+                  ],
+                  "material_instance": "water"
+                },
+                "west": {
+                  "uv": [
+                    1,
+                    11
+                  ],
+                  "uv_size": [
+                    14,
+                    3
+                  ],
+                  "material_instance": "water"
+                },
+                "up": {
+                  "uv": [
+                    1,
+                    1
+                  ],
+                  "uv_size": [
+                    14,
+                    14
+                  ],
+                  "material_instance": "water"
+                },
+                "down": {
+                  "uv": [
+                    1,
+                    1
+                  ],
+                  "uv_size": [
+                    14,
+                    14
+                  ],
+                  "material_instance": "water"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

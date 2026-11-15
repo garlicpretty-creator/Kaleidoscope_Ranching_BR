@@ -6,6 +6,8 @@
 
 - [企劃書（正式版）](docs/PROPOSAL.zh-TW.md)
 - [腳本架構](packs/BP/scripts/ARCHITECTURE.md)
+- [里程碑之間的介面](docs/INTERFACES.md)
+- [M2 照顧核心交接說明](docs/M2_交接.md)
 
 ## 目前進度
 
@@ -34,9 +36,9 @@
 
 | 指令 | 作用 |
 | --- | --- |
-| `npm run generate` | 重新生成動物美術、實體檔與語言檔 |
+| `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引 |
 | `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結 |
-| `npm test` | 以模擬的腳本 API 執行行為測試 |
+| `npm test` | 以模擬的腳本 API 執行行為測試（樂牧主測試與 M2 的情境測試） |
 | `npm run build` | 驗證、測試，然後打包成 `dist/` 下的 `.mcaddon` |
 
 生成的檔案（動物模型、貼圖、實體 JSON、語言檔）請改生成器，不要手改。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。

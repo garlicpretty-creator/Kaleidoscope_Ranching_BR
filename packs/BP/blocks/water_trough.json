@@ -1,0 +1,74 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:water_trough",
+      "menu_category": {
+        "category": "items"
+      },
+      "states": {
+        "kaleidoscope_ranching:water": {
+          "values": {
+            "min": 0,
+            "max": 3
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:geometry": {
+        "identifier": "geometry.kaleidoscope_ranching.water_trough",
+        "bone_visibility": {
+          "water": "q.block_state('kaleidoscope_ranching:water') > 0"
+        }
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_water_trough",
+          "render_method": "alpha_test"
+        },
+        "water": {
+          "texture": "kr_water",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          8,
+          16
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          8,
+          16
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.5
+      },
+      "minecraft:map_color": "#7d7d7d",
+      "minecraft:light_dampening": 0,
+      "minecraft:tick": {
+        "interval_range": [
+          200,
+          200
+        ],
+        "looping": true
+      },
+      "kaleidoscope_ranching:water_trough": {}
+    }
+  }
+}

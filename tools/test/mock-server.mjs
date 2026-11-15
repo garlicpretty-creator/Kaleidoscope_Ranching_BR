@@ -40,6 +40,19 @@ class Signal {
 export const EquipmentSlot = { Mainhand: "Mainhand", Offhand: "Offhand" };
 export const GameMode = { Survival: "Survival", Creative: "Creative", Adventure: "Adventure", Spectator: "Spectator" };
 export const Direction = { Up: "Up", Down: "Down", North: "North", South: "South", East: "East", West: "West" };
+export const PlayerPermissionLevel = { Visitor: 0, Member: 1, Operator: 2, Custom: 3 };
+export class BlockVolume {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+}
+const STATE_VALUES = new Map();
+export const BlockStates = { get: (name) => (STATE_VALUES.has(name) ? { validValues: STATE_VALUES.get(name) } : undefined) };
+/** Test helper: declares the valid values of a block state. */
+export function __defineState(name, values) {
+  STATE_VALUES.set(name, values);
+}
 
 // --- Items ----------------------------------------------------------------
 
@@ -184,6 +197,11 @@ export class Entity {
   getProperty(key) {
     return this.properties.get(key);
   }
+  matches({ families = [], type } = {}) {
+    if (type && this.typeId !== type) return false;
+    const own = this.componentMap().get("minecraft:type_family")?.family ?? [];
+    return families.every((family) => own.includes(family));
+  }
   setProperty(key, value) {
     this.properties.set(key, value);
   }
@@ -246,11 +264,17 @@ export class Player extends Entity {
     this.actionBar = [];
     this.sounds = [];
     this.onScreenDisplay = { setActionBar: (message) => this.actionBar.push(message) };
+    this.isSneaking = false;
+  }
+  getEntitiesFromViewDirection() {
+    return [];
   }
   getComponent(id) {
     if (id === "minecraft:inventory") return { container: this.inventory };
     if (id === "minecraft:equippable") {
       return {
+        getEquipment: () => this.inventory.getItem(this.selectedSlotIndex),
+        setEquipment: (_slot, item) => this.inventory.setItem(this.selectedSlotIndex, item),
         getEquipmentSlot: () => ({
           getItem: () => this.inventory.getItem(this.selectedSlotIndex),
           setItem: (item) => this.inventory.setItem(this.selectedSlotIndex, item),
@@ -386,9 +410,10 @@ class Dimension {
     world.afterEvents.entitySpawn.fire({ entity, cause });
     return entity;
   }
-  getEntities({ type, location, maxDistance } = {}) {
+  getEntities({ type, location, maxDistance, families } = {}) {
     return this.entities.filter((entity) => {
       if (type && entity.typeId !== type) return false;
+      if (families && !entity.matches({ families })) return false;
       if (location && maxDistance !== undefined) {
         const d = (entity.location.x - location.x) ** 2 + (entity.location.y - location.y) ** 2 + (entity.location.z - location.z) ** 2;
         if (d > maxDistance * maxDistance) return false;
@@ -431,6 +456,8 @@ export const world = {
     projectileHitEntity: new Signal(),
     worldLoad: new Signal(),
     itemCompleteUse: new Signal(),
+    itemUse: new Signal(),
+    entityHurt: new Signal(),
     playerBreakBlock: new Signal(),
   },
   getDimension: (id) => dimensions.get(id.includes(":") ? id : `minecraft:${id}`),

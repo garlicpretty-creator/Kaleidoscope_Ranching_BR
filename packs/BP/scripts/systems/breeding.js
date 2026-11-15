@@ -21,11 +21,14 @@ import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick } from "../core/time.js";
+import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
 
 const LOVE_UNTIL = dp("love_until");
 const COOLDOWN_UNTIL = dp("breed_cooldown_until");
 const PREGNANT_DUE = dp("pregnant_due");
 const MATE_AFFECTION = dp("mate_affection");
+// Read by M2's notebook (data/m1_contract.js): the game day the birth is due.
+const PREGNANT_UNTIL_DAY = DP_PREGNANT_UNTIL_DAY;
 
 const pregnancies = createRegistry("pregnancies");
 
@@ -72,6 +75,7 @@ function canMateNow(entity, now) {
 
 function conceive(mother, father, now) {
   mother.setDynamicProperty(PREGNANT_DUE, now + GESTATION_DAYS * TICKS_PER_DAY);
+  mother.setDynamicProperty(PREGNANT_UNTIL_DAY, Math.floor((now + GESTATION_DAYS * TICKS_PER_DAY) / TICKS_PER_DAY));
   mother.setDynamicProperty(MATE_AFFECTION, getAffection(father));
   for (const parent of [mother, father]) {
     parent.setDynamicProperty(LOVE_UNTIL, undefined);
@@ -111,6 +115,7 @@ function giveBirth(mother) {
   if (!species) return;
   const mateAffection = numberProperty(mother, MATE_AFFECTION);
   mother.setDynamicProperty(PREGNANT_DUE, undefined);
+  mother.setDynamicProperty(PREGNANT_UNTIL_DAY, undefined);
   mother.setDynamicProperty(MATE_AFFECTION, undefined);
   pregnancies.remove(mother.id);
 

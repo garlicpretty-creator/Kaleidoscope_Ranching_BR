@@ -1,0 +1,66 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:salt_lick",
+      "menu_category": {
+        "category": "items"
+      },
+      "states": {
+        "kaleidoscope_ranching:bites": {
+          "values": {
+            "min": 0,
+            "max": 6
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.kaleidoscope_ranching.salt_lick",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_salt_lick",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -5,
+          0,
+          -5
+        ],
+        "size": [
+          10,
+          6,
+          10
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -5,
+          0,
+          -5
+        ],
+        "size": [
+          10,
+          6,
+          10
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.0
+      },
+      "minecraft:map_color": "#e8d8d0",
+      "minecraft:light_dampening": 0,
+      "minecraft:loot": "loot_tables/kaleidoscope_ranching/empty.json",
+      "minecraft:tick": {
+        "interval_range": [
+          200,
+          200
+        ],
+        "looping": true
+      },
+      "kaleidoscope_ranching:salt_lick": {}
+    }
+  }
+}

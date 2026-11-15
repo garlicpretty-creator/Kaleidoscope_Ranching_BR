@@ -1,0 +1,89 @@
+{
+  "resource_pack_name": "kaleidoscope_ranching",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "kr_planks": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_planks"
+    },
+    "kr_trough": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_trough"
+    },
+    "kr_feed_grass": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_grass"
+    },
+    "kr_feed_grain": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_grain"
+    },
+    "kr_feed_veg": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_veg"
+    },
+    "kr_feed_mixed": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_mixed"
+    },
+    "kr_feed_concentrate": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_concentrate"
+    },
+    "kr_water_trough": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_water_trough"
+    },
+    "kr_auto_waterer": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_auto_waterer"
+    },
+    "kr_water": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_water"
+    },
+    "kr_auto_feeder_side": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_auto_feeder_side"
+    },
+    "kr_auto_feeder_top": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_auto_feeder_top"
+    },
+    "kr_chaff_cutter_side": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_chaff_cutter_side"
+    },
+    "kr_chaff_cutter_top": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_chaff_cutter_top"
+    },
+    "kr_feed_mixer_side": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_mixer_side"
+    },
+    "kr_feed_mixer_top": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_feed_mixer_top"
+    },
+    "kr_salt_lick": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_salt_lick"
+    },
+    "kr_compost_bin_side": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_compost_bin_side"
+    },
+    "kr_compost_bin_top_empty": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_compost_bin_top_empty"
+    },
+    "kr_compost_bin_top_manure": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_compost_bin_top_manure"
+    },
+    "kr_compost_bin_top_fermenting": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_compost_bin_top_fermenting"
+    },
+    "kr_compost_bin_top_ready": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_compost_bin_top_ready"
+    },
+    "kr_manure": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_manure"
+    },
+    "kr_alfalfa_stage0": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage0"
+    },
+    "kr_alfalfa_stage1": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage1"
+    },
+    "kr_alfalfa_stage2": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage2"
+    },
+    "kr_alfalfa_stage3": {
+      "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage3"
+    }
+  }
+}

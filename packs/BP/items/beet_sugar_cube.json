@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:beet_sugar_cube",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_beet_sugar_cube"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:feed_bag"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "L L",
+      "LWL",
+      "LLL"
+    ],
+    "key": {
+      "L": {
+        "item": "minecraft:leather"
+      },
+      "W": {
+        "item": "minecraft:wheat"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:feed_bag",
+      "count": 1
+    }
+  }
+}

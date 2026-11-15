@@ -41,24 +41,12 @@ export const PROCESSING_RECIPES = [
   { id: "pickle/salted_duck_egg", station: "pickling_vat", inputs: [{ anyOf: ANY_DUCK_EGG, count: 4 }, { item: "minecraft:clay_ball", count: 1 }], outputs: [{ item: "salted_duck_egg", count: 4 }], ticks: DAY * 2 },
   { id: "pickle/century_egg", station: "pickling_vat", inputs: [{ anyOf: ANY_DUCK_EGG, count: 4 }, { item: "minecraft:charcoal", count: 1 }, { item: "minecraft:clay_ball", count: 1 }], outputs: [{ item: "century_egg", count: 4 }], ticks: DAY * 3 },
 
-  // Chaff cutter: instant, better yield than hand crafting
-  { id: "cutter/wheat", station: "chaff_cutter", inputs: [{ item: "minecraft:wheat", count: 1 }], outputs: [{ item: "forage", count: 2 }], ticks: 0 },
-  { id: "cutter/grass", station: "chaff_cutter", inputs: [{ anyOf: ["minecraft:short_grass", "minecraft:tall_grass", "minecraft:fern"], count: 2 }], outputs: [{ item: "forage", count: 1 }], ticks: 0 },
-  { id: "cutter/alfalfa", station: "chaff_cutter", inputs: [{ item: "alfalfa", count: 1 }], outputs: [{ item: "forage", count: 3 }], ticks: 0 },
-
-  // Feed mixer
-  { id: "mixer/mixed_feed", station: "feed_mixer", inputs: [{ item: "forage", count: 2 }, { anyOf: ["minecraft:carrot", "minecraft:potato", "minecraft:beetroot", "minecraft:wheat_seeds"], count: 1 }], outputs: [{ item: "mixed_feed", count: 3 }], ticks: 200 },
-  { id: "mixer/premium_feed", station: "feed_mixer", inputs: [{ item: "mixed_feed", count: 2 }, { item: "alfalfa", count: 1 }, { anyOf: ["minecraft:bone_meal", "minecraft:pumpkin_seeds", "minecraft:melon_seeds"], count: 1 }], outputs: [{ item: "premium_feed", count: 3 }], ticks: 400 },
-  { id: "mixer/swill", station: "feed_mixer", inputs: [{ anyOf: ["minecraft:rotten_flesh", "minecraft:potato", "minecraft:carrot", "minecraft:beetroot", "minecraft:bread"], count: 2 }, { item: "whey", count: 1 }], outputs: [{ item: "swill", count: 3 }], ticks: 200 },
-
-  // Compost bin
-  { id: "compost/fertilizer", station: "compost_bin", inputs: [{ item: "manure", count: 4 }, { anyOf: ["minecraft:wheat", "forage", "minecraft:hay_block"], count: 1 }], outputs: [{ item: "fertilizer", count: 4 }], ticks: DAY * 2 },
 ];
 
 // Recipes that use vanilla workstations rather than a Ranching block.
 export const VANILLA_COOKING = [
   { id: "furnace/lard", kind: "furnace", input: "pork_fat", output: "lard" },
-  { id: "furnace/dried_yak_dung", kind: "furnace", input: "manure", output: "dried_yak_dung", note: "yak manure only; resolved when manure gains a source tag" },
+  { id: "furnace/dried_yak_dung", kind: "furnace", input: "manure_item", output: "dried_yak_dung", note: "yak manure only; resolved when manure gains a source tag" },
   { id: "furnace/cooked_buffalo_meat", kind: "furnace", input: "buffalo_meat", output: "cooked_buffalo_meat" },
   { id: "furnace/cooked_yak_meat", kind: "furnace", input: "yak_meat", output: "cooked_yak_meat" },
   { id: "furnace/cooked_duck_meat", kind: "furnace", input: "duck_meat", output: "cooked_duck_meat" },

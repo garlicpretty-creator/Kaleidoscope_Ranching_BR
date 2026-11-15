@@ -1,0 +1,94 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:compost_bin",
+      "menu_category": {
+        "category": "items"
+      },
+      "states": {
+        "kaleidoscope_ranching:stage": {
+          "values": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "kaleidoscope_ranching:manure": {
+          "values": {
+            "min": 0,
+            "max": 4
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_compost_bin_side"
+        },
+        "up": {
+          "texture": "kr_compost_bin_top_empty"
+        },
+        "down": {
+          "texture": "kr_planks"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.5
+      },
+      "minecraft:map_color": "#6b4a2a",
+      "kaleidoscope_ranching:compost_bin": {}
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('kaleidoscope_ranching:stage') == 0 && q.block_state('kaleidoscope_ranching:manure') > 0",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "kr_compost_bin_side"
+            },
+            "up": {
+              "texture": "kr_compost_bin_top_manure"
+            },
+            "down": {
+              "texture": "kr_planks"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('kaleidoscope_ranching:stage') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "kr_compost_bin_side"
+            },
+            "up": {
+              "texture": "kr_compost_bin_top_fermenting"
+            },
+            "down": {
+              "texture": "kr_planks"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('kaleidoscope_ranching:stage') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "kr_compost_bin_side"
+            },
+            "up": {
+              "texture": "kr_compost_bin_top_ready"
+            },
+            "down": {
+              "texture": "kr_planks"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
