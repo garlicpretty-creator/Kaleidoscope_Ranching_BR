@@ -49,6 +49,18 @@ def registry_items():
     return json.loads(out.stdout)
 
 
+def dish_looks():
+    """{dish id: (shape, colour)} for M5 dishes and their uncooked steps."""
+    script = (
+        "import(process.argv[1]).then(m => console.log(JSON.stringify(Object.fromEntries(["
+        "...m.DISHES.map(d => [d.id, d.look]),"
+        "...m.DISH_PREPS.map(p => [p.id, ['bowl', p.id === 'egg_custard' ? [250, 210, 90] : [236, 220, 170]]])]))))"
+    )
+    url = (ROOT / "packs/BP/scripts/data/dishes.js").as_uri()
+    out = subprocess.run(["node", "-e", script, url], check=True, capture_output=True, text=True)
+    return {k: (v[0], tuple(v[1])) for k, v in json.loads(out.stdout).items()}
+
+
 def write_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
@@ -64,6 +76,7 @@ def clean(directory, keep):
 def main():
     # Item icons
     ids = registry_items()
+    icons.DISH_LOOKS.update(dish_looks())
     icon_dir = RP / "textures" / "items" / "ranching"
     clean(icon_dir, set(ids))
     item_atlas = {}

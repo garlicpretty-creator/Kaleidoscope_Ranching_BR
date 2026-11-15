@@ -285,8 +285,30 @@ RAW = (196, 70, 64)
 COOKED = (140, 88, 54)
 
 
+# Placeholder dish icons (M5), filled in by tools/gen_m3_art.py from data/dishes.js.
+DISH_LOOKS = {}
+
+
+def dish(c, shape, color):
+    if shape == "bottle":
+        bottle(c, color)
+        return
+    if shape == "plate":
+        c.fill(ellipse(7.5, 11, 7, 2.5), (236, 236, 232))
+        c.fill(ellipse(7.5, 9, 4.5, 2.5), color)
+        return
+    # bowl: rim of food over a wooden bowl
+    c.fill(ellipse(7.5, 8, 6.5, 2.2), color)
+    c.fill(rect(2, 9, 13, 11), (150, 104, 60))
+    c.fill(rect(4, 12, 11, 13), (120, 82, 46))
+
+
 def draw(item_id):
     c = Canvas()
+    if item_id in DISH_LOOKS:
+        dish(c, *DISH_LOOKS[item_id])
+        c.outline()
+        return c.image
     tier = None
     base = item_id
     for suffix in ("_fine", "_superb"):

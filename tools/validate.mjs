@@ -161,6 +161,30 @@ PROCESSING_RECIPES.forEach((recipe) => {
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
 
+// M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla
+// item or a Cookery item; Ranching ones must be registered.
+{
+  const { DISHES, DISH_PREPS } = await load("dishes.js");
+  const checkIngredient = (where, id) => {
+    if (typeof id !== "string") return; // a { tag } slot
+    const [ns, name] = id.includes(":") ? id.split(":") : ["kaleidoscope_ranching", id];
+    if (ns === "kaleidoscope_ranching") {
+      note(name);
+      if (!itemIds.has(name)) fail(`dishes.js: ${where} uses unregistered "${id}"`);
+    } else if (ns !== "minecraft" && ns !== "kaleidoscope_cookery") fail(`dishes.js: ${where} uses "${id}" from an unknown namespace`);
+  };
+  for (const dish of DISHES) {
+    note(dish.id);
+    (dish.slots ?? []).flat().forEach((id) => checkIngredient(dish.id, id));
+    if (dish.input) checkIngredient(dish.id, dish.input);
+    if (["stockpot", "wok"].includes(dish.station) && (dish.slots.length < 1 || dish.slots.length > 9)) fail(`dishes.js: ${dish.id} needs 1-9 slots for Cookery`);
+  }
+  for (const prep of DISH_PREPS) {
+    note(prep.id);
+    prep.makes.flat().forEach((id) => checkIngredient(prep.id, id));
+  }
+}
+
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.

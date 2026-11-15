@@ -13,6 +13,8 @@ const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", 
 const { ITEMS, NAMESPACE } = await load("items.js");
 const { ANIMALS } = await load("animals.js");
 const { VANILLA_COOKING } = await load("processing.js");
+const { DISHES, DISH_PREPS } = await load("dishes.js");
+const DISH_BY_ID = new Map(DISHES.map((dish) => [dish.id, dish]));
 
 const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
 const FORMAT = "1.21.60";
@@ -39,7 +41,9 @@ const OVERRIDES = {
   whey: { stack: 16, ...food(1, 0.2, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   salted_duck_egg: food(4, 0.6),
   century_egg: food(5, 0.6),
-  lard: { stack: 16 },
+  // Lard is a Cookery oil container (api/cookeryRecipes.js): its oil count is an
+  // item dynamic property, so it cannot stack.
+  lard: { stack: 1 },
   // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
   dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
   // Item custom components (systems/m4.js); they need item format 1.21.90.
@@ -76,6 +80,16 @@ function componentsFor(item) {
     case "meat":
       Object.assign(c, item.id.startsWith("cooked_") ? food(8, 0.8) : food(3, 0.3));
       tags.push("minecraft:is_meat");
+      break;
+    case "dish": {
+      // M5 dishes stack like Cookery's own dishes; eating gives the carrier back.
+      const dish = DISH_BY_ID.get(item.id);
+      const converts = dish.carrier || undefined;
+      Object.assign(c, food(dish.food[0], dish.food[1], { converts, drink: dish.look[0] === "bottle" }));
+      break;
+    }
+    case "prep":
+      stack = 16;
       break;
     case "cut":
       Object.assign(c, food(2, 0.3));
@@ -147,6 +161,36 @@ const RECIPES = [
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),
 ];
 
+// --- M5 dish recipes made outside Cookery ---------------------------------------
+
+const ingredient = (slot) => (typeof slot === "string" ? { item: rid(slot) } : { tag: slot.tag });
+const m5 = (recipe) => {
+  const [id, data] = recipe;
+  const key = Object.keys(data).find((k) => k.startsWith("minecraft:recipe_"));
+  data[key].description.identifier = rid(`m5_${id}`);
+  return [`m5_${id}`, data];
+};
+for (const dish of DISHES.filter((d) => d.station === "crafting")) {
+  RECIPES.push(m5(shapeless(dish.id, dish.slots.map((slot) => ingredient(slot[0])), dish.id)));
+}
+for (const prep of DISH_PREPS) {
+  prep.makes.forEach((slots, i) => RECIPES.push(m5(shapeless(`${prep.id}_${i}`, slots.map(ingredient), prep.id))));
+}
+for (const dish of DISHES.filter((d) => d.station === "furnace")) {
+  RECIPES.push([
+    `m5_furnace_${dish.id}`,
+    {
+      format_version: "1.20.10",
+      "minecraft:recipe_furnace": {
+        description: { identifier: rid(`m5_furnace_${dish.id}`) },
+        tags: ["furnace", "smoker"],
+        input: rid(dish.input),
+        output: rid(dish.id),
+      },
+    },
+  ]);
+}
+
 for (const cook of VANILLA_COOKING) {
   if (cook.note) continue; // needs a source tag on manure first; see processing.js
   const isMeat = cook.output.startsWith("cooked_");
@@ -181,7 +225,14 @@ writeFresh(
     {
       format_version: OVERRIDES[item.id]?.format ?? FORMAT,
       "minecraft:item": {
-        description: { identifier: rid(item.id), menu_category: { category: MENU[item.category] ?? "items" } },
+        description: {
+          identifier: rid(item.id),
+          // Dishes sit with Cookery's foods in the creative inventory.
+          menu_category:
+            item.category === "dish"
+              ? { category: "equipment", group: "kaleidoscope_cookery:itemGroup.name.foods" }
+              : { category: MENU[item.category] ?? "items" },
+        },
         components: componentsFor(item),
       },
     },

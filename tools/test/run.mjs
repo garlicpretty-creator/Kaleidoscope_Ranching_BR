@@ -1223,6 +1223,78 @@ test("the cowbell calls only animals with three hearts or more", () => {
   assert(friend.getComponent("minecraft:behavior.tempt").items.includes("kaleidoscope_ranching:cowbell"), "tempted by the bell");
 });
 
+// --- M5: Cookery dishes and guidebook ---------------------------------------------
+
+const { DISHES } = await import("../../packs/BP/scripts/data/dishes.js");
+const COOKERY_CAPS = ["wok", "stockpot_exact", "steamer", "chopping_board", "wok_meat_conversions", "guidebook_extensions", "oil_containers"];
+
+test("when Cookery is ready every Cookery dish, the cheese board and the wok meats are registered", () => {
+  system.__scriptEvents.length = 0;
+  system.sendScriptEvent("kaleidoscope_cookery:api_ready", JSON.stringify({ api: 1, capabilities: COOKERY_CAPS }));
+  const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
+  const cookeryDishes = DISHES.filter((dish) => ["stockpot", "wok", "steamer"].includes(dish.station));
+  for (const dish of cookeryDishes) {
+    const sent = recipes.find((r) => r.recipe.result === `kaleidoscope_ranching:${dish.id}`);
+    assert(sent, `${dish.id} registered`);
+    assert(sent.api === 1 && sent.source === "kaleidoscope_ranching", `${dish.id} envelope`);
+    if (sent.kind !== "steamer") {
+      assert(sent.recipe.ingredients.length >= 1 && sent.recipe.ingredients.length <= 9, `${dish.id}: 1-9 slots`);
+      for (const slot of sent.recipe.ingredients) for (const id of slot) assert(/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(id), `${dish.id}: namespaced ${id}`);
+    }
+  }
+  assert(recipes.some((r) => r.kind === "chopping_board" && r.recipe.input === "kaleidoscope_ranching:aged_cheese_wheel"), "cheese wheel on the board");
+  const meats = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_wok_meat").map((e) => JSON.parse(e.message));
+  assert(meats.some((m) => m.raw === "kaleidoscope_ranching:duck_meat"), "duck meat converts in the wok");
+  // Cookery's wok-meat check: source and raw are namespaced ids sharing a namespace.
+  const ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
+  assert(meats.every((m) => ID.test(m.source) && ID.test(m.raw) && m.source.split(":")[0] === m.raw.split(":")[0]), "wok meats pass Cookery's checks");
+  const oil = system.__scriptEvents.find((e) => e.id === "kaleidoscope_cookery:register_oil_container");
+  assert(oil && JSON.parse(oil.message).container.id === "kaleidoscope_ranching:lard", "lard registered as wok oil");
+  equal(new ItemStack("kaleidoscope_ranching:lard").maxAmount, 1, "lard does not stack, so it can hold its oil count");
+  assert(cookeryDishes.length + DISHES.filter((d) => !["stockpot", "wok", "steamer"].includes(d.station)).length >= 20, "about twenty dishes");
+});
+
+test("every quality of milk and duck egg is accepted in the dishes that use them", () => {
+  const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
+  const tea = recipes.find((r) => r.recipe.result === "kaleidoscope_ranching:milk_tea");
+  assert(tea.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:yak_milk_superb") && slot.includes("kaleidoscope_ranching:cow_milk")), "milk tea takes any milk");
+  const eggs = recipes.find((r) => r.recipe.result === "kaleidoscope_ranching:tomato_duck_egg");
+  assert(eggs.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:duck_egg_fine")), "any duck egg");
+});
+
+test("the guidebook chapter arrives in chunks under 2048 characters and parses back", () => {
+  system.__scriptEvents.length = 0;
+  system.sendScriptEvent("kaleidoscope_cookery:guidebook_ready", JSON.stringify({ api: 1 }));
+  const events = system.__scriptEvents.filter((e) => e.id.startsWith("kaleidoscope_cookery:guidebook_") && e.id !== "kaleidoscope_cookery:guidebook_ready");
+  equal(events[0].id, "kaleidoscope_cookery:guidebook_begin", "begins");
+  equal(events.at(-1).id, "kaleidoscope_cookery:guidebook_end", "ends");
+  const begin = JSON.parse(events[0].message);
+  const chunks = events.filter((e) => e.id === "kaleidoscope_cookery:guidebook_chunk");
+  equal(chunks.length, begin.chunks, "chunk count");
+  assert(events.every((e) => e.message.length <= 2048), "every message fits a script event");
+  const payload = JSON.parse(chunks.map((e) => e.message.split("\n").slice(4).join("\n")).join(""));
+  for (const locale of ["en_US", "zh_TW", "zh_CN"]) {
+    for (const entry of payload.entries) assert(payload.names[locale][entry.id], `${locale} name for ${entry.id}`);
+    assert(payload.text[locale].intro.length < 4096, `${locale} intro fits`);
+  }
+  assert(payload.text.zh_TW.intro.startsWith("先從屠宰開始"), "butchering explained first");
+  system.__scriptEvents.length = 0;
+  system.sendScriptEvent("kaleidoscope_cookery:guidebook_ready", JSON.stringify({ api: 1 }));
+  equal(system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:guidebook_begin").length, 0, "sent once per session");
+});
+
+test("whey from the cheese press fills a trough as mixed feed that pigs eat", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_ranching:whey", 1);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(state(trough, "kind"), 4, "mixed feed");
+  const pig = ranch("pig", 1, "female");
+  runBlockClock();
+  equal(care.feedTierToday(pig), 2, "pig fed at tier 2");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

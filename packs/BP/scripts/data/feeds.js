@@ -38,6 +38,9 @@ export const FEEDS = {
   "minecraft:apple": { kind: KIND.VEG, units: 1 },
 
   "kaleidoscope_ranching:mixed_feed": { kind: KIND.MIXED, units: 1 },
+  // 乳清餵豬 (proposal, by-products line): whey from the cheese press fills a
+  // trough as mixed feed, so pigs and cattle drink it.
+  "kaleidoscope_ranching:whey": { kind: KIND.MIXED, units: 2 },
   "kaleidoscope_ranching:concentrate_feed": { kind: KIND.CONCENTRATE, units: 1 },
 };
 

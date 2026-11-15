@@ -2,6 +2,7 @@
 // Keep this file small: bootstrap integrations, components and events only.
 
 import { connectToCookery } from "./api/cookery.js";
+import { startCookeryContent } from "./api/cookeryRecipes.js";
 import { startRanchingApi } from "./api/ranchingApi.js";
 import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
@@ -13,6 +14,7 @@ import { startM3 } from "./systems/m3.js";
 import { startM4 } from "./systems/m4.js";
 
 connectToCookery();
+startCookeryContent();
 
 // M5: Ranching's own public API for other add-ons (docs/API.md)
 startRanchingApi();
