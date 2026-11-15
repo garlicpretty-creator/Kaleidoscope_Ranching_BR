@@ -12,25 +12,25 @@
         "baby": "textures/entity/ranching/yak/baby"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.cow"
+        "default": "geometry.kaleidoscope_ranching.yak"
       },
       "animations": {
-        "walk": "animation.kaleidoscope_ranching.cow.walk",
+        "walk": "animation.kaleidoscope_ranching.yak.walk",
         "look_at_target": "animation.common.look_at_target"
       },
       "scripts": {
-        "scale": "((!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0) * 1.1",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.15 : 0.95)",
         "animate": [
           "walk",
           "look_at_target"
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.cow"
+        "controller.render.kaleidoscope_ranching.yak"
       ],
       "spawn_egg": {
-        "base_color": "#4A3526",
-        "overlay_color": "#D8CFC0"
+        "base_color": "#3A2E26",
+        "overlay_color": "#D8D0C0"
       }
     }
   }

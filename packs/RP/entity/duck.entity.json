@@ -12,25 +12,25 @@
         "baby": "textures/entity/ranching/duck/baby"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.chicken"
+        "default": "geometry.kaleidoscope_ranching.duck"
       },
       "animations": {
-        "walk": "animation.kaleidoscope_ranching.chicken.walk",
+        "walk": "animation.kaleidoscope_ranching.duck.walk",
         "look_at_target": "animation.common.look_at_target"
       },
       "scripts": {
-        "scale": "((!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0) * 1.0",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.15 : 0.95)",
         "animate": [
           "walk",
           "look_at_target"
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.chicken"
+        "controller.render.kaleidoscope_ranching.duck"
       ],
       "spawn_egg": {
-        "base_color": "#9C7A54",
-        "overlay_color": "#2F7A3C"
+        "base_color": "#8C6A46",
+        "overlay_color": "#246E3E"
       }
     }
   }

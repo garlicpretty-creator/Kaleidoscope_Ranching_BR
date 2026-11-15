@@ -1,0 +1,81 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.buffalo": {
+      "geometry": "Geometry.default",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "arrays": {
+        "textures": {
+          "Array.skins": [
+            "Texture.female",
+            "Texture.male",
+            "Texture.baby"
+          ]
+        }
+      },
+      "textures": [
+        "Array.skins[q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')]"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "a_torso": "!q.is_baby"
+        },
+        {
+          "a_tail": "!q.is_baby"
+        },
+        {
+          "fa_udder": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "a_head": "!q.is_baby"
+        },
+        {
+          "fa_horns": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "m_horns": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "a_leg_fl": "!q.is_baby"
+        },
+        {
+          "a_leg_fr": "!q.is_baby"
+        },
+        {
+          "a_leg_bl": "!q.is_baby"
+        },
+        {
+          "a_leg_br": "!q.is_baby"
+        },
+        {
+          "b_torso": "q.is_baby"
+        },
+        {
+          "b_tail": "q.is_baby"
+        },
+        {
+          "b_head": "q.is_baby"
+        },
+        {
+          "b_leg_fl": "q.is_baby"
+        },
+        {
+          "b_leg_fr": "q.is_baby"
+        },
+        {
+          "b_leg_bl": "q.is_baby"
+        },
+        {
+          "b_leg_br": "q.is_baby"
+        }
+      ]
+    }
+  }
+}
