@@ -1,0 +1,13 @@
+{
+  "texture_data": {
+    "kr_hay_rack": {
+      "textures": "textures/items/ranching/hay_rack"
+    },
+    "kr_hitching_post": {
+      "textures": "textures/items/ranching/hitching_post"
+    },
+    "kr_animal_crate": {
+      "textures": "textures/items/ranching/animal_crate"
+    }
+  }
+}
