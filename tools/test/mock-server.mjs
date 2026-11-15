@@ -445,6 +445,26 @@ class Dimension {
   getBlock(location) {
     return new Block(this, { x: Math.floor(location.x), y: Math.floor(location.y), z: Math.floor(location.z) });
   }
+  setBlockType(location, typeId) {
+    this.getBlock(location).setType(typeId);
+  }
+  setBlockPermutation(location, permutation) {
+    this.getBlock(location).setPermutation(permutation);
+  }
+  /** Only `includeTypes` filters are supported. */
+  getBlocks(volume, filter = {}) {
+    const { from, to } = volume;
+    const hits = [];
+    for (const [key, permutation] of this.blocks) {
+      const [x, y, z] = key.split(",").map(Number);
+      if (x < Math.min(from.x, to.x) || x > Math.max(from.x, to.x)) continue;
+      if (y < Math.min(from.y, to.y) || y > Math.max(from.y, to.y)) continue;
+      if (z < Math.min(from.z, to.z) || z > Math.max(from.z, to.z)) continue;
+      if (filter.includeTypes && !filter.includeTypes.includes(permutation.type.id)) continue;
+      hits.push({ x, y, z });
+    }
+    return { getBlockLocationIterator: () => hits[Symbol.iterator]() };
+  }
 }
 
 const dimensions = new Map(["minecraft:overworld", "minecraft:nether", "minecraft:the_end"].map((id) => [id, new Dimension(id)]));

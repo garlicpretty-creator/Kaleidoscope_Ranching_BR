@@ -61,13 +61,6 @@
       },
       "minecraft:map_color": "#7d7d7d",
       "minecraft:light_dampening": 0,
-      "minecraft:tick": {
-        "interval_range": [
-          200,
-          200
-        ],
-        "looping": true
-      },
       "kaleidoscope_ranching:water_trough": {}
     }
   }

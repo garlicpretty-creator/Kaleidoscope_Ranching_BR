@@ -18,12 +18,13 @@
 // ## ranch clock through a bounded registry, so eggs are laid, pushed into
 // ## hoppers and hatched without a player standing next to the box.
 
-import { ItemStack, world } from "@minecraft/server";
+import { ItemStack } from "@minecraft/server";
 import { ANIMALS, INCUBATION_DAYS } from "../data/animals.js";
 import { tierIds } from "../data/items.js";
 import { animalsNear, isAdultFemale, isBaby, sexOf } from "../core/animal.js";
-import { blockKey, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
-import { CLOCK_INTERVAL, createRegistry, registerClockTask } from "../core/clock.js";
+import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
+import { CLOCK_INTERVAL } from "../core/clock.js";
+import { defineClockBlock, startBlockClock, trackBlock, untrackBlock } from "../core/blockClock.js";
 import { fertilizedChance, inheritedAffection, notifyBorn, production } from "../core/husbandry.js";
 import { dp, rid } from "../core/ids.js";
 import { consumeMainHand, give, mainHand } from "../core/inventory.js";
@@ -49,8 +50,6 @@ const HEAT = new Set([
   "minecraft:fire", "minecraft:soul_fire", "minecraft:lit_furnace", "minecraft:lit_smoker", "minecraft:lit_blast_furnace",
 ]);
 
-const nests = createRegistry("nest_boxes");
-const incubators = createRegistry("incubators");
 
 function tell(player, key) {
   player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
@@ -173,12 +172,12 @@ function dropNest(dimension, location, data) {
 
 export const nestBoxComponent = {
   onPlace({ block }) {
-    nests.add(blockKey(block));
+    trackBlock(block);
   },
 
   onPlayerInteract({ block, player }) {
     if (!player) return;
-    nests.add(blockKey(block));
+    trackBlock(block);
     const data = settleNest(block);
     const item = mainHand(player)?.getItem();
     const species = item && SPECIES_BY_FERTILIZED.get(item.typeId);
@@ -197,7 +196,7 @@ export const nestBoxComponent = {
 
   onPlayerBreak({ block, dimension, brokenBlockPermutation }) {
     const dim = dimension ?? block.dimension;
-    nests.remove(blockKey(block));
+    untrackBlock(brokenBlockPermutation?.type?.id ?? rid("nest_box"), dim, block.location);
     dropNest(dim, block.location, takeBlockData(dim, block.location, null, brokenBlockPermutation?.type?.id));
   },
 
@@ -236,12 +235,12 @@ export function settleIncubator(block, elapsed = 0) {
 
 export const incubatorComponent = {
   onPlace({ block }) {
-    incubators.add(blockKey(block));
+    trackBlock(block);
   },
 
   onPlayerInteract({ block, player }) {
     if (!player) return;
-    incubators.add(blockKey(block));
+    trackBlock(block);
     const data = settleIncubator(block);
     const item = mainHand(player)?.getItem();
     const species = item && SPECIES_BY_FERTILIZED.get(item.typeId);
@@ -261,7 +260,7 @@ export const incubatorComponent = {
 
   onPlayerBreak({ block, dimension, brokenBlockPermutation }) {
     const dim = dimension ?? block.dimension;
-    incubators.remove(blockKey(block));
+    untrackBlock(brokenBlockPermutation?.type?.id ?? rid("incubator"), dim, block.location);
     const data = takeBlockData(dim, block.location, null, brokenBlockPermutation?.type?.id);
     const { x, y, z } = block.location;
     for (const egg of data?.eggs ?? []) dim.spawnItem(new ItemStack(egg.egg, 1), { x: x + 0.5, y: y + 0.5, z: z + 0.5 });
@@ -274,33 +273,10 @@ export const incubatorComponent = {
 
 // --- Clock ----------------------------------------------------------------
 
-/** "kaleidoscope_ranching:block:<dimension>:<x>,<y>,<z>" -> loaded block, or undefined. */
-function blockFromKey(key) {
-  const match = /block:(.+):(-?\d+),(-?\d+),(-?\d+)$/.exec(key);
-  if (!match) return undefined;
-  try {
-    return world.getDimension(match[1]).getBlock({ x: +match[2], y: +match[3], z: +match[4] });
-  } catch {
-    return undefined; // chunk not loaded
-  }
-}
-
+// ## Both blocks run on M2's shared block clock (core/blockClock.js): it keeps
+// ## one bounded registry per block type and skips unloaded chunks.
 export function startNests() {
-  registerClockTask("nest_boxes", () => {
-    for (const key of nests.all()) {
-      const block = blockFromKey(key);
-      if (!block) continue;
-      if (block.typeId !== rid("nest_box")) nests.remove(key);
-      else settleNest(block);
-    }
-  });
-  registerClockTask("incubators", () => {
-    for (const key of incubators.all()) {
-      const block = blockFromKey(key);
-      if (!block) continue;
-      if (block.typeId !== rid("incubator")) incubators.remove(key);
-      else settleIncubator(block, CLOCK_INTERVAL);
-    }
-  });
+  defineClockBlock(rid("nest_box"), "nest_boxes", (block) => settleNest(block));
+  defineClockBlock(rid("incubator"), "incubators", (block) => settleIncubator(block, CLOCK_INTERVAL));
+  startBlockClock();
 }
-

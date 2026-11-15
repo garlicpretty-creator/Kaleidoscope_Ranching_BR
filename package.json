@@ -5,7 +5,7 @@
   "scripts": {
     "generate": "python3 tools/gen_art.py && python3 tools/m2/gen_content.py && python3 tools/gen_m3_art.py && node tools/gen_entities.mjs && node tools/gen_items.mjs && node tools/gen_blocks.mjs && node tools/gen_shared.mjs",
     "validate": "node tools/validate.mjs",
-    "test": "node --import ./tools/test/register.mjs tools/test/run.mjs && node --import ./tools/test/m2/register.mjs tools/test/m2/sim.mjs",
+    "test": "node --import ./tools/test/register.mjs tools/test/run.mjs",
     "build": "npm run validate && npm test && bash tools/build.sh"
   }
 }

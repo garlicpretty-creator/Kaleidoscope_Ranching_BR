@@ -67,13 +67,6 @@
       },
       "minecraft:map_color": "#8a5a32",
       "minecraft:light_dampening": 0,
-      "minecraft:tick": {
-        "interval_range": [
-          200,
-          200
-        ],
-        "looping": true
-      },
       "kaleidoscope_ranching:trough": {}
     },
     "permutations": [

@@ -179,8 +179,9 @@ def mats(default, **named):
 def box(x, y, z, w, h, d):
     return {"origin": [x, y, z], "size": [w, h, d]}
 
-def tick(interval):
-    return {"minecraft:tick": {"interval_range": [interval, interval], "looping": True}}
+# ## Troughs, water troughs, auto feeders and salt licks used to carry a
+# ## minecraft:tick component. They now run on the shared ranch clock
+# ## (scripts/core/blockClock.js), so the block files carry no tick.
 
 def state(name, lo, hi):
     return {f"{NS}:{name}": {"values": {"min": lo, "max": hi}}}
@@ -202,7 +203,7 @@ def block_defs():
             "minecraft:collision_box": low, "minecraft:selection_box": low,
             "minecraft:destructible_by_mining": {"seconds_to_destroy": 1.0},
             "minecraft:map_color": "#8a5a32", "minecraft:light_dampening": 0,
-            **tick(200), f"{NS}:trough": {},
+            f"{NS}:trough": {},
         },
         permutations=[{"condition": f"{q('kind')} == {k}",
                        "components": {"minecraft:material_instances": mats("kr_trough", feed=t)}}
@@ -217,7 +218,7 @@ def block_defs():
             "minecraft:collision_box": low, "minecraft:selection_box": low,
             "minecraft:destructible_by_mining": {"seconds_to_destroy": 1.5},
             "minecraft:map_color": "#7d7d7d", "minecraft:light_dampening": 0,
-            **tick(200), f"{NS}:water_trough": {},
+            f"{NS}:water_trough": {},
         },
     )
     B["auto_waterer"] = dict(
@@ -227,7 +228,7 @@ def block_defs():
             "minecraft:collision_box": low, "minecraft:selection_box": low,
             "minecraft:destructible_by_mining": {"seconds_to_destroy": 1.5},
             "minecraft:map_color": "#6d7f8a", "minecraft:light_dampening": 0,
-            **tick(200), f"{NS}:auto_waterer": {},
+            f"{NS}:auto_waterer": {},
         },
     )
     full = lambda top, side, bottom=None: {
@@ -239,7 +240,7 @@ def block_defs():
     B["auto_feeder"] = dict(components={
         **full("kr_auto_feeder_top", "kr_auto_feeder_side"),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#5b5b5b",
-        **tick(40), f"{NS}:auto_feeder": {},
+        f"{NS}:auto_feeder": {},
     })
     B["chaff_cutter"] = dict(components={
         **full("kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks"),
@@ -263,7 +264,7 @@ def block_defs():
             "minecraft:destructible_by_mining": {"seconds_to_destroy": 1.0},
             "minecraft:map_color": "#e8d8d0", "minecraft:light_dampening": 0,
             "minecraft:loot": f"loot_tables/{NS}/empty.json",
-            **tick(200), f"{NS}:salt_lick": {},
+            f"{NS}:salt_lick": {},
         },
     )
     comp = lambda top: full(top, "kr_compost_bin_side", "kr_planks")
