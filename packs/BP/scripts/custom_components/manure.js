@@ -1,7 +1,16 @@
 // 糞便: placed by the daily settlement next to an animal, cleared with the 糞叉.
+//
+// ## A pile a yak leaves remembers the day it was dropped (block data). Left on
+// ## the ground past that day it has dried, and the manure fork collects it as
+// ## dried yak dung (fuel) instead of manure.
+
+import { setBlockData } from "../core/blockStore.js";
+import { today } from "../core/time.js";
 
 export const MANURE_BLOCK = "kaleidoscope_ranching:manure";
 export const MANURE_ITEM = "kaleidoscope_ranching:manure_item";
+export const DRIED_YAK_DUNG = "kaleidoscope_ranching:dried_yak_dung";
+const YAK = "kaleidoscope_ranching:yak";
 
 function canHold(dim, loc) {
   try {
@@ -28,6 +37,7 @@ export function placeManureNear(entity) {
       if (canHold(dim, loc)) {
         try {
           dim.setBlockType(loc, MANURE_BLOCK);
+          if (entity.typeId === YAK) setBlockData(dim.getBlock(loc), { yak_day: today() });
           return true;
         } catch {}
       }

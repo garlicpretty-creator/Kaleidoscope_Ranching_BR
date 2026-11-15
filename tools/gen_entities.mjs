@@ -23,9 +23,48 @@ const TUNING = {
   pig: { family: "pig", health: 10, speed: 0.25, box: [0.9, 0.9], mass: 0.75, saddle: true },
   chicken: { family: "chicken", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true },
   rabbit: { family: "rabbit", health: 3, speed: 0.3, box: [0.4, 0.5], mass: 0.4, variants: 6 },
+  // M4. No vanilla counterpart, so they also get spawn rules (SPAWN below).
+  duck: { family: "duck", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true, swims: true },
+  goose: { family: "goose", health: 8, speed: 0.25, box: [0.7, 1.0], mass: 0.6, noFallDamage: true, swims: true, guard: true },
+  buffalo: { family: "buffalo", health: 14, speed: 0.2, box: [1.1, 1.4], mass: 1.2 },
+  yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1 },
+};
+
+// Natural spawning for the M4 animals, modelled on vanilla cows. Biome tags are
+// Bedrock's; an animal spawns where any of its tags is present.
+const SPAWN = {
+  duck: { tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], weight: 8, herd: [2, 4] },
+  goose: { tags: ["plains", "river"], blocks: ["minecraft:grass_block"], weight: 6, herd: [2, 3] },
+  buffalo: { tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 6, herd: [2, 3] },
+  yak: { tags: ["mountains", "meadow", "snowy_slopes", "frozen_peaks"], blocks: ["minecraft:grass_block", "minecraft:snow", "minecraft:stone"], weight: 6, herd: [2, 4] },
 };
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
+
+// A gander drives hostile mobs off: adult males only (babies never pick a target).
+function guardComponents() {
+  return {
+    "minecraft:attack": { damage: 2 },
+    "minecraft:behavior.melee_attack": { priority: 3, speed_multiplier: 1.3, track_target: true },
+    "minecraft:behavior.nearest_attackable_target": {
+      priority: 2,
+      must_see: true,
+      reselect_targets: true,
+      entity_types: [
+        {
+          filters: {
+            all_of: [
+              { test: "is_family", subject: "other", value: "monster" },
+              { test: "is_family", subject: "other", operator: "!=", value: "creeper" },
+              { test: "is_baby", subject: "self", value: false },
+            ],
+          },
+          max_dist: 8,
+        },
+      ],
+    },
+  };
+}
 
 function buildEntity(animal, t) {
   const sexFamily = (sex) => ({
@@ -69,7 +108,7 @@ function buildEntity(animal, t) {
     },
     [g("adult")]: adult,
     [g("sex_female")]: sexFamily("female"),
-    [g("sex_male")]: sexFamily("male"),
+    [g("sex_male")]: { ...sexFamily("male"), ...(t.guard ? guardComponents() : {}) },
     [g("wild")]: { "minecraft:despawn": { despawn_from_distance: {} } },
     [g("persistent")]: { "minecraft:persistent": {} },
   };
@@ -140,7 +179,9 @@ function buildEntity(animal, t) {
     // Death drops are handled by script (the carcass); see systems/carcass.js.
     "minecraft:loot": { table: `loot_tables/${NS}/empty.json` },
     "minecraft:movement": { value: t.speed },
-    "minecraft:navigation.walk": { can_path_over_water: true, avoid_water: true, avoid_damage_blocks: true },
+    "minecraft:navigation.walk": t.swims
+      ? { can_path_over_water: true, can_swim: true, avoid_water: false, avoid_damage_blocks: true }
+      : { can_path_over_water: true, avoid_water: true, avoid_damage_blocks: true },
     "minecraft:movement.basic": {},
     "minecraft:jump.static": {},
     "minecraft:can_climb": {},
@@ -269,6 +310,38 @@ for (const animal of ANIMALS) {
   if (!tuning) continue;
   writeFileSync(join(outDir, `${animal.id}.json`), JSON.stringify(buildEntity(animal, tuning), null, 2) + "\n");
   written++;
+}
+
+// --- Spawn rules (M4) -----------------------------------------------------------
+
+const spawnDir = join(root, "packs/BP/spawn_rules");
+mkdirSync(spawnDir, { recursive: true });
+for (const [id, rule] of Object.entries(SPAWN)) {
+  if (!TUNING[id]) continue;
+  writeFileSync(
+    join(spawnDir, `${id}.json`),
+    JSON.stringify(
+      {
+        format_version: "1.8.0",
+        "minecraft:spawn_rules": {
+          description: { identifier: rid(id), population_control: "animal" },
+          conditions: [
+            {
+              "minecraft:spawns_on_surface": {},
+              "minecraft:spawns_on_block_filter": rule.blocks,
+              "minecraft:brightness_filter": { min: 7, max: 15, adjust_for_weather: false },
+              "minecraft:weight": { default: rule.weight },
+              "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
+              "minecraft:density_limit": { surface: 4 },
+              "minecraft:biome_filter": { any_of: rule.tags.map((tag) => ({ test: "has_biome_tag", value: tag })) },
+            },
+          ],
+        },
+      },
+      null,
+      2
+    ) + "\n"
+  );
 }
 
 const lootDir = join(root, `packs/BP/loot_tables/${NS}`);

@@ -40,6 +40,8 @@ const OVERRIDES = {
   salted_duck_egg: food(4, 0.6),
   century_egg: food(5, 0.6),
   lard: { stack: 16 },
+  // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
+  dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
   milking_pail: { stack: 1, components: { "minecraft:durability": { max_durability: 128 }, "minecraft:hand_equipped": true } },
   nursing_bottle: { stack: 1, components: { "minecraft:durability": { max_durability: 32 } } },
   cowbell: { stack: 1 },

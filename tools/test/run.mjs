@@ -49,6 +49,7 @@ system.beforeEvents.startup.fire({
 });
 const care = await import("../../packs/BP/scripts/care/state.js");
 const husbandry = await import("../../packs/BP/scripts/core/husbandry.js");
+const manureModule = await import("../../packs/BP/scripts/custom_components/manure.js");
 
 /** Meets all four of M2's daily needs for today, with the given feed tier. */
 function careFor(entity, feedTier = 1) {
@@ -1037,6 +1038,92 @@ test("breaking a hay rack gives the hay back once, as bales and wheat", () => {
   breakBlock(HAY_RACK, rack);
   equal(dropsOf("minecraft:hay_block").reduce((n, d) => n + d.item.amount, 0), 1, "one bale");
   equal(dropsOf("minecraft:wheat").reduce((n, d) => n + d.item.amount, 0), 4, "four wheat");
+});
+
+// --- M4: new animals -------------------------------------------------------------
+
+test("ducks, geese, buffalo and yaks spawn with both sexes and Ranching families", () => {
+  for (const type of ["duck", "goose", "buffalo", "yak"]) {
+    clearWorld();
+    const animals = Array.from({ length: 20 }, (_, i) => ranch(type, i));
+    const sexes = new Set(animals.map((entity) => entity.getProperty(SEX)));
+    assert(sexes.has("female") && sexes.has("male"), `${type}: both sexes`);
+    const female = animals.find((entity) => entity.getProperty(SEX) === "female");
+    assert(female.matches({ families: ["ranching_livestock", "ranching_female", type] }), `${type}: families`);
+  }
+});
+
+test("only an adult gander picks fights with monsters", () => {
+  clearWorld();
+  const gander = ranch("goose", 1, "male");
+  const goose = ranch("goose", 2, "female");
+  assert(gander.hasComponent("minecraft:behavior.nearest_attackable_target"), "gander guards");
+  assert(!goose.hasComponent("minecraft:behavior.nearest_attackable_target"), "goose does not");
+});
+
+test("ducks lay duck eggs in a nest box and a fertilized duck egg hatches a duckling", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  ranch("duck", 2, "female");
+  use(NEST, nest, player);
+  equal(player.inventory.count("kaleidoscope_ranching:duck_egg"), 1, "a duck egg");
+  const incubator = __place(overworld, { x: 5, y: 64, z: 0 }, "kaleidoscope_ranching:incubator", {
+    "kaleidoscope_ranching:eggs": 0, "kaleidoscope_ranching:busy": false,
+  });
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  __place(overworld, { x: 5, y: 63, z: 0 }, "minecraft:campfire");
+  hold(player, "kaleidoscope_ranching:fertilized_duck_egg", 1);
+  use(INCUBATOR, incubator, player);
+  __advance(24000 * 2 + 1200);
+  equal(overworld.getEntities({ type: "kaleidoscope_ranching:duck" }).filter(isBaby).length, 1, "duckling hatched");
+});
+
+test("a buffalo pair breeds, the cow gives buffalo milk, and its carcass cuts into buffalo meat", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("buffalo", 1, "female");
+  const bull = ranch("buffalo", 2, "male");
+  careFor(cow);
+  careFor(bull);
+  hold(player, "minecraft:wheat", 2);
+  __interact(player, cow);
+  hold(player, "minecraft:wheat", 1);
+  __interact(player, bull);
+  __skipTime(DAY * 3);
+  __advance(700);
+  equal(overworld.getEntities({ type: "kaleidoscope_ranching:buffalo" }).filter(isBaby).length, 1, "a calf");
+
+  hold(player, "kaleidoscope_ranching:milking_pail");
+  player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 1));
+  __interact(player, cow);
+  equal(player.inventory.count("kaleidoscope_ranching:buffalo_milk"), 1, "buffalo milk");
+
+  overworld.items = [];
+  bull.kill();
+  const rack = rackAt();
+  player.inventory.setItem(0, dropsOf("kaleidoscope_ranching:buffalo_carcass")[0].item);
+  use(RACK, rack, player);
+  cutAll(player, rack);
+  assert(player.inventory.count("kaleidoscope_ranching:buffalo_meat") >= 1, "buffalo meat");
+});
+
+test("yak manure left a day dries; the fork collects it as dried yak dung", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const { placeManureNear } = manureModule;
+  __place(overworld, { x: 0, y: 63, z: 0 }, "minecraft:grass_block");
+  __place(overworld, { x: 4, y: 63, z: 0 }, "minecraft:grass_block");
+  const yak = ranch("yak", 0, "female");
+  const cow = ranch("cow", 4, "female");
+  placeManureNear(yak);
+  placeManureNear(cow);
+  hold(player, "kaleidoscope_ranching:manure_fork");
+  COMPONENTS["kaleidoscope_ranching:manure_fork"].onUseOn({ source: player, block: overworld.getBlock(at(4)) });
+  equal(dropsOf("kaleidoscope_ranching:manure_item").length, 1, "cow manure is manure");
+  __skipTime(DAY);
+  COMPONENTS["kaleidoscope_ranching:manure_fork"].onUseOn({ source: player, block: overworld.getBlock(at(0)) });
+  equal(dropsOf("kaleidoscope_ranching:dried_yak_dung").length, 1, "yak manure dried");
 });
 
 // --- Report ---------------------------------------------------------------

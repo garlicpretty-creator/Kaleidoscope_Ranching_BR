@@ -1,0 +1,37 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:duck",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female": "textures/entity/ranching/duck/female",
+        "male": "textures/entity/ranching/duck/male",
+        "baby": "textures/entity/ranching/duck/baby"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.chicken"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.chicken.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "scale": "((!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0) * 1.0",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.chicken"
+      ],
+      "spawn_egg": {
+        "base_color": "#9C7A54",
+        "overlay_color": "#2F7A3C"
+      }
+    }
+  }
+}
