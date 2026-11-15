@@ -181,7 +181,7 @@ def box(x, y, z, w, h, d):
 
 # ## Troughs, water troughs, auto feeders and salt licks used to carry a
 # ## minecraft:tick component. They now run on the shared ranch clock
-# ## (scripts/care/blockClock.js), so the block files carry no tick.
+# ## (scripts/core/blockClock.js), so the block files carry no tick.
 
 def state(name, lo, hi):
     return {f"{NS}:{name}": {"values": {"min": lo, "max": hi}}}

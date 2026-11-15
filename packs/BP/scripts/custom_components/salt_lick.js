@@ -3,7 +3,7 @@
 import { CARE } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { ensureSettled, mark } from "../care/state.js";
-import { clockBlockEvents, untrackBlock } from "../care/blockClock.js";
+import { clockBlockEvents, untrackBlock } from "../core/blockClock.js";
 import { today, getState, setStates, animalsNear, blockGet, blockSet, blockClear } from "../utils/world_util.js";
 
 export function tickSaltLick(block) {

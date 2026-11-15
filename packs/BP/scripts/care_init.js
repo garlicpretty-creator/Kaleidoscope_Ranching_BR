@@ -11,7 +11,7 @@ import {
 } from "./custom_components/water_trough.js";
 import { autoFeederComponent, tickAutoFeeder } from "./custom_components/auto_feeder.js";
 import { saltLickComponent, tickSaltLick } from "./custom_components/salt_lick.js";
-import { defineClockBlock, startBlockClock } from "./care/blockClock.js";
+import { defineClockBlock, startBlockClock } from "./core/blockClock.js";
 import { compostBinComponent } from "./custom_components/compost_bin.js";
 import { alfalfaCropComponent } from "./custom_components/alfalfa_crop.js";
 import { feedBagComponent } from "./events/feed_bag.js";

@@ -1,5 +1,6 @@
-// M2 blocks that act on their own (troughs, water troughs, auto feeders,
-// salt licks) run on the shared ranch clock instead of block ticks.
+// Custom blocks that act on their own (M2 troughs, water troughs, auto
+// feeders, salt licks; M3 nest boxes and incubators) run on the ranch clock
+// instead of block ticks.
 //
 // ## Each block type keeps a bounded registry of placed blocks (core/clock.js).
 // ## A block joins when it is placed or used and leaves when it is broken; the
@@ -59,8 +60,12 @@ export function runBlockClock() {
   }
 }
 
+/** Starts the clock task once; any milestone may call it. */
+let started = false;
 export function startBlockClock() {
-  registerClockTask("m2:blocks", runBlockClock);
+  if (started) return;
+  started = true;
+  registerClockTask("blocks", runBlockClock);
 }
 
 /** Component events shared by every clock block: join on place/use, leave on break. */

@@ -3,7 +3,7 @@
 
 import { FEEDS } from "../data/feeds.js";
 import { TROUGH, addToTrough, itemsThatFit } from "./trough.js";
-import { clockBlockEvents } from "../care/blockClock.js";
+import { clockBlockEvents } from "../core/blockClock.js";
 
 // ## The clock runs every 30 s (40 times a game day), so 4 items a pass keeps
 // ## up with far more animals than one trough can serve.

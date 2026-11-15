@@ -100,6 +100,7 @@ M2 另外保留一個備援：若點擊沒有經過路由（實體沒有互動�
 
 - 一律用 `nowTick()`（世界建立以來的刻數）與 `today()` 比較時間，不要自己開計時器。
 - 需要「時間到了自動發生」的事，請用 `createRegistry(name)` 記下要追蹤的對象，再用 `registerClockTask(id, run)` 掛到牧場時鐘（每 30 秒一次）。不要掃描整個世界。
+- 自訂方塊要定時動作時，用 `core/blockClock.js`：`defineClockBlock(typeId, 登錄表名稱, tick)` 宣告方塊種類，元件用 `clockBlockEvents({...})` 包起來（放置與使用時加入登錄表、打掉時移除），最後呼叫 `startBlockClock()`。不要在方塊檔加 `minecraft:tick`。
 
 ## 5. 方塊資料：`core/blockStore.js`
 

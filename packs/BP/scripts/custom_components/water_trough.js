@@ -10,7 +10,7 @@ import {
 } from "../utils/world_util.js";
 import { ItemStack } from "@minecraft/server";
 import { T } from "../ui/text.js";
-import { clockBlockEvents } from "../care/blockClock.js";
+import { clockBlockEvents } from "../core/blockClock.js";
 
 const NEIGHBOURS = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0, -1, 0], [0, 1, 0]];
 

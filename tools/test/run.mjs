@@ -254,7 +254,7 @@ test("M2's ear tag makes an animal persistent", () => {
 // --- M2: care core ---------------------------------------------------------
 
 const { BlockPermutation, __setMaxStack } = mc;
-const { runBlockClock, trackBlock } = await import("../../packs/BP/scripts/care/blockClock.js");
+const { runBlockClock, trackBlock } = await import("../../packs/BP/scripts/core/blockClock.js");
 const { troughComponent } = await import("../../packs/BP/scripts/custom_components/trough.js");
 const { waterTroughComponent } = await import("../../packs/BP/scripts/custom_components/water_trough.js");
 const { compostBinComponent } = await import("../../packs/BP/scripts/custom_components/compost_bin.js");
