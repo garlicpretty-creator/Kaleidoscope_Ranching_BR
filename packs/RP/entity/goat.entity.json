@@ -1,0 +1,37 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:goat",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female": "textures/entity/ranching/goat/female",
+        "male": "textures/entity/ranching/goat/male",
+        "baby": "textures/entity/ranching/goat/baby"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.goat"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.goat.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "scale": "(!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.goat"
+      ],
+      "spawn_egg": {
+        "base_color": "#ECE6DA",
+        "overlay_color": "#B4A88E"
+      }
+    }
+  }
+}

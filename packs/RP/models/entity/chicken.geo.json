@@ -5,12 +5,12 @@
       "description": {
         "identifier": "geometry.kaleidoscope_ranching.chicken",
         "texture_width": 64,
-        "texture_height": 64,
-        "visible_bounds_width": 2,
-        "visible_bounds_height": 2,
+        "texture_height": 32,
+        "visible_bounds_width": 1.5,
+        "visible_bounds_height": 1.5,
         "visible_bounds_offset": [
           0,
-          0.75,
+          0.5,
           0
         ]
       },
@@ -62,8 +62,8 @@
                 3
               ],
               "uv": [
-                0,
-                14
+                42,
+                0
               ]
             },
             {
@@ -78,14 +78,14 @@
                 2
               ],
               "uv": [
-                14,
+                44,
                 14
               ]
             }
           ]
         },
         {
-          "name": "hen_wattle",
+          "name": "fa_wattle",
           "pivot": [
             0,
             10,
@@ -105,14 +105,14 @@
                 1
               ],
               "uv": [
-                22,
-                14
+                18,
+                23
               ]
             }
           ]
         },
         {
-          "name": "hen_comb",
+          "name": "fa_comb",
           "pivot": [
             0,
             15,
@@ -132,14 +132,14 @@
                 2
               ],
               "uv": [
-                28,
-                0
+                10,
+                23
               ]
             }
           ]
         },
         {
-          "name": "rooster_comb",
+          "name": "m_comb",
           "pivot": [
             0,
             15,
@@ -159,14 +159,14 @@
                 4
               ],
               "uv": [
-                28,
-                3
+                10,
+                14
               ]
             }
           ]
         },
         {
-          "name": "rooster_wattle",
+          "name": "m_wattle",
           "pivot": [
             0,
             10,
@@ -186,8 +186,8 @@
                 1
               ],
               "uv": [
-                28,
-                10
+                52,
+                14
               ]
             }
           ]
@@ -213,8 +213,8 @@
                 6
               ],
               "uv": [
-                0,
-                23
+                28,
+                0
               ]
             }
           ]
@@ -240,9 +240,10 @@
                 6
               ],
               "uv": [
-                14,
-                23
-              ]
+                28,
+                0
+              ],
+              "mirror": true
             }
           ]
         },
@@ -267,8 +268,8 @@
                 1
               ],
               "uv": [
-                52,
-                0
+                40,
+                14
               ]
             },
             {
@@ -283,8 +284,8 @@
                 2
               ],
               "uv": [
-                42,
-                0
+                0,
+                23
               ]
             }
           ]
@@ -310,8 +311,8 @@
                 1
               ],
               "uv": [
-                52,
-                0
+                40,
+                14
               ],
               "mirror": true
             },
@@ -327,15 +328,15 @@
                 2
               ],
               "uv": [
-                42,
-                0
+                0,
+                23
               ],
               "mirror": true
             }
           ]
         },
         {
-          "name": "hen_tail",
+          "name": "f_tail",
           "pivot": [
             0,
             9,
@@ -362,7 +363,7 @@
           ]
         },
         {
-          "name": "rooster_tail",
+          "name": "m_tail",
           "pivot": [
             0,
             9,
@@ -383,7 +384,7 @@
               ],
               "uv": [
                 0,
-                33
+                14
               ]
             },
             {
@@ -398,8 +399,8 @@
                 2
               ],
               "uv": [
-                10,
-                33
+                20,
+                14
               ]
             }
           ]

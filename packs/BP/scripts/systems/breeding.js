@@ -1,0 +1,169 @@
+// M1: mating and pregnancy for mammals.
+//
+// Feeding an adult its breeding food puts it in love for 30 seconds. When a
+// male and a female of the same species are in love within 8 blocks, the
+// female becomes pregnant and gives birth three game days later. Two animals of
+// the same sex never mate. Birds do not use this: they breed through fertilized
+// eggs (systems/nest.js).
+
+import { system, world } from "@minecraft/server";
+import {
+  BREED_COOLDOWN_TICKS,
+  GESTATION_DAYS,
+  LOVE_TICKS,
+  MATE_RADIUS,
+  AFFECTION,
+} from "../data/animals.js";
+import { isBaby, nearbySameSpecies, sexOf, speciesOf } from "../core/animal.js";
+import { createRegistry, registerClockTask } from "../core/clock.js";
+import { canBreed, getAffection, notifyBorn, notifyMated } from "../core/husbandry.js";
+import { dp, rid } from "../core/ids.js";
+import { registerEntityInteraction } from "../core/interact.js";
+import { consumeMainHand } from "../core/inventory.js";
+import { TICKS_PER_DAY, nowTick } from "../core/time.js";
+
+const LOVE_UNTIL = dp("love_until");
+const COOLDOWN_UNTIL = dp("breed_cooldown_until");
+const PREGNANT_DUE = dp("pregnant_due");
+const MATE_AFFECTION = dp("mate_affection");
+
+const pregnancies = createRegistry("pregnancies");
+
+/** Entity type id -> set of breeding food ids. Filled by startBreeding. */
+const BREED_ITEMS = new Map();
+
+function numberProperty(entity, key) {
+  const value = entity.getDynamicProperty(key);
+  return typeof value === "number" ? value : 0;
+}
+
+export function isPregnant(entity) {
+  return numberProperty(entity, PREGNANT_DUE) > 0;
+}
+
+function inLove(entity, now) {
+  return numberProperty(entity, LOVE_UNTIL) > now;
+}
+
+function resting(entity, now) {
+  return numberProperty(entity, COOLDOWN_UNTIL) > now;
+}
+
+function tell(player, key) {
+  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.breed.${key}` });
+}
+
+function hearts(entity) {
+  const { x, y, z } = entity.location;
+  for (let i = 0; i < 4; i++) {
+    try {
+      entity.dimension.spawnParticle("minecraft:heart_particle", {
+        x: x + (Math.random() - 0.5),
+        y: y + 0.8 + Math.random() * 0.5,
+        z: z + (Math.random() - 0.5),
+      });
+    } catch {}
+  }
+}
+
+function canMateNow(entity, now) {
+  return !isBaby(entity) && inLove(entity, now) && !resting(entity, now) && !(sexOf(entity) === "female" && isPregnant(entity)) && canBreed(entity);
+}
+
+function conceive(mother, father, now) {
+  mother.setDynamicProperty(PREGNANT_DUE, now + GESTATION_DAYS * TICKS_PER_DAY);
+  mother.setDynamicProperty(MATE_AFFECTION, getAffection(father));
+  for (const parent of [mother, father]) {
+    parent.setDynamicProperty(LOVE_UNTIL, undefined);
+    parent.setDynamicProperty(COOLDOWN_UNTIL, now + BREED_COOLDOWN_TICKS);
+    parent.triggerEvent("kaleidoscope_ranching:make_persistent");
+    hearts(parent);
+  }
+  try {
+    mother.dimension.spawnEntity("minecraft:xp_orb", mother.location);
+  } catch {}
+  pregnancies.add(mother.id);
+  notifyMated(mother, father);
+}
+
+function feed(player, animal) {
+  const now = nowTick();
+  if (sexOf(animal) === "female" && isPregnant(animal)) return tell(player, "pregnant");
+  if (resting(animal, now)) return tell(player, "resting");
+  if (!canBreed(animal)) return tell(player, "not_cared");
+
+  consumeMainHand(player);
+  animal.setDynamicProperty(LOVE_UNTIL, now + LOVE_TICKS);
+  hearts(animal);
+
+  const others = nearbySameSpecies(animal, MATE_RADIUS).filter((other) => canMateNow(other, now));
+  const mate = others.find((other) => sexOf(other) !== sexOf(animal));
+  if (mate) {
+    const [mother, father] = sexOf(animal) === "female" ? [animal, mate] : [mate, animal];
+    conceive(mother, father, now);
+  } else if (others.length) {
+    tell(player, "same_sex");
+  }
+}
+
+function giveBirth(mother) {
+  const species = speciesOf(mother);
+  if (!species) return;
+  const mateAffection = numberProperty(mother, MATE_AFFECTION);
+  mother.setDynamicProperty(PREGNANT_DUE, undefined);
+  mother.setDynamicProperty(MATE_AFFECTION, undefined);
+  pregnancies.remove(mother.id);
+
+  const baby = mother.dimension.spawnEntity(mother.typeId, mother.location);
+  baby.triggerEvent("kaleidoscope_ranching:become_baby");
+  baby.triggerEvent("kaleidoscope_ranching:make_persistent");
+  if (species.id === "sheep") {
+    const color = mother.getComponent("minecraft:color")?.value;
+    if (Number.isInteger(color)) baby.triggerEvent(`kaleidoscope_ranching:set_color_${color & 15}`);
+  }
+  if (species.id === "rabbit") {
+    const variant = mother.getComponent("minecraft:variant")?.value;
+    if (Number.isInteger(variant)) baby.triggerEvent(`kaleidoscope_ranching:set_variant_${variant}`);
+  }
+  hearts(mother);
+  const inherited = Math.floor(((getAffection(mother) + mateAffection) / 2) * AFFECTION.inheritedShare);
+  notifyBorn(baby, mother, inherited);
+}
+
+function checkPregnancy(entity) {
+  if (!entity?.isValid) return;
+  const due = numberProperty(entity, PREGNANT_DUE);
+  if (due > 0 && due <= nowTick()) giveBirth(entity);
+}
+
+export function startBreeding(animals) {
+  for (const animal of animals) {
+    if (animal.reproduction === "gestation") BREED_ITEMS.set(rid(animal.id), new Set(animal.breedItems.map(rid)));
+  }
+
+  registerEntityInteraction({
+    id: "m1:breeding",
+    priority: 50,
+    match: ({ entity, item }) => {
+      const foods = BREED_ITEMS.get(entity.typeId);
+      return Boolean(foods && item && foods.has(item.typeId) && !isBaby(entity));
+    },
+    handle: ({ player, entity }) => feed(player, entity),
+  });
+
+  registerClockTask("pregnancies", () => {
+    for (const id of pregnancies.all()) {
+      const entity = world.getEntity(id);
+      if (entity) checkPregnancy(entity);
+    }
+  });
+
+  world.afterEvents.entityLoad.subscribe(({ entity }) => {
+    if (speciesOf(entity)) system.run(() => checkPregnancy(entity));
+  });
+  world.afterEvents.entityDie.subscribe(({ deadEntity }) => {
+    try {
+      if (speciesOf(deadEntity)) pregnancies.remove(deadEntity.id);
+    } catch {}
+  });
+}

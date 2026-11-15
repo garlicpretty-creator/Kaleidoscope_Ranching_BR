@@ -1,8 +1,31 @@
 pack.name=Kaleidoscope Ranching
 pack.description=Unofficial Kaleidoscope add-on: raise animals that reward good care. Requires Kaleidoscope Cookery.
-entity.kaleidoscope_ranching:chicken.name=Chicken
-item.spawn_egg.entity.kaleidoscope_ranching:chicken.name=Ranching Chicken Spawn Egg
+kaleidoscope_ranching.message.breed.same_sex=Breeding needs one male and one female.
+kaleidoscope_ranching.message.breed.pregnant=She is already expecting.
+kaleidoscope_ranching.message.breed.resting=This animal bred recently and needs to rest.
+kaleidoscope_ranching.message.breed.not_cared=This animal has not been cared for today and will not breed.
 kaleidoscope_ranching.message.cookery_missing=§e[Kaleidoscope Ranching]§r Kaleidoscope Cookery did not respond. Check that Cookery 1.6.6 or newer is active and loaded above Ranching.
+
+entity.kaleidoscope_ranching:cow.name=Cow
+item.spawn_egg.entity.kaleidoscope_ranching:cow.name=Cow Spawn Egg
+entity.kaleidoscope_ranching:sheep.name=Sheep
+item.spawn_egg.entity.kaleidoscope_ranching:sheep.name=Sheep Spawn Egg
+entity.kaleidoscope_ranching:goat.name=Goat
+item.spawn_egg.entity.kaleidoscope_ranching:goat.name=Goat Spawn Egg
+entity.kaleidoscope_ranching:pig.name=Pig
+item.spawn_egg.entity.kaleidoscope_ranching:pig.name=Pig Spawn Egg
+entity.kaleidoscope_ranching:chicken.name=Chicken
+item.spawn_egg.entity.kaleidoscope_ranching:chicken.name=Chicken Spawn Egg
+entity.kaleidoscope_ranching:rabbit.name=Rabbit
+item.spawn_egg.entity.kaleidoscope_ranching:rabbit.name=Rabbit Spawn Egg
+entity.kaleidoscope_ranching:duck.name=Duck
+item.spawn_egg.entity.kaleidoscope_ranching:duck.name=Duck Spawn Egg
+entity.kaleidoscope_ranching:goose.name=Goose
+item.spawn_egg.entity.kaleidoscope_ranching:goose.name=Goose Spawn Egg
+entity.kaleidoscope_ranching:buffalo.name=Buffalo
+item.spawn_egg.entity.kaleidoscope_ranching:buffalo.name=Buffalo Spawn Egg
+entity.kaleidoscope_ranching:yak.name=Yak
+item.spawn_egg.entity.kaleidoscope_ranching:yak.name=Yak Spawn Egg
 
 item.kaleidoscope_ranching:cow_milk.name=Cow Milk
 item.kaleidoscope_ranching:cow_milk_fine.name=Fine Cow Milk

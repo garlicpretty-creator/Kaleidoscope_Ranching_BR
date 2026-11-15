@@ -75,6 +75,16 @@ registerEntityInteraction({
 
 `speciesOf(entity)`、`sexOf(entity)`、`isBaby(entity)`、`isAdultFemale(entity)`、`nearbySameSpecies(entity, radius)`。性別存在實體屬性 `kaleidoscope_ranching:sex`（`female` 或 `male`），資源包也用它切換外觀，請不要改用動態屬性。
 
+每種樂牧動物的實體都提供這些事件，可用 `entity.triggerEvent(...)` 呼叫：
+
+| 事件 | 作用 |
+| --- | --- |
+| `kaleidoscope_ranching:make_persistent` | 讓動物不再自然消失。M2 的耳標請用這個 |
+| `kaleidoscope_ranching:become_baby` / `grow_up` | 變成幼體 / 長大 |
+| `kaleidoscope_ranching:set_female` / `set_male` | 指定性別 |
+
+野生動物（自然生成後被轉換的）會像原版一樣在遠離玩家時消失；繁殖、孵化出來的，以及有名字、拴著繩、裝了鞍的動物不會。
+
 ## 4. 時間與排程：`core/time.js`、`core/clock.js`
 
 - 一律用 `nowTick()`（世界建立以來的刻數）與 `today()` 比較時間，不要自己開計時器。

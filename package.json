@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate": "python3 tools/gen_art.py && node tools/gen_entities.mjs && node tools/gen_lang.mjs",
     "validate": "node tools/validate.mjs",
-    "art": "python3 tools/gen_chicken.py",
-    "build": "node tools/validate.mjs && bash tools/build.sh"
+    "test": "node --import ./tools/test/register.mjs tools/test/run.mjs",
+    "build": "node tools/validate.mjs && node --import ./tools/test/register.mjs tools/test/run.mjs && bash tools/build.sh"
   }
 }

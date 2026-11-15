@@ -3,19 +3,45 @@
   "render_controllers": {
     "controller.render.kaleidoscope_ranching.chicken": {
       "geometry": "Geometry.default",
-      "materials": [{ "*": "Material.default" }],
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
       "arrays": {
         "textures": {
-          "Array.skins": ["Texture.hen", "Texture.rooster", "Texture.chick"]
+          "Array.skins": [
+            "Texture.female",
+            "Texture.male",
+            "Texture.baby"
+          ]
         }
       },
       "textures": [
         "Array.skins[q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')]"
       ],
       "part_visibility": [
-        { "*": true },
-        { "rooster_*": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'" },
-        { "hen_*": "q.is_baby || q.property('kaleidoscope_ranching:sex') != 'male'" }
+        {
+          "*": true
+        },
+        {
+          "fa_wattle": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "fa_comb": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "m_comb": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "m_wattle": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "f_tail": "q.is_baby || !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "m_tail": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        }
       ]
     }
   }

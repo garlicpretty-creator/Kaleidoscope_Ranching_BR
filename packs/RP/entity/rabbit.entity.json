@@ -1,0 +1,40 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:rabbit",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "brown": "textures/entity/ranching/rabbit/brown",
+        "white": "textures/entity/ranching/rabbit/white",
+        "black": "textures/entity/ranching/rabbit/black",
+        "splotched": "textures/entity/ranching/rabbit/splotched",
+        "gold": "textures/entity/ranching/rabbit/gold",
+        "salt": "textures/entity/ranching/rabbit/salt"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.rabbit"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.rabbit.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "scale": "(!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.rabbit"
+      ],
+      "spawn_egg": {
+        "base_color": "#806042",
+        "overlay_color": "#C4AA8C"
+      }
+    }
+  }
+}

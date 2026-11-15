@@ -83,6 +83,9 @@ for (const animal of ANIMALS) {
   if (!animal.maleTrait) fail(`${where}: missing maleTrait`);
   if (animal.replaces === null && !animal.biomes?.length) fail(`${where}: a new animal needs spawn biomes`);
   if (animal.groomProduct) checkItem(animal.groomProduct, `${where} groomProduct`);
+  if (!Array.isArray(animal.breedItems) || !Array.isArray(animal.temptItems)) fail(`${where}: breedItems and temptItems must be arrays`);
+  [...(animal.breedItems ?? []), ...(animal.temptItems ?? [])].forEach((id) => checkItem(id, `${where} breed/tempt`));
+  if (animal.reproduction === "gestation" && !animal.breedItems?.length) fail(`${where}: a gestation animal needs breedItems`);
   if (animal.reproduction === "egg") checkItem(animal.fertilizedEgg, `${where} fertilizedEgg`);
 
   const product = animal.dailyProduct;
@@ -139,7 +142,7 @@ if (QUALITY_RULES.at(-1).tier !== "plain") fail("animals.js: the last quality ru
 const referenced = new Set();
 const note = (id) => typeof id === "string" && !id.includes(":") && referenced.add(id);
 for (const animal of ANIMALS) {
-  [animal.carcass, animal.treat, animal.groomProduct, animal.fertilizedEgg, animal.dailyProduct?.via].forEach(note);
+  [animal.carcass, animal.treat, animal.groomProduct, animal.fertilizedEgg, animal.dailyProduct?.via, ...animal.breedItems, ...animal.temptItems].forEach(note);
   const product = animal.dailyProduct;
   if (product) (product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item])).forEach(note);
 }
@@ -160,6 +163,67 @@ const CRAFTED_OR_INTERACTIVE = new Set([
 ]);
 for (const id of itemIds) {
   if (!referenced.has(id) && !CRAFTED_OR_INTERACTIVE.has(id)) fail(`items.js: "${id}" is declared but no table produces or uses it`);
+}
+
+// --- 3. Resource pack wiring ---------------------------------------------
+
+const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
+const rp = join(root, "packs", "RP");
+const bp = join(root, "packs", "BP");
+const exists = (path) => {
+  try {
+    statSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const geometries = new Set();
+for (const path of walk(join(rp, "models")).filter((p) => p.endsWith(".json"))) {
+  for (const geo of readJson(path)["minecraft:geometry"] ?? []) geometries.add(geo.description.identifier);
+}
+const animations = new Set();
+for (const path of walk(join(rp, "animations")).filter((p) => p.endsWith(".json"))) {
+  Object.keys(readJson(path).animations ?? {}).forEach((id) => animations.add(id));
+}
+const renderControllers = new Map();
+for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
+  Object.entries(readJson(path).render_controllers ?? {}).forEach(([id, rc]) => renderControllers.set(id, rc));
+}
+const clientEntities = new Map();
+for (const path of walk(join(rp, "entity")).filter((p) => p.endsWith(".json"))) {
+  const description = readJson(path)["minecraft:client_entity"].description;
+  clientEntities.set(description.identifier, { description, path });
+}
+
+for (const path of walk(join(bp, "entities")).filter((p) => p.endsWith(".json"))) {
+  const id = readJson(path)["minecraft:entity"].description.identifier;
+  const client = clientEntities.get(id);
+  if (!client) {
+    fail(`${id}: behaviour entity has no client entity`);
+    continue;
+  }
+  const { description } = client;
+  for (const geo of Object.values(description.geometry ?? {})) if (!geometries.has(geo)) fail(`${id}: unknown geometry ${geo}`);
+  for (const [name, anim] of Object.entries(description.animations ?? {})) {
+    if (!anim.startsWith("animation.common.") && !animations.has(anim)) fail(`${id}: unknown animation ${anim} (${name})`);
+  }
+  for (const texture of Object.values(description.textures ?? {})) {
+    if (!exists(join(rp, texture + ".png"))) fail(`${id}: missing texture ${texture}.png`);
+  }
+  for (const rcId of description.render_controllers ?? []) {
+    const rc = renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]);
+    if (!rc) {
+      fail(`${id}: unknown render controller ${JSON.stringify(rcId)}`);
+      continue;
+    }
+    for (const list of Object.values(rc.arrays?.textures ?? {})) {
+      for (const ref of list) {
+        if (!(ref.replace("Texture.", "") in (description.textures ?? {}))) fail(`${id}: render controller uses undefined ${ref}`);
+      }
+    }
+  }
 }
 
 // --- Report ---------------------------------------------------------------

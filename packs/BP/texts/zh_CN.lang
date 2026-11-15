@@ -1,8 +1,31 @@
 pack.name=森罗物语：乐牧
 pack.description=非官方的森罗物语扩展：饲养会回报细心照顾的动物。需要《森罗物语：厨房》。
-entity.kaleidoscope_ranching:chicken.name=鸡
-item.spawn_egg.entity.kaleidoscope_ranching:chicken.name=乐牧鸡刷怪蛋
+kaleidoscope_ranching.message.breed.same_sex=繁殖需要一公一母。
+kaleidoscope_ranching.message.breed.pregnant=它已经怀孕了。
+kaleidoscope_ranching.message.breed.resting=它刚繁殖过，需要休息一下。
+kaleidoscope_ranching.message.breed.not_cared=它今天还没被照顾好，不会繁殖。
 kaleidoscope_ranching.message.cookery_missing=§e[森罗物语：乐牧]§r 没有收到《森罗物语：厨房》的回应。请确认已启用 1.6.6 以上的厨房，且加载顺序在乐牧之上。
+
+entity.kaleidoscope_ranching:cow.name=牛
+item.spawn_egg.entity.kaleidoscope_ranching:cow.name=牛刷怪蛋
+entity.kaleidoscope_ranching:sheep.name=羊
+item.spawn_egg.entity.kaleidoscope_ranching:sheep.name=羊刷怪蛋
+entity.kaleidoscope_ranching:goat.name=山羊
+item.spawn_egg.entity.kaleidoscope_ranching:goat.name=山羊刷怪蛋
+entity.kaleidoscope_ranching:pig.name=豬
+item.spawn_egg.entity.kaleidoscope_ranching:pig.name=豬刷怪蛋
+entity.kaleidoscope_ranching:chicken.name=雞
+item.spawn_egg.entity.kaleidoscope_ranching:chicken.name=雞刷怪蛋
+entity.kaleidoscope_ranching:rabbit.name=兔
+item.spawn_egg.entity.kaleidoscope_ranching:rabbit.name=兔刷怪蛋
+entity.kaleidoscope_ranching:duck.name=鴨
+item.spawn_egg.entity.kaleidoscope_ranching:duck.name=鴨刷怪蛋
+entity.kaleidoscope_ranching:goose.name=鵝
+item.spawn_egg.entity.kaleidoscope_ranching:goose.name=鵝刷怪蛋
+entity.kaleidoscope_ranching:buffalo.name=水牛
+item.spawn_egg.entity.kaleidoscope_ranching:buffalo.name=水牛刷怪蛋
+entity.kaleidoscope_ranching:yak.name=氂牛
+item.spawn_egg.entity.kaleidoscope_ranching:yak.name=氂牛刷怪蛋
 
 item.kaleidoscope_ranching:cow_milk.name=牛奶
 item.kaleidoscope_ranching:cow_milk_fine.name=優良牛奶

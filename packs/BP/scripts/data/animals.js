@@ -9,6 +9,8 @@
 // - feedGroup:     which rows of feeds.js this animal eats.
 // - largeCarcass:  large carcasses do not stack and remember the animal's sex (males yield more).
 // - biomes:        natural spawn biome tags for animals that have no vanilla counterpart.
+// - breedItems:    fed to an adult to put it in love (gestation species only; birds breed through fertilized eggs).
+// - temptItems:    items the animal follows.
 //
 // Identifiers without a namespace belong to `kaleidoscope_ranching:`.
 
@@ -26,6 +28,8 @@ export const FEMALES_PER_MALE = 8;
 export const ANIMALS = [
   {
     id: "cow",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
     replaces: "minecraft:cow",
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -40,6 +44,8 @@ export const ANIMALS = [
   },
   {
     id: "sheep",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
     replaces: "minecraft:sheep",
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -54,6 +60,8 @@ export const ANIMALS = [
   },
   {
     id: "goat",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
     replaces: "minecraft:goat",
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -68,6 +76,8 @@ export const ANIMALS = [
   },
   {
     id: "pig",
+    breedItems: ["minecraft:carrot", "minecraft:potato", "minecraft:beetroot", "swill", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:carrot", "minecraft:potato", "minecraft:beetroot", "swill", "mixed_feed", "premium_feed"],
     replaces: "minecraft:pig",
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -82,6 +92,8 @@ export const ANIMALS = [
   },
   {
     id: "chicken",
+    breedItems: [],
+    temptItems: ["minecraft:wheat_seeds", "minecraft:pumpkin_seeds", "minecraft:melon_seeds", "minecraft:beetroot_seeds", "mixed_feed", "premium_feed"],
     replaces: "minecraft:chicken",
     reproduction: "egg",
     days: INCUBATION_DAYS,
@@ -98,6 +110,8 @@ export const ANIMALS = [
   },
   {
     id: "rabbit",
+    breedItems: ["minecraft:dandelion", "minecraft:carrot", "minecraft:golden_carrot", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:dandelion", "minecraft:carrot", "minecraft:golden_carrot", "forage", "mixed_feed", "premium_feed"],
     replaces: "minecraft:rabbit",
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -112,6 +126,8 @@ export const ANIMALS = [
   },
   {
     id: "duck",
+    breedItems: [],
+    temptItems: ["minecraft:wheat_seeds", "mixed_feed", "premium_feed"],
     replaces: null,
     reproduction: "egg",
     days: INCUBATION_DAYS,
@@ -127,6 +143,8 @@ export const ANIMALS = [
   },
   {
     id: "goose",
+    breedItems: [],
+    temptItems: ["minecraft:wheat_seeds", "mixed_feed", "premium_feed"],
     replaces: null,
     reproduction: "egg",
     days: INCUBATION_DAYS,
@@ -142,6 +160,8 @@ export const ANIMALS = [
   },
   {
     id: "buffalo",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
     replaces: null,
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -156,6 +176,8 @@ export const ANIMALS = [
   },
   {
     id: "yak",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "premium_feed"],
     replaces: null,
     reproduction: "gestation",
     days: GESTATION_DAYS,
@@ -196,3 +218,15 @@ export const QUALITY_RULES = [
 // Chance that a hen with a same-species male in trough range lays a fertilized
 // egg, indexed by affection hearts 0..5.
 export const FERTILIZED_CHANCE_BY_AFFECTION = [0.1, 0.2, 0.3, 0.45, 0.6, 0.75];
+
+/** Ticks an animal stays in love after being fed (30 seconds). */
+export const LOVE_TICKS = 600;
+
+/** Ticks before a parent can breed again (5 minutes). */
+export const BREED_COOLDOWN_TICKS = 6000;
+
+/** Radius, in blocks, within which two animals in love find each other. */
+export const MATE_RADIUS = 8;
+
+/** Bottle feedings that make a baby grow up immediately. */
+export const NURSING_FEEDS_TO_GROW = 3;

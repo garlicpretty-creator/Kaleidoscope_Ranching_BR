@@ -1,0 +1,82 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:sheep",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female_white": "textures/entity/ranching/sheep/female_white",
+        "female_orange": "textures/entity/ranching/sheep/female_orange",
+        "female_magenta": "textures/entity/ranching/sheep/female_magenta",
+        "female_light_blue": "textures/entity/ranching/sheep/female_light_blue",
+        "female_yellow": "textures/entity/ranching/sheep/female_yellow",
+        "female_lime": "textures/entity/ranching/sheep/female_lime",
+        "female_pink": "textures/entity/ranching/sheep/female_pink",
+        "female_gray": "textures/entity/ranching/sheep/female_gray",
+        "female_light_gray": "textures/entity/ranching/sheep/female_light_gray",
+        "female_cyan": "textures/entity/ranching/sheep/female_cyan",
+        "female_purple": "textures/entity/ranching/sheep/female_purple",
+        "female_blue": "textures/entity/ranching/sheep/female_blue",
+        "female_brown": "textures/entity/ranching/sheep/female_brown",
+        "female_green": "textures/entity/ranching/sheep/female_green",
+        "female_red": "textures/entity/ranching/sheep/female_red",
+        "female_black": "textures/entity/ranching/sheep/female_black",
+        "male_white": "textures/entity/ranching/sheep/male_white",
+        "male_orange": "textures/entity/ranching/sheep/male_orange",
+        "male_magenta": "textures/entity/ranching/sheep/male_magenta",
+        "male_light_blue": "textures/entity/ranching/sheep/male_light_blue",
+        "male_yellow": "textures/entity/ranching/sheep/male_yellow",
+        "male_lime": "textures/entity/ranching/sheep/male_lime",
+        "male_pink": "textures/entity/ranching/sheep/male_pink",
+        "male_gray": "textures/entity/ranching/sheep/male_gray",
+        "male_light_gray": "textures/entity/ranching/sheep/male_light_gray",
+        "male_cyan": "textures/entity/ranching/sheep/male_cyan",
+        "male_purple": "textures/entity/ranching/sheep/male_purple",
+        "male_blue": "textures/entity/ranching/sheep/male_blue",
+        "male_brown": "textures/entity/ranching/sheep/male_brown",
+        "male_green": "textures/entity/ranching/sheep/male_green",
+        "male_red": "textures/entity/ranching/sheep/male_red",
+        "male_black": "textures/entity/ranching/sheep/male_black",
+        "baby_white": "textures/entity/ranching/sheep/baby_white",
+        "baby_orange": "textures/entity/ranching/sheep/baby_orange",
+        "baby_magenta": "textures/entity/ranching/sheep/baby_magenta",
+        "baby_light_blue": "textures/entity/ranching/sheep/baby_light_blue",
+        "baby_yellow": "textures/entity/ranching/sheep/baby_yellow",
+        "baby_lime": "textures/entity/ranching/sheep/baby_lime",
+        "baby_pink": "textures/entity/ranching/sheep/baby_pink",
+        "baby_gray": "textures/entity/ranching/sheep/baby_gray",
+        "baby_light_gray": "textures/entity/ranching/sheep/baby_light_gray",
+        "baby_cyan": "textures/entity/ranching/sheep/baby_cyan",
+        "baby_purple": "textures/entity/ranching/sheep/baby_purple",
+        "baby_blue": "textures/entity/ranching/sheep/baby_blue",
+        "baby_brown": "textures/entity/ranching/sheep/baby_brown",
+        "baby_green": "textures/entity/ranching/sheep/baby_green",
+        "baby_red": "textures/entity/ranching/sheep/baby_red",
+        "baby_black": "textures/entity/ranching/sheep/baby_black"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.sheep"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.sheep.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "scale": "(!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.sheep"
+      ],
+      "spawn_egg": {
+        "base_color": "#E9ECEC",
+        "overlay_color": "#E2CEBC"
+      }
+    }
+  }
+}

@@ -1,0 +1,274 @@
+// Generates the behaviour-pack entity files for Ranching animals from
+// data/animals.js plus the per-species tuning below.
+//
+// Run with: node tools/gen_entities.mjs
+
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/animals.js")).href);
+
+const NS = "kaleidoscope_ranching";
+const SEX = `${NS}:sex`;
+const rid = (id) => (id.includes(":") ? id : `${NS}:${id}`);
+const g = (name) => `${NS}:${name}`;
+
+// Species built in M1. M4 adds duck, goose, buffalo and yak here.
+const TUNING = {
+  cow: { family: "cow", health: 10, speed: 0.25, box: [0.9, 1.3], mass: 1.0, bucketMilk: true },
+  sheep: { family: "sheep", health: 8, speed: 0.25, box: [0.9, 1.3], mass: 0.75, wool: true },
+  goat: { family: "goat", health: 10, speed: 0.2, box: [0.9, 1.3], mass: 0.75, bucketMilk: true },
+  pig: { family: "pig", health: 10, speed: 0.25, box: [0.9, 0.9], mass: 0.75, saddle: true },
+  chicken: { family: "chicken", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true },
+  rabbit: { family: "rabbit", health: 3, speed: 0.3, box: [0.4, 0.5], mass: 0.4, variants: 6 },
+};
+
+const range = (n) => Array.from({ length: n }, (_, i) => i);
+
+function buildEntity(animal, t) {
+  const sexFamily = (sex) => ({
+    "minecraft:type_family": { family: [t.family, "mob", "ranching_livestock", `ranching_${sex}`] },
+  });
+
+  const adult = {
+    "minecraft:experience_reward": { on_death: "q.last_hit_by_player ? Math.Random(1, 3) : 0" },
+  };
+  if (t.bucketMilk) {
+    // Vanilla bucket milking stays available for adult females so cake and
+    // other vanilla recipes keep working. The Ranching milking pail is handled
+    // by script and gives graded bottled milk instead.
+    adult["minecraft:interact"] = {
+      interactions: [
+        {
+          on_interact: {
+            filters: {
+              all_of: [
+                { test: "is_family", subject: "other", value: "player" },
+                { test: "has_equipment", domain: "hand", subject: "other", value: "bucket:0" },
+                { test: "enum_property", subject: "self", domain: SEX, value: "female" },
+              ],
+            },
+          },
+          use_item: true,
+          transform_to_item: "milk_bucket:0",
+          play_sounds: "milk",
+          interact_text: "action.interact.milk",
+        },
+      ],
+    };
+  }
+
+  const groups = {
+    [g("baby")]: {
+      "minecraft:is_baby": {},
+      "minecraft:scale": { value: 0.5 },
+      "minecraft:ageable": { duration: 1200, grow_up: { event: g("grow_up"), target: "self" } },
+      "minecraft:behavior.follow_parent": { priority: 5, speed_multiplier: 1.1 },
+    },
+    [g("adult")]: adult,
+    [g("sex_female")]: sexFamily("female"),
+    [g("sex_male")]: sexFamily("male"),
+    [g("wild")]: { "minecraft:despawn": { despawn_from_distance: {} } },
+    [g("persistent")]: { "minecraft:persistent": {} },
+  };
+
+  const adultGroups = [g("adult")];
+  const spawnDefaults = [g("wild")];
+
+  if (t.wool) {
+    for (const i of range(16)) groups[g(`color_${i}`)] = { "minecraft:color": { value: i } };
+    groups[g("sheared")] = { "minecraft:is_sheared": {} };
+    spawnDefaults.push(g("color_0"));
+  }
+  if (t.variants) {
+    for (const i of range(t.variants)) groups[g(`variant_${i}`)] = { "minecraft:variant": { value: i } };
+    spawnDefaults.push(g("variant_0"));
+  }
+  if (t.saddle) {
+    groups[g("unsaddled")] = {
+      "minecraft:interact": {
+        interactions: [
+          {
+            on_interact: {
+              filters: {
+                all_of: [
+                  { test: "is_family", subject: "other", value: "player" },
+                  { test: "has_equipment", domain: "hand", subject: "other", value: "saddle" },
+                ],
+              },
+              event: g("on_saddled"),
+            },
+            use_item: true,
+            play_sounds: "saddle",
+            interact_text: "action.interact.saddle",
+          },
+        ],
+      },
+    };
+    groups[g("saddled")] = {
+      "minecraft:is_saddled": {},
+      "minecraft:rideable": {
+        seat_count: 1,
+        family_types: ["player"],
+        interact_text: "action.interact.mount",
+        seats: { position: [0.0, 0.63, 0.0] },
+      },
+      "minecraft:item_controllable": { control_items: "carrot_on_a_stick" },
+      "minecraft:behavior.controlled_by_player": { priority: 0 },
+      "minecraft:boostable": {
+        speed_multiplier: 2.0,
+        duration: 3.0,
+        boost_items: [{ item: "carrot_on_a_stick", damage: 2, replace_item: "fishing_rod" }],
+      },
+    };
+    adultGroups.push(g("unsaddled"));
+  }
+
+  const components = {
+    "minecraft:is_hidden_when_invisible": {},
+    "minecraft:breathable": { total_supply: 15, suffocate_time: 0 },
+    "minecraft:collision_box": { width: t.box[0], height: t.box[1] },
+    "minecraft:nameable": {},
+    "minecraft:health": { value: t.health, max: t.health },
+    "minecraft:hurt_on_condition": {
+      damage_conditions: [
+        { filters: { test: "in_lava", subject: "self", operator: "==", value: true }, cause: "lava", damage_per_tick: 4 },
+      ],
+    },
+    // Death drops are handled by script (the carcass); see systems/carcass.js.
+    "minecraft:loot": { table: `loot_tables/${NS}/empty.json` },
+    "minecraft:movement": { value: t.speed },
+    "minecraft:navigation.walk": { can_path_over_water: true, avoid_water: true, avoid_damage_blocks: true },
+    "minecraft:movement.basic": {},
+    "minecraft:jump.static": {},
+    "minecraft:can_climb": {},
+    "minecraft:leashable": { soft_distance: 4.0, hard_distance: 6.0, max_distance: 10.0 },
+    "minecraft:balloonable": { mass: t.mass },
+    "minecraft:behavior.float": { priority: 0 },
+    "minecraft:behavior.panic": { priority: 1, speed_multiplier: 1.25 },
+    "minecraft:behavior.random_stroll": { priority: 6, speed_multiplier: 0.8 },
+    "minecraft:behavior.look_at_player": { priority: 7, look_distance: 6.0, probability: 0.02 },
+    "minecraft:behavior.random_look_around": { priority: 8 },
+    "minecraft:physics": {},
+    "minecraft:pushable": { is_pushable: true, is_pushable_by_piston: true },
+    "minecraft:conditional_bandwidth_optimization": {},
+  };
+  if (animal.temptItems.length) {
+    components["minecraft:behavior.tempt"] = {
+      priority: 4,
+      speed_multiplier: 1.25,
+      items: animal.temptItems.map(rid),
+    };
+  }
+  if (t.noFallDamage) {
+    components["minecraft:damage_sensor"] = { triggers: { cause: "fall", deals_damage: "no" } };
+  }
+  if (t.wool) {
+    components["minecraft:behavior.eat_block"] = {
+      priority: 6,
+      success_chance: "q.is_baby ? 0.02 : 0.001",
+      time_until_eat: 1.8,
+      eat_and_replace_block_pairs: [
+        { eat_block: "minecraft:grass_block", replace_block: "minecraft:dirt" },
+        { eat_block: "minecraft:short_grass", replace_block: "minecraft:air" },
+      ],
+      on_eat: { event: g("regrow_wool"), target: "self" },
+    };
+  }
+
+  const setSex = (sex) => ({
+    sequence: [
+      { set_property: { [SEX]: sex } },
+      { remove: { component_groups: [g("sex_female"), g("sex_male")] } },
+      { add: { component_groups: [g(`sex_${sex}`)] } },
+    ],
+  });
+
+  const events = {
+    "minecraft:entity_spawned": {
+      sequence: [
+        {
+          randomize: [
+            // ## Inlined rather than `trigger`ing set_female/set_male, which keeps
+            // ## the spawn event to the most widely supported response types.
+            { weight: 1, set_property: { [SEX]: "female" }, add: { component_groups: [g("sex_female")] } },
+            { weight: 1, set_property: { [SEX]: "male" }, add: { component_groups: [g("sex_male")] } },
+          ],
+        },
+        { add: { component_groups: [...adultGroups, ...spawnDefaults] } },
+      ],
+    },
+    [g("set_female")]: setSex("female"),
+    [g("set_male")]: setSex("male"),
+    [g("become_baby")]: {
+      sequence: [
+        { remove: { component_groups: adultGroups } },
+        { add: { component_groups: [g("baby")] } },
+      ],
+    },
+    [g("grow_up")]: {
+      sequence: [
+        { remove: { component_groups: [g("baby")] } },
+        { add: { component_groups: adultGroups } },
+      ],
+    },
+    [g("make_persistent")]: {
+      sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
+    },
+  };
+  if (t.wool) {
+    const all = range(16).map((i) => g(`color_${i}`));
+    for (const i of range(16)) {
+      events[g(`set_color_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }] };
+    }
+    events[g("shear")] = { add: { component_groups: [g("sheared")] } };
+    events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
+  }
+  if (t.variants) {
+    const all = range(t.variants).map((i) => g(`variant_${i}`));
+    for (const i of range(t.variants)) {
+      events[g(`set_variant_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`variant_${i}`)] } }] };
+    }
+  }
+  if (t.saddle) {
+    events[g("on_saddled")] = {
+      sequence: [{ remove: { component_groups: [g("unsaddled")] } }, { add: { component_groups: [g("saddled")] } }],
+    };
+  }
+
+  return {
+    format_version: "1.21.0",
+    "minecraft:entity": {
+      description: {
+        identifier: rid(animal.id),
+        is_spawnable: true,
+        is_summonable: true,
+        is_experimental: false,
+        properties: {
+          [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
+        },
+      },
+      component_groups: groups,
+      components,
+      events,
+    },
+  };
+}
+
+const outDir = join(root, "packs/BP/entities");
+mkdirSync(outDir, { recursive: true });
+let written = 0;
+for (const animal of ANIMALS) {
+  const tuning = TUNING[animal.id];
+  if (!tuning) continue;
+  writeFileSync(join(outDir, `${animal.id}.json`), JSON.stringify(buildEntity(animal, tuning), null, 2) + "\n");
+  written++;
+}
+
+const lootDir = join(root, `packs/BP/loot_tables/${NS}`);
+mkdirSync(lootDir, { recursive: true });
+writeFileSync(join(lootDir, "empty.json"), JSON.stringify({ pools: [] }, null, 2) + "\n");
+
+console.log(`gen_entities: wrote ${written} entities`);
