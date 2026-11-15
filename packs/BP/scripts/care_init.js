@@ -5,10 +5,13 @@
 // Registers every M2 block / item custom component and event subscription.
 
 import { system } from "@minecraft/server";
-import { troughComponent } from "./custom_components/trough.js";
-import { waterTroughComponent, autoWatererComponent } from "./custom_components/water_trough.js";
-import { autoFeederComponent } from "./custom_components/auto_feeder.js";
-import { saltLickComponent } from "./custom_components/salt_lick.js";
+import { troughComponent, tickTrough } from "./custom_components/trough.js";
+import {
+  waterTroughComponent, autoWatererComponent, tickWaterTrough, tickAutoWaterer,
+} from "./custom_components/water_trough.js";
+import { autoFeederComponent, tickAutoFeeder } from "./custom_components/auto_feeder.js";
+import { saltLickComponent, tickSaltLick } from "./custom_components/salt_lick.js";
+import { defineClockBlock, startBlockClock } from "./care/blockClock.js";
 import { compostBinComponent } from "./custom_components/compost_bin.js";
 import { alfalfaCropComponent } from "./custom_components/alfalfa_crop.js";
 import { feedBagComponent } from "./events/feed_bag.js";
@@ -31,6 +34,15 @@ system.beforeEvents.startup.subscribe(({ blockComponentRegistry: blocks, itemCom
   items.registerCustomComponent(`${NS}:fertilizer`, fertilizerComponent);
   items.registerCustomComponent(`${NS}:manure_fork`, manureForkComponent);
 });
+
+// ## Order matters within one clock pass: feeders top troughs up before the
+// ## troughs feed, so an automated pen never misses a day.
+defineClockBlock(`${NS}:auto_feeder`, "m2_auto_feeders", tickAutoFeeder);
+defineClockBlock(`${NS}:trough`, "m2_troughs", tickTrough);
+defineClockBlock(`${NS}:water_trough`, "m2_water_troughs", tickWaterTrough);
+defineClockBlock(`${NS}:auto_waterer`, "m2_auto_waterers", tickAutoWaterer);
+defineClockBlock(`${NS}:salt_lick`, "m2_salt_licks", tickSaltLick);
+startBlockClock();
 
 registerCareInteractions();
 registerWorldHooks();

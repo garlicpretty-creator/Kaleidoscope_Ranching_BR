@@ -1,5 +1,5 @@
 // 飼槽: holds one kind of feed (state kind 0–5, fill 0–15).
-// Its block tick is the "飼槽結算": settles animals in range, feeds them,
+// Its clock pass (care/blockClock.js) is the "飼槽結算": settles animals in range, feeds them,
 // and marks the 清潔 need from the pen's manure count.
 
 import { CARE } from "../data/care_config.js";
@@ -13,6 +13,7 @@ import {
 import { MANURE_BLOCK } from "./manure.js";
 import { FEED_BAG, bagToTrough } from "../events/feed_bag.js";
 import { T } from "../ui/text.js";
+import { clockBlockEvents } from "../care/blockClock.js";
 
 export const TROUGH = "kaleidoscope_ranching:trough";
 
@@ -43,7 +44,7 @@ function penIsClean(block, day) {
   return ok;
 }
 
-function tick(block) {
+export function tickTrough(block) {
   const animals = animalsNear(block);
   if (animals.length === 0) return;
   const day = today();
@@ -95,11 +96,8 @@ function interact(block, player) {
   showStatus(player, block);
 }
 
-export const troughComponent = {
-  onTick({ block }) {
-    tick(block);
-  },
+export const troughComponent = clockBlockEvents({
   onPlayerInteract({ block, player }) {
     if (player) interact(block, player);
   },
-};
+});

@@ -55,7 +55,7 @@ registerHusbandryProvider({
 
 ## 2. 玩家對動物互動：`core/interact.js`
 
-多個系統都會對「玩家拿某樣東西點動物」作反應。新程式請不要直接訂閱 `world.beforeEvents.playerInteractWithEntity`，改用路由（M2 目前自己訂閱，處理的物品與 M1、M3 不重疊：蹲下空手、毛刷、記事本、耳標、四種零食）：
+多個系統都會對「玩家拿某樣東西點動物」作反應。新程式請不要直接訂閱 `world.beforeEvents.playerInteractWithEntity`，改用路由：
 
 ```js
 import { registerEntityInteraction } from "./core/interact.js";
@@ -77,8 +77,9 @@ registerEntityInteraction({
 | `m3:nursing` | 50 | 手持奶瓶點幼體 |
 | `m1:dye_sheep` | 60 | 手持染料點羊 |
 | `m1:shear_sheep` | 60 | 手持剪刀點未剪毛的成年羊 |
+| `m2:care` | 100 | 蹲下空手、毛刷、記事本、耳標、該物種的零食 |
 
-蹲下空手撫摸、毛刷、記事本、耳標、零食由 M2 的 `events/care_interact.js` 處理。
+M2 另外保留一個備援：若點擊沒有經過路由（實體沒有互動元件時可能發生），用毛刷、記事本、耳標、零食時會以視線找動物；同一下點擊只會處理一次。
 
 ## 3. 動物資訊：`core/animal.js`
 

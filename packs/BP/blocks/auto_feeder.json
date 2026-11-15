@@ -24,13 +24,6 @@
         "seconds_to_destroy": 2.0
       },
       "minecraft:map_color": "#5b5b5b",
-      "minecraft:tick": {
-        "interval_range": [
-          40,
-          40
-        ],
-        "looping": true
-      },
       "kaleidoscope_ranching:auto_feeder": {}
     }
   }

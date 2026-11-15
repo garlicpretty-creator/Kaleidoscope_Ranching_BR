@@ -10,6 +10,7 @@ import {
 } from "../utils/world_util.js";
 import { ItemStack } from "@minecraft/server";
 import { T } from "../ui/text.js";
+import { clockBlockEvents } from "../care/blockClock.js";
 
 const NEIGHBOURS = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0, -1, 0], [0, 1, 0]];
 
@@ -51,10 +52,10 @@ function waterAnimals(block, auto) {
   }
 }
 
-export const waterTroughComponent = {
-  onTick({ block }) {
-    waterAnimals(block, false);
-  },
+export const tickWaterTrough = (block) => waterAnimals(block, false);
+export const tickAutoWaterer = (block) => waterAnimals(block, true);
+
+export const waterTroughComponent = clockBlockEvents({
   onPlayerInteract({ block, player }) {
     if (!player) return;
     const held = mainhand(player);
@@ -65,13 +66,10 @@ export const waterTroughComponent = {
     }
     actionbar(player, T("water.status", [`${getState(block, "water")}`, `${CARE.WATER_LEVELS_PER_BUCKET}`]));
   },
-};
+});
 
-export const autoWatererComponent = {
-  onTick({ block }) {
-    waterAnimals(block, true);
-  },
+export const autoWatererComponent = clockBlockEvents({
   onPlayerInteract({ block, player }) {
     if (player) actionbar(player, T(touchesWaterSource(block) ? "waterer.ok" : "waterer.dry"));
   },
-};
+});

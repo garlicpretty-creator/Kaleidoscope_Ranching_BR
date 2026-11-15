@@ -3,9 +3,10 @@
 import { CARE } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { ensureSettled, mark } from "../care/state.js";
+import { clockBlockEvents, untrackBlock } from "../care/blockClock.js";
 import { today, getState, setStates, animalsNear, blockGet, blockSet, blockClear } from "../utils/world_util.js";
 
-function tick(block) {
+export function tickSaltLick(block) {
   const animals = animalsNear(block);
   if (animals.length === 0) return;
   const day = today();
@@ -20,16 +21,14 @@ function tick(block) {
   const bites = getState(block, "bites") + 1;
   if (bites >= CARE.SALT_LICK_DAYS) {
     blockClear(block, "used_day");
+    untrackBlock(block.typeId, block.dimension, block.location);
     block.setType("minecraft:air");
     block.dimension.playSound("dig.stone", block.location);
   } else setStates(block, { bites });
 }
 
-export const saltLickComponent = {
-  onTick({ block }) {
-    tick(block);
-  },
+export const saltLickComponent = clockBlockEvents({
   onPlayerBreak({ block }) {
     blockClear(block, "used_day");
   },
-};
+});

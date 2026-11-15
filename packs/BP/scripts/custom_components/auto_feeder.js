@@ -3,10 +3,13 @@
 
 import { FEEDS } from "../data/feeds.js";
 import { TROUGH, addToTrough, itemsThatFit } from "./trough.js";
+import { clockBlockEvents } from "../care/blockClock.js";
 
+// ## The clock runs every 30 s (40 times a game day), so 4 items a pass keeps
+// ## up with far more animals than one trough can serve.
 const MAX_ITEMS_PER_TICK = 4;
 
-function tick(block) {
+export function tickAutoFeeder(block) {
   const trough = block.below();
   if (trough?.typeId !== TROUGH) return;
   const container = block.above()?.getComponent("minecraft:inventory")?.container;
@@ -27,8 +30,4 @@ function tick(block) {
   }
 }
 
-export const autoFeederComponent = {
-  onTick({ block }) {
-    tick(block);
-  },
-};
+export const autoFeederComponent = clockBlockEvents();
