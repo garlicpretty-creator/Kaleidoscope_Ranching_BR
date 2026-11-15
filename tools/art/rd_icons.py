@@ -12,8 +12,11 @@ RetroDiffusion API is reachable, with the API key in the environment:
 
 `generate` saves candidates to art/icons/candidates/<id>/<n>.png and a
 labelled contact sheet art/icons/candidates/sheet.png to choose from.
-`pick` copies the chosen candidate to art/icons/<id>.png; those files are
-committed. `apply` runs as the last step of `npm run generate`: it needs no
+`pick` copies the chosen candidate to art/icons/<id>.png and records the
+choice in art/icons/picks.json; those files are committed. The contact sheet
+shows the icon shipped today next to the candidates, on an inventory-slot
+grey, and flags candidates that kept a background, came out near-empty or flat
+(also written to art/icons/candidates/review.json). `apply` runs as the last step of `npm run generate`: it needs no
 key and no network, and it skips every icon that has no picked art yet, so
 the procedural icons stay in place until a replacement is chosen.
 
@@ -161,7 +164,47 @@ def cmd_generate(config, only):
     contact_sheet()
 
 
+# Automatic screening. RetroDiffusion sometimes keeps a background, returns a
+# near-empty image or a flat blob; such candidates are flagged on the sheet and
+# in review.json so picking only has to compare the plausible ones.
+MIN_OPAQUE = 20  # of 256 pixels
+MAX_OPAQUE = 236  # more than this almost always means the background stayed
+MIN_COLORS = 4
+
+
+def screen(icon):
+    """Metrics and flags for one 16x16 RGBA icon."""
+    pixels = [icon.getpixel((x, y)) for y in range(16) for x in range(16)]
+    opaque = [p for p in pixels if p[3] == 255]
+    colors = len({p[:3] for p in opaque})
+    flags = []
+    if len(opaque) < MIN_OPAQUE:
+        flags.append("empty")
+    if len(opaque) > MAX_OPAQUE:
+        flags.append("background")
+    if colors < MIN_COLORS:
+        flags.append("flat")
+    return {"opaque": len(opaque), "colors": colors, "flags": flags}
+
+
+def current_icon(item_id):
+    """The icon the pack ships today (procedural placeholder or earlier pick), or None."""
+    from PIL import Image
+
+    try:
+        with open(ATLAS, encoding="utf8") as f:
+            entry = json.load(f)["texture_data"].get(f"kr_{item_id}")
+    except OSError:
+        return None
+    if not entry:
+        return None
+    texture = entry["textures"] if isinstance(entry["textures"], str) else entry["textures"][0]
+    path = os.path.join(ROOT, "packs", "RP", texture + ".png")
+    return Image.open(path).convert("RGBA") if os.path.exists(path) else None
+
+
 def contact_sheet():
+    """art/icons/candidates/sheet.png (now | candidates, flagged) and review.json."""
     try:
         from PIL import Image, ImageDraw
     except ImportError:
@@ -173,20 +216,41 @@ def contact_sheet():
     scale, label = 4, 170
     most = max(len(os.listdir(os.path.join(CANDIDATES, d))) for d in ids)
     cell = 16 * scale + 6
-    sheet = Image.new("RGB", (label + most * cell, len(ids) * cell), (58, 58, 64))
+    sheet = Image.new("RGB", (label + (most + 1) * cell + 6, len(ids) * cell + 14), (58, 58, 64))
     draw = ImageDraw.Draw(sheet)
+    draw.text((label + 2, 1), "now", fill=(170, 170, 170))
+    draw.text((label + cell + 8, 1), "candidates (red = flagged)", fill=(170, 170, 170))
+    slot = (139, 139, 139)  # inventory slot grey, so icons are judged on the colour they appear on
+    review = {}
     for row, item_id in enumerate(ids):
-        draw.text((4, row * cell + cell // 2 - 6), item_id, fill=(230, 230, 230))
-        files = sorted(os.listdir(os.path.join(CANDIDATES, item_id)))
+        y = 14 + row * cell
+        draw.text((4, y + cell // 2 - 6), item_id, fill=(230, 230, 230))
+        now = current_icon(item_id)
+        if now:
+            draw.rectangle([label, y, label + 16 * scale - 1, y + 16 * scale - 1], fill=slot)
+            big = now.resize((16 * scale, 16 * scale), Image.NEAREST)
+            sheet.paste(big, (label, y), big)
+        files = sorted((f for f in os.listdir(os.path.join(CANDIDATES, item_id)) if f.endswith(".png")), key=lambda f: int(f.split(".")[0]))
+        review[item_id] = []
         for col, name in enumerate(files):
-            icon = Image.open(os.path.join(CANDIDATES, item_id, name)).convert("RGBA")
-            icon = icon.resize((16 * scale, 16 * scale), Image.NEAREST)
-            x, y = label + col * cell, row * cell
-            sheet.paste(icon, (x, y), icon)
-            draw.text((x + 2, y + 1), name.split(".")[0], fill=(255, 220, 120))
+            icon = to_icon(os.path.join(CANDIDATES, item_id, name))
+            result = {"n": int(name.split(".")[0]), **screen(icon)}
+            review[item_id].append(result)
+            x = label + (col + 1) * cell + 6
+            draw.rectangle([x, y, x + 16 * scale - 1, y + 16 * scale - 1], fill=slot)
+            big = icon.resize((16 * scale, 16 * scale), Image.NEAREST)
+            sheet.paste(big, (x, y), big)
+            mark = (240, 80, 80) if result["flags"] else (255, 220, 120)
+            draw.text((x + 2, y + 1), str(result["n"]), fill=mark)
+            if result["flags"]:
+                draw.rectangle([x - 1, y - 1, x + 16 * scale, y + 16 * scale], outline=(240, 80, 80))
     path = os.path.join(CANDIDATES, "sheet.png")
     sheet.save(path)
-    print(f"contact sheet: {os.path.relpath(path, ROOT)}")
+    with open(os.path.join(CANDIDATES, "review.json"), "w", encoding="utf8") as f:
+        json.dump(review, f, indent=1)
+    flagged = sum(bool(r["flags"]) for rows in review.values() for r in rows)
+    usable = sum(any(not r["flags"] for r in rows) for rows in review.values())
+    print(f"contact sheet: {os.path.relpath(path, ROOT)} ({flagged} flagged candidates; {usable}/{len(review)} icons have a usable one)")
 
 
 def to_icon(path):
@@ -204,6 +268,21 @@ def to_icon(path):
     return image
 
 
+PICKS = os.path.join(ART, "picks.json")
+
+
+def record_pick(item_id, n):
+    """art/icons/picks.json: which candidate became each icon, for review and re-picking."""
+    picks = {}
+    if os.path.exists(PICKS):
+        with open(PICKS, encoding="utf8") as f:
+            picks = json.load(f)
+    picks[item_id] = n
+    with open(PICKS, "w", encoding="utf8") as f:
+        json.dump(dict(sorted(picks.items())), f, indent=1)
+        f.write("\n")
+
+
 def cmd_pick(config, args):
     if len(args) % 2:
         sys.exit("usage: pick <id> <n> [<id> <n> ...]")
@@ -213,6 +292,7 @@ def cmd_pick(config, args):
         if not os.path.exists(source):
             sys.exit(f"no candidate {source}")
         to_icon(source).save(os.path.join(ART, item_id + ".png"))
+        record_pick(item_id, int(n))
         print(f"picked {item_id} <- candidate {n}")
 
 
