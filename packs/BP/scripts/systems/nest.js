@@ -51,6 +51,9 @@ const speciesForEgg = (itemId) => {
   return animal?.reproduction === "egg" ? animal.id : undefined;
 };
 
+/** Ticks a fertilized egg (full item id) takes to hatch: its species' `days`. */
+const hatchTicks = (itemId) => (animalByFertilizedEgg(itemId)?.days ?? INCUBATION_DAYS) * TICKS_PER_DAY;
+
 const HEAT = new Set([
   "minecraft:campfire", "minecraft:soul_campfire", "minecraft:magma", "minecraft:lava", "minecraft:flowing_lava",
   "minecraft:fire", "minecraft:soul_fire", "minecraft:lit_furnace", "minecraft:lit_smoker", "minecraft:lit_blast_furnace",
@@ -198,7 +201,7 @@ export const nestBoxComponent = {
     const species = item && speciesForEgg(item.typeId);
     if (species) {
       if (data.hatching.length >= HATCH_SLOTS) return tell(player, "nest.full");
-      data.hatching.push({ egg: item.typeId, species, due: nowTick() + INCUBATION_DAYS * TICKS_PER_DAY });
+      data.hatching.push({ egg: item.typeId, species, due: nowTick() + hatchTicks(item.typeId) });
       consumeMainHand(player);
     } else {
       if (!storedCount(data)) return tell(player, "nest.empty");
@@ -262,7 +265,7 @@ export const incubatorComponent = {
     const species = item && speciesForEgg(item.typeId);
     if (species) {
       if (data.eggs.length >= HATCH_SLOTS) return tell(player, "incubator.full");
-      data.eggs.push({ egg: item.typeId, species, due: nowTick() + INCUBATION_DAYS * TICKS_PER_DAY });
+      data.eggs.push({ egg: item.typeId, species, due: nowTick() + hatchTicks(item.typeId) });
       consumeMainHand(player);
       if (!isHeated(block)) tell(player, "incubator.cold");
     } else {

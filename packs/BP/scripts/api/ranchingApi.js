@@ -9,7 +9,9 @@
 //   in   kaleidoscope_ranching:register_feed      a feed item for troughs
 //   in   kaleidoscope_ranching:register_recipe    a recipe for one of the five processing stations
 //   in   kaleidoscope_ranching:register_butcher   the butcher-rack cuts of a carcass
-//   out  kaleidoscope_ranching:animal_event       born / hatched / harvested / butchered
+//   out  kaleidoscope_ranching:animal_event       born / hatched / harvested / butchered / mated / cared
+//   in   kaleidoscope_ranching:query_animal       { entity, ref? }: ask about one animal
+//   out  kaleidoscope_ranching:animal_info        the answer: sex, hearts, needs, pregnancy
 //   out  kaleidoscope_ranching:api_result         { event, id, ok, error? } for every register_*
 //
 // ## Rules (same as Cookery's v1 API): field names stay compatible within
@@ -23,6 +25,11 @@ import { KIND, registerFeed } from "../data/feeds.js";
 import { registerSpecies } from "../data/species.js";
 import { STATIONS, addAnimal, addButcherEntry, addRecipe } from "../core/content.js";
 import { onRanchEvent } from "../core/events.js";
+import { isBaby, sexOf, speciesOf } from "../core/animal.js";
+import { getAffection } from "../core/husbandry.js";
+import { today } from "../core/time.js";
+import { needsToday } from "../care/state.js";
+import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
 
 export const API_VERSION = 1;
 export const PACK_VERSION = "0.5.0";
@@ -31,6 +38,8 @@ const EV = (name) => `${NS}:${name}`;
 
 export const CAPABILITIES = [
   "register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result",
+  // Added after the first v1 build; check for them before relying on them.
+  "query_animal", "care_events",
 ];
 
 /** Most entries of each kind one world session accepts, so a broken add-on cannot grow memory forever. */
@@ -200,6 +209,41 @@ export function registerButcher(data) {
   return carcass;
 }
 
+/**
+ * query_animal { entity: "<entity id>", ref?: string }
+ * Answers with animal_info. `ref` is echoed back so the asker can match the
+ * answer to its question. Built-in and registered animals both answer.
+ */
+export function queryAnimal(data) {
+  const id = typeof data.entity === "string" ? data.entity : fail("entity must be an entity id string");
+  const info = { entity: id, found: false };
+  if (data.ref !== undefined) info.ref = String(data.ref).slice(0, 64);
+  let entity;
+  try {
+    entity = world.getEntity(id);
+  } catch {}
+  // An unloaded, dead or non-Ranching entity is simply "not found".
+  if (!entity?.isValid || !speciesOf(entity)) return info;
+  const needs = needsToday(entity);
+  const day = today();
+  const due = entity.getDynamicProperty(DP_PREGNANT_UNTIL_DAY);
+  const pregnant = typeof due === "number" && due >= day;
+  Object.assign(info, {
+    found: true,
+    animal: entity.typeId,
+    sex: sexOf(entity),
+    baby: isBaby(entity),
+    hearts: getAffection(entity),
+    needs: { fed: needs.fed, water: needs.water, groom: needs.groom, clean: needs.clean, all: needs.all },
+    pregnant,
+  });
+  if (pregnant) info.dueInDays = due - day;
+  const tag = entity.getDynamicProperty("kr:ear_tag");
+  if (tag !== undefined) info.earTag = tag;
+  if (entity.nameTag) info.name = entity.nameTag;
+  return info;
+}
+
 const HANDLERS = {
   [EV("register_animal")]: registerAnimal,
   [EV("register_feed")]: registerFeedItem,
@@ -224,6 +268,16 @@ export function announceReady() {
 /** Handles one incoming script event; returns the api_result payload for register_* (exported for tests). */
 export function handleScriptEvent(id, message) {
   if (id === EV("api_ping")) return announceReady();
+  if (id === EV("query_animal")) {
+    let info;
+    try {
+      info = queryAnimal(JSON.parse(String(message ?? "")) ?? {});
+    } catch (error) {
+      info = { found: false, error: error instanceof ApiError ? error.message : "message is not valid JSON" };
+    }
+    send("animal_info", info);
+    return info;
+  }
   const handler = HANDLERS[id];
   if (!handler) return undefined;
   const event = id.slice(NS.length + 1);

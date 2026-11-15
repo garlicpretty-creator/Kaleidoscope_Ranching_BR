@@ -18,6 +18,11 @@ import { rid, shortId } from "../core/ids.js";
 import { countItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { nowTick } from "../core/time.js";
 
+// ## The duration is stored with the running batch. A recipe another add-on
+// ## registered is unknown again after a world reload until that add-on
+// ## re-registers it; the batch must not finish early (or never) because of that.
+const ticksOf = (data) => data.ticks ?? recipeById(data.recipe)?.ticks ?? 0;
+
 const BUSY_STATE = "kaleidoscope_ranching:busy";
 const TICKS_PER_MINUTE = 1200;
 const TIER_NAMES = ["plain", "fine", "superb"];
@@ -90,7 +95,7 @@ function start(block, player) {
       for (const output of outputs) give(player, output.item, output.count);
       return;
     }
-    setBlockData(block, { recipe: recipe.id, start: nowTick(), outputs, refund: result.taken });
+    setBlockData(block, { recipe: recipe.id, start: nowTick(), ticks: recipe.ticks, outputs, refund: result.taken });
     setBusy(block, true);
     block.dimension.playSound("bucket.fill_water", block.location);
     return;
@@ -101,8 +106,7 @@ function start(block, player) {
 function spill(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
   if (!data) return;
-  const recipe = recipeById(data.recipe);
-  const done = recipe && nowTick() >= data.start + recipe.ticks;
+  const done = nowTick() >= data.start + ticksOf(data);
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
   if (done) {
     for (const output of data.outputs) dimension.spawnItem(new ItemStack(output.item, output.count), at);
@@ -119,8 +123,7 @@ export const stationComponent = {
     if (!player) return;
     const data = getBlockData(block);
     if (!data) return start(block, player);
-    const recipe = recipeById(data.recipe);
-    const left = recipe ? data.start + recipe.ticks - nowTick() : 0;
+    const left = data.start + ticksOf(data) - nowTick();
     if (left <= 0) return collect(block, player, data);
     tell(player, "working", [String(Math.ceil(left / TICKS_PER_MINUTE))]);
   },

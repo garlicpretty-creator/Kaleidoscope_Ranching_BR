@@ -29,7 +29,8 @@ export function startCarcassDrops() {
     } catch {
       return;
     }
-    if (baby) return;
+    // ## Animals other add-ons register may have no carcass (docs/API.md).
+    if (baby || !species.carcass) return;
 
     const carcass = new ItemStack(rid(species.carcass), 1);
     if (species.largeCarcass) {

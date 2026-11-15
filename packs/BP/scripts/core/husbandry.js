@@ -44,7 +44,7 @@ const DEFAULTS = {
   /** Notification: a baby was born or hatched. `mother` may be undefined (incubator). */
   onBorn(_baby, _mother, _inheritedAffection) {},
 
-  /** Notification: a player cared for the animal through a Ranching tool. */
+  /** Notification: a player cared for the animal: "pet" | "brush" | "treat" | "ear_tag" | "nursing_bottle". */
   onCared(_entity, _player, _kind) {},
 };
 
@@ -82,6 +82,9 @@ export function production(entity, day) {
 
 export function notifyMated(mother, father) {
   safe("onMated", undefined, mother, father);
+  try {
+    emitRanchEvent("mated", { animal: mother.typeId, mother: mother.id, father: father.id });
+  } catch {}
 }
 
 export function notifyBorn(baby, mother, inheritedAffection) {
@@ -96,6 +99,9 @@ export function notifyBorn(baby, mother, inheritedAffection) {
 
 export function notifyCared(entity, player, kind) {
   safe("onCared", undefined, entity, player, kind);
+  try {
+    emitRanchEvent("cared", { animal: entity.typeId, entity: entity.id, player: player?.id, kind });
+  } catch {}
 }
 
 /** Chance that a hen lays a fertilized egg, given a male of her species is in range. */

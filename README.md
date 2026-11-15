@@ -20,6 +20,7 @@
 | M2 照顧核心 | 由另一位開發者完成，已整合，待實測 |
 | M3 屠宰與乳蛋加工 | 完成，待實測；規則見 [M3 說明](docs/M3_說明.md) |
 | M5 對外 API | 完成，待實測；規格見 [API 文件](docs/API.md) |
+| 光影（Vibrant Visuals） | 資源包已宣告 `pbr`，並為金屬、陶缸、玻璃瓶、水面、木料、乳脂等貼圖附上均一數值的材質檔；逐像素的 MER 與法線圖留待 M6 |
 | M4、M5 廚房料理、M6 | 已分派，見外包工作包 |
 
 ![M1 動物預覽](docs/art/m1_animals_preview.png)
@@ -43,11 +44,11 @@
 
 | 指令 | 作用 |
 | --- | --- |
-| `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引 |
-| `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結 |
+| `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引，最後生成光影材質檔 |
+| `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結，以及光影材質檔是否和 `tools/gen_pbr.mjs` 一致 |
 | `npm test` | 以模擬的腳本 API 執行行為測試（M1 到 M3、M5 API 與範例附加包） |
 | `npm run build` | 驗證、測試，然後打包成 `dist/` 下的 `.mcaddon` |
 
-生成的檔案（動物模型、貼圖、實體 JSON、語言檔）請改生成器，不要手改。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。
+生成的檔案（動物模型、貼圖、實體 JSON、語言檔、`*.texture_set.json` 光影材質檔）請改生成器，不要手改。哪張貼圖用哪種材質寫在 `tools/gen_pbr.mjs` 的 `RULES`。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。
 
 簡體中文語言檔的物品與方塊名稱暫時沿用繁體，待登錄表補上簡體欄位。
