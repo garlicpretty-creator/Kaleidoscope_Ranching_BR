@@ -17,3 +17,16 @@ out="$root/dist/Kaleidoscope-Ranching-v$version.mcaddon"
 rm -f "$out"
 (cd "$stage" && zip -q -r "$out" .)
 echo "built ${out#"$root/"}"
+
+# The API example add-on (docs/API.md), packed separately.
+example="$root/examples/api-example"
+if [ -d "$example" ]; then
+  stage2="$(mktemp -d)"
+  cp -R "$example/BP" "$stage2/Ranching API example [BP]"
+  cp -R "$example/RP" "$stage2/Ranching API example [RP]"
+  out2="$root/dist/Kaleidoscope-Ranching-API-example.mcaddon"
+  rm -f "$out2"
+  (cd "$stage2" && zip -q -r "$out2" .)
+  rm -rf "$stage2"
+  echo "built ${out2#"$root/"}"
+fi

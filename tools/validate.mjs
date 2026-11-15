@@ -291,6 +291,33 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
 }
 
+// --- 5. API example add-on -------------------------------------------------
+
+// ## The example is what add-on authors copy, so it must stay valid: its JSON
+// ## parses, and every kr_example: id it registers has an item or entity file.
+const example = join(root, "examples", "api-example");
+if (exists(example)) {
+  const exampleJson = walk(example).filter((path) => path.endsWith(".json"));
+  for (const path of exampleJson) {
+    try {
+      JSON.parse(readFileSync(path, "utf8"));
+    } catch (error) {
+      fail(`${relative(root, path)}: ${error.message}`);
+    }
+  }
+  const defined = new Set();
+  for (const path of exampleJson) {
+    const data = JSON.parse(readFileSync(path, "utf8"));
+    const id = data["minecraft:item"]?.description?.identifier ?? data["minecraft:entity"]?.description?.identifier;
+    if (id) defined.add(id);
+  }
+  const script = readFileSync(join(example, "BP", "scripts", "main.js"), "utf8");
+  // (The example's recipe id equals its output item, so every id is an item or entity.)
+  const used = [...script.matchAll(/`\$\{ME\}:([a-z0-9_]+)`/g)].map(([, name]) => `kr_example:${name}`);
+  if (!used.length) fail("examples/api-example: no kr_example ids found in scripts/main.js");
+  for (const id of new Set(used)) if (!defined.has(id)) fail(`examples/api-example uses ${id} but no item or entity file defines it`);
+}
+
 // --- Report ---------------------------------------------------------------
 
 if (errors.length) {

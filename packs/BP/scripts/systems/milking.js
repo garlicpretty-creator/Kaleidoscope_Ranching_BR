@@ -17,6 +17,7 @@ import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { damageMainHand, give, takeItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
+import { emitRanchEvent } from "../core/events.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
@@ -52,7 +53,9 @@ function milk(player, animal) {
   if (!takeItems(player, ["minecraft:glass_bottle"], 1)) return tell(player, "milking.need_bottle");
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
-  give(player, milkTiers(species)[TIER_INDEX[quality]]);
+  const bottle = milkTiers(species)[TIER_INDEX[quality]];
+  give(player, bottle);
+  emitRanchEvent("harvested", { animal: animal.typeId, entity: animal.id, product: "milk", items: { [bottle]: 1 } });
   damageMainHand(player);
   animal.dimension.playSound("mob.cow.milk", animal.location);
 }

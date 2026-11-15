@@ -1,0 +1,24 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kr_example:alpaca",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/goat/female"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.goat"
+      },
+      "render_controllers": [
+        "controller.render.kr_example.alpaca"
+      ],
+      "spawn_egg": {
+        "base_color": "#e8dcc4",
+        "overlay_color": "#8a6a4a"
+      }
+    }
+  }
+}

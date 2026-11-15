@@ -9,6 +9,7 @@ M1、M3 與 M2 由不同的人開發。這份文件說明誰擁有什麼，以�
 | M1 自有動物與性別 | Claude | `scripts/systems/conversion.js`、`scripts/systems/breeding.js`、動物實體與美術 |
 | M2 照顧核心 | 另一位開發者（Claude 整合） | `scripts/care_init.js`、`care/`、`custom_components/`、`events/`、`ui/`、`utils/`、`data/care_config.js`、`data/feeds.js`、`data/species.js`、`data/m1_contract.js`、`tools/m2/gen_content.py`；交接說明在 `docs/M2_交接.md` |
 | M3 屠宰與乳蛋加工 | Claude | `scripts/systems/carcass.js`、`butcherRack.js`、`milking.js`、`nursing.js`、`nest.js`、`stations.js`，以及對應方塊與物品 |
+| M5 對外 API | Claude | `scripts/api/ranchingApi.js`、`scripts/core/content.js`、`scripts/core/events.js`、`examples/api-example/`；規格在 `docs/API.md` |
 
 `scripts/core/` 是共用層，三方都可以讀；修改時請在合併請求裡標明，因為會影響其他人。
 
@@ -123,3 +124,22 @@ M3 的方塊用四個自訂元件：`kaleidoscope_ranching:butcher_rack`、`nest
 ## 9. 資料表
 
 `scripts/data/` 是所有識別碼的唯一來源。新增物品或方塊時先登錄到 `items.js`、`blocks.js`，並填上 `owner`（由哪個里程碑的生成器產出檔案；省略代表樂牧主生成器），然後執行 `npm run validate`。驗證會比對登錄表、`packs/BP/items`、`packs/BP/blocks` 與貼圖索引；驗證不過的合併請求不要合併。生成的檔案請不要手改。
+
+## 10. 執行期內容：`core/content.js`
+
+其他附加包會透過對外 API（`docs/API.md`）在遊戲執行中加入動物、屠體分切與加工配方，所以系統**不要直接讀** `data/animals.js` 的 `ANIMALS`、`data/butcher.js` 的 `BUTCHER_TABLE`、`data/processing.js` 的 `PROCESSING_RECIPES`，改用：
+
+| 函式 | 用途 |
+| --- | --- |
+| `animalByType(typeId)`、`allAnimals()` | 動物資料列（`core/animal.js` 的 `speciesOf` 已改用它） |
+| `animalByFertilizedEgg(itemId)`、`animalByCarcass(itemId)` | 由受精蛋或屠體找到動物 |
+| `onAnimalAdded(listener)` | 要建索引的系統（例如繁殖的飼料表）在動物加入時更新 |
+| `butcherEntry(carcassItemId)` | 屠體的分切表，參數是完整 id |
+| `recipesForStation(station)`、`recipeById(id)` | 加工配方 |
+
+內建內容一律優先，外部註冊不能覆蓋。外部動物用族群 `ranching_male` / `ranching_female` 表示性別，`sexOf` 讀不到性別屬性時會改看族群。
+
+## 11. 牧場事件：`core/events.js`
+
+出生、孵化、收成、屠宰完成時，系統呼叫 `emitRanchEvent(type, data)` 回報；對外 API 會把它轉成 `kaleidoscope_ranching:animal_event` 廣播出去。新功能如果會產出動物或收成，也請在這裡回報，事件種類見 `core/events.js`。出生與孵化已在 `core/husbandry.js` 的 `notifyBorn` 統一回報，不需要另外呼叫。
+

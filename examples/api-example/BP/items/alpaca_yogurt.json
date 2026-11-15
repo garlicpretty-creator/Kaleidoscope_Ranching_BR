@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kr_example:alpaca_yogurt",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_example_yogurt",
+      "minecraft:food": {
+        "nutrition": 4,
+        "saturation_modifier": 0.6
+      },
+      "minecraft:use_animation": "eat"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kr_example:hay_cube",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_example_hay_cube",
+      "minecraft:tags": {
+        "tags": [
+          "kaleidoscope_ranching:feed"
+        ]
+      }
+    }
+  }
+}

@@ -776,6 +776,167 @@ test("the pickling vat needs every ingredient and refunds them if broken early",
   equal(dropsOf("minecraft:clay_ball").length, 1, "clay back once");
 });
 
+// --- M5: Ranching's public API --------------------------------------------
+
+const API = "kaleidoscope_ranching";
+const { speciesOf } = await import("../../packs/BP/scripts/core/animal.js");
+const { FEEDS: LIVE_FEEDS } = await import("../../packs/BP/scripts/data/feeds.js");
+const sent = (name) => system.__scriptEvents.filter((e) => e.id === `${API}:${name}`).map((e) => JSON.parse(e.message));
+const lastResult = () => sent("api_result").at(-1);
+function call(name, payload) {
+  system.sendScriptEvent(`${API}:${name}`, typeof payload === "string" ? payload : JSON.stringify(payload));
+  return lastResult();
+}
+/** An animal from another add-on: no sex property, sex and livestock come from families. */
+function outsider(type, x, sex, z = 0) {
+  return overworld.__spawnVanilla(type, at(x, z), {
+    "minecraft:type_family": { family: ["mob", "ranching_livestock", `ranching_${sex}`] },
+  });
+}
+
+__setMaxStack("kr_example:alpaca_carcass", 1);
+
+// The example add-on registers through the same events a real one would.
+await import("../../examples/api-example/BP/scripts/main.js");
+world.afterEvents.worldLoad.fire({});
+__advance(60);
+
+test("M5: a ping is answered with api_ready and the v1 capabilities", () => {
+  system.__scriptEvents.length = 0;
+  system.sendScriptEvent(`${API}:api_ping`, "");
+  const ready = sent("api_ready").at(-1);
+  equal(ready?.api, 1, "api version");
+  for (const capability of ["register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event"]) {
+    assert(ready.capabilities.includes(capability), capability);
+  }
+});
+
+test("M5 acceptance: the example add-on registers its alpaca, feed, cuts and recipe", () => {
+  const alpaca = speciesOf({ typeId: "kr_example:alpaca" });
+  assert(alpaca, "alpaca known to Ranching");
+  equal(alpaca.dailyProduct.via, "milking_pail", "milked");
+  equal(LIVE_FEEDS["kr_example:hay_cube"]?.units, 2, "hay cube is feed");
+});
+
+test("M5: a registered animal is fed at the trough, milked by quality, and drops its carcass", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  const female = outsider("kr_example:alpaca", 1, "female");
+  hold(player, "kr_example:hay_cube", 4);
+  troughComponent.onPlayerInteract({ block: trough, player });
+  runBlockClock();
+  equal(female.getDynamicProperty("kr:fed_day"), Math.floor(world.getAbsoluteTime() / DAY), "ate from the trough");
+
+  // Five hearts, but today's feed was hay (tier 1): plain milk.
+  care.setAffection(female, 100);
+  careFor(female);
+  hold(player, `${API}:milking_pail`);
+  player.inventory.setItem(5, new ItemStack("minecraft:glass_bottle", 1));
+  system.__scriptEvents.length = 0;
+  assert(__interact(player, female), "pail handled");
+  equal(player.inventory.count("kr_example:alpaca_milk"), 1, "alpaca milk at the quality hay earns");
+  const harvest = sent("animal_event").find((e) => e.type === "harvested");
+  equal(harvest?.items?.["kr_example:alpaca_milk"], 1, "harvest broadcast");
+
+  female.kill();
+  equal(overworld.items.filter((d) => d.item.typeId === "kr_example:alpaca_carcass").length, 1, "carcass dropped");
+});
+
+test("M5: a registered carcass is cut on the butcher rack", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const male = outsider("kr_example:alpaca", 1, "male");
+  male.kill();
+  const carcass = overworld.items.pop().item;
+  equal(carcass.getDynamicProperty(`${API}:carcass_male`), true, "remembers the male");
+  const rack = rackAt();
+  player.inventory.setItem(0, carcass);
+  use(RACK, rack, player);
+  equal(rack.permutation.getState(`${API}:carcass`), "sheep", "borrowed look");
+  system.__scriptEvents.length = 0;
+  cutAll(player, rack);
+  equal(rack.permutation.getState(`${API}:carcass`), "none", "rack emptied");
+  assert(player.inventory.count("minecraft:mutton") >= 3, "male bonus mutton");
+  assert(player.inventory.count(`${API}:large_bone`) >= 1, "Ranching items allowed as cuts");
+  assert(sent("animal_event").some((e) => e.type === "butchered" && e.carcass === "kr_example:alpaca_carcass"), "butchered broadcast");
+});
+
+test("M5: a registered recipe runs in the fermenting jar", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const jar = stationAt("fermenting_jar");
+  player.inventory.setItem(0, new ItemStack("kr_example:alpaca_milk_fine", 1));
+  use(STATION, jar, player);
+  __skipTime(DAY);
+  use(STATION, jar, player);
+  equal(player.inventory.count("kr_example:alpaca_yogurt"), 1, "yogurt (fine ×1.5 rounds down)");
+});
+
+test("M5: registered animals breed, and the birth is broadcast", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const female = outsider("kr_example:alpaca", 1, "female");
+  const male = outsider("kr_example:alpaca", 2, "male");
+  careFor(female);
+  careFor(male);
+  hold(player, "kr_example:hay_cube", 2);
+  __interact(player, female);
+  __interact(player, male);
+  assert(female.getDynamicProperty(`${API}:pregnant_due`) > 0, "pregnant");
+  system.__scriptEvents.length = 0;
+  __skipTime(DAY * 3);
+  __advance(700);
+  equal(overworld.getEntities({ type: "kr_example:alpaca" }).length, 3, "a young alpaca");
+  assert(sent("animal_event").some((e) => e.type === "born" && e.animal === "kr_example:alpaca"), "born broadcast");
+});
+
+test("M5: a registered bird lays into the nest box and its fertilized egg hatches in the incubator", () => {
+  const result = call("register_animal", {
+    id: "kr_test:quail",
+    reproduction: "egg",
+    carcass: "kr_test:quail_carcass",
+    dailyProduct: { via: "nest_box", items: ["kr_test:quail_egg", "kr_test:quail_egg_fine", "kr_test:quail_egg_superb"] },
+    fertilizedEgg: "kr_test:fertilized_quail_egg",
+    care: { eats: ["grain"] },
+  });
+  equal(result.ok, true, `registered (${result.error})`);
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  outsider("kr_test:quail", 2, "female");
+  use(NEST, nest, player);
+  equal(player.inventory.count("kr_test:quail_egg"), 1, "quail egg collected");
+
+  const incubator = __place(overworld, { x: 5, y: 64, z: 0 }, `${API}:incubator`, { [`${API}:eggs`]: 0, [`${API}:busy`]: false });
+  __place(overworld, { x: 5, y: 63, z: 0 }, "minecraft:campfire");
+  hold(player, "kr_test:fertilized_quail_egg");
+  use(INCUBATOR, incubator, player);
+  system.__scriptEvents.length = 0;
+  __skipTime(DAY * 2);
+  runBlockClock();
+  equal(overworld.getEntities({ type: "kr_test:quail" }).length, 2, "a quail hatched");
+  assert(sent("animal_event").some((e) => e.type === "hatched" && e.animal === "kr_test:quail"), "hatched broadcast");
+});
+
+test("M5: built-in and foreign-namespace registrations are refused; bad input gets a reason", () => {
+  let r = call("register_animal", { id: `${API}:cow`, reproduction: "gestation", breedItems: ["minecraft:wheat"] });
+  equal(r.ok, false, "cannot replace a Ranching animal");
+  assert(/own namespace/.test(r.error), r.error);
+  r = call("register_feed", { item: "minecraft:wheat", kind: "veg" });
+  equal(r.ok, false, "cannot re-register vanilla wheat");
+  equal(LIVE_FEEDS["minecraft:wheat"].kind, 1, "wheat unchanged");
+  r = call("register_recipe", { id: "kr_test:bad", station: "furnace", inputs: [{ item: "minecraft:egg" }], outputs: [{ item: "minecraft:cake" }] });
+  equal(r.ok, false, "unknown station");
+  r = call("register_butcher", "{not json");
+  equal(r.ok, false, "invalid JSON");
+  r = call("register_feed", { item: "kr_test:oats", kind: "grain" });
+  equal(r.ok, true, "a valid feed");
+  r = call("register_feed", { item: "kr_test:oats", kind: "grain", units: 3 });
+  equal(r.ok, true, "registering again is safe");
+  equal(LIVE_FEEDS["kr_test:oats"].units, 3, "and updates it");
+});
+
 // --- M1: vanilla parity ---------------------------------------------------
 
 test("shearing drops wool of the sheep's colour and marks it sheared", () => {

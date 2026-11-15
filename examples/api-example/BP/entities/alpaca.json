@@ -1,0 +1,222 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "kr_example:alpaca",
+      "is_spawnable": true,
+      "is_summonable": true
+    },
+    "component_groups": {
+      "baby": {
+        "minecraft:is_baby": {},
+        "minecraft:scale": {
+          "value": 0.5
+        },
+        "minecraft:ageable": {
+          "duration": 1200,
+          "grow_up": {
+            "event": "kaleidoscope_ranching:grow_up",
+            "target": "self"
+          }
+        },
+        "minecraft:behavior.follow_parent": {
+          "priority": 5,
+          "speed_multiplier": 1.1
+        }
+      },
+      "adult": {},
+      "female": {
+        "minecraft:type_family": {
+          "family": [
+            "alpaca",
+            "mob",
+            "ranching_livestock",
+            "ranching_female"
+          ]
+        }
+      },
+      "male": {
+        "minecraft:type_family": {
+          "family": [
+            "alpaca",
+            "mob",
+            "ranching_livestock",
+            "ranching_male"
+          ]
+        }
+      },
+      "wild": {
+        "minecraft:despawn": {
+          "despawn_from_distance": {}
+        }
+      },
+      "persistent": {
+        "minecraft:persistent": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "alpaca",
+          "mob",
+          "ranching_livestock",
+          "ranching_female"
+        ]
+      },
+      "minecraft:health": {
+        "value": 12,
+        "max": 12
+      },
+      "minecraft:collision_box": {
+        "width": 0.9,
+        "height": 1.4
+      },
+      "minecraft:nameable": {},
+      "minecraft:physics": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:movement": {
+        "value": 0.2
+      },
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:jump.static": {},
+      "minecraft:leashable": {
+        "soft_distance": 4,
+        "hard_distance": 6,
+        "max_distance": 10
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/empty.json"
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.panic": {
+        "priority": 1,
+        "speed_multiplier": 1.25
+      },
+      "minecraft:behavior.tempt": {
+        "priority": 4,
+        "speed_multiplier": 1.25,
+        "items": [
+          "kr_example:hay_cube",
+          "kaleidoscope_ranching:mixed_feed"
+        ]
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 6,
+        "probability": 0.02
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:interact": {
+        "interactions": [
+          {
+            "on_interact": {
+              "filters": {
+                "test": "is_family",
+                "subject": "other",
+                "value": "player"
+              }
+            },
+            "interact_text": "action.interact.alpaca"
+          }
+        ]
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "sequence": [
+          {
+            "randomize": [
+              {
+                "weight": 1,
+                "add": {
+                  "component_groups": [
+                    "female"
+                  ]
+                }
+              },
+              {
+                "weight": 1,
+                "add": {
+                  "component_groups": [
+                    "male"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "add": {
+              "component_groups": [
+                "adult",
+                "wild"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:become_baby": {
+        "remove": {
+          "component_groups": [
+            "adult"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "baby"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:grow_up": {
+        "remove": {
+          "component_groups": [
+            "baby"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "adult"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:make_persistent": {
+        "remove": {
+          "component_groups": [
+            "wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "persistent"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:add_ear_tag": {
+        "remove": {
+          "component_groups": [
+            "wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "persistent"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -84,8 +84,16 @@ export function speciesOf(entity) {
 }
 
 /** External animals (M5 register_animal will call this). */
+const BUILTIN_SPECIES = new Set(Object.keys(SPECIES));
+
+/** External animals (the public API's register_animal). Built-in rows cannot be replaced; re-registering an external one updates it. */
 export function registerSpecies(typeId, row) {
-  if (SPECIES[typeId]) return false;
+  if (BUILTIN_SPECIES.has(typeId)) return false;
   SPECIES[typeId] = row;
   return true;
+}
+
+/** Whether an item is some animal's favourite treat. */
+export function isTreat(itemId) {
+  return Object.values(SPECIES).some((row) => row.treat === itemId);
 }

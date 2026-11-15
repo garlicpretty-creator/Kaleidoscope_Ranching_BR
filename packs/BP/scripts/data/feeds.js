@@ -42,8 +42,11 @@ export const FEEDS = {
 };
 
 /** External feeds registered at runtime (M5 API will call this). */
+const BUILTIN_FEEDS = new Set(Object.keys(FEEDS));
+
+/** External feeds (the public API's register_feed). Built-ins win (企劃書 API 規則); re-registering an external feed updates it. */
 export function registerFeed(itemId, kind, units = 1) {
-  if (FEEDS[itemId]) return false; // built-ins win (企劃書 API 規則)
+  if (BUILTIN_FEEDS.has(itemId)) return false;
   FEEDS[itemId] = { kind, units };
   return true;
 }

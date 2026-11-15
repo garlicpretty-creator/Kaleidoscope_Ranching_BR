@@ -4,7 +4,7 @@
 
 import { world, system } from "@minecraft/server";
 import { CARE } from "../data/care_config.js";
-import { SPECIES } from "../data/species.js";
+import { SPECIES, isTreat } from "../data/species.js";
 import { FAMILY_LIVESTOCK, EVENT_ADD_EAR_TAG } from "../data/m1_contract.js";
 import { mark, addAffection, isMarkedToday, ensureSettled } from "../care/state.js";
 import { consumeMainhand, damageMainhand, dropAt, actionbar } from "../utils/world_util.js";
@@ -16,8 +16,10 @@ import { registerEntityInteraction } from "../core/interact.js";
 const BRUSH = "kaleidoscope_ranching:brush";
 const NOTEBOOK = "kaleidoscope_ranching:ranch_notebook";
 const EAR_TAG = "kaleidoscope_ranching:ear_tag";
-const TREATS = new Set(Object.values(SPECIES).map((s) => s.treat));
-const TOOL_IDS = new Set([BRUSH, NOTEBOOK, EAR_TAG, ...TREATS]);
+const TOOLS = new Set([BRUSH, NOTEBOOK, EAR_TAG]);
+// ## Treats are looked up each time: animals registered through the public
+// ## API bring their own.
+const isTool = (id) => TOOLS.has(id) || isTreat(id);
 
 const lastHandled = new Map(); // player.id → tick, so one click acts once
 
@@ -79,7 +81,7 @@ function act(player, e, itemId) {
   if (itemId === BRUSH) return brush(player, e);
   if (itemId === NOTEBOOK) return showAnimal(player, e);
   if (itemId === EAR_TAG) return earTag(player, e);
-  if (TREATS.has(itemId)) return treat(player, e, itemId);
+  if (isTreat(itemId)) return treat(player, e, itemId);
 }
 
 function handledThisTick(player) {
@@ -96,7 +98,7 @@ export function registerCareInteractions() {
     priority: 100,
     match: ({ player, entity, item }) => {
       if (!SPECIES[entity.typeId]) return false;
-      const ok = item ? TOOL_IDS.has(item.typeId) : player.isSneaking;
+      const ok = item ? isTool(item.typeId) : player.isSneaking;
       if (ok) lastHandled.set(player.id, system.currentTick);
       return ok;
     },
@@ -105,7 +107,7 @@ export function registerCareInteractions() {
 
   // Fallback / in-air use.
   world.afterEvents.itemUse.subscribe(({ source: player, itemStack }) => {
-    if (!player || !itemStack || !TOOL_IDS.has(itemStack.typeId) || handledThisTick(player)) return;
+    if (!player || !itemStack || !isTool(itemStack.typeId) || handledThisTick(player)) return;
     const hit = player
       .getEntitiesFromViewDirection({ maxDistance: 5, families: [FAMILY_LIVESTOCK] })
       .find((h) => SPECIES[h.entity.typeId]);

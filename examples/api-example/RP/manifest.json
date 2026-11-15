@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Ranching API example (alpaca)",
+    "description": "Resources for the Ranching API example. Reuses Ranching's goat model.",
+    "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a02",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      1
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a05",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

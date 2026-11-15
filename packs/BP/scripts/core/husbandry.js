@@ -13,6 +13,8 @@
 // ## breed, produces every day at plain quality.
 
 import { AFFECTION, FERTILIZED_CHANCE_BY_AFFECTION } from "../data/animals.js";
+import { speciesOf } from "./animal.js";
+import { emitRanchEvent } from "./events.js";
 
 /** @typedef {"plain" | "fine" | "superb"} Quality */
 
@@ -84,6 +86,12 @@ export function notifyMated(mother, father) {
 
 export function notifyBorn(baby, mother, inheritedAffection) {
   safe("onBorn", undefined, baby, mother, inheritedAffection);
+  // ## Every birth and hatching passes through here, so this is where the
+  // ## ranch event is reported (core/events.js).
+  try {
+    const hatched = speciesOf(baby)?.reproduction === "egg";
+    emitRanchEvent(hatched ? "hatched" : "born", { animal: baby.typeId, entity: baby.id, mother: mother?.id });
+  } catch {}
 }
 
 export function notifyCared(entity, player, kind) {

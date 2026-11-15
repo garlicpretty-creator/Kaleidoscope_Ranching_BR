@@ -15,6 +15,7 @@ import {
   AFFECTION,
 } from "../data/animals.js";
 import { isBaby, nearbySameSpecies, sexOf, speciesOf } from "../core/animal.js";
+import { onAnimalAdded } from "../core/content.js";
 import { createRegistry, registerClockTask } from "../core/clock.js";
 import { canBreed, getAffection, notifyBorn, notifyMated } from "../core/husbandry.js";
 import { dp, rid } from "../core/ids.js";
@@ -80,7 +81,7 @@ function conceive(mother, father, now) {
   for (const parent of [mother, father]) {
     parent.setDynamicProperty(LOVE_UNTIL, undefined);
     parent.setDynamicProperty(COOLDOWN_UNTIL, now + BREED_COOLDOWN_TICKS);
-    parent.triggerEvent("kaleidoscope_ranching:make_persistent");
+    tryEvent(parent, "kaleidoscope_ranching:make_persistent");
     hearts(parent);
   }
   try {
@@ -120,8 +121,8 @@ function giveBirth(mother) {
   pregnancies.remove(mother.id);
 
   const baby = mother.dimension.spawnEntity(mother.typeId, mother.location);
-  baby.triggerEvent("kaleidoscope_ranching:become_baby");
-  baby.triggerEvent("kaleidoscope_ranching:make_persistent");
+  tryEvent(baby, "kaleidoscope_ranching:become_baby");
+  tryEvent(baby, "kaleidoscope_ranching:make_persistent");
   if (species.id === "sheep") {
     const color = mother.getComponent("minecraft:color")?.value;
     if (Number.isInteger(color)) baby.triggerEvent(`kaleidoscope_ranching:set_color_${color & 15}`);
@@ -141,10 +142,21 @@ function checkPregnancy(entity) {
   if (due > 0 && due <= nowTick()) giveBirth(entity);
 }
 
+function indexBreedItems(animal) {
+  if (animal.reproduction === "gestation") BREED_ITEMS.set(rid(animal.id), new Set((animal.breedItems ?? []).map(rid)));
+}
+
+/** Triggers an entity event that animals from other add-ons may not define. */
+function tryEvent(entity, name) {
+  try {
+    entity.triggerEvent(name);
+  } catch {}
+}
+
 export function startBreeding(animals) {
-  for (const animal of animals) {
-    if (animal.reproduction === "gestation") BREED_ITEMS.set(rid(animal.id), new Set(animal.breedItems.map(rid)));
-  }
+  animals.forEach(indexBreedItems);
+  // Animals other add-ons register later breed the same way.
+  onAnimalAdded(indexBreedItems);
 
   registerEntityInteraction({
     id: "m1:breeding",
