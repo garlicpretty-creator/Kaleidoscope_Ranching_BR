@@ -54,6 +54,14 @@ const DEFS = {
     seconds: 1,
     light: true,
   },
+  hay_rack: {
+    component: "hay_rack",
+    states: { [S("hay")]: [0, 1, 2, 3] },
+    bones: Object.fromEntries([1, 2, 3].map((n) => [`hay_${n}`, `${state("hay")} >= ${n}`])),
+    collision: box(-8, 0, -6, 16, 16, 12),
+    selection: box(-8, 0, -6, 16, 16, 12),
+    seconds: 1,
+  },
   ...Object.fromEntries(
     STATIONS.map((id) => [
       id,

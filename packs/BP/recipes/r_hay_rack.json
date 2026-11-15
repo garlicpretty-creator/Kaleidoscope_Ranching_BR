@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_hay_rack"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "S S",
+      "SHS",
+      "PPP"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:stick"
+      },
+      "H": {
+        "item": "minecraft:hay_block"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:hay_rack",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:hay_rack"
+      }
+    ]
+  }
+}

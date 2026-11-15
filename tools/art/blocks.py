@@ -195,6 +195,28 @@ def aging_rack():
     return Model("geometry.kaleidoscope_ranching.aging_rack", bones, cubes, 64, 64)
 
 
+def hay_rack():
+    # A slatted wooden manger; hay fills it in three layers (state hay 1-3).
+    bones = [Bone("rack", None, (0, 0, 0))] + [Bone(f"hay_{n}", "rack", (0, 4 + 4 * n, 0)) for n in (1, 2, 3)]
+    cubes = [
+        Cube("rack", "dark_wood", (-8, 0, -6), (2, 16, 2), name="leg"),
+        Cube("rack", "dark_wood", (6, 0, -6), (2, 16, 2), mirror_of="leg"),
+        Cube("rack", "dark_wood", (-8, 0, 4), (2, 16, 2), mirror_of="leg"),
+        Cube("rack", "dark_wood", (6, 0, 4), (2, 16, 2), mirror_of="leg"),
+        Cube("rack", "wood", (-6, 4, -5), (12, 1, 10), name="floor"),
+        Cube("rack", "wood", (-6, 6, -6), (12, 1, 1), name="slat"),
+        Cube("rack", "wood", (-6, 10, -6), (12, 1, 1), mirror_of="slat"),
+        Cube("rack", "wood", (-6, 14, -6), (12, 1, 1), mirror_of="slat"),
+        Cube("rack", "wood", (-6, 6, 5), (12, 1, 1), mirror_of="slat"),
+        Cube("rack", "wood", (-6, 10, 5), (12, 1, 1), mirror_of="slat"),
+        Cube("rack", "wood", (-6, 14, 5), (12, 1, 1), mirror_of="slat"),
+        Cube("hay_1", "straw", (-6, 5, -5), (12, 3, 10), name="hay"),
+        Cube("hay_2", "straw", (-6, 8, -5), (12, 3, 10), mirror_of="hay"),
+        Cube("hay_3", "straw", (-6, 11, -5), (12, 4, 10)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.hay_rack", bones, cubes, 64, 64)
+
+
 def fermenting_jar():
     bones = [Bone("jar", None, (0, 0, 0)), Bone("busy", "jar", (0, 1, 0))]
     cubes = [
@@ -225,4 +247,5 @@ ALL = {
     "aging_rack": aging_rack,
     "fermenting_jar": fermenting_jar,
     "pickling_vat": pickling_vat,
+    "hay_rack": hay_rack,
 }
