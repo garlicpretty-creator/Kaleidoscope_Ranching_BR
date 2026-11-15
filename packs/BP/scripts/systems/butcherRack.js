@@ -3,10 +3,11 @@
 // gives the next entry of data/butcher.js; the last one empties the rack.
 
 import { ItemStack } from "@minecraft/server";
-import { ANIMALS } from "../data/animals.js";
-import { BUTCHER_TABLE, DURABILITY_PER_STROKE, KNIFE_TAG, VANILLA_BLADE_TAGS } from "../data/butcher.js";
+import { DURABILITY_PER_STROKE, KNIFE_TAG, VANILLA_BLADE_TAGS } from "../data/butcher.js";
+import { animalByCarcass, butcherEntry } from "../core/content.js";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
-import { rid, shortId } from "../core/ids.js";
+import { rid } from "../core/ids.js";
+import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
 
@@ -18,8 +19,23 @@ const WOOL_COLORS = [
   "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
 ];
 
-/** carcass item id (short) -> animal id, e.g. cow_carcass -> cow */
-const ANIMAL_BY_CARCASS = new Map(ANIMALS.map((animal) => [animal.carcass, animal.id]));
+// ## The rack's carcass state lists the built-in animals. A carcass from
+// ## another add-on (api/ranchingApi.js) borrows one of those looks: the
+// ## `look` it registered, else a cow for large carcasses and a chicken for small.
+const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak"]);
+
+/** Cuts for a carcass (full item id); data saved by older builds used short ids. */
+function cutsOf(carcass) {
+  return butcherEntry(rid(carcass))?.cuts ?? [];
+}
+
+function lookOf(carcass) {
+  const animal = animalByCarcass(rid(carcass));
+  if (animal && LOOKS.has(animal.id)) return animal.id;
+  const look = butcherEntry(rid(carcass))?.look;
+  if (LOOKS.has(look)) return look;
+  return animal?.largeCarcass === false ? "chicken" : "cow";
+}
 
 function tell(player, key) {
   player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.rack.${key}` });
@@ -59,23 +75,23 @@ function setVisual(block, data) {
   if (!data) {
     permutation = permutation.withState(STATE_CARCASS, "none").withState(STATE_CUT, false);
   } else {
-    const cuts = BUTCHER_TABLE[data.carcass].cuts;
+    const cuts = cutsOf(data.carcass);
     permutation = permutation
-      .withState(STATE_CARCASS, ANIMAL_BY_CARCASS.get(data.carcass))
+      .withState(STATE_CARCASS, lookOf(data.carcass))
       .withState(STATE_CUT, data.stroke >= Math.ceil(cuts.length / 2));
   }
   block.setPermutation(permutation);
 }
 
 function hang(block, player, item) {
-  const carcass = shortId(item.typeId);
+  const carcass = item.typeId;
   const data = { carcass, stroke: 0, male: false };
   try {
     data.male = item.getDynamicProperty(CARCASS_MALE) === true;
     const wool = item.getDynamicProperty(CARCASS_WOOL);
     if (typeof wool === "number") data.wool = wool;
   } catch {}
-  data.stroke = Math.max(0, nextCut(BUTCHER_TABLE[carcass].cuts, data, 0));
+  data.stroke = Math.max(0, nextCut(cutsOf(carcass), data, 0));
   consumeMainHand(player);
   setBlockData(block, data);
   setVisual(block, data);
@@ -83,7 +99,7 @@ function hang(block, player, item) {
 }
 
 function cut(block, player, data) {
-  const cuts = BUTCHER_TABLE[data.carcass].cuts;
+  const cuts = cutsOf(data.carcass);
   for (const { typeId, amount } of rollCut(cuts[data.stroke], data)) give(player, typeId, amount);
   damageMainHand(player, DURABILITY_PER_STROKE);
   block.dimension.playSound("dig.cloth", block.location);
@@ -92,6 +108,7 @@ function cut(block, player, data) {
   if (next < 0) {
     clearBlockData(block.dimension, block.location);
     setVisual(block, null);
+    emitRanchEvent("butchered", { carcass: rid(data.carcass) });
     return;
   }
   data.stroke = next;
@@ -104,7 +121,7 @@ function spill(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
   if (!data) return;
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
-  if (data.stroke === nextCut(BUTCHER_TABLE[data.carcass].cuts, data, 0)) {
+  if (data.stroke === nextCut(cutsOf(data.carcass), data, 0)) {
     const carcass = new ItemStack(rid(data.carcass), 1);
     try {
       carcass.setDynamicProperty(CARCASS_MALE, data.male);
@@ -113,7 +130,7 @@ function spill(dimension, location, typeId) {
     dimension.spawnItem(carcass, at);
     return;
   }
-  const cuts = BUTCHER_TABLE[data.carcass].cuts;
+  const cuts = cutsOf(data.carcass);
   for (let i = data.stroke; i >= 0 && i < cuts.length; i = nextCut(cuts, data, i + 1)) {
     for (const { typeId, amount } of rollCut(cuts[i], data)) dimension.spawnItem(new ItemStack(typeId, amount), at);
   }
@@ -131,12 +148,11 @@ export const butcherRackComponent = {
     const item = mainHand(player)?.getItem();
     const data = getBlockData(block);
     if (!data) {
-      const carcass = item && shortId(item.typeId);
-      if (carcass && BUTCHER_TABLE[carcass]) hang(block, player, item);
+      if (item && butcherEntry(item.typeId)) hang(block, player, item);
       else tell(player, "empty");
       return;
     }
-    if (item && BUTCHER_TABLE[shortId(item.typeId)]) return tell(player, "occupied");
+    if (item && butcherEntry(item.typeId)) return tell(player, "occupied");
     if (!isBlade(item)) return tell(player, "need_blade");
     cut(block, player, data);
   },

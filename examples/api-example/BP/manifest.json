@@ -1,0 +1,54 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Ranching API example (alpaca)",
+    "description": "Example add-on: registers an alpaca with Kaleidoscope Ranching through its public API.",
+    "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a01",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      1
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a03",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a04",
+      "entry": "scripts/main.js",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "6f0c2a8e-4c61-4f6e-9d36-2b8f5b7d9a02",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.7.0"
+    }
+  ]
+}

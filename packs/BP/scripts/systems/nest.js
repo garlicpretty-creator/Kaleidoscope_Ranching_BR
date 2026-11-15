@@ -19,7 +19,8 @@
 // ## hoppers and hatched without a player standing next to the box.
 
 import { ItemStack } from "@minecraft/server";
-import { ANIMALS, INCUBATION_DAYS } from "../data/animals.js";
+import { INCUBATION_DAYS } from "../data/animals.js";
+import { allAnimals, animalByFertilizedEgg } from "../core/content.js";
 import { tierIds } from "../data/items.js";
 import { animalsNear, isAdultFemale, isBaby, sexOf } from "../core/animal.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
@@ -29,6 +30,7 @@ import { fertilizedChance, inheritedAffection, notifyBorn, production } from "..
 import { dp, rid } from "../core/ids.js";
 import { consumeMainHand, give, mainHand } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
+import { emitRanchEvent } from "../core/events.js";
 
 export const NEST_RADIUS = 8;
 export const MALE_RADIUS = 8;
@@ -41,9 +43,13 @@ const LAST_LAID_DAY = dp("last_laid_day");
 const EGGS_STATE = "kaleidoscope_ranching:eggs";
 const BUSY_STATE = "kaleidoscope_ranching:busy";
 
-const LAYERS = ANIMALS.filter((animal) => animal.reproduction === "egg" && animal.dailyProduct?.via === "nest_box");
-/** fertilized egg item (full id) -> species id */
-const SPECIES_BY_FERTILIZED = new Map(LAYERS.map((animal) => [rid(animal.fertilizedEgg), animal.id]));
+/** Laying species, built-in and registered (core/content.js), read each time. */
+const layers = () => allAnimals().filter((animal) => animal.reproduction === "egg" && animal.dailyProduct?.via === "nest_box");
+/** Species id that hatches from a fertilized egg item (full id), or undefined. */
+const speciesForEgg = (itemId) => {
+  const animal = animalByFertilizedEgg(itemId);
+  return animal?.reproduction === "egg" ? animal.id : undefined;
+};
 
 const HEAT = new Set([
   "minecraft:campfire", "minecraft:soul_campfire", "minecraft:magma", "minecraft:lava", "minecraft:flowing_lava",
@@ -79,8 +85,13 @@ function hatch(dimension, location, speciesId, mother) {
   } catch {
     return false; // species not in the pack yet (e.g. M4 birds before M4)
   }
-  baby.triggerEvent("kaleidoscope_ranching:become_baby");
-  baby.triggerEvent("kaleidoscope_ranching:make_persistent");
+  // ## Animals from other add-ons are asked to provide these events (see
+  // ## docs/API.md); a missing one must not stop the hatch.
+  for (const event of ["kaleidoscope_ranching:become_baby", "kaleidoscope_ranching:make_persistent"]) {
+    try {
+      baby.triggerEvent(event);
+    } catch {}
+  }
   notifyBorn(baby, mother, inheritedAffection(mother));
   return true;
 }
@@ -98,7 +109,7 @@ function storedCount(data) {
 function lay(block, data) {
   const day = today();
   const at = center(block);
-  for (const species of LAYERS) {
+  for (const species of layers()) {
     const birds = animalsNear(block.dimension, at, species.id, Math.max(NEST_RADIUS, MALE_RADIUS));
     for (const hen of birds) {
       if (!isAdultFemale(hen)) continue;
@@ -142,11 +153,15 @@ function pushToHopper(block, data) {
   if (below?.typeId !== "minecraft:hopper") return;
   const container = below.getComponent("minecraft:inventory")?.container;
   if (!container) return;
+  const moved = {};
   for (const [egg, count] of Object.entries(data.eggs)) {
     const rest = container.addItem(new ItemStack(egg, count));
     if (rest) data.eggs[egg] = rest.amount;
     else delete data.eggs[egg];
+    const n = count - (rest?.amount ?? 0);
+    if (n > 0) moved[egg] = n;
   }
+  if (Object.keys(moved).length) emitRanchEvent("harvested", { product: "egg", items: moved });
 }
 
 function showNest(block, data) {
@@ -180,7 +195,7 @@ export const nestBoxComponent = {
     trackBlock(block);
     const data = settleNest(block);
     const item = mainHand(player)?.getItem();
-    const species = item && SPECIES_BY_FERTILIZED.get(item.typeId);
+    const species = item && speciesForEgg(item.typeId);
     if (species) {
       if (data.hatching.length >= HATCH_SLOTS) return tell(player, "nest.full");
       data.hatching.push({ egg: item.typeId, species, due: nowTick() + INCUBATION_DAYS * TICKS_PER_DAY });
@@ -188,6 +203,7 @@ export const nestBoxComponent = {
     } else {
       if (!storedCount(data)) return tell(player, "nest.empty");
       for (const [egg, count] of Object.entries(data.eggs)) give(player, egg, count);
+      emitRanchEvent("harvested", { product: "egg", items: { ...data.eggs } });
       data.eggs = {};
     }
     setBlockData(block, data);
@@ -243,7 +259,7 @@ export const incubatorComponent = {
     trackBlock(block);
     const data = settleIncubator(block);
     const item = mainHand(player)?.getItem();
-    const species = item && SPECIES_BY_FERTILIZED.get(item.typeId);
+    const species = item && speciesForEgg(item.typeId);
     if (species) {
       if (data.eggs.length >= HATCH_SLOTS) return tell(player, "incubator.full");
       data.eggs.push({ egg: item.typeId, species, due: nowTick() + INCUBATION_DAYS * TICKS_PER_DAY });

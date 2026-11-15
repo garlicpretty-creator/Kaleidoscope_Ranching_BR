@@ -11,7 +11,8 @@
 // (QUALITY_YIELD), rounded down, at least 1.
 
 import { ItemStack } from "@minecraft/server";
-import { PROCESSING_RECIPES, QUALITY_YIELD } from "../data/processing.js";
+import { QUALITY_YIELD } from "../data/processing.js";
+import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
 import { countItems, give, mainHand, takeItems } from "../core/inventory.js";
@@ -33,13 +34,8 @@ function setBusy(block, busy) {
   block.setPermutation(block.permutation.withState(BUSY_STATE, busy));
 }
 
-const RECIPES_BY_STATION = new Map();
-for (const recipe of PROCESSING_RECIPES) {
-  const list = RECIPES_BY_STATION.get(recipe.station) ?? [];
-  list.push(recipe);
-  RECIPES_BY_STATION.set(recipe.station, list);
-}
-const RECIPE_BY_ID = new Map(PROCESSING_RECIPES.map((recipe) => [recipe.id, recipe]));
+// ## Recipes come from core/content.js: data/processing.js plus recipes other
+// ## add-ons registered this session (kaleidoscope_ranching:register_recipe).
 
 const inputIds = (input) => (input.anyOf ?? [input.item]).map(rid);
 
@@ -81,7 +77,7 @@ function start(block, player) {
   const station = shortId(block.typeId);
   const held = mainHand(player)?.getItem();
   if (!held) return tell(player, "empty");
-  const candidates = (RECIPES_BY_STATION.get(station) ?? []).filter((recipe) =>
+  const candidates = recipesForStation(station).filter((recipe) =>
     recipe.inputs.some((input) => inputIds(input).includes(held.typeId))
   );
   if (!candidates.length) return tell(player, "wrong_item");
@@ -105,7 +101,7 @@ function start(block, player) {
 function spill(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
   if (!data) return;
-  const recipe = RECIPE_BY_ID.get(data.recipe);
+  const recipe = recipeById(data.recipe);
   const done = recipe && nowTick() >= data.start + recipe.ticks;
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
   if (done) {
@@ -123,7 +119,7 @@ export const stationComponent = {
     if (!player) return;
     const data = getBlockData(block);
     if (!data) return start(block, player);
-    const recipe = RECIPE_BY_ID.get(data.recipe);
+    const recipe = recipeById(data.recipe);
     const left = recipe ? data.start + recipe.ticks - nowTick() : 0;
     if (left <= 0) return collect(block, player, data);
     tell(player, "working", [String(Math.ceil(left / TICKS_PER_MINUTE))]);

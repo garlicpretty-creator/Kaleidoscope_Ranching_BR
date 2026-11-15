@@ -1,22 +1,38 @@
 // Facts about a Ranching animal entity that every milestone can read.
 
-import { ANIMALS } from "../data/animals.js";
+import { animalByType } from "./content.js";
 import { SEX_PROPERTY, rid, shortId } from "./ids.js";
 
-const BY_TYPE = new Map(ANIMALS.map((animal) => [rid(animal.id), animal]));
-
-/** The animals.js row for a Ranching animal entity, or undefined. */
+/**
+ * The animal row for a Ranching animal entity, or undefined. Includes
+ * animals other add-ons registered through the public API (core/content.js).
+ */
 export function speciesOf(entity) {
-  return BY_TYPE.get(entity?.typeId);
+  return animalByType(entity?.typeId);
 }
 
 export function isRanchAnimal(entity) {
-  return BY_TYPE.has(entity?.typeId);
+  return animalByType(entity?.typeId) !== undefined;
 }
 
-/** "female" | "male" */
+/**
+ * "female" | "male". Ranching's own animals use the sex entity property;
+ * animals from other add-ons say it with the ranching_male / ranching_female
+ * families instead (企劃書 標籤契約).
+ */
 export function sexOf(entity) {
-  return entity.getProperty(SEX_PROPERTY) === "male" ? "male" : "female";
+  let value;
+  try {
+    value = entity.getProperty(SEX_PROPERTY);
+  } catch {}
+  if (value === undefined) {
+    try {
+      return entity.matches({ families: ["ranching_male"] }) ? "male" : "female";
+    } catch {
+      return "female";
+    }
+  }
+  return value === "male" ? "male" : "female";
 }
 
 export function isFemale(entity) {

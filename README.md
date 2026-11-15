@@ -9,6 +9,7 @@
 - [里程碑之間的介面](docs/INTERFACES.md)
 - [M2 照顧核心交接說明](docs/M2_交接.md)
 - [M3 屠宰與乳蛋加工說明](docs/M3_說明.md)
+- [對外擴充 API](docs/API.md)（範例附加包在 `examples/api-example/`）
 
 ## 目前進度
 
@@ -18,7 +19,8 @@
 | M1 自有動物與性別 | 完成，待實測 |
 | M2 照顧核心 | 由另一位開發者完成，已整合，待實測 |
 | M3 屠宰與乳蛋加工 | 完成，待實測；規則見 [M3 說明](docs/M3_說明.md) |
-| M4–M6 | 已分派，見外包工作包 |
+| M5 對外 API | 完成，待實測；規格見 [API 文件](docs/API.md) |
+| M4、M5 廚房料理、M6 | 已分派，見外包工作包 |
 
 ![M1 動物預覽](docs/art/m1_animals_preview.png)
 
@@ -43,7 +45,7 @@
 | --- | --- |
 | `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引 |
 | `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結 |
-| `npm test` | 以模擬的腳本 API 執行行為測試（樂牧主測試與 M2 的情境測試） |
+| `npm test` | 以模擬的腳本 API 執行行為測試（M1 到 M3、M5 API 與範例附加包） |
 | `npm run build` | 驗證、測試，然後打包成 `dist/` 下的 `.mcaddon` |
 
 生成的檔案（動物模型、貼圖、實體 JSON、語言檔）請改生成器，不要手改。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。

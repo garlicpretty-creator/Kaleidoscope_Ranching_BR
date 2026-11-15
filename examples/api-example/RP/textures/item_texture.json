@@ -1,0 +1,18 @@
+{
+  "resource_pack_name": "kr_example",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "kr_example_milk": {
+      "textures": "textures/items/potion_bottle_empty"
+    },
+    "kr_example_carcass": {
+      "textures": "textures/items/mutton_raw"
+    },
+    "kr_example_hay_cube": {
+      "textures": "textures/items/wheat"
+    },
+    "kr_example_yogurt": {
+      "textures": "textures/items/mushroom_stew"
+    }
+  }
+}
