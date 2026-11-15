@@ -1,0 +1,29 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:chicken",
+      "materials": { "default": "entity_alphatest" },
+      "textures": {
+        "hen": "textures/entity/ranching/chicken/hen",
+        "rooster": "textures/entity/ranching/chicken/rooster",
+        "chick": "textures/entity/ranching/chicken/chick"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.chicken"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.chicken.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "animate": ["walk", "look_at_target"]
+      },
+      "render_controllers": ["controller.render.kaleidoscope_ranching.chicken"],
+      "spawn_egg": {
+        "base_color": "#EEE4CE",
+        "overlay_color": "#C83A2C"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.chicken": {
+      "geometry": "Geometry.default",
+      "materials": [{ "*": "Material.default" }],
+      "arrays": {
+        "textures": {
+          "Array.skins": ["Texture.hen", "Texture.rooster", "Texture.chick"]
+        }
+      },
+      "textures": [
+        "Array.skins[q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')]"
+      ],
+      "part_visibility": [
+        { "*": true },
+        { "rooster_*": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'" },
+        { "hen_*": "q.is_baby || q.property('kaleidoscope_ranching:sex') != 'male'" }
+      ]
+    }
+  }
+}
