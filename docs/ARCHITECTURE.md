@@ -1,6 +1,6 @@
 # 森羅物語：樂牧 架構說明
 
-給接手的開發者或 AI 代理：先讀這份，再讀 `docs/INTERFACES.md`（共用介面的規則）。玩法看 `docs/PROPOSAL.zh-TW.md`；對外 API 看 `docs/API.md`。
+給接手的開發者或 AI 代理：先讀這份，再讀 `docs/INTERFACES.md`（共用介面的規則）。腳本層的寫作規則（資料表不得匯入 `@minecraft/*`、註解慣例等）在 `packs/BP/scripts/ARCHITECTURE.md`，比照廚房的格式。玩法看 `docs/PROPOSAL.zh-TW.md`；對外 API 看 `docs/API.md`。
 
 ## 一句話
 
