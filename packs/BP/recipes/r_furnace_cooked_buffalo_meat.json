@@ -1,0 +1,16 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_furnace_cooked_buffalo_meat"
+    },
+    "tags": [
+      "furnace",
+      "smoker",
+      "campfire",
+      "soul_campfire"
+    ],
+    "input": "kaleidoscope_ranching:buffalo_meat",
+    "output": "kaleidoscope_ranching:cooked_buffalo_meat"
+  }
+}

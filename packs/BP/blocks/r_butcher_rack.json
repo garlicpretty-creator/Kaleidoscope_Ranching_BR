@@ -1,0 +1,154 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:butcher_rack",
+      "menu_category": {
+        "category": "items"
+      },
+      "traits": {
+        "minecraft:placement_direction": {
+          "enabled_states": [
+            "minecraft:cardinal_direction"
+          ],
+          "y_rotation_offset": 180
+        }
+      },
+      "states": {
+        "kaleidoscope_ranching:carcass": [
+          "none",
+          "cow",
+          "sheep",
+          "goat",
+          "pig",
+          "chicken",
+          "rabbit",
+          "duck",
+          "goose",
+          "buffalo",
+          "yak"
+        ],
+        "kaleidoscope_ranching:cut": [
+          false,
+          true
+        ]
+      }
+    },
+    "components": {
+      "minecraft:geometry": {
+        "identifier": "geometry.kaleidoscope_ranching.butcher_rack",
+        "bone_visibility": {
+          "carcass_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')"
+        }
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_butcher_rack",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 3
+      },
+      "minecraft:light_dampening": 0,
+      "minecraft:map_color": "#8a6a44",
+      "kaleidoscope_ranching:butcher_rack": {}
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('minecraft:cardinal_direction') == 'north'",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('minecraft:cardinal_direction') == 'east'",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              270,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('minecraft:cardinal_direction') == 'south'",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              180,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('minecraft:cardinal_direction') == 'west'",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              90,
+              0
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

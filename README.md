@@ -8,18 +8,23 @@
 - [腳本架構](packs/BP/scripts/ARCHITECTURE.md)
 - [里程碑之間的介面](docs/INTERFACES.md)
 - [M2 照顧核心交接說明](docs/M2_交接.md)
+- [M3 屠宰與乳蛋加工說明](docs/M3_說明.md)
 
 ## 目前進度
 
-里程碑 M0（規格定稿）的內容已就緒，等待美術樣張確認：
-
-- 四張資料表：[動物](packs/BP/scripts/data/animals.js)、[飼料](packs/BP/scripts/data/feeds.js)、[加工配方](packs/BP/scripts/data/processing.js)、[屠體分切](packs/BP/scripts/data/butcher.js)，以及物品與方塊的[名稱登錄表](packs/BP/scripts/data/items.js)。
-- 專案骨架：行為包、資源包、與廚房的握手腳本、語言檔。
-- 美術樣張：公雞、母雞、小雞。
+| 里程碑 | 狀態 |
+| --- | --- |
+| M0 規格與骨架 | 完成，待合併 |
+| M1 自有動物與性別 | 完成，待實測 |
+| M2 照顧核心 | 由另一位開發者完成，已整合，待實測 |
+| M3 屠宰與乳蛋加工 | 完成，待實測；規則見 [M3 說明](docs/M3_說明.md) |
+| M4–M6 | 已分派，見外包工作包 |
 
 ![M1 動物預覽](docs/art/m1_animals_preview.png)
 
-目前的附加包只含一種可召喚的動物（`kaleidoscope_ranching:chicken`），用來在遊戲裡確認畫風；照顧、產蛋、屠體等玩法從 M1 起逐步加入。尚未在遊戲內實測。
+![M3 方塊預覽](docs/art/m3_blocks_preview.png)
+
+所有內容都只在模擬的腳本 API 上測過，尚未在遊戲內實測。
 
 ## 資料夾
 

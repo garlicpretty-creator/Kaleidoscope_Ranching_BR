@@ -1,0 +1,209 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.aging_rack",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "rack",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -8
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                6,
+                0,
+                -8
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -8,
+                0,
+                6
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                6,
+                0,
+                6
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -7,
+                1,
+                -7
+              ],
+              "size": [
+                14,
+                1,
+                14
+              ],
+              "uv": [
+                8,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -7,
+                8,
+                -7
+              ],
+              "size": [
+                14,
+                1,
+                14
+              ],
+              "uv": [
+                8,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -7,
+                15,
+                -7
+              ],
+              "size": [
+                14,
+                1,
+                14
+              ],
+              "uv": [
+                8,
+                0
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "busy",
+          "pivot": [
+            0,
+            8,
+            0
+          ],
+          "parent": "rack",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                2,
+                -3
+              ],
+              "size": [
+                5,
+                3,
+                5
+              ],
+              "uv": [
+                0,
+                18
+              ]
+            },
+            {
+              "origin": [
+                1,
+                2,
+                -2
+              ],
+              "size": [
+                5,
+                3,
+                5
+              ],
+              "uv": [
+                0,
+                18
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -3,
+                9,
+                -3
+              ],
+              "size": [
+                5,
+                3,
+                5
+              ],
+              "uv": [
+                0,
+                18
+              ],
+              "mirror": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

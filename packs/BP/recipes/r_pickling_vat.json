@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_pickling_vat"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "T T",
+      "TTT"
+    ],
+    "key": {
+      "T": {
+        "item": "minecraft:hardened_clay"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:pickling_vat",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:pickling_vat"
+      }
+    ]
+  }
+}

@@ -29,5 +29,29 @@
   },
   "kaleidoscope_ranching:manure": {
     "sound": "gravel"
+  },
+  "kaleidoscope_ranching:butcher_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:nest_box": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:incubator": {
+    "sound": "glass"
+  },
+  "kaleidoscope_ranching:butter_churn": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:cheese_press": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:aging_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:fermenting_jar": {
+    "sound": "glass"
+  },
+  "kaleidoscope_ranching:pickling_vat": {
+    "sound": "stone"
   }
 }

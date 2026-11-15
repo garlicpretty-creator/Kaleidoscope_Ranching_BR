@@ -84,6 +84,30 @@
     },
     "kr_alfalfa_stage3": {
       "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage3"
+    },
+    "kr_butcher_rack": {
+      "textures": "textures/blocks/ranching/butcher_rack"
+    },
+    "kr_nest_box": {
+      "textures": "textures/blocks/ranching/nest_box"
+    },
+    "kr_incubator": {
+      "textures": "textures/blocks/ranching/incubator"
+    },
+    "kr_butter_churn": {
+      "textures": "textures/blocks/ranching/butter_churn"
+    },
+    "kr_cheese_press": {
+      "textures": "textures/blocks/ranching/cheese_press"
+    },
+    "kr_aging_rack": {
+      "textures": "textures/blocks/ranching/aging_rack"
+    },
+    "kr_fermenting_jar": {
+      "textures": "textures/blocks/ranching/fermenting_jar"
+    },
+    "kr_pickling_vat": {
+      "textures": "textures/blocks/ranching/pickling_vat"
     }
   }
 }
