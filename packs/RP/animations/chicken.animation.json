@@ -5,10 +5,32 @@
       "loop": true,
       "bones": {
         "leg_left": {
-          "rotation": ["math.cos(q.modified_distance_moved * 38.17) * 80.0", 0, 0]
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * 80",
+            0,
+            0
+          ]
         },
         "leg_right": {
-          "rotation": ["-math.cos(q.modified_distance_moved * 38.17) * 80.0", 0, 0]
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * 80",
+            0,
+            0
+          ]
+        },
+        "wing_left": {
+          "rotation": [
+            0,
+            0,
+            "-(q.is_on_ground ? 0 : math.sin(q.life_time * 1600) * 40)"
+          ]
+        },
+        "wing_right": {
+          "rotation": [
+            0,
+            0,
+            "q.is_on_ground ? 0 : math.sin(q.life_time * 1600) * 40"
+          ]
         }
       }
     }

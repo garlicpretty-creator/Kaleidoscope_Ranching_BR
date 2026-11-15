@@ -1,0 +1,38 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.rabbit.walk": {
+      "loop": true,
+      "bones": {
+        "leg_fl": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 30) * 40",
+            0,
+            0
+          ]
+        },
+        "leg_fr": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 30) * 40",
+            0,
+            0
+          ]
+        },
+        "leg_bl": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 30) * 40",
+            0,
+            0
+          ]
+        },
+        "leg_br": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 30) * 40",
+            0,
+            0
+          ]
+        }
+      }
+    }
+  }
+}

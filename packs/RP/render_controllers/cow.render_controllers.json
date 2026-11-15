@@ -1,0 +1,36 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.cow": {
+      "geometry": "Geometry.default",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "arrays": {
+        "textures": {
+          "Array.skins": [
+            "Texture.female",
+            "Texture.male",
+            "Texture.baby"
+          ]
+        }
+      },
+      "textures": [
+        "Array.skins[q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')]"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "m_horns": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "fa_udder": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        }
+      ]
+    }
+  }
+}

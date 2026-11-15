@@ -1,0 +1,948 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:sheep",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false,
+      "properties": {
+        "kaleidoscope_ranching:sex": {
+          "type": "enum",
+          "values": [
+            "female",
+            "male"
+          ],
+          "default": "female",
+          "client_sync": true
+        }
+      }
+    },
+    "component_groups": {
+      "kaleidoscope_ranching:baby": {
+        "minecraft:is_baby": {},
+        "minecraft:scale": {
+          "value": 0.5
+        },
+        "minecraft:ageable": {
+          "duration": 1200,
+          "grow_up": {
+            "event": "kaleidoscope_ranching:grow_up",
+            "target": "self"
+          }
+        },
+        "minecraft:behavior.follow_parent": {
+          "priority": 5,
+          "speed_multiplier": 1.1
+        }
+      },
+      "kaleidoscope_ranching:adult": {
+        "minecraft:experience_reward": {
+          "on_death": "q.last_hit_by_player ? Math.Random(1, 3) : 0"
+        }
+      },
+      "kaleidoscope_ranching:sex_female": {
+        "minecraft:type_family": {
+          "family": [
+            "sheep",
+            "mob",
+            "ranching_livestock",
+            "ranching_female"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:sex_male": {
+        "minecraft:type_family": {
+          "family": [
+            "sheep",
+            "mob",
+            "ranching_livestock",
+            "ranching_male"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:wild": {
+        "minecraft:despawn": {
+          "despawn_from_distance": {}
+        }
+      },
+      "kaleidoscope_ranching:persistent": {
+        "minecraft:persistent": {}
+      },
+      "kaleidoscope_ranching:color_0": {
+        "minecraft:color": {
+          "value": 0
+        }
+      },
+      "kaleidoscope_ranching:color_1": {
+        "minecraft:color": {
+          "value": 1
+        }
+      },
+      "kaleidoscope_ranching:color_2": {
+        "minecraft:color": {
+          "value": 2
+        }
+      },
+      "kaleidoscope_ranching:color_3": {
+        "minecraft:color": {
+          "value": 3
+        }
+      },
+      "kaleidoscope_ranching:color_4": {
+        "minecraft:color": {
+          "value": 4
+        }
+      },
+      "kaleidoscope_ranching:color_5": {
+        "minecraft:color": {
+          "value": 5
+        }
+      },
+      "kaleidoscope_ranching:color_6": {
+        "minecraft:color": {
+          "value": 6
+        }
+      },
+      "kaleidoscope_ranching:color_7": {
+        "minecraft:color": {
+          "value": 7
+        }
+      },
+      "kaleidoscope_ranching:color_8": {
+        "minecraft:color": {
+          "value": 8
+        }
+      },
+      "kaleidoscope_ranching:color_9": {
+        "minecraft:color": {
+          "value": 9
+        }
+      },
+      "kaleidoscope_ranching:color_10": {
+        "minecraft:color": {
+          "value": 10
+        }
+      },
+      "kaleidoscope_ranching:color_11": {
+        "minecraft:color": {
+          "value": 11
+        }
+      },
+      "kaleidoscope_ranching:color_12": {
+        "minecraft:color": {
+          "value": 12
+        }
+      },
+      "kaleidoscope_ranching:color_13": {
+        "minecraft:color": {
+          "value": 13
+        }
+      },
+      "kaleidoscope_ranching:color_14": {
+        "minecraft:color": {
+          "value": 14
+        }
+      },
+      "kaleidoscope_ranching:color_15": {
+        "minecraft:color": {
+          "value": 15
+        }
+      },
+      "kaleidoscope_ranching:sheared": {
+        "minecraft:is_sheared": {}
+      }
+    },
+    "components": {
+      "minecraft:is_hidden_when_invisible": {},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:collision_box": {
+        "width": 0.9,
+        "height": 1.3
+      },
+      "minecraft:nameable": {},
+      "minecraft:health": {
+        "value": 8,
+        "max": 8
+      },
+      "minecraft:hurt_on_condition": {
+        "damage_conditions": [
+          {
+            "filters": {
+              "test": "in_lava",
+              "subject": "self",
+              "operator": "==",
+              "value": true
+            },
+            "cause": "lava",
+            "damage_per_tick": 4
+          }
+        ]
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/kaleidoscope_ranching/empty.json"
+      },
+      "minecraft:movement": {
+        "value": 0.25
+      },
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:jump.static": {},
+      "minecraft:can_climb": {},
+      "minecraft:leashable": {
+        "soft_distance": 4,
+        "hard_distance": 6,
+        "max_distance": 10
+      },
+      "minecraft:balloonable": {
+        "mass": 0.75
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.panic": {
+        "priority": 1,
+        "speed_multiplier": 1.25
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 6,
+        "probability": 0.02
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:physics": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:behavior.tempt": {
+        "priority": 4,
+        "speed_multiplier": 1.25,
+        "items": [
+          "minecraft:wheat",
+          "kaleidoscope_ranching:forage",
+          "kaleidoscope_ranching:mixed_feed",
+          "kaleidoscope_ranching:premium_feed"
+        ]
+      },
+      "minecraft:behavior.eat_block": {
+        "priority": 6,
+        "success_chance": "q.is_baby ? 0.02 : 0.001",
+        "time_until_eat": 1.8,
+        "eat_and_replace_block_pairs": [
+          {
+            "eat_block": "minecraft:grass_block",
+            "replace_block": "minecraft:dirt"
+          },
+          {
+            "eat_block": "minecraft:short_grass",
+            "replace_block": "minecraft:air"
+          }
+        ],
+        "on_eat": {
+          "event": "kaleidoscope_ranching:regrow_wool",
+          "target": "self"
+        }
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "sequence": [
+          {
+            "randomize": [
+              {
+                "weight": 1,
+                "set_property": {
+                  "kaleidoscope_ranching:sex": "female"
+                },
+                "add": {
+                  "component_groups": [
+                    "kaleidoscope_ranching:sex_female"
+                  ]
+                }
+              },
+              {
+                "weight": 1,
+                "set_property": {
+                  "kaleidoscope_ranching:sex": "male"
+                },
+                "add": {
+                  "component_groups": [
+                    "kaleidoscope_ranching:sex_male"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:adult",
+                "kaleidoscope_ranching:wild",
+                "kaleidoscope_ranching:color_0"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_female": {
+        "sequence": [
+          {
+            "set_property": {
+              "kaleidoscope_ranching:sex": "female"
+            }
+          },
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:sex_female",
+                "kaleidoscope_ranching:sex_male"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:sex_female"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_male": {
+        "sequence": [
+          {
+            "set_property": {
+              "kaleidoscope_ranching:sex": "male"
+            }
+          },
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:sex_female",
+                "kaleidoscope_ranching:sex_male"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:sex_male"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:become_baby": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:adult"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:baby"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:grow_up": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:baby"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:adult"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:make_persistent": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:wild"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:persistent"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_0": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_1": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_1"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_2": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_2"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_3": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_3"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_4": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_4"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_5": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_5"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_6": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_6"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_7": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_7"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_8": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_8"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_9": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_9"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_10": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_10"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_11": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_11"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_12": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_12"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_13": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_13"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_14": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_14"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:set_color_15": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_0",
+                "kaleidoscope_ranching:color_1",
+                "kaleidoscope_ranching:color_2",
+                "kaleidoscope_ranching:color_3",
+                "kaleidoscope_ranching:color_4",
+                "kaleidoscope_ranching:color_5",
+                "kaleidoscope_ranching:color_6",
+                "kaleidoscope_ranching:color_7",
+                "kaleidoscope_ranching:color_8",
+                "kaleidoscope_ranching:color_9",
+                "kaleidoscope_ranching:color_10",
+                "kaleidoscope_ranching:color_11",
+                "kaleidoscope_ranching:color_12",
+                "kaleidoscope_ranching:color_13",
+                "kaleidoscope_ranching:color_14",
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:color_15"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:shear": {
+        "add": {
+          "component_groups": [
+            "kaleidoscope_ranching:sheared"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:regrow_wool": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:sheared"
+          ]
+        }
+      }
+    }
+  }
+}

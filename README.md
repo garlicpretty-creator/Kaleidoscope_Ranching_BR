@@ -15,7 +15,7 @@
 - 專案骨架：行為包、資源包、與廚房的握手腳本、語言檔。
 - 美術樣張：公雞、母雞、小雞。
 
-![雞的美術樣張](docs/art/chicken_preview.png)
+![M1 動物預覽](docs/art/m1_animals_preview.png)
 
 目前的附加包只含一種可召喚的動物（`kaleidoscope_ranching:chicken`），用來在遊戲裡確認畫風；照顧、產蛋、屠體等玩法從 M1 起逐步加入。尚未在遊戲內實測。
 
@@ -34,9 +34,11 @@
 
 | 指令 | 作用 |
 | --- | --- |
-| `node tools/validate.mjs` | 檢查所有 JSON 語法，並交叉比對資料表 |
-| `node tools/gen_lang.mjs` | 由名稱登錄表生成三種語言檔 |
-| `python3 tools/gen_chicken.py` | 重新生成雞的模型、貼圖與預覽圖 |
-| `bash tools/build.sh` | 打包成 `dist/` 下的 `.mcaddon` |
+| `npm run generate` | 重新生成動物美術、實體檔與語言檔 |
+| `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結 |
+| `npm test` | 以模擬的腳本 API 執行行為測試 |
+| `npm run build` | 驗證、測試，然後打包成 `dist/` 下的 `.mcaddon` |
+
+生成的檔案（動物模型、貼圖、實體 JSON、語言檔）請改生成器，不要手改。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。
 
 簡體中文語言檔的物品與方塊名稱暫時沿用繁體，待登錄表補上簡體欄位。

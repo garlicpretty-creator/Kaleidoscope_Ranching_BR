@@ -1,0 +1,99 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.sheep": {
+      "geometry": "Geometry.default",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "arrays": {
+        "textures": {
+          "Array.skins": [
+            "Texture.female_white",
+            "Texture.female_orange",
+            "Texture.female_magenta",
+            "Texture.female_light_blue",
+            "Texture.female_yellow",
+            "Texture.female_lime",
+            "Texture.female_pink",
+            "Texture.female_gray",
+            "Texture.female_light_gray",
+            "Texture.female_cyan",
+            "Texture.female_purple",
+            "Texture.female_blue",
+            "Texture.female_brown",
+            "Texture.female_green",
+            "Texture.female_red",
+            "Texture.female_black",
+            "Texture.male_white",
+            "Texture.male_orange",
+            "Texture.male_magenta",
+            "Texture.male_light_blue",
+            "Texture.male_yellow",
+            "Texture.male_lime",
+            "Texture.male_pink",
+            "Texture.male_gray",
+            "Texture.male_light_gray",
+            "Texture.male_cyan",
+            "Texture.male_purple",
+            "Texture.male_blue",
+            "Texture.male_brown",
+            "Texture.male_green",
+            "Texture.male_red",
+            "Texture.male_black",
+            "Texture.baby_white",
+            "Texture.baby_orange",
+            "Texture.baby_magenta",
+            "Texture.baby_light_blue",
+            "Texture.baby_yellow",
+            "Texture.baby_lime",
+            "Texture.baby_pink",
+            "Texture.baby_gray",
+            "Texture.baby_light_gray",
+            "Texture.baby_cyan",
+            "Texture.baby_purple",
+            "Texture.baby_blue",
+            "Texture.baby_brown",
+            "Texture.baby_green",
+            "Texture.baby_red",
+            "Texture.baby_black"
+          ]
+        }
+      },
+      "textures": [
+        "Array.skins[(q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')) * 16 + math.clamp(q.color, 0, 15)]"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "wool_body": "!q.is_sheared"
+        },
+        {
+          "wool_tail": "!q.is_sheared"
+        },
+        {
+          "wool_head": "!q.is_sheared"
+        },
+        {
+          "m_horns": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "wool_leg_fl": "!q.is_sheared"
+        },
+        {
+          "wool_leg_fr": "!q.is_sheared"
+        },
+        {
+          "wool_leg_bl": "!q.is_sheared"
+        },
+        {
+          "wool_leg_br": "!q.is_sheared"
+        }
+      ]
+    }
+  }
+}

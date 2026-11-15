@@ -18,7 +18,8 @@ function tiered(id, zh, en, category) {
   return QUALITY_TIERS.map((tier) => [id + tier.suffix, tier.zh + zh, tier.en + en, category]);
 }
 
-const ANIMAL_NAMES = [
+/** [id, zh_TW, en_US] for every animal; also used for entity names. */
+export const ANIMAL_NAMES = [
   ["cow", "牛", "Cow"],
   ["sheep", "羊", "Sheep"],
   ["goat", "山羊", "Goat"],

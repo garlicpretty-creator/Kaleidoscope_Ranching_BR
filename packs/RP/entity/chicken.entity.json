@@ -3,11 +3,13 @@
   "minecraft:client_entity": {
     "description": {
       "identifier": "kaleidoscope_ranching:chicken",
-      "materials": { "default": "entity_alphatest" },
+      "materials": {
+        "default": "entity_alphatest"
+      },
       "textures": {
-        "hen": "textures/entity/ranching/chicken/hen",
-        "rooster": "textures/entity/ranching/chicken/rooster",
-        "chick": "textures/entity/ranching/chicken/chick"
+        "female": "textures/entity/ranching/chicken/female",
+        "male": "textures/entity/ranching/chicken/male",
+        "baby": "textures/entity/ranching/chicken/baby"
       },
       "geometry": {
         "default": "geometry.kaleidoscope_ranching.chicken"
@@ -17,9 +19,15 @@
         "look_at_target": "animation.common.look_at_target"
       },
       "scripts": {
-        "animate": ["walk", "look_at_target"]
+        "scale": "(!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
       },
-      "render_controllers": ["controller.render.kaleidoscope_ranching.chicken"],
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.chicken"
+      ],
       "spawn_egg": {
         "base_color": "#EEE4CE",
         "overlay_color": "#C83A2C"
