@@ -1,0 +1,57 @@
+{
+  "resource_pack_name": "kaleidoscope_ranching",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "kr_alfalfa_seeds": {
+      "textures": "textures/items/kaleidoscope_ranching/alfalfa_seeds"
+    },
+    "kr_alfalfa": {
+      "textures": "textures/items/kaleidoscope_ranching/alfalfa"
+    },
+    "kr_forage": {
+      "textures": "textures/items/kaleidoscope_ranching/forage"
+    },
+    "kr_mixed_feed": {
+      "textures": "textures/items/kaleidoscope_ranching/mixed_feed"
+    },
+    "kr_concentrate_feed": {
+      "textures": "textures/items/kaleidoscope_ranching/concentrate_feed"
+    },
+    "kr_manure_item": {
+      "textures": "textures/items/kaleidoscope_ranching/manure_item"
+    },
+    "kr_fertilizer": {
+      "textures": "textures/items/kaleidoscope_ranching/fertilizer"
+    },
+    "kr_pig_bristle": {
+      "textures": "textures/items/kaleidoscope_ranching/pig_bristle"
+    },
+    "kr_brush": {
+      "textures": "textures/items/kaleidoscope_ranching/brush"
+    },
+    "kr_ranch_notebook": {
+      "textures": "textures/items/kaleidoscope_ranching/ranch_notebook"
+    },
+    "kr_ear_tag": {
+      "textures": "textures/items/kaleidoscope_ranching/ear_tag"
+    },
+    "kr_manure_fork": {
+      "textures": "textures/items/kaleidoscope_ranching/manure_fork"
+    },
+    "kr_feed_bag": {
+      "textures": "textures/items/kaleidoscope_ranching/feed_bag"
+    },
+    "kr_alfalfa_cake": {
+      "textures": "textures/items/kaleidoscope_ranching/alfalfa_cake"
+    },
+    "kr_grain_cake": {
+      "textures": "textures/items/kaleidoscope_ranching/grain_cake"
+    },
+    "kr_beet_sugar_cube": {
+      "textures": "textures/items/kaleidoscope_ranching/beet_sugar_cube"
+    },
+    "kr_carrot_chips": {
+      "textures": "textures/items/kaleidoscope_ranching/carrot_chips"
+    }
+  }
+}

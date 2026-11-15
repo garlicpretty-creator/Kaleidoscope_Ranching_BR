@@ -6,6 +6,8 @@ import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
 import { startConversion } from "./systems/conversion.js";
 import { startVanillaParity } from "./systems/vanillaParity.js";
+import "./care_init.js";
+import { connectCareCore } from "./systems/careBridge.js";
 
 connectToCookery();
 
@@ -13,3 +15,6 @@ connectToCookery();
 startConversion();
 startBreeding(ANIMALS);
 startVanillaParity();
+
+// M2: care core (registers its own components and events on import)
+connectCareCore();

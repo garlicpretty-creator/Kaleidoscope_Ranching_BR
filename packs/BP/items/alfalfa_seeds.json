@@ -1,0 +1,20 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:alfalfa_seeds",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_alfalfa_seeds",
+      "minecraft:block_placer": {
+        "block": "kaleidoscope_ranching:alfalfa_crop",
+        "use_on": [
+          "minecraft:farmland"
+        ]
+      }
+    }
+  }
+}

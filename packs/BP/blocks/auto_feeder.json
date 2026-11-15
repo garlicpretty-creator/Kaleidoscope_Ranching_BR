@@ -1,0 +1,37 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:auto_feeder",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "kr_auto_feeder_side"
+        },
+        "up": {
+          "texture": "kr_auto_feeder_top"
+        },
+        "down": {
+          "texture": "kr_auto_feeder_top"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.0
+      },
+      "minecraft:map_color": "#5b5b5b",
+      "minecraft:tick": {
+        "interval_range": [
+          40,
+          40
+        ],
+        "looping": true
+      },
+      "kaleidoscope_ranching:auto_feeder": {}
+    }
+  }
+}

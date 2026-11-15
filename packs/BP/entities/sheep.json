@@ -236,7 +236,7 @@
           "minecraft:wheat",
           "kaleidoscope_ranching:forage",
           "kaleidoscope_ranching:mixed_feed",
-          "kaleidoscope_ranching:premium_feed"
+          "kaleidoscope_ranching:concentrate_feed"
         ]
       },
       "minecraft:behavior.eat_block": {
@@ -384,6 +384,24 @@
         ]
       },
       "kaleidoscope_ranching:make_persistent": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:wild"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:persistent"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:add_ear_tag": {
         "sequence": [
           {
             "remove": {

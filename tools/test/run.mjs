@@ -41,6 +41,16 @@ function ranch(type, x, sex, z = 0) {
 }
 
 await import("../../packs/BP/scripts/main.js");
+const care = await import("../../packs/BP/scripts/care/state.js");
+const husbandry = await import("../../packs/BP/scripts/core/husbandry.js");
+
+/** Meets all four of M2's daily needs for today, with the given feed tier. */
+function careFor(entity, feedTier = 1) {
+  care.mark(entity, "fed", { fed_tier: feedTier });
+  care.mark(entity, "water");
+  care.mark(entity, "groom");
+  care.mark(entity, "clean");
+}
 world.afterEvents.worldLoad.fire({});
 __advance(2);
 
@@ -108,6 +118,8 @@ test("a male and a female in love conceive; the female gives birth after three d
   const player = __newPlayer(at(0));
   const cow = ranch("cow", 1, "female");
   const bull = ranch("cow", 2, "male");
+  careFor(cow);
+  careFor(bull);
   hold(player, "minecraft:wheat", 2);
   assert(__interact(player, cow), "feeding is handled");
   assert(__interact(player, bull), "feeding is handled");
@@ -131,6 +143,8 @@ test("two animals of the same sex never conceive", () => {
   const player = __newPlayer(at(0));
   const a = ranch("sheep", 1, "female");
   const b = ranch("sheep", 2, "female");
+  careFor(a);
+  careFor(b);
   hold(player, "minecraft:wheat", 2);
   __interact(player, a);
   __interact(player, b);
@@ -144,6 +158,8 @@ test("a pregnant female cannot be put in love again", () => {
   const player = __newPlayer(at(0));
   const sow = ranch("pig", 1, "female");
   const boar = ranch("pig", 2, "male");
+  careFor(sow);
+  careFor(boar);
   hold(player, "minecraft:carrot", 3);
   __interact(player, sow);
   __interact(player, boar);
@@ -158,6 +174,8 @@ test("a lamb inherits its mother's wool colour", () => {
   const ewe = ranch("sheep", 1, "female");
   ewe.triggerEvent("kaleidoscope_ranching:set_color_11");
   const ram = ranch("sheep", 2, "male");
+  careFor(ewe);
+  careFor(ram);
   hold(player, "minecraft:wheat", 2);
   __interact(player, ewe);
   __interact(player, ram);
@@ -173,6 +191,64 @@ test("chickens do not breed by feeding", () => {
   const hen = ranch("chicken", 1, "female");
   hold(player, "minecraft:wheat_seeds", 1);
   assert(!__interact(player, hen), "seeds are not intercepted");
+});
+
+// --- M2 bridge ------------------------------------------------------------
+
+test("animals that were not cared for today do not breed", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  const bull = ranch("cow", 2, "male");
+  careFor(bull);
+  hold(player, "minecraft:wheat", 2);
+  __interact(player, cow);
+  equal(player.inventory.count("minecraft:wheat"), 2, "wheat kept");
+  assert(player.actionBar.some((m) => m.translate.endsWith("not_cared")), "player told why");
+});
+
+test("quality follows M2's hearts and today's feed tier", () => {
+  clearWorld();
+  const cow = ranch("cow", 1, "female");
+  const day = Math.floor(world.getAbsoluteTime() / 24000);
+  care.setAffection(cow, 100);
+  careFor(cow, 3);
+  equal(husbandry.production(cow, day).quality, "superb", "5 hearts + concentrate");
+  care.setAffection(cow, 60);
+  equal(husbandry.production(cow, day).quality, "fine", "3 hearts");
+  care.setAffection(cow, 20);
+  equal(husbandry.production(cow, day).quality, "plain", "1 heart");
+  equal(husbandry.getAffection(cow), 1, "hearts, not points");
+});
+
+test("a newborn starts with half its parents' average hearts", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  const bull = ranch("cow", 2, "male");
+  care.setAffection(cow, 100);
+  care.setAffection(bull, 60);
+  careFor(cow);
+  careFor(bull);
+  hold(player, "minecraft:wheat", 2);
+  __interact(player, cow);
+  __interact(player, bull);
+  equal(cow.getDynamicProperty("kr:pregnant_until_day") > 0, true, "M2's notebook sees the due day");
+  __skipTime(24000 * 3);
+  __advance(700);
+  const calf = overworld.getEntities({ type: "kaleidoscope_ranching:cow" }).find(isBaby);
+  equal(care.getHearts(calf), 2, "floor(((5 + 3) / 2) * 0.5) hearts");
+  equal(cow.getDynamicProperty("kr:pregnant_until_day"), undefined, "due day cleared");
+});
+
+test("M2's ear tag makes an animal persistent", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const pig = ranch("pig", 1);
+  assert(pig.hasComponent("minecraft:despawn"), "wild pigs can despawn");
+  hold(player, "kaleidoscope_ranching:ear_tag", 1);
+  assert(__interact(player, pig), "ear tag handled by M2");
+  assert(pig.hasComponent("minecraft:persistent") && !pig.hasComponent("minecraft:despawn"), "tagged pig stays");
 });
 
 // --- M1: vanilla parity ---------------------------------------------------

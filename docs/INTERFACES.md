@@ -7,14 +7,23 @@ M1、M3 與 M2 由不同的人開發。這份文件說明誰擁有什麼，以�
 | 里程碑 | 負責 | 擁有的程式 |
 | --- | --- | --- |
 | M1 自有動物與性別 | Claude | `scripts/systems/conversion.js`、`scripts/systems/breeding.js`、動物實體與美術 |
-| M2 照顧核心 | 另一位開發者 | 好感度、四項每日需求、每日結算、飼槽、水槽、餵食器、飲水器、鍘草機、飼料攪拌桶、苜蓿、毛刷、記事本、耳標、糞叉、堆肥槽、鹽磚、零食、飼料袋 |
+| M2 照顧核心 | 另一位開發者（Claude 整合） | `scripts/care_init.js`、`care/`、`custom_components/`、`events/`、`ui/`、`utils/`、`data/care_config.js`、`data/feeds.js`、`data/species.js`、`data/m1_contract.js`、`tools/m2/gen_content.py`；交接說明在 `docs/M2_交接.md` |
 | M3 屠宰與乳蛋加工 | Claude | `scripts/systems/carcass.js`、`butcherRack.js`、`milking.js`、`nursing.js`、`nest.js`、`stations.js`，以及對應方塊與物品 |
 
 `scripts/core/` 是共用層，三方都可以讀；修改時請在合併請求裡標明，因為會影響其他人。
 
 ## 1. 照顧資料：`core/husbandry.js`
 
-M1 和 M3 需要知道「這隻動物今天照顧得好不好」，但這是 M2 的範圍。所以 M1、M3 只透過 `core/husbandry.js` 詢問，由 M2 用一行程式掛上自己的實作：
+M1 和 M3 需要知道「這隻動物今天照顧得好不好」，但這是 M2 的範圍。所以 M1、M3 只透過 `core/husbandry.js` 詢問。M2 的實作由 `systems/careBridge.js` 掛上，它把 M2 的 `care/state.js` 轉成下面的契約：
+
+| 契約 | M2 的實作 |
+| --- | --- |
+| `getAffection` | `getHearts`（M2 以點數儲存，20 點 1 心） |
+| `canBreed` | `needsMetToday`：四項需求今天都滿足 |
+| `production` | 一律有產出；品質依 `data/animals.js` 的 `QUALITY_RULES`，用心數與當天飼料等級（今天用 `feedTierToday`，過去的日子用 `lastDayTier`） |
+| `onBorn` | `setAffection(baby, 繼承心數 × 20)` |
+
+契約本身的寫法（給日後其他實作參考）：
 
 ```js
 import { registerHusbandryProvider } from "./core/husbandry.js";
@@ -46,7 +55,7 @@ registerHusbandryProvider({
 
 ## 2. 玩家對動物互動：`core/interact.js`
 
-多個系統都會對「玩家拿某樣東西點動物」作反應。請不要直接訂閱 `world.beforeEvents.playerInteractWithEntity`，改用：
+多個系統都會對「玩家拿某樣東西點動物」作反應。新程式請不要直接訂閱 `world.beforeEvents.playerInteractWithEntity`，改用路由（M2 目前自己訂閱，處理的物品與 M1、M3 不重疊：蹲下空手、毛刷、記事本、耳標、四種零食）：
 
 ```js
 import { registerEntityInteraction } from "./core/interact.js";
@@ -69,7 +78,7 @@ registerEntityInteraction({
 | `m1:dye_sheep` | 60 | 手持染料點羊 |
 | `m1:shear_sheep` | 60 | 手持剪刀點未剪毛的成年羊 |
 
-空手撫摸、毛刷、零食都留給 M2。
+蹲下空手撫摸、毛刷、記事本、耳標、零食由 M2 的 `events/care_interact.js` 處理。
 
 ## 3. 動物資訊：`core/animal.js`
 
@@ -79,7 +88,8 @@ registerEntityInteraction({
 
 | 事件 | 作用 |
 | --- | --- |
-| `kaleidoscope_ranching:make_persistent` | 讓動物不再自然消失。M2 的耳標請用這個 |
+| `kaleidoscope_ranching:make_persistent` | 讓動物不再自然消失 |
+| `kaleidoscope_ranching:add_ear_tag` | 同上，M2 的耳標使用 |
 | `kaleidoscope_ranching:become_baby` / `grow_up` | 變成幼體 / 長大 |
 | `kaleidoscope_ranching:set_female` / `set_male` | 指定性別 |
 
@@ -94,10 +104,14 @@ registerEntityInteraction({
 
 自訂方塊沒有方塊實體。需要存比方塊狀態更多的資料時，用 `getBlockData` / `setBlockData`，方塊被破壞時務必 `takeBlockData` 或 `clearBlockData`。
 
-## 6. 加工站引擎：`systems/stations.js`（M3 提供）
+## 6. 懷孕狀態
 
-M3 的五個加工方塊共用一個加工站引擎，配方來自 `data/processing.js`。M2 的鍘草機、飼料攪拌桶、堆肥槽的配方已經寫在同一張表裡；M2 可以直接重用：方塊 JSON 加上 `"kaleidoscope_ranching:station": {}` 自訂元件即可，不需要另寫程式。
+M1 在懷孕的母畜上寫兩個動態屬性：`kaleidoscope_ranching:pregnant_due`（預產的絕對刻數，M1 自己用）與 `kr:pregnant_until_day`（預產的遊戲日，給 M2 的記事本顯示）。
 
-## 7. 資料表
+## 7. 共用檔案
 
-`scripts/data/` 是所有識別碼的唯一來源。新增物品或方塊時先登錄到 `items.js`、`blocks.js`，然後執行 `node tools/validate.mjs`；驗證不過的合併請求不要合併。物品 JSON、圖示與語言檔由 `tools/` 下的生成器產出，請不要手改生成的檔案。
+語言檔、`item_texture.json`、`terrain_texture.json`、`blocks.json` 由 `node tools/gen_shared.mjs` 組成：登錄表裡非 M2 的物品與方塊名稱，加上 `tools/fragments/<里程碑>/` 下各里程碑生成器寫的片段。同一個鍵被兩處定義時會報錯。各里程碑的生成器只能寫自己的片段，不要直接寫最終檔。
+
+## 8. 資料表
+
+`scripts/data/` 是所有識別碼的唯一來源。新增物品或方塊時先登錄到 `items.js`、`blocks.js`，並填上 `owner`（由哪個里程碑的生成器產出檔案；省略代表樂牧主生成器），然後執行 `npm run validate`。驗證會比對登錄表、`packs/BP/items`、`packs/BP/blocks` 與貼圖索引；驗證不過的合併請求不要合併。生成的檔案請不要手改。

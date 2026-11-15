@@ -217,6 +217,10 @@ function buildEntity(animal, t) {
     [g("make_persistent")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
     },
+    // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).
+    [g("add_ear_tag")]: {
+      sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
+    },
   };
   if (t.wool) {
     const all = range(16).map((i) => g(`color_${i}`));

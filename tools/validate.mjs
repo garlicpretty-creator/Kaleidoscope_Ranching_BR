@@ -39,7 +39,8 @@ for (const path of jsonFiles) {
 const { ITEMS, tierIds } = await load("items.js");
 const { BLOCKS } = await load("blocks.js");
 const { ANIMALS, NEEDS, QUALITY_RULES, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load("animals.js");
-const { FEEDS, FEED_GROUPS } = await load("feeds.js");
+const { FEEDS, KIND_TIER } = await load("feeds.js");
+const { SPECIES } = await load("species.js");
 const { PROCESSING_RECIPES, VANILLA_COOKING, WOK_MEATS } = await load("processing.js");
 const { BUTCHER_TABLE } = await load("butcher.js");
 
@@ -77,7 +78,9 @@ for (const animal of ANIMALS) {
   checkItem(animal.carcass, `${where} carcass`);
   checkItem(animal.treat, `${where} treat`);
   if (!BUTCHER_TABLE[animal.carcass]) fail(`${where}: no butcher.js entry for "${animal.carcass}"`);
-  if (!FEED_GROUPS.includes(animal.feedGroup)) fail(`${where}: unknown feed group "${animal.feedGroup}"`);
+  const care = SPECIES[`kaleidoscope_ranching:${animal.id}`];
+  if (!care) fail(`${where}: no row in M2's species.js`);
+  else if (care.treat !== `kaleidoscope_ranching:${animal.treat}`) fail(`${where}: treat differs from species.js (${care.treat})`);
   if (!["gestation", "egg"].includes(animal.reproduction)) fail(`${where}: unknown reproduction "${animal.reproduction}"`);
   if (!(animal.days > 0)) fail(`${where}: days must be positive`);
   if (!animal.maleTrait) fail(`${where}: missing maleTrait`);
@@ -107,14 +110,16 @@ for (const carcass of Object.keys(BUTCHER_TABLE)) {
   }
 }
 
-for (const feed of FEEDS) {
-  checkItem(feed.item, "feeds.js");
-  for (const group of feed.groups) if (!FEED_GROUPS.includes(group)) fail(`feeds.js ${feed.item}: unknown group "${group}"`);
+// M2 tables use full identifiers; strip the namespace before checking.
+const local = (id) => id.replace(/^kaleidoscope_ranching:/, "");
+for (const [item, feed] of Object.entries(FEEDS)) {
+  checkItem(local(item), "feeds.js");
+  if (!(feed.kind in KIND_TIER)) fail(`feeds.js ${item}: unknown kind ${feed.kind}`);
 }
-for (const group of FEED_GROUPS) {
-  for (const tier of [1, 2, 3]) {
-    if (!FEEDS.some((feed) => feed.tier === tier && feed.groups.includes(group))) fail(`feeds.js: group "${group}" has no tier ${tier} feed`);
-  }
+for (const [type, row] of Object.entries(SPECIES)) {
+  if (!ANIMALS.some((animal) => `kaleidoscope_ranching:${animal.id}` === type)) fail(`species.js: ${type} is not in animals.js`);
+  checkItem(local(row.treat), `species.js ${type} treat`);
+  for (const [item] of row.brushDrops ?? []) checkItem(local(item), `species.js ${type} brushDrops`);
 }
 
 for (const recipe of PROCESSING_RECIPES) {
@@ -147,7 +152,8 @@ for (const animal of ANIMALS) {
   if (product) (product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item])).forEach(note);
 }
 Object.values(BUTCHER_TABLE).forEach((entry) => entry.cuts.forEach((cut) => note(cut.item)));
-FEEDS.forEach((feed) => note(feed.item));
+Object.keys(FEEDS).forEach((item) => note(local(item)));
+Object.values(SPECIES).forEach((row) => [row.treat, ...(row.brushDrops ?? []).map(([item]) => item)].forEach((id) => note(local(id))));
 PROCESSING_RECIPES.forEach((recipe) => {
   recipe.inputs.forEach((input) => (input.anyOf ?? [input.item]).forEach(note));
   recipe.outputs.forEach((output) => note(output.item));
@@ -157,12 +163,11 @@ WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
 
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
-const CRAFTED_OR_INTERACTIVE = new Set([
-  "cheese_slice", "alfalfa_seeds",
-  "brush", "cowbell", "ranch_notebook", "ear_tag", "nursing_bottle", "feed_bag", "pitchfork",
-]);
-for (const id of itemIds) {
-  if (!referenced.has(id) && !CRAFTED_OR_INTERACTIVE.has(id)) fail(`items.js: "${id}" is declared but no table produces or uses it`);
+// M2 items are produced and used by M2's own generator and scripts.
+const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle"]);
+for (const item of ITEMS) {
+  if (item.owner === "m2") continue;
+  if (!referenced.has(item.id) && !CRAFTED_OR_INTERACTIVE.has(item.id)) fail(`items.js: "${item.id}" is declared but no table produces or uses it`);
 }
 
 // --- 3. Resource pack wiring ---------------------------------------------
@@ -224,6 +229,46 @@ for (const path of walk(join(bp, "entities")).filter((p) => p.endsWith(".json"))
       }
     }
   }
+}
+
+// --- 4. Registries against generated item and block files ----------------
+
+const fileIds = (dir, key) =>
+  exists(dir)
+    ? walk(dir).filter((p) => p.endsWith(".json")).map((p) => ({ path: p, data: readJson(p)[key] }))
+    : [];
+const itemFiles = fileIds(join(bp, "items"), "minecraft:item");
+const blockFiles = fileIds(join(bp, "blocks"), "minecraft:block");
+const itemAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
+const terrainAtlas = exists(join(rp, "textures/terrain_texture.json")) ? readJson(join(rp, "textures/terrain_texture.json")).texture_data : {};
+
+const fileItemIds = new Set();
+for (const { path, data } of itemFiles) {
+  const id = local(data.description.identifier);
+  fileItemIds.add(id);
+  if (!itemIds.has(id)) fail(`${relative(root, path)}: item "${id}" is not in items.js`);
+  const icon = data.components?.["minecraft:icon"];
+  const iconName = typeof icon === "string" ? icon : icon?.textures?.default ?? icon?.texture;
+  if (!itemAtlas[iconName]) fail(`${relative(root, path)}: icon "${iconName}" missing from item_texture.json`);
+}
+for (const item of ITEMS) {
+  if (item.owner === "m2" && !fileItemIds.has(item.id)) fail(`items.js: M2 item "${item.id}" has no file in packs/BP/items`);
+}
+for (const { path, data } of blockFiles) {
+  const id = local(data.description.identifier);
+  if (!blockIds.has(id)) fail(`${relative(root, path)}: block "${id}" is not in blocks.js`);
+  const instances = [data.components?.["minecraft:material_instances"], ...(data.permutations ?? []).map((p) => p.components?.["minecraft:material_instances"])];
+  for (const set of instances.filter(Boolean)) {
+    for (const instance of Object.values(set)) {
+      if (typeof instance === "object" && instance.texture && !terrainAtlas[instance.texture]) {
+        fail(`${relative(root, path)}: texture "${instance.texture}" missing from terrain_texture.json`);
+      }
+    }
+  }
+}
+for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(terrainAtlas)]) {
+  const file = typeof entry.textures === "string" ? entry.textures : entry.textures?.[0];
+  if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
 }
 
 // --- Report ---------------------------------------------------------------

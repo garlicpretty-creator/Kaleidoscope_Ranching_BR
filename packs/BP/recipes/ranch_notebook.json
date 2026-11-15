@@ -1,0 +1,25 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:ranch_notebook"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:book",
+        "count": 1
+      },
+      {
+        "item": "minecraft:wheat",
+        "count": 1
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:ranch_notebook",
+      "count": 1
+    }
+  }
+}

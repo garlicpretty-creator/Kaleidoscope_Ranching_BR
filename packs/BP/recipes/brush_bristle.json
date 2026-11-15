@@ -1,0 +1,27 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:brush_bristle"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "B",
+      "S"
+    ],
+    "key": {
+      "B": {
+        "item": "kaleidoscope_ranching:pig_bristle"
+      },
+      "S": {
+        "item": "minecraft:stick"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:brush",
+      "count": 1
+    }
+  }
+}
