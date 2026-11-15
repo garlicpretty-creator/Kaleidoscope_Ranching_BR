@@ -1,6 +1,6 @@
 // Player ↔ animal care actions: 撫摸 (sneak + empty hand), 毛刷, 動物零食,
-// 牧場記事本, 耳標. Handles both the entity-interact event and, as a fallback
-// for entities without an interact component, item use + view raycast.
+// 牧場記事本, 耳標. Clicks arrive through the shared interaction router; item
+// use + view raycast is the fallback for clicks the router never sees.
 
 import { world, system } from "@minecraft/server";
 import { CARE } from "../data/care_config.js";
@@ -11,6 +11,7 @@ import { consumeMainhand, damageMainhand, dropAt, actionbar } from "../utils/wor
 import { showAnimal, showRoster } from "../ui/notebook.js";
 import { nextTagNumber, updateRoster, removeFromRoster } from "../ui/roster.js";
 import { T } from "../ui/text.js";
+import { registerEntityInteraction } from "../core/interact.js";
 
 const BRUSH = "kaleidoscope_ranching:brush";
 const NOTEBOOK = "kaleidoscope_ranching:ranch_notebook";
@@ -86,13 +87,20 @@ function handledThisTick(player) {
 }
 
 export function registerCareInteractions() {
-  world.beforeEvents.playerInteractWithEntity.subscribe((ev) => {
-    const { player, target, itemStack } = ev;
-    if (!SPECIES[target.typeId]) return;
-    const id = itemStack?.typeId;
-    if (id ? !TOOL_IDS.has(id) : !player.isSneaking) return;
-    ev.cancel = true;
-    system.run(() => act(player, target, id));
+  // ## Through the shared router (core/interact.js) so one click never
+  // ## triggers both an M2 action and M1 breeding or M3 milking. The router
+  // ## runs `handle` one tick later; marking the player in `match` keeps the
+  // ## item-use fallback below from acting on the same click.
+  registerEntityInteraction({
+    id: "m2:care",
+    priority: 100,
+    match: ({ player, entity, item }) => {
+      if (!SPECIES[entity.typeId]) return false;
+      const ok = item ? TOOL_IDS.has(item.typeId) : player.isSneaking;
+      if (ok) lastHandled.set(player.id, system.currentTick);
+      return ok;
+    },
+    handle: ({ player, entity, item }) => act(player, entity, item?.typeId),
   });
 
   // Fallback / in-air use.

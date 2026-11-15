@@ -1,36 +1,27 @@
 // Small helpers with no lifecycle responsibility.
 
-import { world, system, GameMode, EquipmentSlot, ItemStack, BlockVolume } from "@minecraft/server";
+import { system, GameMode, EquipmentSlot, ItemStack, BlockVolume } from "@minecraft/server";
 import { CARE, TEST_WITH_VANILLA } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { FAMILY_LIVESTOCK } from "../data/m1_contract.js";
+import { getBlockData, setBlockData, clearBlockData } from "../core/blockStore.js";
 
-/** Current game day (0-based). */
-export function today() {
-  try {
-    return world.getDay();
-  } catch {
-    return Math.floor(world.getAbsoluteTime() / 24000);
-  }
-}
-
-export function absTime() {
-  return world.getAbsoluteTime();
-}
+/** Current game day and absolute tick, from the shared clock (core/time.js). */
+export { today, nowTick as absTime } from "../core/time.js";
 
 // ---- per-block storage (timestamps the 企劃書 calls 放入時記錄時間) ----
-function blockKey(block, slot) {
-  const { x, y, z } = block.location;
-  return `kr:b:${block.dimension.id}:${x},${y},${z}:${slot}`;
-}
+// Slots live in one object per block in core/blockStore.js.
 export function blockGet(block, slot) {
-  return world.getDynamicProperty(blockKey(block, slot));
+  return getBlockData(block, {})[slot];
 }
 export function blockSet(block, slot, value) {
-  world.setDynamicProperty(blockKey(block, slot), value);
+  setBlockData(block, { ...getBlockData(block, {}), [slot]: value });
 }
 export function blockClear(block, ...slots) {
-  for (const s of slots) world.setDynamicProperty(blockKey(block, s), undefined);
+  const data = { ...getBlockData(block, {}) };
+  for (const s of slots) delete data[s];
+  if (Object.keys(data).length) setBlockData(block, data);
+  else clearBlockData(block.dimension, block.location);
 }
 
 // ---- block states ----
