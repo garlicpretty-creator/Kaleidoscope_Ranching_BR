@@ -12,6 +12,7 @@ import { consumeMainHand, damageMainHand, give, mainHand } from "../core/invento
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
+const STATE_SKINNED = "kaleidoscope_ranching:skinned";
 const STATE_CUT = "kaleidoscope_ranching:cut";
 
 const WOOL_COLORS = [
@@ -70,15 +71,31 @@ export function rollCut(cut, data) {
   return amount > 0 ? [{ typeId, amount }] : [];
 }
 
+/** Strokes that take the hide, wool or feathers: the carcass shows skinned from this stroke on.
+ *  Carcasses from other add-ons that mark no skin cut count their first stroke as the skin. */
+export function skinStrokes(cuts) {
+  let last = -1;
+  cuts.forEach((cut, i) => { if (cut.skin) last = i; });
+  return last + 1 || 1;
+}
+
+/** Visual stage of a hanging carcass: whole with its skin, skinned, or partly cut. */
+export function stageOf(cuts, stroke) {
+  const skinned = stroke >= skinStrokes(cuts);
+  const cut = stroke >= Math.max(skinStrokes(cuts) + 1, Math.ceil(cuts.length / 2));
+  return { skinned: skinned || cut, cut };
+}
+
 function setVisual(block, data) {
   let permutation = block.permutation;
   if (!data) {
-    permutation = permutation.withState(STATE_CARCASS, "none").withState(STATE_CUT, false);
+    permutation = permutation.withState(STATE_CARCASS, "none").withState(STATE_SKINNED, false).withState(STATE_CUT, false);
   } else {
-    const cuts = cutsOf(data.carcass);
+    const { skinned, cut } = stageOf(cutsOf(data.carcass), data.stroke);
     permutation = permutation
       .withState(STATE_CARCASS, lookOf(data.carcass))
-      .withState(STATE_CUT, data.stroke >= Math.ceil(cuts.length / 2));
+      .withState(STATE_SKINNED, skinned)
+      .withState(STATE_CUT, cut);
   }
   block.setPermutation(permutation);
 }

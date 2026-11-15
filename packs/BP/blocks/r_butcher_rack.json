@@ -28,6 +28,10 @@
           "buffalo",
           "yak"
         ],
+        "kaleidoscope_ranching:skinned": [
+          false,
+          true
+        ],
         "kaleidoscope_ranching:cut": [
           false,
           true
@@ -38,25 +42,35 @@
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.butcher_rack",
         "bone_visibility": {
-          "carcass_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_cow": "q.block_state('kaleidoscope_ranching:carcass') == 'cow' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_sheep": "q.block_state('kaleidoscope_ranching:carcass') == 'sheep' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_goat": "q.block_state('kaleidoscope_ranching:carcass') == 'goat' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_pig": "q.block_state('kaleidoscope_ranching:carcass') == 'pig' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_chicken": "q.block_state('kaleidoscope_ranching:carcass') == 'chicken' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_rabbit": "q.block_state('kaleidoscope_ranching:carcass') == 'rabbit' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_duck": "q.block_state('kaleidoscope_ranching:carcass') == 'duck' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_goose": "q.block_state('kaleidoscope_ranching:carcass') == 'goose' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && q.block_state('kaleidoscope_ranching:cut')",
-          "carcass_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && !q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')"
         }
       },
