@@ -250,6 +250,18 @@ def fork(c):
     c.fill(rect(5, 5, 11, 5), (170, 176, 184), shade=False)
 
 
+def crate(c):
+    # A small wooden crate with iron bars on the front (placeholder until the RetroDiffusion icon).
+    wood, dark, iron = (170, 120, 70), (110, 74, 40), (150, 154, 160)
+    c.fill(rect(2, 4, 13, 13), wood)
+    for x in (2, 13):
+        c.fill(rect(x, 4, x, 13), dark, shade=False)
+    for y in (4, 13):
+        c.fill(rect(2, y, 13, y), dark, shade=False)
+    for x in (5, 8, 11):
+        c.fill(rect(x, 6, x, 11), iron, shade=False)
+
+
 def mark_star(c, color):
     for (x, y) in ((13, 0), (12, 1), (13, 1), (14, 1), (13, 2)):
         c.put(x, y, color)
@@ -363,6 +375,8 @@ def draw(item_id):
         brush(c)
     elif base == "cowbell":
         bell(c)
+    elif base == "animal_crate":
+        crate(c)
     elif base == "ranch_notebook":
         notebook(c)
     elif base == "ear_tag":

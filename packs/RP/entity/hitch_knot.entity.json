@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:hitch_knot",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/hitch_knot"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.hitch_knot"
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.hitch_knot"
+      ]
+    }
+  }
+}

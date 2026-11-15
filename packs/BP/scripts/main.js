@@ -10,6 +10,7 @@ import { startVanillaParity } from "./systems/vanillaParity.js";
 import "./care_init.js";
 import { connectCareCore } from "./systems/careBridge.js";
 import { startM3 } from "./systems/m3.js";
+import { startM4 } from "./systems/m4.js";
 
 connectToCookery();
 
@@ -26,3 +27,4 @@ connectCareCore();
 
 // M3: carcasses, butcher rack, milking, nests, processing
 startM3();
+startM4();

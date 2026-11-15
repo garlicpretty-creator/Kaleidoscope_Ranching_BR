@@ -142,6 +142,8 @@ const TOOLS = [
   ["milking_pail", "擠奶桶", "Milking Pail", "tool"],
   ["nursing_bottle", "奶瓶", "Nursing Bottle", "tool"],
   ["cowbell", "牧鈴", "Cowbell", "tool"],
+  // A hand-held item, not a block: it carries one animal (systems/crate.js).
+  ["animal_crate", "運畜籠", "Animal Crate", "tool"],
   ["brush", "毛刷", "Brush", "tool", "m2"],
   ["ranch_notebook", "牧場記事本", "Ranch Notebook", "tool", "m2"],
   ["ear_tag", "耳標", "Ear Tag", "tool", "m2"],

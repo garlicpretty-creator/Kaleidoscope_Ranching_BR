@@ -107,6 +107,7 @@
     "milking_pail": { "prompt": "small metal milking pail with a wire handle, tin grey" },
     "nursing_bottle": { "prompt": "glass baby animal feeding bottle with a large red rubber teat" },
     "cowbell": { "prompt": "brass cowbell on a brown leather strap" },
+    "animal_crate": { "prompt": "small wooden animal transport crate with iron bars on the front and a rope handle" },
     "brush": { "prompt": "wooden animal grooming brush with stiff bristles" },
     "ranch_notebook": { "prompt": "small brown leather notebook with a green ribbon bookmark" },
     "ear_tag": { "prompt": "orange plastic livestock ear tag with a round pin" },

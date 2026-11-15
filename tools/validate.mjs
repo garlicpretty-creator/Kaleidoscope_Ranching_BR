@@ -164,7 +164,7 @@ WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.
-const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung"]);
+const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate"]);
 for (const item of ITEMS) {
   if (item.owner === "m2") continue;
   if (!referenced.has(item.id) && !CRAFTED_OR_INTERACTIVE.has(item.id)) fail(`items.js: "${item.id}" is declared but no table produces or uses it`);

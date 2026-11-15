@@ -1126,6 +1126,103 @@ test("yak manure left a day dries; the fork collects it as dried yak dung", () =
   equal(dropsOf("kaleidoscope_ranching:dried_yak_dung").length, 1, "yak manure dried");
 });
 
+// --- M4: crate, hitching post, cowbell ------------------------------------------
+
+const CRATE_ITEM = COMPONENTS["kaleidoscope_ranching:animal_crate"];
+const POST = COMPONENTS["kaleidoscope_ranching:hitching_post"];
+const COWBELL = COMPONENTS["kaleidoscope_ranching:cowbell"];
+
+test("a crated animal comes back with its sex, name, wool, affection and pregnancy", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const ewe = ranch("sheep", 1, "female");
+  const ram = ranch("sheep", 2, "male");
+  ewe.triggerEvent("kaleidoscope_ranching:set_color_14");
+  ewe.nameTag = "Mimi";
+  careFor(ewe);
+  careFor(ram);
+  care.setAffection(ewe, 70);
+  hold(player, "minecraft:wheat", 2);
+  __interact(player, ewe);
+  hold(player, "minecraft:wheat", 1);
+  __interact(player, ram);
+  assert(ewe.getDynamicProperty("kaleidoscope_ranching:pregnant_due") > 0, "pregnant before crating");
+
+  hold(player, "kaleidoscope_ranching:animal_crate");
+  __interact(player, ewe);
+  __advance(1);
+  assert(!ewe.isValid, "the ewe went into the crate");
+  const crate = player.inventory.getItem(player.selectedSlotIndex);
+  assert(crate.getDynamicProperty("kaleidoscope_ranching:crate"), "crate holds a snapshot");
+  assert(crate.getLore()[0].includes("Mimi"), "lore names the animal");
+
+  const ground = __place(overworld, { x: 6, y: 63, z: 0 }, "minecraft:grass_block");
+  CRATE_ITEM.onUseOn({ source: player, block: ground, blockFace: "Up" });
+  __advance(1);
+  const back = overworld.getEntities({ type: "kaleidoscope_ranching:sheep" }).find((e) => e.nameTag === "Mimi");
+  assert(back, "released");
+  equal(back.getProperty(SEX), "female", "sex kept");
+  equal(back.getComponent("minecraft:color").value, 14, "wool colour kept");
+  equal(care.getAffection(back), 70, "affection kept");
+  assert(back.hasComponent("minecraft:persistent"), "stays in the world");
+  equal(player.inventory.getItem(player.selectedSlotIndex).getDynamicProperty("kaleidoscope_ranching:crate"), undefined, "crate is empty again");
+
+  __skipTime(DAY * 3);
+  __advance(700);
+  equal(overworld.getEntities({ type: "kaleidoscope_ranching:sheep" }).filter(isBaby).length, 1, "the pregnancy carried over");
+});
+
+test("a leashed animal cannot be crated", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  cow.getComponent("minecraft:leashable").leashTo(player);
+  hold(player, "kaleidoscope_ranching:animal_crate");
+  __interact(player, cow);
+  __advance(1);
+  assert(cow.isValid, "still here");
+  assert(player.actionBar.at(-1).translate.endsWith("crate.leashed"), "told why");
+});
+
+test("the hitching post ties led animals and hands them back", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const post = place("hitching_post", at(0), {});
+  const cow = ranch("cow", 2, "female");
+  const goat = ranch("goat", 3, "male");
+  for (const animal of [cow, goat]) animal.getComponent("minecraft:leashable").leashTo(player);
+  POST.onPlayerInteract({ block: post, player });
+  __advance(1);
+  const knot = overworld.getEntities({ type: "kaleidoscope_ranching:hitch_knot" })[0];
+  assert(knot, "a knot on the post");
+  equal(cow.getComponent("minecraft:leashable").leashHolder, knot, "cow tied");
+  equal(goat.getComponent("minecraft:leashable").leashHolder, knot, "goat tied");
+  POST.onPlayerInteract({ block: post, player });
+  __advance(1);
+  equal(cow.getComponent("minecraft:leashable").leashHolder, player, "handed back");
+  for (const animal of [cow, goat]) animal.getComponent("minecraft:leashable").leashTo(player);
+  POST.onPlayerInteract({ block: post, player });
+  __advance(1);
+  breakBlock(POST, post);
+  assert(!cow.getComponent("minecraft:leashable").isLeashed, "freed when the post breaks");
+  equal(dropsOf("minecraft:lead").length, 2, "one lead back per animal, not more");
+  equal(overworld.getEntities({ type: "kaleidoscope_ranching:hitch_knot" }).length, 0, "knot removed");
+});
+
+test("the cowbell calls only animals with three hearts or more", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const friend = ranch("cow", 5, "female");
+  const stranger = ranch("cow", 6, "female");
+  care.setAffection(friend, 3 * 20);
+  care.setAffection(stranger, 20);
+  COWBELL.onUse({ source: player });
+  __advance(1);
+  assert(friend.hasComponent("minecraft:timer"), "friend follows the bell");
+  assert(!stranger.hasComponent("minecraft:timer"), "stranger ignores it");
+  assert(friend.getComponent("minecraft:behavior.tempt").items.includes("kaleidoscope_ranching:cowbell"), "tempted by the bell");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

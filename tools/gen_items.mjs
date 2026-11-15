@@ -42,9 +42,11 @@ const OVERRIDES = {
   lard: { stack: 16 },
   // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
   dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
+  // Item custom components (systems/m4.js); they need item format 1.21.90.
+  cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
+  animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
   milking_pail: { stack: 1, components: { "minecraft:durability": { max_durability: 128 }, "minecraft:hand_equipped": true } },
   nursing_bottle: { stack: 1, components: { "minecraft:durability": { max_durability: 32 } } },
-  cowbell: { stack: 1 },
 };
 
 function componentsFor(item) {
@@ -81,7 +83,7 @@ function componentsFor(item) {
       break;
   }
   const override = OVERRIDES[item.id] ?? {};
-  const { stack: overrideStack, components = {}, ...overrideComponents } = override;
+  const { stack: overrideStack, format: _format, components = {}, ...overrideComponents } = override;
   Object.assign(c, overrideComponents, components);
   if (overrideStack) stack = overrideStack;
   if (c["minecraft:food"] && !tags.includes("minecraft:is_food")) tags.push("minecraft:is_food");
@@ -129,6 +131,9 @@ const shapeless = (id, ingredients, result, count = 1) => [
 
 const RECIPES = [
   shaped("butcher_rack", ["SIS", "P P", "P P"], { S: { item: "minecraft:stick" }, I: { item: "minecraft:iron_ingot" }, P: planks }, "butcher_rack"),
+  shaped("animal_crate", ["PBP", "B B", "PBP"], { P: planks, B: { item: "minecraft:iron_bars" } }, "animal_crate"),
+  shaped("cowbell", [" L ", "C C", "CCC"], { L: { item: "minecraft:leather" }, C: { item: "minecraft:copper_ingot" } }, "cowbell"),
+  shaped("hitching_post", ["N", "F", "F"], { N: { item: "minecraft:iron_nugget" }, F: { item: "minecraft:oak_fence" } }, "hitching_post"),
   shaped("nest_box", ["P P", "PHP"], { P: planks, H: { item: "minecraft:hay_block" } }, "nest_box"),
   shaped("incubator", ["GGG", "P P", "PIP"], { G: { item: "minecraft:glass" }, P: planks, I: { item: "minecraft:iron_ingot" } }, "incubator"),
   shaped("butter_churn", [" S ", "P P", "PPP"], { S: { item: "minecraft:stick" }, P: planks }, "butter_churn"),
@@ -174,7 +179,7 @@ writeFresh(
   items.map((item) => [
     item.id,
     {
-      format_version: FORMAT,
+      format_version: OVERRIDES[item.id]?.format ?? FORMAT,
       "minecraft:item": {
         description: { identifier: rid(item.id), menu_category: { category: MENU[item.category] ?? "items" } },
         components: componentsFor(item),

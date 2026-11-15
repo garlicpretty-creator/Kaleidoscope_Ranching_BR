@@ -195,6 +195,18 @@ def aging_rack():
     return Model("geometry.kaleidoscope_ranching.aging_rack", bones, cubes, 64, 64)
 
 
+def hitching_post():
+    # A squared oak post with an iron tie ring near the top.
+    bones = [Bone("post", None, (0, 0, 0))]
+    cubes = [
+        Cube("post", "dark_wood", (-2, 0, -2), (4, 16, 4)),
+        Cube("post", "wood", (-3, 14, -3), (6, 2, 6)),
+        Cube("post", "iron", (-1, 10, -3), (2, 2, 1), name="ring"),
+        Cube("post", "iron", (-1, 10, 2), (2, 2, 1), mirror_of="ring"),
+    ]
+    return Model("geometry.kaleidoscope_ranching.hitching_post", bones, cubes, 32, 32)
+
+
 def hay_rack():
     # A slatted wooden manger; hay fills it in three layers (state hay 1-3).
     bones = [Bone("rack", None, (0, 0, 0))] + [Bone(f"hay_{n}", "rack", (0, 4 + 4 * n, 0)) for n in (1, 2, 3)]
@@ -248,4 +260,5 @@ ALL = {
     "fermenting_jar": fermenting_jar,
     "pickling_vat": pickling_vat,
     "hay_rack": hay_rack,
+    "hitching_post": hitching_post,
 }

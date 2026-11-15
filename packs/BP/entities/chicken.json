@@ -66,6 +66,31 @@
           "despawn_from_distance": {}
         }
       },
+      "kaleidoscope_ranching:called": {
+        "minecraft:behavior.tempt": {
+          "priority": 3,
+          "speed_multiplier": 1.3,
+          "within_radius": 32,
+          "can_tempt_vertically": true,
+          "items": [
+            "kaleidoscope_ranching:cowbell",
+            "minecraft:wheat_seeds",
+            "minecraft:pumpkin_seeds",
+            "minecraft:melon_seeds",
+            "minecraft:beetroot_seeds",
+            "kaleidoscope_ranching:mixed_feed",
+            "kaleidoscope_ranching:concentrate_feed"
+          ]
+        },
+        "minecraft:timer": {
+          "looping": false,
+          "time": 60,
+          "time_down_event": {
+            "event": "kaleidoscope_ranching:uncalled",
+            "target": "self"
+          }
+        }
+      },
       "kaleidoscope_ranching:persistent": {
         "minecraft:persistent": {}
       }
@@ -305,6 +330,31 @@
             }
           }
         ]
+      },
+      "kaleidoscope_ranching:called": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:called"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:called"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:uncalled": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:called"
+          ]
+        }
       },
       "kaleidoscope_ranching:add_ear_tag": {
         "sequence": [

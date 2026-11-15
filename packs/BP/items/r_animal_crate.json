@@ -1,0 +1,16 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:animal_crate",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_animal_crate",
+      "minecraft:max_stack_size": 1,
+      "kaleidoscope_ranching:animal_crate": {}
+    }
+  }
+}

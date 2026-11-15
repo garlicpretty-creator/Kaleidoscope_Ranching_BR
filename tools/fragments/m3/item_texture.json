@@ -244,6 +244,9 @@
     },
     "kr_cowbell": {
       "textures": "textures/items/ranching/cowbell"
+    },
+    "kr_animal_crate": {
+      "textures": "textures/items/ranching/animal_crate"
     }
   }
 }
