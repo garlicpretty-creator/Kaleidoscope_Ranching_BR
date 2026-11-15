@@ -84,69 +84,103 @@ def block_geo(bid, bones):
         "bones": out}]}
 
 
-def grain(p, name, base, dark, p_dark=0.18):
-    """Wood: vertical-ish streaks with darker knots."""
-    p.cube(name, base, 7, dark, p_dark)
+def mix(a, b, t):
+    return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
 
 
-def ends(p, name, color, faces=("top", "bottom")):
-    for fc in p.cubes[name]:
-        for f in faces:
-            p.rect(fc[f], color, 5)
+def wood(base, rings=None):
+    """Planks/posts: grain lines running along the long axis, a darker bevel at the face edges,
+    and end grain (rings) on the cut ends."""
+    dark, light = mix(base, (30, 18, 10), 0.28), mix(base, (255, 230, 190), 0.14)
+
+    def fn(f, i, j, w, h, fi):
+        long_h = h >= w  # grain follows the face's longer side
+        if rings and f in ("top", "bottom") and w <= 3 and h <= 3:
+            return rings
+        a, b = (i, j) if long_h else (j, i)
+        span = w if long_h else h
+        if a == 0 or a == span - 1:
+            return mix(base, dark, 0.5)  # bevel
+        if (a * 5 + b // 5) % 4 == 0:
+            return dark
+        if (a * 3 + b // 3) % 7 == 0:
+            return light
+        return base
+    return fn
+
+
+def hay(f, i, j, w, h, fi):
+    """Loose straw: short streaks of three golds with the odd green stalk, scattered irregularly."""
+    r = ((i * 73856093) ^ (j * 19349663) ^ sum(map(ord, f)) * 83492791) % 100
+    if r < 6:
+        return (150, 172, 80)
+    if r < 30 or (r < 45 and (i + j) % 2 == 0):
+        return HAY_DK
+    if r > 82:
+        return (246, 224, 136)
+    return HAY
+
+
+def rope(f, i, j, w, h, fi):
+    return (160, 132, 82) if (i + j) % 2 == 0 else (214, 186, 124)
+
+
+def iron(f, i, j, w, h, fi):
+    if f == "top" or (i == 0 and j == 0):
+        return (200, 200, 208)
+    return IRON if j == 0 else IRON_DK
+
+
+def stone(f, i, j, w, h, fi):
+    """Cut stone slab with mortar seams."""
+    mortar = (98, 96, 92)
+    if f in ("top", "bottom"):
+        return mortar if (i % 4 == 3 or j % 4 == 3) else mix(STONE, (150, 148, 144), ((i * 7 + j * 3) % 5) / 10)
+    return mortar if j == h - 1 else STONE
 
 
 def paint_hay_rack():
     p = Painter(64, 64, HAY_RACK, "hay_rack")
-    for n in ("leg", "rail", "siderail", "slat"):
-        grain(p, n, WOOD, WOOD_DK)
-    ends(p, "leg", WOOD_LT)
-    grain(p, "trough", WOOD_DK, (80, 52, 30), 0.25)
-    for n in ("hay", "tuft"):
-        p.cube(n, HAY, 14, HAY_DK, 0.35)
-        for fc in p.cubes[n]:  # a few green stalks
-            for f in ("top", "north", "south"):
-                x0, y0, w, h = fc[f]
-                for _ in range(max(1, w * h // 12)):
-                    p.px(x0 + p.rng.randrange(w), y0 + p.rng.randrange(h), (150, 170, 80), 10)
+    p.paint("leg", wood(WOOD, rings=WOOD_LT))
+    p.paint("rail", wood(WOOD))
+    p.paint("siderail", wood(WOOD))
+    p.paint("slat", wood(WOOD_LT))
+    p.paint("trough", wood(WOOD_DK))
+    p.paint("hay", hay)
+    p.paint("tuft", hay)
     return p
 
 
 def paint_hitching_post():
     p = Painter(64, 64, HITCHING_POST, "hitching_post")
-    p.cube("base", STONE, 10, (104, 102, 98), 0.3)
-    grain(p, "pole", WOOD, WOOD_DK, 0.22)
-    ends(p, "pole", WOOD_LT)
-    grain(p, "cap", WOOD_DK, (80, 52, 30))
-    p.cube("rope", (196, 168, 110), 8)
-    for fc in p.cubes["rope"]:  # twisted rope bands
-        for f in ("north", "south", "east", "west"):
-            x0, y0, w, h = fc[f]
-            for x in range(x0, x0 + w, 2):
-                p.px(x, y0, (150, 124, 78), 4)
+    p.paint("base", stone)
+    p.paint("pole", wood(WOOD, rings=WOOD_LT))
+    p.paint("cap", wood(WOOD_DK))
+    p.paint("rope", rope)
     for n in ("staple", "ring_h", "ring_v"):
-        p.cube(n, IRON, 8, IRON_DK, 0.25)
+        p.paint(n, iron)
     return p
 
 
 def paint_animal_crate():
     p = Painter(64, 64, ANIMAL_CRATE, "animal_crate")
-    grain(p, "corner", WOOD_DK, (80, 52, 30))
-    grain(p, "panel", WOOD, WOOD_DK)
-    for fc in p.cubes["panel"]:  # plank seams on the lid and floor
-        for f in ("top", "bottom"):
-            x0, y0, w, h = fc[f]
-            for x in range(x0 + 3, x0 + w, 4):
-                p.rect((x, y0, 1, h), WOOD_DK, 4)
-    grain(p, "slat_fb", WOOD_LT, WOOD)
-    grain(p, "slat_side", WOOD_LT, WOOD)
-    p.cube("handle", (196, 168, 110), 6)  # rope handle
-    p.cube("straw", HAY, 12, HAY_DK, 0.35)
+    p.paint("corner", wood(WOOD_DK, rings=mix(WOOD_DK, WOOD_LT, 0.5)))
+
+    def panel(f, i, j, w, h, fi):
+        if f in ("top", "bottom"):
+            if i % 4 == 3:
+                return mix(WOOD, (30, 18, 10), 0.4)  # plank seam
+            if j in (1, h - 2) and i % 4 == 1:
+                return (70, 66, 64)  # nail heads
+        return wood(WOOD)(f, i, j, w, h, fi)
+    p.paint("panel", panel)
+    p.paint("slat_fb", wood(WOOD_LT))
+    p.paint("slat_side", wood(WOOD_LT))
+    p.paint("handle", rope)
+    p.paint("straw", hay)
     # the animal is seen in shadow through the gaps, so keep it dark and neutral
-    p.cube("animal", (92, 76, 64), 8, (74, 60, 50), 0.3)
-    p.cube("animal_head", (92, 76, 64), 8)
-    x0, y0, w, h = p.face("animal_head", "north")
-    p.px(x0 + 1, y0 + 1, (230, 220, 200))
-    p.px(x0 + w - 2, y0 + 1, (230, 220, 200))
+    p.paint("animal", lambda f, i, j, w, h, fi: (84, 70, 60) if (i + j) % 3 else (98, 82, 70))
+    p.paint("animal_head", lambda f, i, j, w, h, fi: (230, 220, 200) if (f == "north" and j == 1 and i in (1, w - 2)) else (92, 76, 64))
     return p
 
 

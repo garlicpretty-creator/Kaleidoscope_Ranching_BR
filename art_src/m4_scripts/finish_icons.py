@@ -1,4 +1,4 @@
-﻿"""Finishes the picked RetroDiffusion icons so they match the pack's icons (dark outline),
+"""Finishes the picked RetroDiffusion icons so they match the pack's icons (dark outline),
 adds the hitching post's iron ring, and installs all three into the resource pack."""
 import json, shutil, sys
 from pathlib import Path

@@ -1,4 +1,4 @@
-﻿"""Hand-drawn 16x16 icon for the animal crate: an isometric slatted crate with a rope handle."""
+"""Hand-drawn 16x16 icon for the animal crate: an isometric slatted crate with a rope handle."""
 import sys
 from PIL import Image
 

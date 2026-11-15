@@ -1,4 +1,4 @@
-﻿"""Buffalo and yak: adult rig (a_*), sexed horns/udder/skirt, and a separate calf rig (b_*)."""
+"""Buffalo and yak: adult rig (a_*), sexed horns/udder/skirt, and a separate calf rig (b_*)."""
 import sys
 from boxuv import RP, BLUSH, Painter, cute_eyes, geo, write_geo
 
@@ -23,7 +23,12 @@ def legs(prefix, cube, size, uv, x, z_front, z_back, top):
 # --- Water buffalo ---------------------------------------------------------------
 BUFFALO = [
     ("body", None, [0, 0, 0], None),
-    ("a_torso", "body", [0, 17, 0], [("torso", [-7, 12, -10], [14, 11, 20], [0, 0])]),
+    ("a_torso", "body", [0, 17, 0], [
+        ("torso", [-7, 12, -10], [14, 11, 20], [0, 0]),
+        ("shoulder", [-6, 22, -9], [12, 2, 7], [42, 32]),   # withers hump
+        ("belly", [-6, 11, -7], [12, 1, 13], [42, 41]),     # rounded underside
+        ("dewlap", [-3, 13, -11], [6, 6, 2], [92, 32]),     # thick neck under the head
+    ]),
     ("a_tail", "body", [0, 22, 10], [("tail", [-1, 13, 10], [2, 9, 1], [16, 32])]),
     ("fa_udder", "body", [0, 12, 4], [("udder", [-2.5, 10, 2], [5, 2, 5], [22, 32])]),
     ("head", "body", [0, 19, -10], None),
@@ -72,6 +77,8 @@ YAK = [
         ("skull", [-3.5, 13, -15], [7, 7, 6], [60, 9]),
         ("muzzle", [-2.5, 13, -16], [5, 4, 1], [88, 0]),
         *pair("ear", [3.5, 18, -12], [3, 1, 2], [88, 5]),
+        ("forelock", [-3.5, 18, -15.5], [7, 3, 1], [82, 46]),  # shaggy fringe over the brow
+        ("beard", [-2.5, 11, -14], [5, 3, 2], [66, 46]),       # hair hanging under the chin
     ]),
     ("fa_horns", "head", [0, 20, -12], [
         *pair("horn1", [3.5, 19, -12], [2, 1, 1], [100, 0]),
@@ -95,107 +102,156 @@ YAK = [
 ]
 
 
-def eyes(p, cube, row, color=(18, 16, 16)):
-    for f in ("east", "west"):
-        x0, y0, w, h = p.face(cube, f)
-        p.px(x0 + 1 if f == "east" else x0 + w - 2, y0 + row, color)
-        p.px(x0 + 1 if f == "east" else x0 + w - 2, y0 + row + 1, color)
+def mix(a, b, t):
+    return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
 
 
-def hooves(p, cube, color, rows=2):
-    for f in ("north", "south", "east", "west"):
-        x0, y0, w, h = p.face(cube, f)
-        p.rect((x0, y0 + h - rows, w, rows), color, 4)
+def flat(c):
+    return lambda f, i, j, w, h, fi: c
 
 
-def nostrils(p, cube, color):
-    x0, y0, w, h = p.face(cube, "north")
-    p.px(x0 + 1, y0 + 1, color)
-    p.px(x0 + w - 2, y0 + 1, color)
+def hide_fn(base, top=None, belly=None, streak=0.08):
+    """Short coat: faint hair strokes on the sides, a darker back and a paler belly."""
+    dark = mix(base, (0, 0, 0), streak)
+
+    def fn(f, i, j, w, h, fi):
+        if f == "top":
+            return top or base
+        if f == "bottom":
+            return belly or base
+        return dark if (i + (j // 3)) % 3 == 0 else base
+    return fn
 
 
-def horn(p, names, base, tip):
-    for i, n in enumerate(names):
-        c = base if i < len(names) - 1 else tip
-        p.cube(n, c, 6)
+def strands(base, light, ragged=False):
+    """Long hanging hair: vertical strands of two shades, with a ragged hem."""
+    def fn(f, i, j, w, h, fi):
+        if f in ("top", "bottom"):
+            return base
+        if ragged and j == h - 1 and (i * 7) % 3 == 0:
+            return None  # leave transparent: uneven hem
+        return light if (i * 5 + (j // 4)) % 4 == 0 else base
+    return fn
+
+
+def leg_fn(coat, sock, hoof):
+    """Upper leg in coat colour, pale lower 'socks', dark hooves."""
+    def fn(f, i, j, w, h, fi):
+        if f == "bottom":
+            return hoof
+        if f == "top":
+            return coat
+        if j >= h - 2:
+            return hoof
+        if sock and j >= h - 5:
+            return sock
+        return coat
+    return fn
+
+
+def horn_fn(base, ridge, tip=None):
+    """Ridged horn: alternating bands across its length."""
+    def fn(f, i, j, w, h, fi):
+        if tip:
+            return tip
+        return ridge if (i + j) % 2 == 0 else base
+    return fn
+
+
+def muzzle_fn(base, lip, nostril):
+    def fn(f, i, j, w, h, fi):
+        if f == "north":
+            if j == 1 and i in (1, w - 2):
+                return nostril
+            if j == h - 1:
+                return lip
+        return base
+    return fn
+
+
+def ear_fn(outer, inner):
+    return lambda f, i, j, w, h, fi: inner if f in ("south", "bottom") else outer
 
 
 def buffalo_adult(p, sex):
-    hide = (84, 82, 86) if sex == "female" else (62, 60, 64)
-    p.cube("torso", hide, 6, tuple(v - 12 for v in hide), 0.25)
-    p.rect(p.face("torso", "bottom"), (96, 92, 94), 6)  # paler belly
-    p.cube("tail", hide, 5)
-    x0, y0, w, h = p.face("tail", "north")
-    p.rect((x0, y0 + h - 3, w, 3), (24, 22, 24), 4)  # tail tuft
-    p.cube("udder", (150, 120, 122), 6)
-    p.cube("skull", hide, 6)
-    p.cube("muzzle", (36, 34, 36), 4)
-    nostrils(p, "muzzle", (14, 12, 14))
-    cute_eyes(p, "skull", 3, inset=1, rim=(150, 146, 150))
-    p.cube("ear", hide, 5)
-    horn(p, ["horn1", "horn2", "horn3"], (124, 114, 98), (92, 84, 74))
-    horn(p, ["mhorn1", "mhorn2", "mhorn3"], (118, 108, 92), (78, 70, 62))
-    p.cube("leg", hide, 6)
-    hooves(p, "leg", (28, 26, 28))
-    # pale chevron on the throat, typical of swamp buffalo
-    x0, y0, w, h = p.face("skull", "north")
-    p.rect((x0 + 1, y0 + h - 1, w - 2, 1), (150, 146, 140), 4)
+    hide = (92, 90, 96) if sex == "female" else (68, 66, 72)
+    back, belly = mix(hide, (0, 0, 0), 0.15), mix(hide, (200, 196, 196), 0.35)
+    p.paint("torso", hide_fn(hide, back, belly))
+    p.paint("shoulder", hide_fn(hide, back))
+    p.paint("belly", flat(belly))
+    p.paint("dewlap", lambda f, i, j, w, h, fi: (186, 180, 174) if (f == "north" and j in (1, 2) and 1 <= i <= w - 2) else hide)  # pale throat chevron
+    p.paint("tail", lambda f, i, j, w, h, fi: (30, 28, 32) if j >= h - 3 else hide)
+    p.paint("udder", flat((168, 136, 136)))
+
+    def skull_fn(f, i, j, w, h, fi):
+        if f in ("east", "west") and j == 1 and 1 <= fi <= 3:
+            return mix(hide, (220, 214, 208), 0.45)  # pale brow above the eye
+        return hide_fn(hide, back)(f, i, j, w, h, fi)
+    p.paint("skull", skull_fn)
+    p.paint("muzzle", muzzle_fn((48, 46, 50), (132, 126, 128), (16, 14, 16)))
+    p.paint("ear", ear_fn(hide, (164, 132, 132)))
+    p.paint("horn1", horn_fn((134, 124, 108), (112, 102, 90)))
+    p.paint("horn2", horn_fn((134, 124, 108), (112, 102, 90)))
+    p.paint("horn3", horn_fn(None, None, tip=(84, 76, 68)))
+    p.paint("mhorn1", horn_fn((128, 118, 102), (104, 94, 82)))
+    p.paint("mhorn2", horn_fn((128, 118, 102), (104, 94, 82)))
+    p.paint("mhorn3", horn_fn(None, None, tip=(74, 66, 58)))
+    p.paint("leg", leg_fn(hide, (176, 172, 168), (30, 28, 30)))
+    cute_eyes(p, "skull", 3, inset=1, rim=(158, 154, 158))
 
 
 def buffalo_calf(p):
-    coat = (150, 128, 112)
-    p.cube("b_torso", coat, 8, (108, 92, 82), 0.3)
-    p.cube("b_tail", coat, 6)
-    p.cube("b_head", coat, 8)
-    p.cube("b_muzzle", (206, 160, 150), 4)
-    nostrils(p, "b_muzzle", (30, 26, 26))
+    coat = (158, 136, 120)
+    p.paint("b_torso", hide_fn(coat, mix(coat, (0, 0, 0), 0.12), mix(coat, (240, 230, 220), 0.4), 0.05))
+    p.paint("b_tail", lambda f, i, j, w, h, fi: (90, 76, 68) if j >= h - 2 else coat)
+    p.paint("b_head", hide_fn(coat, mix(coat, (0, 0, 0), 0.1), streak=0.04))
+    p.paint("b_muzzle", muzzle_fn((214, 168, 158), (232, 196, 186), (120, 80, 76)))
+    p.paint("b_ear", ear_fn(coat, (226, 170, 166)))
+    p.paint("b_leg", leg_fn(coat, (206, 196, 186), (64, 56, 52)))
     cute_eyes(p, "b_head", 2, inset=1, blush=BLUSH)
-    p.cube("b_ear", coat, 6)
-    p.cube("b_leg", coat, 6)
-    hooves(p, "b_leg", (40, 36, 36))
 
 
 def yak_adult(p, sex):
-    coat = (84, 64, 50) if sex == "female" else (62, 48, 40)
-    hair = (60, 46, 38) if sex == "female" else (42, 32, 28)
-    p.cube("torso", coat, 7, hair, 0.3)
-    p.cube("hump", coat, 7, hair, 0.3)
-    for n in ("skirt_f", "skirt_m"):
-        p.cube(n, hair, 8, coat, 0.15)
-        for f in ("north", "south", "east", "west"):  # long vertical strands
-            x0, y0, w, h = p.face(n, f)
-            for x in range(x0, x0 + w):
-                if p.rng.random() < 0.35:
-                    p.rect((x, y0, 1, h), tuple(v + 18 for v in hair), 6)
-        for f in ("north", "south", "east", "west"):  # ragged hem
-            x0, y0, w, h = p.face(n, f)
-            for x in range(x0, x0 + w):
-                if p.rng.random() < 0.45:
-                    p.img.putpixel((x, y0 + h - 1), (0, 0, 0, 0))
-    p.cube("tail", hair, 7)
-    p.cube("udder", (140, 112, 104), 6)
-    p.cube("skull", coat, 7, hair, 0.2)
-    p.cube("muzzle", (156, 136, 118), 5)
-    nostrils(p, "muzzle", (30, 24, 20))
-    cute_eyes(p, "skull", 3, inset=1, rim=(164, 138, 116))
-    p.cube("ear", coat, 6)
-    horn(p, ["horn1", "horn2"], (220, 210, 188), (120, 110, 96))
-    horn(p, ["mhorn1", "mhorn2", "mhorn3"], (214, 204, 180), (110, 100, 88))
-    p.cube("leg", hair, 6)
-    hooves(p, "leg", (22, 18, 16))
+    coat = (88, 68, 54) if sex == "female" else (64, 50, 42)
+    hair, light = mix(coat, (0, 0, 0), 0.25), mix(coat, (255, 240, 220), 0.18)
+    blaze = (228, 222, 212)
+    p.paint("torso", strands(coat, light))
+    p.paint("hump", strands(coat, light))
+    p.paint("skirt_f", strands(hair, coat, ragged=True))
+    p.paint("skirt_m", strands(hair, coat, ragged=True))
+    p.paint("tail", strands(hair, light))
+    p.paint("udder", flat((156, 124, 114)))
+
+    def skull_fn(f, i, j, w, h, fi):
+        if f == "north" and w // 2 - 1 <= i <= w // 2:
+            return blaze  # white blaze down the face
+        return strands(coat, light)(f, i, j, w, h, fi)
+    p.paint("skull", skull_fn)
+    p.paint("forelock", strands(hair, light, ragged=True))
+    p.paint("beard", strands(hair, coat, ragged=True))
+    p.paint("muzzle", muzzle_fn((190, 170, 152) if sex == "female" else (164, 144, 126), (214, 200, 186), (40, 30, 26)))
+    p.paint("ear", ear_fn(coat, (176, 140, 124)))
+    cream, tip = (232, 222, 200), (96, 86, 74)
+    p.paint("horn1", flat(cream))
+    p.paint("horn2", lambda f, i, j, w, h, fi: tip if j == 0 else cream)
+    p.paint("mhorn1", flat(cream))
+    p.paint("mhorn2", flat(mix(cream, tip, 0.2)))
+    p.paint("mhorn3", flat(tip))
+    p.paint("leg", leg_fn(hair, None, (24, 20, 18)))
+    cute_eyes(p, "skull", 3, inset=1, rim=(170, 144, 122))
 
 
 def yak_calf(p):
-    coat = (128, 98, 76)
-    p.cube("b_torso", coat, 10, (88, 66, 52), 0.4)
-    p.cube("b_tail", (80, 62, 50), 6)
-    p.cube("b_head", coat, 10, (88, 66, 52), 0.3)
-    p.cube("b_muzzle", (214, 176, 158), 5)
-    nostrils(p, "b_muzzle", (50, 40, 32))
+    coat = (138, 106, 82)
+    curl = mix(coat, (255, 236, 210), 0.22)
+    woolly = lambda f, i, j, w, h, fi: curl if (i + 2 * j) % 5 == 0 else coat  # tight curly down
+    p.paint("b_torso", woolly)
+    p.paint("b_tail", flat(mix(coat, (0, 0, 0), 0.2)))
+    p.paint("b_head", woolly)
+    p.paint("b_muzzle", muzzle_fn((222, 184, 166), (236, 206, 190), (110, 76, 64)))
+    p.paint("b_ear", ear_fn(coat, (226, 172, 160)))
+    p.paint("b_leg", leg_fn(mix(coat, (0, 0, 0), 0.15), None, (52, 42, 36)))
     cute_eyes(p, "b_head", 2, inset=1, blush=BLUSH)
-    p.cube("b_ear", coat, 6)
-    p.cube("b_leg", (80, 62, 50), 6)
-    hooves(p, "b_leg", (34, 28, 24))
 
 
 def stubby(bones, dy=3):

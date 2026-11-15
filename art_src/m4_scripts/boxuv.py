@@ -1,9 +1,16 @@
-﻿"""Shared helpers for the hand-built M4 animals: geometry JSON and box-UV painting."""
+"""Shared helpers for the hand-built M4 animals: geometry JSON and box-UV painting."""
 import json, random
 from pathlib import Path
 from PIL import Image
 
 RP = Path(r"D:\Kaleidoscope\KR\packs\RP")
+
+
+def extras(c):
+    """A cube tuple may end with a number (inflate) or a dict (rotation, pivot, inflate)."""
+    if len(c) < 5:
+        return {}
+    return {"inflate": c[4]} if isinstance(c[4], (int, float)) else dict(c[4])
 
 
 def geo(sid, tw, th, bones, bounds=(1.5, 1.5)):
@@ -13,8 +20,7 @@ def geo(sid, tw, th, bones, bounds=(1.5, 1.5)):
         if parent:
             b["parent"] = parent
         if cubes:
-            b["cubes"] = [{"origin": o, "size": s, "uv": uv, **({"inflate": c[4]} if len(c) > 4 else {})}
-                          for c in cubes for (_, o, s, uv) in [c[:4]]]
+            b["cubes"] = [{"origin": c[1], "size": c[2], "uv": c[3], **extras(c)} for c in cubes]
         out.append(b)
     return {"format_version": "1.12.0", "minecraft:geometry": [{
         "description": {"identifier": f"geometry.kaleidoscope_ranching.{sid}", "texture_width": tw, "texture_height": th,
@@ -57,6 +63,29 @@ class Painter:
             for f, r in fc.items():
                 if only is None or f in only:
                     self.rect(r, color, amt, speck, p)
+
+    LIGHT = {"top": 1.10, "bottom": 0.70, "north": 1.0, "south": 0.90, "east": 0.95, "west": 0.95}
+
+    def paint(self, name, fn, amt=4, only=None, light=True):
+        """Paint every face of a cube from fn(face, i, j, w, h, fi) -> colour, where i/j are the
+        pixel within the face, j counts down from its top and fi counts back from the head end on
+        the side faces. Adds baked light: lit tops, darker undersides, a soft top-to-bottom fade."""
+        for fc in self.cubes[name]:
+            for f, (x0, y0, w, h) in fc.items():
+                if only is not None and f not in only:
+                    continue
+                for j in range(h):
+                    for i in range(w):
+                        fi = (w - 1 - i) if f == "east" else i
+                        c = fn(f, i, j, w, h, fi)
+                        if c is None:
+                            continue
+                        k = 1.0
+                        if light:
+                            k = self.LIGHT[f]
+                            if f in ("north", "south", "east", "west") and h > 1:
+                                k *= 1.05 - 0.14 * j / (h - 1)
+                        self.px(x0 + i, y0 + j, tuple(min(255, int(v * k)) for v in c[:3]), amt)
 
     def face(self, name, f, i=0):
         return self.cubes[name][i][f]

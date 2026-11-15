@@ -1,4 +1,4 @@
-﻿"""Writes client entity, render controller and walk animation for an M4 animal.
+"""Writes client entity, render controller and walk animation for an M4 animal.
 Usage: python client.py duck"""
 import json, sys
 from pathlib import Path

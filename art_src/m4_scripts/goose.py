@@ -1,80 +1,122 @@
-﻿"""Goose: white domestic goose with a bill knob (bigger on the gander); fluffy gosling rig."""
+"""Goose (white Chinese goose): shaped body, two-part neck, bill knob (bigger on the gander),
+feathered white plumage with grey flight feathers, and a fluffy gosling rig."""
 from boxuv import RP, BLUSH, Painter, cute_eyes, geo, write_geo
 
 SID, TW, TH = "goose", 64, 64
 
 BONES = [
     ("body", None, [0, 0, 0], None),
-    ("a_torso", "body", [0, 7, 0], [("torso", [-3.5, 4, -5], [7, 6, 10], [0, 0])]),
-    ("a_tail", "body", [0, 9, 5], [("tail", [-2, 8, 5], [4, 2, 2], [36, 0])]),
+    # --- adult -------------------------------------------------------------------
+    ("a_torso", "body", [0, 7, 0], [
+        ("torso", [-3.5, 4, -5], [7, 6, 10], [0, 0]),
+        ("chest", [-3, 4, -6], [6, 5, 1], [34, 0]),
+        ("belly", [-3, 3, -4], [6, 1, 8], [0, 16]),
+    ]),
+    ("a_tail", "body", [0, 8, 5], [
+        ("tail", [-2.5, 7, 5], [5, 3, 2], [48, 0]),
+        ("tail_tip", [-1.5, 8, 7], [3, 2, 1], [48, 5]),
+    ]),
     ("head", "body", [0, 10, -5], None),
     ("a_head", "head", [0, 10, -5], [
-        ("neck", [-1, 9, -6], [2, 6, 2], [36, 4]),
-        ("head", [-2, 14, -8], [4, 4, 4], [44, 20]),
-        ("bill", [-1, 14, -10], [2, 2, 2], [48, 11]),
+        ("neck_lo", [-1.5, 9, -6], [3, 3, 2], [34, 6]),
+        ("neck_hi", [-1, 12, -6], [2, 4, 2], [56, 5]),
+        ("head", [-2, 15, -8], [4, 4, 4], [28, 16]),
+        ("bill", [-1, 15, -11], [2, 2, 3], [44, 11]),
     ]),
-    ("m_knob", "head", [0, 17, -9], [("m_knob", [-1, 16, -9], [2, 2, 1], [58, 0])]),
-    ("fa_knob", "head", [0, 17, -9], [("fa_knob", [-0.5, 16, -9], [1, 1, 1], [58, 4])]),
-    ("a_wing_left", "body", [3.5, 10, -1], [("wing_l", [3.5, 5, -4], [1, 5, 8], [0, 16])]),
-    ("a_wing_right", "body", [-3.5, 10, -1], [("wing_r", [-4.5, 5, -4], [1, 5, 8], [18, 16])]),
-    ("a_leg_left", "body", [1.5, 4, 1], [("leg", [1, 0, 0], [1, 4, 1], [36, 16]), ("foot", [0, 0, -1], [3, 1, 2], [40, 16])]),
-    ("a_leg_right", "body", [-1.5, 4, 1], [("leg", [-2, 0, 0], [1, 4, 1], [36, 16]), ("foot", [-3, 0, -1], [3, 1, 2], [40, 16])]),
-    # gosling: round fluffy body, short upright neck, big head
-    ("b_torso", "body", [0, 4, 0], [("b_torso", [-3, 2, -3], [6, 5, 6], [0, 32])]),
+    ("m_knob", "head", [0, 17, -9], [("m_knob", [-1, 17, -9], [2, 2, 1], [54, 11])]),
+    ("fa_knob", "head", [0, 17, -9], [("fa_knob", [-0.5, 17, -9], [1, 1, 1], [60, 11])]),
+    ("a_wing_left", "body", [3.5, 9, -2], [
+        ("wing_l", [3.5, 5, -4], [1, 5, 9], [0, 25]),
+        ("wingtip", [3.5, 6, 5], [1, 3, 3], [44, 16]),
+    ]),
+    ("a_wing_right", "body", [-3.5, 9, -2], [
+        ("wing_r", [-4.5, 5, -4], [1, 5, 9], [20, 25]),
+        ("wingtip", [-4.5, 6, 5], [1, 3, 3], [44, 16]),
+    ]),
+    ("a_leg_left", "body", [1.5, 3, 1], [("leg", [1, 0, 0], [1, 3, 1], [52, 16]), ("foot", [0, 0, -2], [3, 1, 3], [44, 22])]),
+    ("a_leg_right", "body", [-1.5, 3, 1], [("leg", [-2, 0, 0], [1, 3, 1], [52, 16]), ("foot", [-3, 0, -2], [3, 1, 3], [44, 22])]),
+    # --- gosling: round fluffy body, short upright neck, big head -----------------
+    ("b_torso", "body", [0, 4, 0], [("b_torso", [-3, 2, -3], [6, 5, 6], [0, 40])]),
     ("b_head", "head", [0, 10, -5], [
-        ("b_neck", [-1, 6, -4], [2, 3, 2], [24, 32]),
-        ("b_head", [-2, 8, -6], [4, 4, 4], [32, 32]),
-        ("b_bill", [-1, 9, -7], [2, 1, 1], [48, 32]),
+        ("b_neck", [-1, 6, -4], [2, 3, 2], [24, 40]),
+        ("b_head", [-2, 8, -6], [4, 4, 4], [32, 40]),
+        ("b_bill", [-1, 9, -7], [2, 1, 1], [48, 40]),
     ]),
-    ("b_wing_left", "body", [3, 6, 0], [("b_wing_l", [3, 3, -1], [1, 3, 4], [0, 44])]),
-    ("b_wing_right", "body", [-3, 6, 0], [("b_wing_r", [-4, 3, -1], [1, 3, 4], [10, 44])]),
-    ("b_leg_left", "body", [1.5, 2, 0.5], [("b_leg", [1, 0, 0], [1, 2, 1], [20, 44]), ("b_foot", [0, 0, -1], [3, 1, 1], [24, 44])]),
-    ("b_leg_right", "body", [-1.5, 2, 0.5], [("b_leg", [-2, 0, 0], [1, 2, 1], [20, 44]), ("b_foot", [-3, 0, -1], [3, 1, 1], [24, 44])]),
+    ("b_wing_left", "body", [3, 6, 0], [("b_wing_l", [3, 3, -1], [1, 3, 4], [0, 51])]),
+    ("b_wing_right", "body", [-3, 6, 0], [("b_wing_r", [-4, 3, -1], [1, 3, 4], [10, 51])]),
+    ("b_leg_left", "body", [1.5, 2, 0.5], [("b_leg", [1, 0, 0], [1, 2, 1], [20, 51]), ("b_foot", [0, 0, -1], [3, 1, 1], [24, 51])]),
+    ("b_leg_right", "body", [-1.5, 2, 0.5], [("b_leg", [-2, 0, 0], [1, 2, 1], [20, 51]), ("b_foot", [-3, 0, -1], [3, 1, 1], [24, 51])]),
 ]
 
-ORANGE = (236, 140, 44)
+ORANGE = (240, 146, 52)
+WHITE, SHADE, EDGE = (246, 246, 240), (226, 226, 220), (255, 255, 252)
 
 
-def eyes(p, cube, row, color=(20, 20, 24)):
-    for f in ("east", "west"):
-        x0, y0, w, h = p.face(cube, f)
-        p.px(x0 + 1 if f == "east" else x0 + w - 2, y0 + row, color)
+def mix(a, b, t):
+    return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
+
+
+def flat(c):
+    return lambda f, i, j, w, h, fi: c
+
+
+def plumage(f, i, j, w, h, fi):
+    """Soft white feathers: faint grey shaft lines under a bright fringe, rows offset."""
+    row = j // 2
+    k = (i + row) % 3
+    if j % 2 == 1:
+        return EDGE if k != 1 else WHITE
+    return SHADE if k == 1 else WHITE
 
 
 def adult(p, sex):
-    white, shade = (242, 242, 236), (222, 222, 216)
-    p.cube("torso", white, 5, shade, 0.2)
-    p.cube("tail", (214, 214, 208), 5)
-    p.cube("neck", white, 4)
-    p.cube("head", white, 4)
+    p.paint("torso", plumage)
+    p.paint("chest", plumage)
+    p.paint("belly", flat((236, 236, 230)))
+    p.paint("tail", plumage)
+    p.paint("tail_tip", flat((214, 214, 210)))
+    p.paint("neck_lo", flat(WHITE))
+    p.paint("neck_hi", flat(WHITE))
+    p.paint("head", flat(WHITE))
+    p.paint("bill", lambda f, i, j, w, h, fi: (214, 120, 40) if (f == "north" and j == 1) else ORANGE)
+    knob = (220, 112, 36) if sex == "male" else (232, 132, 44)
+    p.paint("m_knob", flat(knob))
+    p.paint("fa_knob", flat(knob))
     cute_eyes(p, "head", 1, blush=BLUSH if sex == "female" else None)
-    p.cube("bill", ORANGE, 6)
-    knob = (214, 110, 34) if sex == "male" else (226, 130, 40)
-    p.cube("m_knob", knob, 6)
-    p.cube("fa_knob", knob, 6)
-    for w in ("wing_l", "wing_r"):
-        p.cube(w, (232, 232, 226), 5, shade, 0.2)
-        for f in ("east", "west"):  # grey flight-feather tips at the back of the wing
-            x0, y0, ww, h = p.face(w, f)
-            tip = x0 + ww - 3 if f == "east" else x0
-            p.rect((tip, y0 + 1, 3, h - 1), (178, 180, 182), 6)
-    p.cube("leg", ORANGE, 6)
-    p.cube("foot", ORANGE, 6)
+
+    def wing_fn(f, i, j, w, h, fi):
+        if f in ("east", "west"):
+            if fi >= 6:
+                return mix((170, 172, 176), (120, 122, 128), (fi - 6) / 3)  # grey flight feathers
+            if j == 0:
+                return EDGE
+            return plumage(f, i, j, w, h, fi)
+        return WHITE
+    p.paint("wing_l", wing_fn)
+    p.paint("wing_r", wing_fn)
+    p.paint("wingtip", flat((132, 134, 140)))
+    p.paint("leg", flat(ORANGE), light=False)
+    p.paint("foot", lambda f, i, j, w, h, fi: mix(ORANGE, (190, 96, 30), 0.35) if (f == "top" and i == 1) else ORANGE)
 
 
 def baby(p):
-    down, back = (244, 230, 124), (196, 186, 124)
-    p.cube("b_torso", down, 10, (214, 204, 108), 0.3)
-    p.rect(p.face("b_torso", "top"), back, 8)
-    p.cube("b_neck", down, 8)
-    p.cube("b_head", down, 8, (214, 204, 108), 0.3)
-    p.rect(p.face("b_head", "top"), back, 8)
+    down, back = (246, 234, 128), (186, 178, 120)
+
+    def body_fn(f, i, j, w, h, fi):
+        if f == "top":
+            return back
+        if f in ("east", "west") and j == 0:
+            return mix(down, back, 0.5)
+        return down
+    p.paint("b_torso", body_fn)
+    p.paint("b_neck", flat(down))
+    p.paint("b_head", lambda f, i, j, w, h, fi: mix(down, back, 0.6) if f == "top" else down)
     cute_eyes(p, "b_head", 1, blush=BLUSH)
-    p.cube("b_bill", (70, 66, 60), 4)
-    for w in ("b_wing_l", "b_wing_r"):
-        p.cube(w, back, 8)
-    p.cube("b_leg", (110, 100, 80), 4)
-    p.cube("b_foot", (110, 100, 80), 4)
+    p.paint("b_bill", flat((72, 68, 62)))
+    p.paint("b_wing_l", flat(mix(down, back, 0.5)))
+    p.paint("b_wing_r", flat(mix(down, back, 0.5)))
+    p.paint("b_leg", flat((120, 108, 86)), light=False)
+    p.paint("b_foot", flat((120, 108, 86)))
 
 
 def main():
