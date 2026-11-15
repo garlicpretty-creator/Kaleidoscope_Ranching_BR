@@ -331,6 +331,18 @@ for (const item of ITEMS) {
   else if (!entry.prompt && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
 }
 
+// --- Simplified Chinese names (data/zh_cn.js) ---------------------------------
+
+{
+  const { toSimplified, TRADITIONAL_HINTS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/zh_cn.js")).href);
+  const { ANIMAL_NAMES } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/items.js")).href);
+  const names = [...ITEMS.filter((i) => i.owner !== "m2"), ...BLOCKS.filter((b) => b.owner !== "m2")].map((row) => [row.id, row.zh]);
+  for (const [id, zh] of [...names, ...ANIMAL_NAMES.map(([id, zh]) => [id, zh])]) {
+    const left = [...toSimplified(zh)].filter((ch) => TRADITIONAL_HINTS.includes(ch));
+    if (left.length) fail(`zh_CN name of "${id}" (${toSimplified(zh)}) still has Traditional characters: ${left.join("")}; add them to data/zh_cn.js`);
+  }
+}
+
 if (errors.length) {
   console.error(`validate: ${errors.length} problem(s)`);
   for (const message of errors) console.error("  - " + message);

@@ -24,6 +24,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const load = (name) => import(pathToFileURL(join(root, "packs", "BP", "scripts", "data", name)).href);
 const { ITEMS, NAMESPACE, ANIMAL_NAMES } = await load("items.js");
 const { BLOCKS } = await load("blocks.js");
+const { toSimplified } = await load("zh_cn.js");
 
 const LANGUAGES = ["en_US", "zh_TW", "zh_CN"];
 const fragmentsDir = join(root, "tools", "fragments");
@@ -35,8 +36,8 @@ const errors = [];
 
 // --- Language files -------------------------------------------------------
 
-// Strings that do not come from a registry. zh_CN registry names currently
-// fall back to zh_TW until the registries gain a zh_CN column.
+// Strings that do not come from a registry. Registry names in zh_CN are made
+// from the zh_TW names by data/zh_cn.js.
 const STATIC = {
   en_US: {
     "pack.name": "Kaleidoscope Ranching",
@@ -160,14 +161,15 @@ const STATIC = {
 function registryEntries(language) {
   const column = language === "en_US" ? "en" : "zh";
   const eggWord = { en_US: " Spawn Egg", zh_TW: "生怪蛋", zh_CN: "刷怪蛋" }[language];
+  const localize = language === "zh_CN" ? toSimplified : (text) => text;
   const entries = Object.entries(STATIC[language]);
   for (const [id, zh, en] of ANIMAL_NAMES) {
-    const name = column === "en" ? en : zh;
+    const name = column === "en" ? en : localize(zh);
     entries.push([`entity.${NAMESPACE}:${id}.name`, name]);
     entries.push([`item.spawn_egg.entity.${NAMESPACE}:${id}.name`, name + eggWord]);
   }
-  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}.name`, item[column]]);
-  for (const block of BLOCKS) if (block.owner !== "m2") entries.push([`tile.${NAMESPACE}:${block.id}.name`, block[column]]);
+  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}.name`, localize(item[column])]);
+  for (const block of BLOCKS) if (block.owner !== "m2") entries.push([`tile.${NAMESPACE}:${block.id}.name`, localize(block[column])]);
   return entries;
 }
 
