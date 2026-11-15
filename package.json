@@ -1,0 +1,10 @@
+{
+  "name": "kaleidoscope-ranching",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate.mjs",
+    "art": "python3 tools/gen_chicken.py",
+    "build": "node tools/validate.mjs && bash tools/build.sh"
+  }
+}

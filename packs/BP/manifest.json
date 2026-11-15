@@ -1,0 +1,46 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "pack.name",
+    "description": "pack.description",
+    "uuid": "54cfbd31-aa9e-47fa-9672-9e735de91a8e",
+    "version": [0, 0, 1],
+    "min_engine_version": [1, 26, 1]
+  },
+  "metadata": {
+    "product_type": "addon",
+    "authors": ["garlicpretty-creator"]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "0800c167-8478-4faf-857b-b4dd04ddd55a",
+      "version": [0, 0, 1]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "ddf85f80-006e-4843-9cf1-9dff4740da0e",
+      "entry": "scripts/main.js",
+      "version": [0, 0, 1]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "838610ca-31db-4a0d-88b8-11740825d5db",
+      "version": [0, 0, 1]
+    },
+    {
+      "uuid": "9944f731-cc4c-4299-bdd5-f8799c1d832e",
+      "version": [1, 6, 6]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.7.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0"
+    }
+  ]
+}
