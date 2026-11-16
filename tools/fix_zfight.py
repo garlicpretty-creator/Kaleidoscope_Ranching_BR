@@ -54,9 +54,9 @@ def compile_condition(text):
 
 
 def entity_envs():
-    for baby, sex, sheared, saddled in itertools.product((0, 1), ("female", "male"), (0, 1), (0, 1)):
+    for baby, sex, sheared, saddled, asleep in itertools.product((0, 1), ("female", "male"), (0, 1), (0, 1), (0, 1)):
         yield {"is_baby": baby, "is_sheared": sheared, "is_saddled": saddled,
-               "prop": {"kaleidoscope_ranching:sex": sex}, "state": {}}
+               "prop": {"kaleidoscope_ranching:sex": sex, "kaleidoscope_ranching:sleeping": asleep}, "state": {}}
 
 
 def state_values(spec):

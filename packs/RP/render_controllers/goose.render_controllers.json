@@ -68,6 +68,12 @@
         },
         {
           "b_leg_right": "q.is_baby"
+        },
+        {
+          "lids_a": "!q.is_baby && q.property('kaleidoscope_ranching:sleeping')"
+        },
+        {
+          "lids_b": "q.is_baby && q.property('kaleidoscope_ranching:sleeping')"
         }
       ]
     }

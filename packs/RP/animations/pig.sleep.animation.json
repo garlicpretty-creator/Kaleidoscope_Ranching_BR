@@ -5,71 +5,76 @@
       "loop": true,
       "bones": {
         "body": {
+          "rotation": [
+            0,
+            0,
+            90
+          ],
           "position": [
             0,
-            "q.is_baby ? -3 : -6",
+            "q.is_baby ? -7 : -5",
             0
           ]
         },
         "a_leg_fl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -20,
+            0,
+            0
           ]
         },
         "a_leg_fr": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -20,
+            0,
+            0
           ]
         },
         "a_leg_bl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            20,
+            0,
+            0
           ]
         },
         "a_leg_br": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            20,
+            0,
+            0
           ]
         },
         "b_leg_fl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -20,
+            0,
+            0
           ]
         },
         "b_leg_fr": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -20,
+            0,
+            0
           ]
         },
         "b_leg_bl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            20,
+            0,
+            0
           ]
         },
         "b_leg_br": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            20,
+            0,
+            0
           ]
         },
         "head": {
           "rotation": [
-            18,
+            -10,
             0,
             0
           ]
