@@ -278,6 +278,59 @@ for (const path of walk(join(bp, "entities")).filter((p) => p.endsWith(".json"))
   }
 }
 
+// --- 3a. Animal rigs: the bones everything else is written against ---------------
+// The walk animation (tools/gen_art.py drops a bone it cannot find without a word), the sleep
+// poses and eyelids (tools/gen_sleep.mjs), the render controllers and the butcher rack all go by
+// bone name. A reshaped model has to keep them.
+{
+  const QUAD = ["leg_fl", "leg_fr", "leg_bl", "leg_br"];
+  const BIRD = ["leg_left", "leg_right", "wing_left", "wing_right"];
+  const LIMBS = { cow: QUAD, buffalo: QUAD, yak: QUAD, sheep: QUAD, goat: QUAD, pig: QUAD, rabbit: QUAD, chicken: BIRD, duck: BIRD, goose: BIRD };
+  const geoBones = new Map();
+  for (const path of walk(join(rp, "models", "entity")).filter((p) => p.endsWith(".json"))) {
+    for (const geo of readJson(path)["minecraft:geometry"] ?? []) geoBones.set(geo.description.identifier, geo.bones ?? []);
+  }
+  for (const animal of ANIMALS) {
+    const client = clientEntities.get(`kaleidoscope_ranching:${animal.id}`);
+    if (!client) continue; // reported above
+    const { description } = client;
+    const bones = geoBones.get(description.geometry?.default) ?? [];
+    const names = new Set(bones.map((bone) => bone.name));
+    const where = `${animal.id} model`;
+    const need = (bone, why) => names.has(bone) || fail(`${where}: missing bone "${bone}" (${why})`);
+
+    for (const bone of ["body", "head", "a_head", "b_head", "a_torso", "b_torso"]) need(bone, "rig");
+    for (const limb of LIMBS[animal.id] ?? []) for (const age of ["a", "b"]) need(`${age}_${limb}`, "walk animation and sleep pose");
+    for (const bone of ["lids_a", "lids_b"]) need(bone, "closed eyes while asleep: tools/gen_sleep.mjs found no eye on the head's front face");
+    for (const bone of bones) {
+      if (bone.parent && !names.has(bone.parent)) fail(`${where}: bone "${bone.name}" hangs from missing bone "${bone.parent}"`);
+    }
+
+    // Every bone an animation moves or a render controller shows and hides must exist.
+    const animationFiles = walk(join(rp, "animations")).filter((p) => p.endsWith(".json")).map(readJson);
+    for (const [key, animId] of Object.entries(description.animations ?? {})) {
+      if (animId.startsWith("animation.common.")) continue;
+      const anim = animationFiles.map((file) => file.animations?.[animId]).find(Boolean);
+      for (const bone of Object.keys(anim?.bones ?? {})) need(bone, `animation "${key}"`);
+      if (key === "walk") {
+        for (const limb of LIMBS[animal.id] ?? []) {
+          for (const age of ["a", "b"]) if (!anim?.bones?.[`${age}_${limb}`]) fail(`${where}: walk animation does not move "${age}_${limb}"`);
+        }
+      }
+    }
+    for (const rcId of description.render_controllers ?? []) {
+      const rc = renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]);
+      for (const entry of rc?.part_visibility ?? []) {
+        const bone = Object.keys(entry)[0];
+        if (bone !== "*") need(bone, "render controller part_visibility");
+      }
+    }
+    // Sexed, aged and shearable parts are switched by bone-name prefix (tools/art/animals.py).
+    if (animal.id === "sheep" && !bones.some((bone) => bone.name.startsWith("wool_"))) fail(`${where}: no wool_ bone to hide when sheared`);
+    if (animal.id === "pig") need("saddle", "shown when saddled");
+  }
+}
+
 // --- 4. Registries against generated item and block files ----------------
 
 const fileIds = (dir, key) =>
