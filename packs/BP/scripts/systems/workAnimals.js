@@ -27,6 +27,7 @@ import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, dropItems, give } from "../core/inventory.js";
 import { BLANKET, wakeNear } from "./sleep.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const HARNESS_HEARTS = 3;
 export const HERD_RADIUS = 24;
@@ -54,7 +55,7 @@ const GATE_TOP = rid("pen_gate_top");
 const OPEN = "kaleidoscope_ranching:open";
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}`, with: values });
 }
 
 const leashHolder = (entity) => {

@@ -40,10 +40,11 @@
         "identifier": "geometry.kaleidoscope_ranching.rug",
         "bone_visibility": {}
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:rug.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_rug",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {
@@ -135,7 +136,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_white",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -146,7 +147,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_orange",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -157,7 +158,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_magenta",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -168,7 +169,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_light_blue",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -179,7 +180,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_yellow",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -190,7 +191,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_lime",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -201,7 +202,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_pink",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -212,7 +213,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_gray",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -223,7 +224,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_light_gray",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -234,7 +235,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_cyan",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -245,7 +246,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_purple",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -256,7 +257,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_blue",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -267,7 +268,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_brown",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -278,7 +279,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_green",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -289,7 +290,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_red",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -300,7 +301,7 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_rug_black",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }

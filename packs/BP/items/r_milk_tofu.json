@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_milk_tofu",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:milk_tofu.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 3,

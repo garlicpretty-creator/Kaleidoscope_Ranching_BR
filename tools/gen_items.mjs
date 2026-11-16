@@ -20,8 +20,6 @@ const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
 const FORMAT = "1.21.60";
 const LARGE_CARCASSES = new Set(ANIMALS.filter((a) => a.largeCarcass).map((a) => a.carcass));
 
-const tierOf = (id) => (id.endsWith("_superb") ? 2 : id.endsWith("_fine") ? 1 : 0);
-
 function food(nutrition, saturation, extra = {}) {
   return {
     "minecraft:food": { nutrition, saturation_modifier: saturation, can_always_eat: extra.always ?? false, ...(extra.converts ? { using_converts_to: extra.converts } : {}) },
@@ -94,8 +92,7 @@ function componentsFor(item) {
   const tags = [];
   switch (item.category) {
     case "milk": {
-      const t = tierOf(item.id);
-      Object.assign(c, food([2, 3, 4][t], [0.4, 0.6, 0.8][t], { drink: true, converts: "minecraft:glass_bottle", always: true }));
+      Object.assign(c, food(2, 0.4, { drink: true, converts: "minecraft:glass_bottle", always: true }));
       stack = 16;
       tags.push(`${NAMESPACE}:milk`);
       break;
@@ -153,6 +150,9 @@ function componentsFor(item) {
 
   return {
     "minecraft:icon": `kr_${item.id}`,
+    // Name the language key outright: items in a creative catalog group are otherwise looked up
+    // as item.<id> (no .name) and showed their raw key in game.
+    "minecraft:display_name": { value: `item.${rid(item.id)}.name` },
     "minecraft:max_stack_size": stack,
     ...c,
     ...(tags.length ? { "minecraft:tags": { tags } } : {}),
@@ -250,11 +250,9 @@ const RECIPES = [
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),
   // ## these simple outlets keep the items useful until then.
-  // Quality chicken eggs and goose eggs work wherever a vanilla egg does
+  // Goose eggs work wherever a vanilla egg does
   // (Cookery's egg dishes and the vanilla cake take only minecraft:egg).
-  ...["egg_fine", "egg_superb", "goose_egg", "goose_egg_fine", "goose_egg_superb"].map((id) =>
-    shapeless(`egg_from_${id}`, [{ item: rid(id) }], "minecraft:egg", id.startsWith("goose") ? 2 : 1)
-  ),
+  shapeless("egg_from_goose_egg", [{ item: rid("goose_egg") }], "minecraft:egg", 2),
   // Restores the vanilla goat horn, which Ranching's goats no longer drop by ramming.
   shapeless("goat_horn", [{ item: rid("billy_goat_horn") }], "minecraft:goat_horn"),
   shapeless("bone_meal_from_cattle_horn", [{ item: rid("cattle_horn") }], "minecraft:bone_meal", 3),
@@ -348,9 +346,9 @@ writeFresh(
       "minecraft:item": {
         description: {
           identifier: rid(item.id),
-          // Dishes sit with Cookery's foods in the creative inventory.
+          // Dishes and their uncooked steps sit with Cookery's foods in the creative inventory.
           menu_category:
-            item.category === "dish"
+            item.category === "dish" || item.category === "prep"
               ? { category: "equipment", group: "kaleidoscope_cookery:itemGroup.name.foods" }
               : { category: MENU[item.category] ?? "items" },
         },

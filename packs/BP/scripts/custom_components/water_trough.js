@@ -13,6 +13,7 @@ import { T } from "../ui/text.js";
 import { clockBlockEvents } from "../core/blockClock.js";
 import { WASHING } from "../data/processing.js";
 import { consumeMainHand, give } from "../core/inventory.js";
+import { showActionBar } from "../core/actionBar.js";
 
 const NS = "kaleidoscope_ranching";
 
@@ -23,14 +24,14 @@ function wash(block, player, held) {
   if (!out) return false;
   const level = getState(block, "water");
   if (level <= 0) {
-    player.onScreenDisplay.setActionBar({ translate: `${NS}.message.wash.no_water` });
+    showActionBar(player, { translate: `${NS}.message.wash.no_water` });
     return true;
   }
   consumeMainHand(player);
   give(player, `${NS}:${out}`, 1);
   setStates(block, { water: level - 1 });
   block.dimension.playSound("bucket.empty_water", block.location);
-  player.onScreenDisplay.setActionBar({ translate: `${NS}.message.wash.done`, with: [`${level - 1}`, `${CARE.WATER_LEVELS_PER_BUCKET}`] });
+  showActionBar(player, { translate: `${NS}.message.wash.done`, with: [`${level - 1}`, `${CARE.WATER_LEVELS_PER_BUCKET}`] });
   return true;
 }
 

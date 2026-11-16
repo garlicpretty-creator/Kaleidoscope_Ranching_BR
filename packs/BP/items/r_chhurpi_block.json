@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_chhurpi_block",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:chhurpi_block.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 3,

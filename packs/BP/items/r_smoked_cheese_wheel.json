@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_smoked_cheese_wheel",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:smoked_cheese_wheel.name"
+      },
       "minecraft:max_stack_size": 16
     }
   }

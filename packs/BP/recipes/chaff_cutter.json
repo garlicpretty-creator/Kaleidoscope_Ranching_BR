@@ -26,6 +26,14 @@
     "result": {
       "item": "kaleidoscope_ranching:chaff_cutter",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:iron_ingot"
+      },
+      {
+        "item": "minecraft:shears"
+      }
+    ]
   }
 }

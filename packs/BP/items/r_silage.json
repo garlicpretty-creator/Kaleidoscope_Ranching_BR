@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_silage",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:silage.name"
+      },
       "minecraft:max_stack_size": 64
     }
   }

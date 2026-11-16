@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_cured_pork_belly",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:cured_pork_belly.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 5,

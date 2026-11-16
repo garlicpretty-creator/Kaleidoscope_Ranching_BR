@@ -1,8 +1,6 @@
 entity.kr_example:alpaca.name=羊駝
 item.spawn_egg.entity.kr_example:alpaca.name=羊駝生怪蛋
 item.kr_example:alpaca_milk.name=羊駝奶
-item.kr_example:alpaca_milk_fine.name=優良羊駝奶
-item.kr_example:alpaca_milk_superb.name=極品羊駝奶
 item.kr_example:alpaca_carcass.name=羊駝屠體
 item.kr_example:hay_cube.name=乾草塊
 item.kr_example:alpaca_yogurt.name=羊駝優格

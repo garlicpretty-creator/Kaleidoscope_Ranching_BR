@@ -5,8 +5,8 @@
 //   getHearts(e)            0–5
 //   getAffection / setAffection (points 0–100; M1 uses it for inheritance)
 //   needsMetToday(e)        M1 breeding check: both parents' needs met today
-//   feedTierToday(e)        M3 quality: tier of today's feed (0 if unfed)
-//   lastDayTier(e)          M3 quality: tier the animal ate on its last settled day
+//   feedTierToday(e)        tier of today's feed (0 if unfed)
+//   lastDayTier(e)          tier the animal ate on its last settled day
 
 import { world } from "@minecraft/server";
 import { CARE, CFG_CLEAN_NEED } from "../data/care_config.js";

@@ -11,6 +11,36 @@
     "kr_butcher_rack": {
       "textures": "textures/blocks/ranching/butcher_rack"
     },
+    "kr_butcher_rack_buffalo": {
+      "textures": "textures/blocks/ranching/butcher_rack_buffalo"
+    },
+    "kr_butcher_rack_chicken": {
+      "textures": "textures/blocks/ranching/butcher_rack_chicken"
+    },
+    "kr_butcher_rack_cow": {
+      "textures": "textures/blocks/ranching/butcher_rack_cow"
+    },
+    "kr_butcher_rack_duck": {
+      "textures": "textures/blocks/ranching/butcher_rack_duck"
+    },
+    "kr_butcher_rack_goat": {
+      "textures": "textures/blocks/ranching/butcher_rack_goat"
+    },
+    "kr_butcher_rack_goose": {
+      "textures": "textures/blocks/ranching/butcher_rack_goose"
+    },
+    "kr_butcher_rack_pig": {
+      "textures": "textures/blocks/ranching/butcher_rack_pig"
+    },
+    "kr_butcher_rack_rabbit": {
+      "textures": "textures/blocks/ranching/butcher_rack_rabbit"
+    },
+    "kr_butcher_rack_sheep": {
+      "textures": "textures/blocks/ranching/butcher_rack_sheep"
+    },
+    "kr_butcher_rack_yak": {
+      "textures": "textures/blocks/ranching/butcher_rack_yak"
+    },
     "kr_butter_churn": {
       "textures": "textures/blocks/ranching/butter_churn"
     },

@@ -10,6 +10,9 @@
     },
     "components": {
       "minecraft:icon": "kr_lion_head_meatballs",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:lion_head_meatballs.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 11,

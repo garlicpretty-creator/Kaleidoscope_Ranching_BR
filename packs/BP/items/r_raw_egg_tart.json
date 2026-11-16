@@ -4,11 +4,15 @@
     "description": {
       "identifier": "kaleidoscope_ranching:raw_egg_tart",
       "menu_category": {
-        "category": "items"
+        "category": "equipment",
+        "group": "kaleidoscope_cookery:itemGroup.name.foods"
       }
     },
     "components": {
       "minecraft:icon": "kr_raw_egg_tart",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:raw_egg_tart.name"
+      },
       "minecraft:max_stack_size": 16
     }
   }

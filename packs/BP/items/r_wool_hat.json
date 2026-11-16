@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_wool_hat",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:wool_hat.name"
+      },
       "minecraft:max_stack_size": 1,
       "minecraft:wearable": {
         "slot": "slot.armor.head",

@@ -21,10 +21,11 @@
         "identifier": "geometry.kaleidoscope_ranching.milking_rack",
         "bone_visibility": {}
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:milking_rack.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_milking_rack",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

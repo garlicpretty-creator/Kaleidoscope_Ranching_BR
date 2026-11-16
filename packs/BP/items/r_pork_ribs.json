@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_pork_ribs",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:pork_ribs.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 2,

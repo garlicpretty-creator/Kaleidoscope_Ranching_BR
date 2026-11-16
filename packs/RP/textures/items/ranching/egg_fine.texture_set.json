@@ -1,8 +1,0 @@
-{
-  "format_version": "1.21.30",
-  "minecraft:texture_set": {
-    "color": "egg_fine",
-    "metalness_emissive_roughness_subsurface": "egg_fine_mers",
-    "normal": "egg_fine_normal"
-  }
-}

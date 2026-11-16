@@ -174,10 +174,15 @@ GEOMETRY = {
 # --------------------------------------------------------------------------
 # Block definitions
 # --------------------------------------------------------------------------
+# Model blocks render single-sided: plain alpha_test draws back faces too, so the
+# faces inside a model and faces that touch fought each other and flickered.
+# (The alfalfa crop keeps alpha_test: its crossed planes are seen from both sides.)
+SOLID = "alpha_test_single_sided"
+
 def mats(default, **named):
-    m = {"*": {"texture": default, "render_method": "alpha_test"}}
+    m = {"*": {"texture": default, "render_method": SOLID}}
     for k, v in named.items():
-        m[k] = {"texture": v, "render_method": "alpha_test"}
+        m[k] = {"texture": v, "render_method": SOLID}
     return m
 
 def box(x, y, z, w, h, d):
@@ -355,6 +360,9 @@ def block_defs():
 # --------------------------------------------------------------------------
 # Item definitions
 # --------------------------------------------------------------------------
+TOOLS = {"brush", "ranch_notebook", "ear_tag", "feed_bag", "manure_fork"}
+
+
 def item_defs():
     feed_tag = {"minecraft:tags": {"tags": [f"{NS}:feed"]}}
     I = {
@@ -385,11 +393,20 @@ def item_defs():
 R = []
 def it(i):
     return {"tag": i[4:]} if i.startswith("tag:") else {"item": i}
+def unlock(ingredients):
+    """1.20+ recipes need unlock data: shown once the player holds any ingredient (tags cannot unlock)."""
+    items = []
+    for ingredient in ingredients:
+        if "item" in ingredient and {"item": ingredient["item"]} not in items:
+            items.append({"item": ingredient["item"]})
+    return items or [{"context": "AlwaysUnlocked"}]
+
 def shaped(name, pattern, key, result, count=1, tag="crafting_table"):
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shaped": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "pattern": pattern,
         "key": {k: it(v) for k, v in key.items()},
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock([it(v) for v in key.values()])}}))
 def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
     ing = []
     for x in ingredients:
@@ -397,7 +414,8 @@ def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
         ing.append({**it(i if ":" in i else f"{NS}:{i}"), "count": n})
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shapeless": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "ingredients": ing,
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock(ing)}}))
 
 def recipes():
     P, I = "tag:minecraft:planks", "minecraft:iron_ingot"
@@ -622,15 +640,20 @@ def main():
             desc["menu_category"] = {"category": "none"}
         if d.get("states"):
             desc["states"] = d["states"]
-        body = {"description": desc, "components": d["components"]}
+        comps = {"minecraft:display_name": f"tile.{NS}:{name}.name", **d["components"]}
+        body = {"description": desc, "components": comps}
         if d.get("permutations"):
             body["permutations"] = d["permutations"]
         write_json(BP / "blocks" / f"{name}.json", {"format_version": FMT, "minecraft:block": body})
 
     for name, comps in item_defs().items():
+        # Tools go in the Equipment tab, like the other Ranching tools.
+        category = "equipment" if name in TOOLS else "items"
         write_json(BP / "items" / f"{name}.json", {"format_version": FMT, "minecraft:item": {
-            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": "items"}},
-            "components": {"minecraft:icon": f"kr_{name}", **comps}}})
+            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": category}},
+            # The explicit key keeps the name working inside a creative catalog group (gen_catalog.mjs).
+            "components": {"minecraft:icon": f"kr_{name}",
+                           "minecraft:display_name": {"value": f"item.{NS}:{name}.name"}, **comps}}})
 
     recipes()
     for name, data in R:

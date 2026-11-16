@@ -7,22 +7,14 @@
 //            record the start time and compare on collection; nothing ticks
 //            while the player is away.
 //
-// No 1.0.0 processed good is tiered. The quality of the milk or eggs that went
-// in scales the output `count` through QUALITY_YIELD instead.
-//
 // Identifiers without a namespace belong to `kaleidoscope_ranching:`.
-
-import { tierIds } from "./items.js";
 
 const DAY = 24000;
 
-const ANY_COW_LIKE_MILK = [...tierIds("cow_milk"), ...tierIds("goat_milk"), ...tierIds("buffalo_milk")];
-const ANY_YAK_MILK = tierIds("yak_milk");
+const ANY_COW_LIKE_MILK = ["cow_milk", "goat_milk", "buffalo_milk"];
+const ANY_YAK_MILK = ["yak_milk"];
 const ANY_MILK = [...ANY_COW_LIKE_MILK, ...ANY_YAK_MILK];
-const ANY_DUCK_EGG = tierIds("duck_egg");
-
-/** Output multiplier by the quality tier of the milk or egg that went in. */
-export const QUALITY_YIELD = { plain: 1, fine: 1.5, superb: 2 };
+const ANY_DUCK_EGG = ["duck_egg"];
 
 export const PROCESSING_RECIPES = [
   // Butter churn
@@ -32,9 +24,9 @@ export const PROCESSING_RECIPES = [
 
   // Cheese press, then aging rack
   // 1.1 起司線: the press makes a cheese per milk (1.0 made fresh cheese from any milk).
-  { id: "press/fresh_cheese", station: "cheese_press", inputs: [{ anyOf: tierIds("cow_milk"), count: 3 }], outputs: [{ item: "fresh_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
-  { id: "press/goat_cheese", station: "cheese_press", inputs: [{ anyOf: tierIds("goat_milk"), count: 3 }], outputs: [{ item: "goat_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
-  { id: "press/mozzarella", station: "cheese_press", inputs: [{ anyOf: tierIds("buffalo_milk"), count: 3 }], outputs: [{ item: "mozzarella", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/fresh_cheese", station: "cheese_press", inputs: [{ anyOf: ["cow_milk"], count: 3 }], outputs: [{ item: "fresh_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/goat_cheese", station: "cheese_press", inputs: [{ anyOf: ["goat_milk"], count: 3 }], outputs: [{ item: "goat_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/mozzarella", station: "cheese_press", inputs: [{ anyOf: ["buffalo_milk"], count: 3 }], outputs: [{ item: "mozzarella", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
   { id: "press/chhurpi", station: "cheese_press", inputs: [{ anyOf: ANY_YAK_MILK, count: 3 }], outputs: [{ item: "chhurpi", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
   { id: "press/ricotta", station: "cheese_press", inputs: [{ item: "whey", count: 3 }], outputs: [{ item: "ricotta", count: 1 }], ticks: DAY / 4 },
   { id: "press/milk_tofu", station: "cheese_press", inputs: [{ item: "skim_milk", count: 3 }], outputs: [{ item: "milk_tofu", count: 2 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
@@ -74,7 +66,7 @@ PROCESSING_RECIPES.push(
 
 // --- 1.1 蛋奶線 -----------------------------------------------------------------
 
-const ANY_CHICKEN_EGG = ["minecraft:egg", "egg_fine", "egg_superb"];
+const ANY_CHICKEN_EGG = ["minecraft:egg"];
 
 PROCESSING_RECIPES.push(
   // The separator is automated (AUTO_STATIONS): milk from the container above, cream and skim milk below.

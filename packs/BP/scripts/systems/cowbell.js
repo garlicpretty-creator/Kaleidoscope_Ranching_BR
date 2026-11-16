@@ -8,6 +8,7 @@
 import { system } from "@minecraft/server";
 import { getAffection } from "../core/husbandry.js";
 import { isRanchAnimal } from "../core/animal.js";
+import { showActionBar } from "../core/actionBar.js";
 import { wakeNear } from "./sleep.js";
 
 export const CALL_RADIUS = 32;
@@ -15,7 +16,7 @@ export const CALL_RADIUS = 32;
 export const BOND_HEARTS = 3;
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.cowbell.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.cowbell.${key}`, with: values });
 }
 
 export function ring(player) {

@@ -46,7 +46,7 @@
   "breedItems": ["my_pack:hay_cube", "kaleidoscope_ranching:mixed_feed"],
   "carcass": "my_pack:alpaca_carcass",
   "largeCarcass": true,
-  "dailyProduct": { "via": "milking_pail", "items": ["my_pack:alpaca_milk", "my_pack:alpaca_milk_fine", "my_pack:alpaca_milk_superb"] },
+  "dailyProduct": { "via": "milking_pail", "items": ["my_pack:alpaca_milk"] },
   "care": { "eats": ["grass", "mixed", "concentrate"], "treat": "kaleidoscope_ranching:alfalfa_cake", "brushDrops": [["minecraft:white_wool", 0.2]] }
 }
 ```
@@ -59,7 +59,7 @@
 | `breedItems` | 懷孕型必要 | 餵這些物品會進入發情 |
 | `carcass` | 否 | 死亡時掉落的屠體物品；沒有的話死亡不掉落任何東西 |
 | `largeCarcass` | 否 | `true` 時屠體會記住公母、公的多切一份；屠體物品必須 `max_stack_size: 1` |
-| `dailyProduct` | 否 | `via` 為 `"milking_pail"`（只限懷孕型）或 `"nest_box"`（只限生蛋型）；`items` 依序是普通、優良、極品三個物品 |
+| `dailyProduct` | 否 | `via` 為 `"milking_pail"`（只限懷孕型）或 `"nest_box"`（只限生蛋型）；`items` 是產物的物品 id（產物不分品質；舊版傳入三個 id 仍可接受，只用第一個） |
 | `fertilizedEgg` | 生蛋型必要 | 受精蛋物品，在巢箱或孵化器孵出這種動物 |
 | `care.eats` | 否 | 飼槽裡吃哪些飼料：`grass`、`grain`、`veg`、`mixed`、`concentrate`；預設 `mixed`、`concentrate` |
 | `care.treat` | 否 | 最愛的零食，每天可餵一次，加半顆心 |
@@ -89,7 +89,7 @@
 {
   "id": "my_pack:alpaca_yogurt",
   "station": "fermenting_jar",
-  "inputs": [{ "anyOf": ["my_pack:alpaca_milk", "my_pack:alpaca_milk_fine", "my_pack:alpaca_milk_superb"], "count": 1 }],
+  "inputs": [{ "item": "my_pack:alpaca_milk", "count": 1 }],
   "outputs": [{ "item": "my_pack:alpaca_yogurt", "count": 1 }],
   "ticks": 24000
 }
@@ -97,7 +97,7 @@
 
 - `inputs` 每格是 `{ item, count }` 或 `{ anyOf, count }`。
 - `ticks` 是加工時間（24000 等於一個遊戲日，最多 7 天）。
-- 成品數量會依投入材料中最低的品質放大，規則和內建配方相同。判斷品質的方式是物品 id 結尾的 `_fine`、`_superb`。
+- 成品數量固定是 `outputs` 寫的數量（產物不分品質）。
 
 ## register_butcher
 

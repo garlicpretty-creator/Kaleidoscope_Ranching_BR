@@ -29,10 +29,11 @@
           "open": "q.block_state('kaleidoscope_ranching:open')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:pen_gate.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_pen_gate",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

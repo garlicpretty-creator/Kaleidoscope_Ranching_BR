@@ -4,11 +4,14 @@
     "description": {
       "identifier": "kaleidoscope_ranching:ear_tag",
       "menu_category": {
-        "category": "items"
+        "category": "equipment"
       }
     },
     "components": {
-      "minecraft:icon": "kr_ear_tag"
+      "minecraft:icon": "kr_ear_tag",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:ear_tag.name"
+      }
     }
   }
 }

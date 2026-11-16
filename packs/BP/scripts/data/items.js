@@ -13,18 +13,6 @@ import { DISHES, DISH_PREPS } from "./dishes.js";
 
 export const NAMESPACE = "kaleidoscope_ranching";
 
-/** Quality tiers. The plain tier has no suffix so recipes can name it directly. */
-export const QUALITY_TIERS = [
-  { id: "plain", suffix: "", zh: "", en: "" },
-  { id: "fine", suffix: "_fine", zh: "優良", en: "Fine " },
-  { id: "superb", suffix: "_superb", zh: "極品", en: "Superb " },
-];
-
-/** Expands one base item into its three quality tiers. */
-function tiered(id, zh, en, category) {
-  return QUALITY_TIERS.map((tier) => [id + tier.suffix, tier.zh + zh, tier.en + en, category]);
-}
-
 /** [id, zh_TW, en_US] for every animal; also used for entity names. */
 export const ANIMAL_NAMES = [
   ["cow", "牛", "Cow"],
@@ -39,21 +27,21 @@ export const ANIMAL_NAMES = [
   ["yak", "氂牛", "Yak"],
 ];
 
+// ## Milk and eggs have no quality grades (the player's call, replacing the
+// ## proposal's three tiers).
 const MILK = [
-  ...tiered("cow_milk", "牛奶", "Cow Milk", "milk"),
-  ...tiered("goat_milk", "山羊奶", "Goat Milk", "milk"),
-  ...tiered("buffalo_milk", "水牛奶", "Buffalo Milk", "milk"),
-  ...tiered("yak_milk", "氂牛奶", "Yak Milk", "milk"),
+  ["cow_milk", "牛奶", "Cow Milk", "milk"],
+  ["goat_milk", "山羊奶", "Goat Milk", "milk"],
+  ["buffalo_milk", "水牛奶", "Buffalo Milk", "milk"],
+  ["yak_milk", "氂牛奶", "Yak Milk", "milk"],
 ];
 
-// ## The plain unfertilized chicken egg is the vanilla `minecraft:egg`, so every
-// ## existing Cookery egg recipe keeps working. Only its two better tiers and
-// ## the fertilized egg are Ranching items.
+// ## The unfertilized chicken egg is the vanilla `minecraft:egg`, so every
+// ## existing Cookery egg recipe keeps working. Only the fertilized egg is a
+// ## Ranching item.
 const EGGS = [
-  ["egg_fine", "優良雞蛋", "Fine Egg", "egg"],
-  ["egg_superb", "極品雞蛋", "Superb Egg", "egg"],
-  ...tiered("duck_egg", "鴨蛋", "Duck Egg", "egg"),
-  ...tiered("goose_egg", "鵝蛋", "Goose Egg", "egg"),
+  ["duck_egg", "鴨蛋", "Duck Egg", "egg"],
+  ["goose_egg", "鵝蛋", "Goose Egg", "egg"],
   ["fertilized_chicken_egg", "受精雞蛋", "Fertilized Chicken Egg", "fertilized_egg"],
   ["fertilized_duck_egg", "受精鴨蛋", "Fertilized Duck Egg", "fertilized_egg"],
   ["fertilized_goose_egg", "受精鵝蛋", "Fertilized Goose Egg", "fertilized_egg"],
@@ -275,8 +263,3 @@ export const ITEMS = [
   ...DISHES.map((dish) => [dish.id, dish.zh, dish.en, "dish", "m5"]),
   ...DISH_PREPS.map((prep) => [prep.id, prep.zh, prep.en, "prep", "m5"]),
 ].map(([id, zh, en, category, owner = "ranching"]) => ({ id, zh, en, category, owner }));
-
-/** All three tier identifiers for a tiered base item, plain tier first. */
-export function tierIds(baseId) {
-  return QUALITY_TIERS.map((tier) => baseId + tier.suffix);
-}

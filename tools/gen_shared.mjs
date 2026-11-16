@@ -288,6 +288,47 @@ function parseLang(text) {
     });
 }
 
+// --- Tooltip lines under item and block names --------------------------------
+
+// ## Like Cookery: under every Ranching item or block name, the add-on's name in
+// ## blue, and for food or drink that places a block, "placeable food/drink" in purple. Bedrock
+// ## shows the name's \n as a new line in the tooltip.
+const TOOLTIP = {
+  mod: { en_US: "Kaleidoscope Ranching", zh_TW: "森羅物語樂牧", zh_CN: "森罗物语乐牧" },
+  food: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
+  drink: { en_US: "Placeable drink", zh_TW: "可放置的飲品", zh_CN: "可放置的饮品" },
+};
+
+// Registry categories that are food even when not eaten as they are (the cheese wheel is cut first).
+const FOOD_CATEGORIES = new Set(["dairy", "dish", "prep", "meat", "cut", "mince", "cured", "offal", "egg", "preserved"]);
+const CATEGORY = new Map(ITEMS.map((item) => [`${NAMESPACE}:${item.id}`, item.category]));
+
+/** {item id: "food" | "drink"} for food and drink that place a block (minecraft:block_placer). Nothing else is labelled. */
+function placeableItems() {
+  const out = {};
+  const dir = join(root, "packs", "BP", "items");
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const item = JSON.parse(readFileSync(join(dir, file), "utf8"))["minecraft:item"];
+    const components = item?.components ?? {};
+    if (!components["minecraft:block_placer"]) continue;
+    const id = item.description.identifier;
+    const category = CATEGORY.get(id);
+    if (components["minecraft:use_animation"] === "drink" || category === "milk") out[id] = "drink";
+    else if (components["minecraft:food"] || FOOD_CATEGORIES.has(category)) out[id] = "food";
+  }
+  return out;
+}
+const PLACEABLE = placeableItems();
+
+function withTooltip(key, value, language) {
+  const match = /^(item|tile)\.(kaleidoscope_ranching:[a-z0-9_]+)\.name$/.exec(key);
+  if (!match) return value;
+  let text = `${value}\\n§9§o${TOOLTIP.mod[language]}§r`;
+  const placeable = match[1] === "item" && PLACEABLE[match[2]];
+  if (placeable) text += `\\n§d${TOOLTIP[placeable][language]}§r`;
+  return text;
+}
+
 for (const language of LANGUAGES) {
   const sections = [["registries", registryEntries(language)]];
   for (const name of fragments) {
@@ -301,7 +342,7 @@ for (const language of LANGUAGES) {
     for (const [key, value] of entries) {
       if (seen.has(key)) errors.push(`${language}: "${key}" defined by both ${seen.get(key)} and ${source}`);
       seen.set(key, source);
-      lines.push(`${key}=${value}`);
+      lines.push(`${key}=${withTooltip(key, value, language)}`);
     }
     lines.push("");
   }

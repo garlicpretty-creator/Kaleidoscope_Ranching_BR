@@ -8,6 +8,7 @@ import { ItemStack } from "@minecraft/server";
 import { rid } from "../core/ids.js";
 import { damageMainHand, give, mainHand } from "../core/inventory.js";
 import { isBlade } from "./butcherRack.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const STATE_CUT = rid("cut");
 export const SLICES = 4;
@@ -17,7 +18,7 @@ const WHEEL = rid("aged_cheese_wheel");
 const cutOf = (permutation) => Number(permutation?.getState(STATE_CUT) ?? 0);
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
 }
 
 /** What a broken wheel gives back, given how many slices were already cut. */

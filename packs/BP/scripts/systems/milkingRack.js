@@ -2,8 +2,8 @@
 //
 // Use the rack while leading a milkable adult female: she is tied to it (one
 // animal per rack). Use it again with nothing on a lead: she is handed back.
-// Once per game day, on the ranch clock, the rack milks her at the quality
-// M2 reports for today, taking an empty glass bottle from the container above
+// Once per game day, on the ranch clock, the rack milks her (no quality
+// grades), taking an empty glass bottle from the container above
 // and putting the milk into the container below (or on top of the rack when
 // there is none). It shares the pail's once-a-day stamp, so a cow milked by
 // hand is not milked again by the rack, and the other way round.
@@ -21,13 +21,13 @@ import { rid } from "../core/ids.js";
 import { dropItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { ensureKnot, findKnot, free, leash, ledBy } from "./hitchingPost.js";
-import { LAST_MILKED_DAY, milkTiers } from "./milking.js";
+import { LAST_MILKED_DAY, milkOf } from "./milking.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const MILKING_RACK = rid("milking_rack");
-const TIER_INDEX = { plain: 0, fine: 1, superb: 2 };
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.milking_rack.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.milking_rack.${key}`, with: values });
 }
 
 export const isMilkable = (animal) =>
@@ -61,13 +61,13 @@ export function tickMilkingRack(block) {
   if (!animal || !isMilkable(animal)) return undefined;
   const day = today();
   if (animal.getDynamicProperty(LAST_MILKED_DAY) === day) return undefined;
-  const { produces, quality } = production(animal, day);
+  const { produces } = production(animal, day);
   if (!produces) return undefined;
   const above = containerOf(block.above());
   if (!above || !takeFrom(above, ["minecraft:glass_bottle"], 1).length) return undefined;
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
-  const bottle = milkTiers(speciesOf(animal))[TIER_INDEX[quality]];
+  const bottle = milkOf(speciesOf(animal));
   const below = containerOf(block.below());
   if (!below || putInto(below, bottle, 1)) {
     const { x, y, z } = block.location;

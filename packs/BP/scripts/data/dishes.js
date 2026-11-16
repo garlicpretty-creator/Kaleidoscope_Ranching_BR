@@ -16,13 +16,12 @@
 
 const NS = "kaleidoscope_ranching";
 const r = (id) => (id.includes(":") ? id : `${NS}:${id}`);
-const tiers = (base) => [r(base), r(`${base}_fine`), r(`${base}_superb`)];
 const KC = (id) => `kaleidoscope_cookery:${id}`;
 
-/** Any Ranching milk, any quality. */
-export const ANY_MILK = ["cow_milk", "goat_milk", "buffalo_milk", "yak_milk"].flatMap(tiers);
-/** Any duck egg, any quality. */
-export const ANY_DUCK_EGG = tiers("duck_egg");
+/** Any Ranching milk. */
+export const ANY_MILK = ["cow_milk", "goat_milk", "buffalo_milk", "yak_milk"].map(r);
+/** A duck egg. */
+export const ANY_DUCK_EGG = [r("duck_egg")];
 
 const BOWL = "minecraft:bowl";
 
@@ -156,7 +155,7 @@ export const DISHES = [
   },
   {
     id: "lion_head_meatballs", zh: "紅燒獅子頭", en: "Braised Lion's Head Meatballs", food: [11, 0.8], station: "stockpot", carrier: BOWL, time: 400,
-    slots: [[r("pork_mince")], [r("pork_mince")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    slots: [[r("pork_mince")], [r("pork_mince")], ["minecraft:egg"]],
     look: ["bowl", [150, 80, 50]],
   },
   {
@@ -247,7 +246,7 @@ export const DISHES = [
   },
   {
     id: "truffle_eggs", zh: "松露炒蛋", en: "Truffle Scrambled Eggs", food: [9, 0.85], station: "wok", carrier: "", time: 200,
-    slots: [[r("truffle")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    slots: [[r("truffle")], ["minecraft:egg"]],
     look: ["plate", [240, 210, 110]],
   },
 
@@ -264,7 +263,7 @@ export const DISHES = [
   },
   {
     id: "ricotta_pancakes", zh: "瑞可塔鬆餅", en: "Ricotta Pancakes", food: [8, 0.75], station: "wok", carrier: "", time: 200,
-    slots: [[r("ricotta")], [KC("flour")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    slots: [[r("ricotta")], [KC("flour")], ["minecraft:egg"]],
     look: ["plate", [232, 196, 130]],
   },
   {
@@ -291,7 +290,7 @@ export const DISHES = [
 
 /**
  * Uncooked steps some dishes need first (crafting recipes), each made with any
- * quality of milk or egg. `with` lists one slot per ingredient; a slot that is
+ * milk or egg. `with` lists one slot per ingredient; a slot that is
  * a tag string accepts every item carrying that tag.
  */
 export const DISH_PREPS = [

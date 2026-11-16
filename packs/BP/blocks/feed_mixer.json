@@ -8,13 +8,14 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:feed_mixer.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.feed_mixer"
       },
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_feed_mixer",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:light_dampening": 0,

@@ -22,6 +22,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:trough.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.trough",
         "bone_visibility": {
@@ -31,11 +32,11 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_trough",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         },
         "feed": {
           "texture": "kr_feed_grass",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {
@@ -76,11 +77,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_grass",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -91,11 +92,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_grain",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -106,11 +107,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_veg",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -121,11 +122,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_mixed",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -136,11 +137,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_concentrate",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -151,11 +152,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_mixed",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }
@@ -166,11 +167,11 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "kr_trough",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             },
             "feed": {
               "texture": "kr_feed_grain",
-              "render_method": "alpha_test"
+              "render_method": "alpha_test_single_sided"
             }
           }
         }

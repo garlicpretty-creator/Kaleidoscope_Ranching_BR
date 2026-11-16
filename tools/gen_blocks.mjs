@@ -42,6 +42,8 @@ const DEFS = {
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
       ])
     ),
+    // Each animal has its own texture (art/blocks/butcher_rack_<id>.png, see tools/art/split_rack_texture.py).
+    materials: CARCASSES,
     collision: FULL,
     selection: FULL,
     seconds: 1.5,
@@ -180,7 +182,16 @@ const ROTATION = { north: 0, east: 270, south: 180, west: 90 };
 function blockJson(id, def) {
   const components = {
     "minecraft:geometry": { identifier: `geometry.${NS}.${id}`, bone_visibility: def.bones },
-    "minecraft:material_instances": { "*": { texture: `kr_${id}`, render_method: "alpha_test" } },
+    // Explicit name key, as for the items (gen_items.mjs).
+    "minecraft:display_name": `tile.${S(id)}.name`,
+    "minecraft:material_instances": {
+      // Single-sided: plain alpha_test also draws back faces, which flickered against touching faces.
+      "*": { texture: `kr_${id}`, render_method: "alpha_test_single_sided" },
+      // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).
+      ...Object.fromEntries(
+        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test_single_sided" }])
+      ),
+    },
     "minecraft:collision_box": def.collision,
     "minecraft:selection_box": def.selection,
     "minecraft:destructible_by_mining": { seconds_to_destroy: def.seconds },
@@ -212,7 +223,7 @@ function blockJson(id, def) {
         ...(def.textureByState
           ? def.textureByState.values.map((value) => ({
               condition: `${state(def.textureByState.state)} == '${value}'`,
-              components: { "minecraft:material_instances": { "*": { texture: def.textureByState.texture(value), render_method: "alpha_test" } } },
+              components: { "minecraft:material_instances": { "*": { texture: def.textureByState.texture(value), render_method: "alpha_test_single_sided" } } },
             }))
           : []),
       ],

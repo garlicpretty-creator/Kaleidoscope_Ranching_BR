@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_foie_gras_pate",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:foie_gras_pate.name"
+      },
       "minecraft:max_stack_size": 16,
       "minecraft:food": {
         "nutrition": 4,

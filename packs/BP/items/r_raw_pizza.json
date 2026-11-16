@@ -4,11 +4,15 @@
     "description": {
       "identifier": "kaleidoscope_ranching:raw_pizza",
       "menu_category": {
-        "category": "items"
+        "category": "equipment",
+        "group": "kaleidoscope_cookery:itemGroup.name.foods"
       }
     },
     "components": {
       "minecraft:icon": "kr_raw_pizza",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:raw_pizza.name"
+      },
       "minecraft:max_stack_size": 16
     }
   }

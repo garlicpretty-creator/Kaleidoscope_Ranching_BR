@@ -74,10 +74,51 @@
           "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:butcher_rack.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_butcher_rack",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
+        },
+        "cow": {
+          "texture": "kr_butcher_rack_cow",
+          "render_method": "alpha_test_single_sided"
+        },
+        "sheep": {
+          "texture": "kr_butcher_rack_sheep",
+          "render_method": "alpha_test_single_sided"
+        },
+        "goat": {
+          "texture": "kr_butcher_rack_goat",
+          "render_method": "alpha_test_single_sided"
+        },
+        "pig": {
+          "texture": "kr_butcher_rack_pig",
+          "render_method": "alpha_test_single_sided"
+        },
+        "chicken": {
+          "texture": "kr_butcher_rack_chicken",
+          "render_method": "alpha_test_single_sided"
+        },
+        "rabbit": {
+          "texture": "kr_butcher_rack_rabbit",
+          "render_method": "alpha_test_single_sided"
+        },
+        "duck": {
+          "texture": "kr_butcher_rack_duck",
+          "render_method": "alpha_test_single_sided"
+        },
+        "goose": {
+          "texture": "kr_butcher_rack_goose",
+          "render_method": "alpha_test_single_sided"
+        },
+        "buffalo": {
+          "texture": "kr_butcher_rack_buffalo",
+          "render_method": "alpha_test_single_sided"
+        },
+        "yak": {
+          "texture": "kr_butcher_rack_yak",
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

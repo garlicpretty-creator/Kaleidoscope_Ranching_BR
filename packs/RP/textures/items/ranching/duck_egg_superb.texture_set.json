@@ -1,8 +1,0 @@
-{
-  "format_version": "1.21.30",
-  "minecraft:texture_set": {
-    "color": "duck_egg_superb",
-    "metalness_emissive_roughness_subsurface": "duck_egg_superb_mers",
-    "normal": "duck_egg_superb_normal"
-  }
-}

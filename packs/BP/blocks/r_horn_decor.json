@@ -21,10 +21,11 @@
         "identifier": "geometry.kaleidoscope_ranching.horn_decor",
         "bone_visibility": {}
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:horn_decor.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_horn_decor",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

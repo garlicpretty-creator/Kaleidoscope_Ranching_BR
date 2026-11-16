@@ -8,7 +8,10 @@
       }
     },
     "components": {
-      "minecraft:icon": "kr_manure_item"
+      "minecraft:icon": "kr_manure_item",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:manure_item.name"
+      }
     }
   }
 }

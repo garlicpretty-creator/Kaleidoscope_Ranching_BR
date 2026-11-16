@@ -16,6 +16,7 @@ import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
+import { showActionBar } from "../core/actionBar.js";
 import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
@@ -46,7 +47,7 @@ function lookOf(carcass) {
 }
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.rack.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.rack.${key}`, with: values });
 }
 
 // --- 1.1 掛架風乾 ---------------------------------------------------------------

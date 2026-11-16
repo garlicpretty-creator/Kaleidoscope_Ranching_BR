@@ -1,7 +1,7 @@
 // Husbandry provider contract.
 //
 // ## M2 (affection, daily needs, settlement) owns the answers to "is this animal
-// ## well cared for today?" and "what quality does it produce?". M1 (breeding)
+// ## well cared for today?" and "does it produce today?". M1 (breeding)
 // ## and M3 (milking, laying, hatching) only ask. They ask through this module,
 // ## so M2 can be developed separately and plugged in with one call:
 // ##
@@ -10,13 +10,11 @@
 // ##
 // ## Every hook is optional. Missing hooks fall back to the defaults below,
 // ## which describe an animal with no care system: 0 hearts, always able to
-// ## breed, produces every day at plain quality.
+// ## breed, produces every day. (Products have no quality grades.)
 
 import { AFFECTION, FERTILIZED_CHANCE_BY_AFFECTION } from "../data/animals.js";
 import { speciesOf } from "./animal.js";
 import { emitRanchEvent } from "./events.js";
-
-/** @typedef {"plain" | "fine" | "superb"} Quality */
 
 const DEFAULTS = {
   /** Affection in hearts, AFFECTION.min..AFFECTION.max. */
@@ -30,12 +28,12 @@ const DEFAULTS = {
   },
 
   /**
-   * Whether the animal yields its daily product on `day`, and at what quality.
+   * Whether the animal yields its daily product on `day`.
    * Called once per animal per elapsed day when milk or eggs are collected.
-   * @returns {{ produces: boolean, quality: Quality }}
+   * @returns {{ produces: boolean }}
    */
   production(_entity, _day) {
-    return { produces: true, quality: "plain" };
+    return { produces: true };
   },
 
   /** Notification: two animals mated. `mother` is now pregnant (mammals only). */
@@ -73,11 +71,10 @@ export function canBreed(entity) {
   return safe("canBreed", true, entity) !== false;
 }
 
-/** @returns {{ produces: boolean, quality: Quality }} */
+/** @returns {{ produces: boolean }} (a provider's `quality` is ignored: products have no grades) */
 export function production(entity, day) {
   const result = safe("production", null, entity, day);
-  const quality = ["plain", "fine", "superb"].includes(result?.quality) ? result.quality : "plain";
-  return { produces: result?.produces !== false, quality };
+  return { produces: result?.produces !== false };
 }
 
 export function notifyMated(mother, father) {

@@ -28,10 +28,11 @@
           "busy": "q.block_state('kaleidoscope_ranching:busy')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:cheese_press.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_cheese_press",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

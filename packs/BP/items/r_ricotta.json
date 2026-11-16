@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_ricotta",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:ricotta.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 2,

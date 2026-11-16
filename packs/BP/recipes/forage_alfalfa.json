@@ -16,6 +16,11 @@
     "result": {
       "item": "kaleidoscope_ranching:forage",
       "count": 3
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:alfalfa"
+      }
+    ]
   }
 }

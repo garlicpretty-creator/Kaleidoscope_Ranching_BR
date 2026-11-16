@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_yogurt",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:yogurt.name"
+      },
       "minecraft:max_stack_size": 16,
       "minecraft:food": {
         "nutrition": 4,

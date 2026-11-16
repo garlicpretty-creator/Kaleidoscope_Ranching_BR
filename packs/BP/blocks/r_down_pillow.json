@@ -21,10 +21,11 @@
         "identifier": "geometry.kaleidoscope_ranching.down_pillow",
         "bone_visibility": {}
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:down_pillow.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_down_pillow",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

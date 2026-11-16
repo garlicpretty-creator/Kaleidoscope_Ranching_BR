@@ -12,6 +12,7 @@ const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data
 
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
+const WOOL_COLOR = `${NS}:wool_color`; // sheep only; see the set_color_N events
 const SLEEPING = `${NS}:sleeping`;
 const rid = (id) => (id.includes(":") ? id : `${NS}:${id}`);
 const g = (name) => `${NS}:${name}`;
@@ -364,7 +365,10 @@ function buildEntity(animal, t) {
   if (t.wool) {
     const all = range(16).map((i) => g(`color_${i}`));
     for (const i of range(16)) {
-      events[g(`set_color_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }] };
+      // The wool_color property mirrors minecraft:color for the render controller, which cannot read the colour itself.
+      events[g(`set_color_${i}`)] = {
+        sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }, { set_property: { [WOOL_COLOR]: i } }],
+      };
     }
     events[g("shear")] = { add: { component_groups: [g("sheared")] } };
     events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
@@ -391,6 +395,7 @@ function buildEntity(animal, t) {
         is_experimental: false,
         properties: {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
+          ...(t.wool ? { [WOOL_COLOR]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
           [SLEEPING]: { type: "bool", default: false, client_sync: true },
         },
       },

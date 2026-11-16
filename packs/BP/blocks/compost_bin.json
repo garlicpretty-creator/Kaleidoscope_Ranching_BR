@@ -22,6 +22,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:compost_bin.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.compost_bin",
         "bone_visibility": {
@@ -36,7 +37,7 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_compost_bin",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:light_dampening": 0,

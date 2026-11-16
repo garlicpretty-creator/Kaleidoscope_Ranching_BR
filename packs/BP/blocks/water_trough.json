@@ -16,6 +16,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:water_trough.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.water_trough",
         "bone_visibility": {
@@ -25,11 +26,11 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_water_trough",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         },
         "water": {
           "texture": "kr_water",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

@@ -12,6 +12,7 @@ import { EquipmentSlot, system } from "@minecraft/server";
 import { isRanchAnimal } from "../core/animal.js";
 import { rid } from "../core/ids.js";
 import { consumeMainHand, damageMainHand, isCreative, mainHand } from "../core/inventory.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const LASSO_RANGE = 8;
 export const APRON_SAVE_CHANCE = 0.3;
@@ -24,7 +25,7 @@ export const RUG_COLORS = [
 const COLOR_STATE = "kaleidoscope_ranching:color";
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}`, with: values });
 }
 
 /** Whether the player wears `itemId` in `slot` ("Chest", "Head"…). */
