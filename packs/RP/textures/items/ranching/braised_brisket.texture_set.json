@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "braised_brisket",
+    "metalness_emissive_roughness_subsurface": "braised_brisket_mers",
+    "normal": "braised_brisket_normal"
+  }
+}

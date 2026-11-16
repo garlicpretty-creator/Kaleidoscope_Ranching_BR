@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "food_waste",
+    "metalness_emissive_roughness_subsurface": "food_waste_mers",
+    "normal": "food_waste_normal"
+  }
+}

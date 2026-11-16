@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "kr_alfalfa_stage1",
+    "metalness_emissive_roughness_subsurface": "kr_alfalfa_stage1_mers",
+    "normal": "kr_alfalfa_stage1_normal"
+  }
+}

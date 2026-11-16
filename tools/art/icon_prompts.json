@@ -39,6 +39,7 @@
     "aged_cheese_wheel": { "prompt": "whole round aged cheese wheel with a hard orange-brown rind" },
     "cheese_slice": { "prompt": "wedge of yellow cheese with a few small holes" },
     "whey": { "prompt": "small glass bottle of pale greenish-yellow whey liquid, cork stopper" },
+    "food_waste": { "prompt": "small heap of mixed kitchen food scraps: carrot peels, cabbage leaves, bread crusts and an apple core" },
     "salted_duck_egg": { "prompt": "salted duck egg cut in half showing a bright orange yolk and white" },
     "century_egg": { "prompt": "century egg cut in half, dark translucent brown jelly white and dark green grey yolk" },
 

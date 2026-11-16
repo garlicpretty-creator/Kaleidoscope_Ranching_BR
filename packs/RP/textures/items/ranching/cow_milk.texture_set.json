@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "cow_milk",
-    "metalness_emissive_roughness": [
-      0,
-      0,
-      50
-    ]
+    "metalness_emissive_roughness_subsurface": "cow_milk_mers",
+    "normal": "cow_milk_normal"
   }
 }

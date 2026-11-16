@@ -62,5 +62,8 @@
   },
   "kaleidoscope_ranching:cheese_wheel": {
     "sound": "cloth"
+  },
+  "kaleidoscope_ranching:food_waste_bin": {
+    "sound": "wood"
   }
 }

@@ -157,6 +157,7 @@ const RECIPES = [
   shaped("fermenting_jar", [" P ", "G G", "GGG"], { G: { item: "minecraft:glass" }, P: planks }, "fermenting_jar"),
   shaped("hay_rack", ["S S", "SHS", "PPP"], { S: { item: "minecraft:stick" }, H: { item: "minecraft:hay_block" }, P: planks }, "hay_rack"),
   shaped("pickling_vat", ["T T", "TTT"], { T: { item: "minecraft:hardened_clay" } }, "pickling_vat"),
+  shaped("food_waste_bin", ["N N", "P P", "PPP"], { N: { item: "minecraft:iron_nugget" }, P: planks }, "food_waste_bin"),
   shapeless("milking_pail", [{ item: "minecraft:bucket" }, { item: "minecraft:stick" }], "milking_pail"),
   shapeless("nursing_bottle", [{ item: "minecraft:glass_bottle" }, { item: "minecraft:slime_ball" }], "nursing_bottle"),
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "salted_egg_yolk_greens",
+    "metalness_emissive_roughness_subsurface": "salted_egg_yolk_greens_mers",
+    "normal": "salted_egg_yolk_greens_normal"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "format_version": "1.20.20",
+  "sound_definitions": {
+    "kaleidoscope_ranching.rooster.crow": {
+      "category": "neutral",
+      "min_distance": 4.0,
+      "max_distance": 48.0,
+      "sounds": [
+        { "name": "sounds/kaleidoscope_ranching/rooster_crow", "volume": 1.0, "load_on_low_memory": true }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "goose_carcass",
+    "metalness_emissive_roughness_subsurface": "goose_carcass_mers",
+    "normal": "goose_carcass_normal"
+  }
+}

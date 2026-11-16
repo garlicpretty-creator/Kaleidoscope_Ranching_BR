@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "kr_water_trough",
-    "metalness_emissive_roughness": [
-      0,
-      0,
-      150
-    ]
+    "metalness_emissive_roughness_subsurface": "kr_water_trough_mers",
+    "normal": "kr_water_trough_normal"
   }
 }

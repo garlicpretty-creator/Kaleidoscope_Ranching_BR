@@ -68,6 +68,8 @@ const DAIRY = [
   ["aged_cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "dairy"],
   ["cheese_slice", "乳酪塊", "Cheese Slice", "dairy"],
   ["whey", "乳清", "Whey", "byproduct"],
+  // From the food waste bin (systems/foodWasteBin.js); vegetable-kind feed.
+  ["food_waste", "廚餘", "Food Scraps", "byproduct"],
 ];
 
 const PRESERVED_EGGS = [

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "alfalfa_cake",
+    "metalness_emissive_roughness_subsurface": "alfalfa_cake_mers",
+    "normal": "alfalfa_cake_normal"
+  }
+}

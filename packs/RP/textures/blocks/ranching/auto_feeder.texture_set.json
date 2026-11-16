@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "auto_feeder",
+    "metalness_emissive_roughness_subsurface": "auto_feeder_mers",
+    "normal": "auto_feeder_normal"
+  }
+}

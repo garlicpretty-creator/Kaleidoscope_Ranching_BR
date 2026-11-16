@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "rabbit_leg",
+    "metalness_emissive_roughness_subsurface": "rabbit_leg_mers",
+    "normal": "rabbit_leg_normal"
+  }
+}

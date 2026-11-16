@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "feed_bag",
+    "metalness_emissive_roughness_subsurface": "feed_bag_mers",
+    "normal": "feed_bag_normal"
+  }
+}

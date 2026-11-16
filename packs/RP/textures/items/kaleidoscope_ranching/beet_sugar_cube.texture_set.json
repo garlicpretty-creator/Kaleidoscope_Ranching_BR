@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "beet_sugar_cube",
+    "metalness_emissive_roughness_subsurface": "beet_sugar_cube_mers",
+    "normal": "beet_sugar_cube_normal"
+  }
+}

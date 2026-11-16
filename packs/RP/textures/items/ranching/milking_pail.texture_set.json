@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "milking_pail",
-    "metalness_emissive_roughness": [
-      215,
-      0,
-      85
-    ]
+    "metalness_emissive_roughness_subsurface": "milking_pail_mers",
+    "normal": "milking_pail_normal"
   }
 }

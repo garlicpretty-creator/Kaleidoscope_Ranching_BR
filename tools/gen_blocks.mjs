@@ -85,6 +85,17 @@ const DEFS = {
     loot: "loot_tables/kaleidoscope_ranching/empty.json",
     mapColor: "#e2b45a",
   },
+  // Food goes in, 廚餘 comes out (systems/foodWasteBin.js); `fill` shows the level, the
+  // contents live in block data and drop when it breaks.
+  food_waste_bin: {
+    component: "food_waste_bin",
+    states: { [S("fill")]: [0, 1, 2, 3, 4] },
+    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`fill_${n}`, `${state("fill")} == ${n}`])),
+    collision: box(-6, 0, -6, 12, 14, 12),
+    selection: box(-6, 0, -6, 12, 14, 12),
+    seconds: 1,
+    mapColor: "#6f7a5a",
+  },
   ...Object.fromEntries(
     STATIONS.map((id) => [
       id,

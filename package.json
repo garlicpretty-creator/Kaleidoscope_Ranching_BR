@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "python3 tools/gen_art.py && python3 tools/gen_placeholder_animals.py && python3 tools/m2/gen_content.py && python3 tools/gen_m3_art.py && node tools/gen_entities.mjs && node tools/gen_items.mjs && node tools/gen_blocks.mjs && node tools/gen_shared.mjs && python3 tools/art/rd_icons.py apply && node tools/gen_pbr.mjs",
+    "generate": "python3 tools/gen_art.py && python3 tools/gen_placeholder_animals.py && python3 tools/m2/gen_content.py && python3 tools/gen_m3_art.py && node tools/gen_entities.mjs && node tools/gen_items.mjs && node tools/gen_blocks.mjs && node tools/gen_shared.mjs && python3 tools/art/rd_icons.py apply && python3 tools/gen_pbr.py",
     "validate": "node tools/validate.mjs",
     "test": "node --import ./tools/test/register.mjs tools/test/run.mjs",
     "build": "npm run validate && npm test && bash tools/build.sh"

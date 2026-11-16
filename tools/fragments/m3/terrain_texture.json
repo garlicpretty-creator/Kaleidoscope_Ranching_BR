@@ -46,6 +46,9 @@
     },
     "kr_feed_mixer": {
       "textures": "textures/blocks/ranching/feed_mixer"
+    },
+    "kr_food_waste_bin": {
+      "textures": "textures/blocks/ranching/food_waste_bin"
     }
   }
 }

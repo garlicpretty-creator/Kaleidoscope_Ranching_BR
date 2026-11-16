@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "female_purple",
+    "metalness_emissive_roughness_subsurface": "female_purple_mers",
+    "normal": "female_purple_normal"
+  }
+}
