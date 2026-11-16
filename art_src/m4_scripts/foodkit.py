@@ -48,18 +48,20 @@ def texel(mat, origin, size):
     (x, y, z), (w, h, d) = origin, size
     x1, y1, z1 = x + w, y + h, z + d
 
+    # Box UV as Bedrock and Blockbench lay it out (test_foodkit.py): the Painter's "east" strip
+    # is the face at the cube's smallest x, its "west" strip the face at the largest x.
     def fn(f, i, j, fw, fh, fi):
         if f == "top":
-            return mat(f, x1 - i - 0.5, y1, z1 - j - 0.5)
+            return mat(f, x + i + 0.5, y1, z1 - j - 0.5)
         if f == "bottom":
-            return mat(f, x1 - i - 0.5, y, z1 - j - 0.5)
+            return mat(f, x + i + 0.5, y, z1 - j - 0.5)
         if f == "north":
-            return mat(f, x1 - i - 0.5, y1 - j - 0.5, z)
+            return mat(f, x + i + 0.5, y1 - j - 0.5, z)
         if f == "south":
-            return mat(f, x + i + 0.5, y1 - j - 0.5, z1)
+            return mat(f, x1 - i - 0.5, y1 - j - 0.5, z1)
         if f == "east":
-            return mat(f, x1, y1 - j - 0.5, z1 - i - 0.5)
-        return mat(f, x, y1 - j - 0.5, z + i + 0.5)
+            return mat(f, x, y1 - j - 0.5, z1 - i - 0.5)
+        return mat(f, x1, y1 - j - 0.5, z + i + 0.5)
     return fn
 
 

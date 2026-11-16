@@ -28,12 +28,13 @@ def faces(cube):
     tw, th, td = [max(1, round(s)) for s in (w, h, d)]
     x1, y1, z1 = x + w, y + h, z + d
     return [
-        ("up", (u + td, v, tw, td), lambda a, b: (x1 - a * w, y1, z1 - b * d)),
-        ("down", (u + td + tw, v, tw, td), lambda a, b: (x1 - a * w, y, z1 - b * d)),
-        ("north", (u + td, v + td, tw, th), lambda a, b: (x1 - a * w, y1 - b * h, z)),
-        ("south", (u + 2 * td + tw, v + td, tw, th), lambda a, b: (x + a * w, y1 - b * h, z1)),
-        ("east", (u, v + td, td, th), lambda a, b: (x1, y1 - b * h, z1 - a * d)),
-        ("west", (u + td + tw, v + td, td, th), lambda a, b: (x, y1 - b * h, z + a * d)),
+        # The left strip is the face at the smallest x, as in Bedrock and Blockbench (test_foodkit.py).
+        ("up", (u + td, v, tw, td), lambda a, b: (x + a * w, y1, z1 - b * d)),
+        ("down", (u + td + tw, v, tw, td), lambda a, b: (x + a * w, y, z1 - b * d)),
+        ("north", (u + td, v + td, tw, th), lambda a, b: (x + a * w, y1 - b * h, z)),
+        ("south", (u + 2 * td + tw, v + td, tw, th), lambda a, b: (x1 - a * w, y1 - b * h, z1)),
+        ("east", (u, v + td, td, th), lambda a, b: (x, y1 - b * h, z1 - a * d)),
+        ("west", (u + td + tw, v + td, td, th), lambda a, b: (x1, y1 - b * h, z + a * d)),
     ]
 
 

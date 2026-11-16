@@ -120,8 +120,10 @@ def pot_body(m, colours, handles):
     m.bone("pot")
     for x in (-5, 4):
         for z in (-5, 4):
-            m.box("pot", [x, 0, z], [1, 2, 1], solid(colours[1]), raw=True)
             m.box("pot", [x, 8, z], [1, 1, 1], mat)  # the rim's corners
+    for x in (-4, 3):
+        for z in (-4, 3):
+            m.box("pot", [x, 0, z], [1, 2, 1], solid(colours[1]), raw=True)  # feet under the floor
     m.box("pot", [-2, 0, -2], [4, 1, 4], burner, raw=True)
     m.box("pot", [-4, 2, -5], [8, 2, 10], mat)  # floor
     m.box("pot", [-5, 2, -4], [1, 2, 8], mat)
@@ -134,14 +136,15 @@ def pot_body(m, colours, handles):
         m.box("pot", [-4, 8, z], [8, 1, 2], mat)  # the rim, turned out by a pixel
     for x in (-6, 4):
         m.box("pot", [x, 8, -4], [2, 1, 8], mat)
+    # handles sit against the wall (x -5 or 4) and under the turned-out rim
     if handles == "ears":  # an iron ear on either side
-        for x in (-7, 6):
-            m.box("pot", [x, 6, -1], [1, 2, 2], mat)
+        for x in (-7, 5):
+            m.box("pot", [x, 6, -1], [2, 2, 2], mat)
     elif handles == "lugs":  # the clay casserole's flat lugs
-        for x in (-7, 6):
-            m.box("pot", [x, 7, -2], [1, 1, 4], mat)
+        for x in (-7, 5):
+            m.box("pot", [x, 7, -2], [2, 1, 4], mat)
     else:  # the fondue pot's one wooden handle
-        m.box("pot", [6, 6, -1], [2, 1, 2], wood(WOOD_DK), raw=True)
+        m.box("pot", [5, 6, -1], [3, 1, 2], wood(WOOD_DK), raw=True)
 
 
 def broth(liquid, liquid_dk, salt):

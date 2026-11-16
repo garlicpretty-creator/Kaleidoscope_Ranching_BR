@@ -42,7 +42,7 @@ const PLACED_SHAPES = {
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
-  placed_pizza: "#d86a3c", placed_fondue: "#3c3c44",
+  placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
 };
 
 const DEFS = {

@@ -2,8 +2,12 @@
 // Python is found by trying each candidate with --version, because on Windows `python3` is often
 // the Microsoft Store shortcut, which exists on PATH but only opens the Store.
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
-const PYFIX = [new URL("./pyfix", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), process.env.PYTHONPATH].filter(Boolean).join(process.platform === "win32" ? ";" : ":");
+// Windows only: tools/pyfix/sitecustomize.py makes file writes wait out a virus scanner.
+const PYTHONPATH = process.platform === "win32"
+  ? [fileURLToPath(new URL("./pyfix", import.meta.url)), process.env.PYTHONPATH].filter(Boolean).join(";")
+  : process.env.PYTHONPATH;
 
 const STEPS = [
   ["py", "tools/png_snapshot.py", "save"],
@@ -46,8 +50,9 @@ if (!python) {
 
 for (const [kind, script, ...args] of STEPS) {
   const cmd = kind === "py" ? [...python, script, ...args] : [process.execPath, script, ...args];
-  // tools/pyfix/sitecustomize.py: file writes wait out a virus scanner on Windows.
-  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env: { ...process.env, PYTHONUTF8: "1", PYTHONPATH: PYFIX } });
+  const env = { ...process.env, PYTHONUTF8: "1" };
+  if (PYTHONPATH) env.PYTHONPATH = PYTHONPATH;
+  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env });
   if (r.status !== 0) {
     console.error(`generate: ${script} failed` + (r.error ? ` (${r.error.message})` : ""));
     process.exit(r.status || 1);

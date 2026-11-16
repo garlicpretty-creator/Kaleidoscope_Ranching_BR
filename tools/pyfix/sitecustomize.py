@@ -15,12 +15,15 @@ if sys.platform == "win32":
     def _patient_open(file, mode="r", *args, **kwargs):
         if not any(c in mode for c in "wax+"):
             return _open(file, mode, *args, **kwargs)
-        for attempt in range(50):
+        # about five seconds in all, so a real error (a read-only file, a folder) still surfaces
+        for attempt in range(14):
             try:
                 return _open(file, mode, *args, **kwargs)
             except OSError as error:
-                if error.errno not in (errno.EINVAL, errno.EACCES) or attempt == 49:
+                if error.errno not in (errno.EINVAL, errno.EACCES) or attempt == 13:
                     raise
+                if attempt == 0:
+                    sys.stderr.write(f"(waiting for {file} to be writable)\n")
                 time.sleep(0.05 * (attempt + 1))
 
     builtins.open = _patient_open

@@ -400,7 +400,7 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
   }
   for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
     const block = readJson(path)["minecraft:block"];
-    const all =[block.components, ...(block.permutations ?? []).map((p) => p.components)];
+    const all = [block.components, ...(block.permutations ?? []).map((p) => p.components)];
     const geometry = block.components["minecraft:geometry"];
     const crossed = (typeof geometry === "string" ? geometry : geometry?.identifier ?? "").endsWith(".cross");
     for (const components of all) {

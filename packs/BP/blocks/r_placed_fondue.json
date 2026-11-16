@@ -71,7 +71,7 @@
         "explosion_resistance": 3
       },
       "minecraft:light_dampening": 0,
-      "minecraft:map_color": "#3c3c44",
+      "minecraft:map_color": "#ac382c",
       "minecraft:loot": "loot_tables/kaleidoscope_ranching/empty.json",
       "kaleidoscope_ranching:placed_food": {}
     },
