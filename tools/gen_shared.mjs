@@ -195,25 +195,30 @@ function parseLang(text) {
 // --- Tooltip lines under item and block names --------------------------------
 
 // ## Like Cookery: under every Ranching item or block name, the add-on's name in
-// ## blue, and for an item that places a block (not seeds), "placeable" in purple. Bedrock
+// ## blue, and for food or drink that places a block, "placeable food/drink" in purple. Bedrock
 // ## shows the name's \n as a new line in the tooltip.
 const TOOLTIP = {
   mod: { en_US: "Kaleidoscope Ranching", zh_TW: "森羅物語樂牧", zh_CN: "森罗物语乐牧" },
-  placeableFood: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
-  placeable: { en_US: "Placeable", zh_TW: "可放置", zh_CN: "可放置" },
+  food: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
+  drink: { en_US: "Placeable drink", zh_TW: "可放置的飲品", zh_CN: "可放置的饮品" },
 };
 
-/** {item id: TOOLTIP key} for items that place a block (minecraft:block_placer). */
+// Registry categories that are food even when not eaten as they are (the cheese wheel is cut first).
+const FOOD_CATEGORIES = new Set(["dairy", "dish", "prep", "meat", "cut", "egg", "preserved"]);
+const CATEGORY = new Map(ITEMS.map((item) => [`${NAMESPACE}:${item.id}`, item.category]));
+
+/** {item id: "food" | "drink"} for food and drink that place a block (minecraft:block_placer). Nothing else is labelled. */
 function placeableItems() {
   const out = {};
   const dir = join(root, "packs", "BP", "items");
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
     const item = JSON.parse(readFileSync(join(dir, file), "utf8"))["minecraft:item"];
-    const placer = item?.components?.["minecraft:block_placer"];
-    if (!placer) continue;
-    // Seeds planted on farmland are not labelled.
-    if ((placer.use_on ?? []).includes("minecraft:farmland")) continue;
-    out[item.description.identifier] = item.components["minecraft:food"] ? "placeableFood" : "placeable";
+    const components = item?.components ?? {};
+    if (!components["minecraft:block_placer"]) continue;
+    const id = item.description.identifier;
+    const category = CATEGORY.get(id);
+    if (components["minecraft:use_animation"] === "drink" || category === "milk") out[id] = "drink";
+    else if (components["minecraft:food"] || FOOD_CATEGORIES.has(category)) out[id] = "food";
   }
   return out;
 }
