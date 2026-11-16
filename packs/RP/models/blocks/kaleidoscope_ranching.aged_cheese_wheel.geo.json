@@ -1,0 +1,201 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.aged_cheese_wheel",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 1.5,
+        "visible_bounds_height": 1.0,
+        "visible_bounds_offset": [
+          0,
+          0.25,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "wheel",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "piece_1",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                0,
+                0,
+                0
+              ],
+              "size": [
+                5,
+                5,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                0,
+                0,
+                0
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                22
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_2",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                0,
+                0,
+                -6
+              ],
+              "size": [
+                5,
+                5,
+                6
+              ],
+              "uv": [
+                22,
+                0
+              ]
+            },
+            {
+              "origin": [
+                0,
+                0,
+                -5
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                22,
+                22
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_3",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0,
+                0
+              ],
+              "size": [
+                5,
+                5,
+                6
+              ],
+              "uv": [
+                0,
+                11
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                0,
+                0
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                32
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_4",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0,
+                -6
+              ],
+              "size": [
+                5,
+                5,
+                6
+              ],
+              "uv": [
+                22,
+                11
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                0,
+                -5
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                22,
+                32
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

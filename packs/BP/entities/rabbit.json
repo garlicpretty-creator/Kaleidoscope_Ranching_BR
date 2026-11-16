@@ -94,6 +94,24 @@
       "kaleidoscope_ranching:persistent": {
         "minecraft:persistent": {}
       },
+      "kaleidoscope_ranching:seeking": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 5,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 60,
+          "target_selection_method": "nearest",
+          "target_blocks": [
+            "kaleidoscope_ranching:trough",
+            "kaleidoscope_ranching:hay_rack",
+            "kaleidoscope_ranching:water_trough",
+            "kaleidoscope_ranching:auto_waterer"
+          ]
+        }
+      },
       "kaleidoscope_ranching:variant_0": {
         "minecraft:variant": {
           "value": 0
@@ -248,6 +266,7 @@
               "component_groups": [
                 "kaleidoscope_ranching:adult",
                 "kaleidoscope_ranching:wild",
+                "kaleidoscope_ranching:seeking",
                 "kaleidoscope_ranching:variant_0"
               ]
             }
@@ -378,6 +397,20 @@
         "remove": {
           "component_groups": [
             "kaleidoscope_ranching:called"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:sated": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:seeking"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:hungry": {
+        "add": {
+          "component_groups": [
+            "kaleidoscope_ranching:seeking"
           ]
         }
       },

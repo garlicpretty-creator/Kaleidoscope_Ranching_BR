@@ -22,6 +22,8 @@ export const BLOCKS = [
   ["butcher_rack", "屠宰掛架", "Butcher Rack", "processing"],
   ["butter_churn", "攪乳桶", "Butter Churn", "processing"],
   ["cheese_press", "乳酪壓模", "Cheese Press", "processing"],
+  // 企劃書: 熟成乳酪輪「可放置、可切塊」. The item places this block.
+  ["aged_cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "processing"],
   ["aging_rack", "熟成架", "Aging Rack", "processing"],
   ["fermenting_jar", "發酵罐", "Fermenting Jar", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],

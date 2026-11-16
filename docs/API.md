@@ -68,7 +68,7 @@
 **你的實體檔需要提供：**
 
 - **族群**：`ranching_livestock`，加上 `ranching_female` 或 `ranching_male` 二選一。樂牧靠族群判斷性別，所以出生時就要隨機指定公母。
-- **事件**：`kaleidoscope_ranching:become_baby`、`kaleidoscope_ranching:grow_up`、`kaleidoscope_ranching:make_persistent`、`kaleidoscope_ranching:add_ear_tag`。少了某個事件只會讓對應功能失效，不會出錯。
+- **事件**：`kaleidoscope_ranching:become_baby`、`kaleidoscope_ranching:grow_up`、`kaleidoscope_ranching:make_persistent`、`kaleidoscope_ranching:add_ear_tag`；想讓動物自己走去飼槽，再加 `kaleidoscope_ranching:sated`（吃飽喝足時移除找飼槽的行為）與 `kaleidoscope_ranching:hungry`（新的一天加回來）。少了某個事件只會讓對應功能失效，不會出錯。
 - **幼體**：幼體要有 `minecraft:is_baby`。
 - **互動元件**：建議加一個 `minecraft:interact`，讓玩家的點擊確實送到腳本。
 - **掉落表**：設成空的，屠體由樂牧產生。

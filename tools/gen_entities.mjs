@@ -123,10 +123,26 @@ function buildEntity(animal, t) {
       "minecraft:timer": { looping: false, time: 60, time_down_event: { event: g("uncalled"), target: "self" } },
     },
     [g("persistent")]: { "minecraft:persistent": {} },
+    // 企劃書: 動物會主動走向飼槽與水槽. Present until the animal has eaten and
+    // drunk today (care/state.js triggers `sated`), added back when the next
+    // day is settled (`hungry`), so a fed herd does not crowd its troughs all day.
+    [g("seeking")]: {
+      "minecraft:behavior.move_to_block": {
+        priority: 5,
+        tick_interval: 20,
+        start_chance: 0.1,
+        search_range: 16,
+        search_height: 4,
+        goal_radius: 1.5,
+        stay_duration: 60,
+        target_selection_method: "nearest",
+        target_blocks: ["trough", "hay_rack", "water_trough", "auto_waterer"].map(rid),
+      },
+    },
   };
 
   const adultGroups = [g("adult")];
-  const spawnDefaults = [g("wild")];
+  const spawnDefaults = [g("wild"), g("seeking")];
 
   if (t.wool) {
     for (const i of range(16)) groups[g(`color_${i}`)] = { "minecraft:color": { value: i } };
@@ -272,6 +288,8 @@ function buildEntity(animal, t) {
     },
     [g("called")]: { sequence: [{ remove: { component_groups: [g("called")] } }, { add: { component_groups: [g("called")] } }] },
     [g("uncalled")]: { remove: { component_groups: [g("called")] } },
+    [g("sated")]: { remove: { component_groups: [g("seeking")] } },
+    [g("hungry")]: { add: { component_groups: [g("seeking")] } },
     // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).
     [g("add_ear_tag")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],

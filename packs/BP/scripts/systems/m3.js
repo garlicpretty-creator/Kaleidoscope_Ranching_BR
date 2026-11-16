@@ -7,6 +7,7 @@ import { startMilking } from "./milking.js";
 import { incubatorComponent, nestBoxComponent, startNests } from "./nest.js";
 import { stationComponent } from "./stations.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
+import { cheeseWheelComponent } from "./cheeseWheel.js";
 
 export function startM3() {
   system.beforeEvents.startup.subscribe(({ blockComponentRegistry }) => {
@@ -15,6 +16,7 @@ export function startM3() {
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:incubator", incubatorComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:station", stationComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:hay_rack", hayRackComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:cheese_wheel", cheeseWheelComponent);
   });
   startCarcassDrops();
   startMilking();

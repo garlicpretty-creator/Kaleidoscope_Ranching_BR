@@ -38,12 +38,23 @@ function writeRecord(e, r) {
   }
 }
 
+// ## Animals walk to troughs and water troughs while they still need feed or
+// ## water today (entity group `seeking`, tools/gen_entities.mjs). Animals
+// ## from other add-ons may not define these events; that is fine.
+function tryEvent(e, name) {
+  try {
+    e.triggerEvent(`kaleidoscope_ranching:${name}`);
+  } catch {}
+}
+
 export function ensureSettled(e, day = today()) {
   if (!e?.isValid) return readRecord(e);
+  const before = e.getDynamicProperty("kr:care_day");
   const { rec, changed, manure } = settle(readRecord(e), day, cleanNeedEnabled());
   if (changed) {
     writeRecord(e, rec);
     updateRoster(e); // keeps the ear-tag roster's last-seen location fresh, once a day
+    if (before !== undefined && rec.care_day !== before) tryEvent(e, "hungry"); // a new day: look for feed again
   }
   if (manure) placeManureNear(e);
   return rec;
@@ -57,6 +68,7 @@ export function mark(e, need, extra = {}) {
   if (rec[key] === day) return false;
   e.setDynamicProperty(`kr:${key}`, day);
   for (const [k, v] of Object.entries(extra)) e.setDynamicProperty(`kr:${k}`, v);
+  if ((need === "fed" || need === "water") && isMarkedToday(e, "fed") && isMarkedToday(e, "water")) tryEvent(e, "sated");
   return true;
 }
 export function isMarkedToday(e, need) {
