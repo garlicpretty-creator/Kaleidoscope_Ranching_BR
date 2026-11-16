@@ -1,0 +1,433 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.smoked_cheese_wheel",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 1.5,
+        "visible_bounds_height": 1.0,
+        "visible_bounds_offset": [
+          0,
+          0.25,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "wheel",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "piece_1",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                0.05,
+                0.05,
+                0.05
+              ],
+              "size": [
+                4.95,
+                4.9,
+                5.95
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    6,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    6
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    17,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    11,
+                    6
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    6,
+                    0
+                  ],
+                  "uv_size": [
+                    5,
+                    6
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    11,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    -6
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                0,
+                0,
+                0
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                22
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_2",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                0.05,
+                0.05,
+                -6
+              ],
+              "size": [
+                4.95,
+                4.9,
+                5.95
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    28,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    22,
+                    6
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    39,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    33,
+                    6
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    28,
+                    0
+                  ],
+                  "uv_size": [
+                    5,
+                    6
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    33,
+                    6
+                  ],
+                  "uv_size": [
+                    5,
+                    -6
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                0,
+                0,
+                -5
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                22,
+                22
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_3",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0.05,
+                0.05
+              ],
+              "size": [
+                4.95,
+                4.9,
+                5.95
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    6,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    17
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    17,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    11,
+                    17
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    6,
+                    11
+                  ],
+                  "uv_size": [
+                    5,
+                    6
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    11,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    -6
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                -6,
+                0,
+                0
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                32
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_4",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "parent": "wheel",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0.05,
+                -6
+              ],
+              "size": [
+                4.95,
+                4.9,
+                5.95
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    28,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    22,
+                    17
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    39,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    5
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    33,
+                    17
+                  ],
+                  "uv_size": [
+                    6,
+                    5
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    28,
+                    11
+                  ],
+                  "uv_size": [
+                    5,
+                    6
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    33,
+                    17
+                  ],
+                  "uv_size": [
+                    5,
+                    -6
+                  ]
+                }
+              }
+            },
+            {
+              "origin": [
+                -6,
+                0,
+                -5
+              ],
+              "size": [
+                6,
+                5,
+                5
+              ],
+              "uv": [
+                22,
+                32
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

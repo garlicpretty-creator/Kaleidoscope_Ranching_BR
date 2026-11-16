@@ -18,9 +18,20 @@ export function give(player, typeId, amount = 1) {
     const size = Math.min(left, stack.maxAmount);
     stack.amount = size;
     left -= size;
-    const rest = player.getComponent("minecraft:inventory")?.container?.addItem(stack) ?? stack;
+    const rest = addOrKeep(player, stack);
     if (rest) player.dimension.spawnItem(rest, player.location);
   }
+}
+
+/**
+ * Adds the stack to the player's inventory and returns what did not fit.
+ * ## addItem returns undefined when everything fitted, so "no inventory" has to
+ * ## be told apart from "all added": falling back to the stack on undefined
+ * ## dropped a second copy of every item that was given.
+ */
+function addOrKeep(player, stack) {
+  const container = player.getComponent("minecraft:inventory")?.container;
+  return container ? container.addItem(stack) : stack;
 }
 
 /**
@@ -48,7 +59,7 @@ export function dropItems(dimension, typeId, amount, location) {
 
 /** Gives an already built stack (keeps dynamic properties). */
 export function giveStack(player, stack) {
-  const rest = player.getComponent("minecraft:inventory")?.container?.addItem(stack) ?? stack;
+  const rest = addOrKeep(player, stack);
   if (rest) player.dimension.spawnItem(rest, player.location);
 }
 

@@ -15,6 +15,9 @@ const { ANIMALS } = await load("animals.js");
 const { VANILLA_COOKING } = await load("processing.js");
 const { DISHES, DISH_PREPS } = await load("dishes.js");
 const { TAGGED, tagId } = await load("tags.js");
+const { PLACED_FOODS } = await load("placedFoods.js");
+// Food that can be put down: the item places its block (gen_blocks.mjs, systems/cheeseWheel.js, systems/placedFood.js).
+const PLACED_BLOCK = new Map(PLACED_FOODS.map((food) => [food.item, `${NAMESPACE}:${food.block}`]));
 const CONTRACT_TAGS = new Map();
 for (const [name, ids] of Object.entries(TAGGED)) for (const id of ids) CONTRACT_TAGS.set(id, [...(CONTRACT_TAGS.get(id) ?? []), tagId(name)]);
 const DISH_BY_ID = new Map(DISHES.map((dish) => [dish.id, dish]));
@@ -37,8 +40,7 @@ const OVERRIDES = {
   yogurt: { stack: 16, ...food(4, 0.6) },
   fresh_cheese: food(3, 0.6),
   cheese_slice: food(2, 0.6),
-  // Places the cuttable wheel block (gen_blocks.mjs, systems/cheeseWheel.js).
-  aged_cheese_wheel: { stack: 16, components: { "minecraft:block_placer": { block: "kaleidoscope_ranching:cheese_wheel" } } },
+  aged_cheese_wheel: { stack: 16 },
   ghee: { stack: 16 },
   whey: { stack: 16, ...food(1, 0.2, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   salted_duck_egg: food(4, 0.6),
@@ -161,6 +163,7 @@ function componentsFor(item) {
   const { stack: overrideStack, format: _format, components = {}, ...overrideComponents } = override;
   Object.assign(c, overrideComponents, components);
   if (overrideStack) stack = overrideStack;
+  if (PLACED_BLOCK.has(item.id)) c["minecraft:block_placer"] = { block: PLACED_BLOCK.get(item.id) };
   if (c["minecraft:food"] && !tags.includes("minecraft:is_food")) tags.push("minecraft:is_food");
   // 1.1 標籤契約 (data/tags.js).
   for (const tag of CONTRACT_TAGS.get(item.id) ?? []) if (!tags.includes(tag)) tags.push(tag);

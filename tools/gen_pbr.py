@@ -75,7 +75,9 @@ RULES = [
     (r"^blocks/ranching/auto_feeder$", "metal"),
     (r"^blocks/ranching/(meat_grinder|cream_separator)$", "metal"),
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
-    (r"^blocks/ranching/cheese_wheel$", "fat"),
+    (r"^blocks/ranching/(vintage_|smoked_)?cheese_wheel$", "fat"),
+    (r"^blocks/ranching/placed_pizza$", "food"),
+    (r"^blocks/ranching/placed_fondue$", "metal"),
     (r"^blocks/ranching/(rug|down_pillow|down_quilt)", "feather"),
     (r"^blocks/ranching/horn_decor$", "bone"),
     (r"^blocks/ranching/", "wood"),
@@ -108,7 +110,7 @@ RULES = [
 RULES = [(re.compile(p), m) for p, m in RULES]
 
 # Textures whose neutral greys are iron fittings (hoops, hinges, blades, pans).
-METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!cheese_wheel$)")
+METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$)")
 GLASS_TEXTURES = re.compile(r"^blocks/ranching/incubator$")
 EYE = (26, 22, 26)  # boxuv.plain_eyes
 EYE_WHITE = (238, 236, 232)

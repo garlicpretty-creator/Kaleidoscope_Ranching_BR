@@ -36,6 +36,18 @@
   "kaleidoscope_ranching:cheese_wheel": {
     "sound": "cloth"
   },
+  "kaleidoscope_ranching:vintage_cheese_wheel": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:smoked_cheese_wheel": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:placed_pizza": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:placed_fondue": {
+    "sound": "metal"
+  },
   "kaleidoscope_ranching:food_waste_bin": {
     "sound": "wood"
   },

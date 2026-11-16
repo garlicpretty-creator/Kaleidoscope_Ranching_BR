@@ -190,6 +190,12 @@
     "kr_pickling_vat": {
       "textures": "textures/blocks/ranching/pickling_vat"
     },
+    "kr_placed_fondue": {
+      "textures": "textures/blocks/ranching/placed_fondue"
+    },
+    "kr_placed_pizza": {
+      "textures": "textures/blocks/ranching/placed_pizza"
+    },
     "kr_rug": {
       "textures": "textures/blocks/ranching/rug"
     },
@@ -244,11 +250,17 @@
     "kr_silage_barrel": {
       "textures": "textures/blocks/ranching/silage_barrel"
     },
+    "kr_smoked_cheese_wheel": {
+      "textures": "textures/blocks/ranching/smoked_cheese_wheel"
+    },
     "kr_spinning_wheel": {
       "textures": "textures/blocks/ranching/spinning_wheel"
     },
     "kr_tanning_rack": {
       "textures": "textures/blocks/ranching/tanning_rack"
+    },
+    "kr_vintage_cheese_wheel": {
+      "textures": "textures/blocks/ranching/vintage_cheese_wheel"
     },
     "kr_weaving_loom": {
       "textures": "textures/blocks/ranching/weaving_loom"
