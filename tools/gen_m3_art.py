@@ -100,7 +100,7 @@ def main():
         terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
         handmade = HANDMADE / f"{block_id}.geo.json"
         if handmade.exists():
-            # Hand-made in Blockbench (art_src/m4_scripts/blocks_m4.py): install it as is.
+            # Hand-made (art_src/m4_scripts/blocks_m3.py, blocks_m4.py, butcher_rack.py): install it as is.
             shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
             shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
             continue
@@ -120,13 +120,16 @@ def main():
     write_json(FRAGMENT / "terrain_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.terrain", "texture_data": terrain})
     write_json(FRAGMENT / "blocks.json", {"format_version": "1.21.40", **{f"{NS}:{k}": {"sound": v} for k, v in SOUNDS.items()}})
 
-    board = Image.new("RGB", (220 * 4, 260 * ((len(previews) + 3) // 4)), (232, 238, 226))
-    draw = ImageDraw.Draw(board)
-    for index, (block_id, image) in enumerate(previews):
-        x, y = (index % 4) * 220, (index // 4) * 260
-        board.paste(image, (x, y + 20))
-        draw.text((x + 8, y + 4), block_id, fill=(60, 70, 56))
-    board.save(ROOT / "docs" / "art" / "m3_blocks_preview.png")
+    # Hand-made blocks have their preview rendered in Blockbench, so the sheet is only written
+    # while some block is still procedural.
+    if previews:
+        board = Image.new("RGB", (220 * 4, 260 * ((len(previews) + 3) // 4)), (232, 238, 226))
+        draw = ImageDraw.Draw(board)
+        for index, (block_id, image) in enumerate(previews):
+            x, y = (index % 4) * 220, (index // 4) * 260
+            board.paste(image, (x, y + 20))
+            draw.text((x + 8, y + 4), block_id, fill=(60, 70, 56))
+        board.save(ROOT / "docs" / "art" / "m3_blocks_preview.png")
     print(f"gen_m3_art: {len(ids)} icons, {len(block_art.ALL)} blocks")
 
 
