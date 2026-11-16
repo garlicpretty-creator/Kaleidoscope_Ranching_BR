@@ -11,7 +11,7 @@
 // ## check. It does not change any M2 file.
 
 import { ItemStack } from "@minecraft/server";
-import { ensureSettled, isMarkedToday, mark, cleanNeedEnabled } from "../care/state.js";
+import { ensureSettled, isMarkedToday, mark, cleanNeedEnabled, readyAt } from "../care/state.js";
 import { MANURE_BLOCK } from "../custom_components/manure.js";
 import { CARE } from "../data/care_config.js";
 import { FEEDS, KIND, KIND_TIER } from "../data/feeds.js";
@@ -86,7 +86,7 @@ export function tickHayRack(block) {
       if (clean === null) clean = penIsClean(block, day);
       if (clean) mark(animal, "clean");
     }
-    if (units > 0 && species.eats.includes(KIND.GRASS) && !isMarkedToday(animal, "fed")) {
+    if (units > 0 && species.eats.includes(KIND.GRASS) && !isMarkedToday(animal, "fed") && readyAt(animal, block, "fed")) {
       mark(animal, "fed", { fed_tier: KIND_TIER[KIND.GRASS] ?? 1 });
       units--;
     }

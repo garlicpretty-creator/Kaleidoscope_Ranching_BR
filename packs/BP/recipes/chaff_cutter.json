@@ -26,6 +26,11 @@
     "result": {
       "item": "kaleidoscope_ranching:chaff_cutter",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:chaff_cutter"
+      }
+    ]
   }
 }

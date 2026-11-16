@@ -20,6 +20,11 @@
     "result": {
       "item": "kaleidoscope_ranching:alfalfa_cake",
       "count": 2
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:alfalfa_cake"
+      }
+    ]
   }
 }

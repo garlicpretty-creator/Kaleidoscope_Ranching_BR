@@ -23,6 +23,11 @@
     "result": {
       "item": "kaleidoscope_ranching:feed_bag",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:feed_bag"
+      }
+    ]
   }
 }

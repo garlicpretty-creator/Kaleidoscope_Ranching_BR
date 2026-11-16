@@ -22,6 +22,11 @@
     "result": {
       "item": "kaleidoscope_ranching:auto_feeder",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:auto_feeder"
+      }
+    ]
   }
 }

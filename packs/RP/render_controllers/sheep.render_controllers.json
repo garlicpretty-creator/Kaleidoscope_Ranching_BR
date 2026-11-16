@@ -63,7 +63,7 @@
         }
       },
       "textures": [
-        "Array.skins[(q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')) * 16 + math.clamp(q.color, 0, 15)]"
+        "Array.skins[(q.is_baby ? 2 : (q.property('kaleidoscope_ranching:sex') == 'male')) * 16 + math.clamp(q.property('kaleidoscope_ranching:wool'), 0, 15)]"
       ],
       "part_visibility": [
         {

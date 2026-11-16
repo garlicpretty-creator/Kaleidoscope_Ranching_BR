@@ -5,7 +5,7 @@
 import { CARE } from "../data/care_config.js";
 import { FEEDS, KIND, KIND_TIER } from "../data/feeds.js";
 import { SPECIES } from "../data/species.js";
-import { ensureSettled, mark, isMarkedToday, cleanNeedEnabled } from "../care/state.js";
+import { ensureSettled, mark, isMarkedToday, cleanNeedEnabled, readyAt } from "../care/state.js";
 import {
   today, getState, setStates, animalsNear, countBlocksNear, blockGet, blockSet,
   mainhand, consumeMainhand, actionbar,
@@ -61,7 +61,7 @@ export function tickTrough(block) {
       if (clean === null) clean = penIsClean(block, day);
       if (clean) mark(e, "clean");
     }
-    if (fill > 0 && sp.eats.includes(kind) && !isMarkedToday(e, "fed")) {
+    if (fill > 0 && sp.eats.includes(kind) && !isMarkedToday(e, "fed") && readyAt(e, block, "fed")) {
       mark(e, "fed", { fed_tier: KIND_TIER[kind] ?? 1 });
       fill--;
     }

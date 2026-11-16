@@ -20,6 +20,11 @@
     "result": {
       "item": "kaleidoscope_ranching:ranch_notebook",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:ranch_notebook"
+      }
+    ]
   }
 }

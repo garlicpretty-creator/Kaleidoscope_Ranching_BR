@@ -12,6 +12,9 @@ const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data
 
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
+// Wool colour for the client: Molang cannot read minecraft:color, so the
+// set_color events mirror it into this synced property.
+const WOOL = `${NS}:wool`;
 const rid = (id) => (id.includes(":") ? id : `${NS}:${id}`);
 const g = (name) => `${NS}:${name}`;
 
@@ -42,6 +45,24 @@ const SPAWN = {
 const range = (n) => Array.from({ length: n }, (_, i) => i);
 
 // A gander drives hostile mobs off: adult males only (babies never pick a target).
+/** A component group that walks the animal to the nearest of `blocks` and keeps it there. */
+function seekGroup(blocks) {
+  return {
+    "minecraft:behavior.move_to_block": {
+      priority: 5,
+      tick_interval: 20,
+      start_chance: 0.1,
+      search_range: 16,
+      search_height: 4,
+      goal_radius: 1.5,
+      // longer than one pass of the ranch clock (30 s), so the animal is still there when served
+      stay_duration: 800,
+      target_selection_method: "nearest",
+      target_blocks: blocks.map(rid),
+    },
+  };
+}
+
 function guardComponents() {
   return {
     "minecraft:attack": { damage: 2 },
@@ -183,19 +204,13 @@ function buildEntity(animal, t) {
     // 企劃書: 動物會主動走向飼槽與水槽. Present until the animal has eaten and
     // drunk today (care/state.js triggers `sated`), added back when the next
     // day is settled (`hungry`), so a fed herd does not crowd its troughs all day.
-    [g("seeking")]: {
-      "minecraft:behavior.move_to_block": {
-        priority: 5,
-        tick_interval: 20,
-        start_chance: 0.1,
-        search_range: 16,
-        search_height: 4,
-        goal_radius: 1.5,
-        stay_duration: 60,
-        target_selection_method: "nearest",
-        target_blocks: ["trough", "hay_rack", "water_trough", "auto_waterer"].map(rid),
-      },
-    },
+    // Hungry and thirsty: walk to the nearest trough of either kind and wait beside it. The
+    // care scripts serve an animal once it stands there (care/state.js readyAt), then move it
+    // on to seeking_water or seeking_feed for whichever it still lacks. Only one of the three
+    // groups is present at a time, because they hold the same component.
+    [g("seeking")]: seekGroup(["trough", "hay_rack", "water_trough", "auto_waterer"]),
+    [g("seeking_feed")]: seekGroup(["trough", "hay_rack"]),
+    [g("seeking_water")]: seekGroup(["water_trough", "auto_waterer"]),
   };
 
   const adultGroups = [g("adult")];
@@ -349,8 +364,10 @@ function buildEntity(animal, t) {
     },
     [g("called")]: { sequence: [{ remove: { component_groups: [g("called")] } }, { add: { component_groups: [g("called")] } }] },
     [g("uncalled")]: { remove: { component_groups: [g("called")] } },
-    [g("sated")]: { remove: { component_groups: [g("seeking")] } },
-    [g("hungry")]: { add: { component_groups: [g("seeking")] } },
+    [g("sated")]: { remove: { component_groups: [g("seeking"), g("seeking_feed"), g("seeking_water")] } },
+    [g("hungry")]: { sequence: [{ remove: { component_groups: [g("seeking_feed"), g("seeking_water")] } }, { add: { component_groups: [g("seeking")] } }] },
+    [g("seek_feed")]: { sequence: [{ remove: { component_groups: [g("seeking"), g("seeking_water")] } }, { add: { component_groups: [g("seeking_feed")] } }] },
+    [g("seek_water")]: { sequence: [{ remove: { component_groups: [g("seeking"), g("seeking_feed")] } }, { add: { component_groups: [g("seeking_water")] } }] },
     // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).
     [g("add_ear_tag")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
@@ -359,7 +376,7 @@ function buildEntity(animal, t) {
   if (t.wool) {
     const all = range(16).map((i) => g(`color_${i}`));
     for (const i of range(16)) {
-      events[g(`set_color_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }] };
+      events[g(`set_color_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }, { set_property: { [WOOL]: i } }] };
     }
     events[g("shear")] = { add: { component_groups: [g("sheared")] } };
     events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
@@ -386,6 +403,7 @@ function buildEntity(animal, t) {
         is_experimental: false,
         properties: {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
+          ...(t.wool ? { [WOOL]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
         },
       },
       component_groups: groups,

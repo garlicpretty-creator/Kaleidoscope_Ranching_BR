@@ -6,28 +6,28 @@
       "bones": {
         "a_leg_left": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            "q.modified_move_speed * math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
         "b_leg_left": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            "q.modified_move_speed * math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
         "a_leg_right": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            "-q.modified_move_speed * math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
         "b_leg_right": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            "-q.modified_move_speed * math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
@@ -58,6 +58,52 @@
             0,
             0,
             "q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40"
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.goose.idle": {
+      "loop": true,
+      "bones": {
+        "a_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.life_time * 90) * 8",
+            0
+          ]
+        },
+        "a_head": {
+          "rotation": [
+            "math.sin(q.life_time * 60) * 2",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "math.sin(q.life_time * 60) * 2",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.goose.eat": {
+      "loop": false,
+      "animation_length": 3.0,
+      "bones": {
+        "a_head": {
+          "rotation": [
+            "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1) * (65 + math.sin(q.anim_time * 1080) * 6)",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1) * (65 + math.sin(q.anim_time * 1080) * 6)",
+            0,
+            0
           ]
         }
       }

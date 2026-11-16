@@ -384,7 +384,8 @@ def shaped(name, pattern, key, result, count=1, tag="crafting_table"):
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shaped": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "pattern": pattern,
         "key": {k: it(v) for k, v in key.items()},
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": [{"item": result if ":" in result else f"{NS}:{result}"}]}}))
 def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
     ing = []
     for x in ingredients:
@@ -392,7 +393,8 @@ def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
         ing.append({**it(i if ":" in i else f"{NS}:{i}"), "count": n})
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shapeless": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "ingredients": ing,
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": [{"item": result if ":" in result else f"{NS}:{result}"}]}}))
 
 def recipes():
     P, I = "tag:minecraft:planks", "minecraft:iron_ingot"
@@ -667,7 +669,7 @@ def main():
         for k, v in BLOCK_NAMES.items():
             out.append(f"tile.{NS}:{k}.name={v[li]}")
         for k, v in ITEM_NAMES.items():
-            out.append(f"item.{NS}:{k}.name={v[li]}")
+            out.append(f"item.{NS}:{k}={v[li]}")
         for k, v in UI.items():
             out.append(f"{NS}.ui.{k}={v[li]}")
         p = SHARED / "texts" / f"{lang}.lang"

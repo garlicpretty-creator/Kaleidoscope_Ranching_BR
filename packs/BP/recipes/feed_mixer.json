@@ -24,6 +24,11 @@
     "result": {
       "item": "kaleidoscope_ranching:feed_mixer",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:feed_mixer"
+      }
+    ]
   }
 }

@@ -23,6 +23,11 @@
     "result": {
       "item": "kaleidoscope_ranching:manure_fork",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:manure_fork"
+      }
+    ]
   }
 }

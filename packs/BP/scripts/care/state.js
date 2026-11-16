@@ -68,8 +68,60 @@ export function mark(e, need, extra = {}) {
   if (rec[key] === day) return false;
   e.setDynamicProperty(`kr:${key}`, day);
   for (const [k, v] of Object.entries(extra)) e.setDynamicProperty(`kr:${k}`, v);
-  if ((need === "fed" || need === "water") && isMarkedToday(e, "fed") && isMarkedToday(e, "water")) tryEvent(e, "sated");
+  if (need === "fed" || need === "water") {
+    playEat(e);
+    // Go on to whichever of feed and water is still missing; stop looking once both are met.
+    const fed = isMarkedToday(e, "fed");
+    const watered = isMarkedToday(e, "water");
+    tryEvent(e, fed && watered ? "sated" : fed ? "seek_water" : "seek_feed");
+  }
   return true;
+}
+
+const waiting = new Map(); // `${entity id}:${need}` -> clock passes spent in range but not beside the block
+let waitingDay = -1;
+
+/**
+ * Whether an animal in range of a trough, rack or waterer should be served on this clock pass.
+ * It is served as soon as it stands beside the block, so that eating and drinking happen at
+ * the trough. One that stays away is served anyway after CARE.EAT_WAIT_PASSES passes.
+ */
+export function readyAt(e, block, need) {
+  const day = today();
+  if (day !== waitingDay) {
+    waiting.clear();
+    waitingDay = day;
+  }
+  const key = `${e.id}:${need}`;
+  const dx = e.location.x - (block.location.x + 0.5);
+  const dz = e.location.z - (block.location.z + 0.5);
+  if (dx * dx + dz * dz <= CARE.EAT_RADIUS * CARE.EAT_RADIUS) {
+    waiting.delete(key);
+    return true;
+  }
+  const passes = (waiting.get(key) ?? 0) + 1;
+  if (passes > CARE.EAT_WAIT_PASSES) {
+    waiting.delete(key);
+    return true;
+  }
+  waiting.set(key, passes);
+  return false;
+}
+
+/**
+ * Shows the animal eating or drinking: it stands still for three seconds and plays its
+ * `eat` animation (tools/gen_art.py). Animals registered by other add-ons have no such
+ * animation, so only Ranching's own are touched.
+ */
+function playEat(e) {
+  const [namespace, id] = e.typeId.split(":");
+  if (namespace !== "kaleidoscope_ranching") return;
+  try {
+    e.addEffect("slowness", 60, { amplifier: 10, showParticles: false });
+    e.playAnimation(`animation.kaleidoscope_ranching.${id}.eat`);
+  } catch {
+    // unloaded or removed in the same tick: nothing to show
+  }
 }
 export function isMarkedToday(e, need) {
   return e.getDynamicProperty(`kr:${need}_day`) === today();

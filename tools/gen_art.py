@@ -59,8 +59,15 @@ def client_entity(species, hand=None):
         scale = f"q.is_baby ? 1.0 : ({SEX_IS_MALE} ? {rig['scale_male']} : {rig['scale_female']})"
     animations = {
         "walk": f"animation.{NS}.{species.id}.walk",
+        "idle": f"animation.{NS}.{species.id}.idle",
         "look_at_target": "animation.common.look_at_target",
     }
+    # idle fades in as the animal slows to a stop; walk fades itself out (see animation_file)
+    animate = ["walk", "look_at_target", {"idle": "1.0 - math.clamp(q.modified_move_speed * 4, 0, 1)"}]
+    if species.id == "sheep":
+        # sheep also eat grass on their own (minecraft:behavior.eat_block)
+        animations["graze"] = f"animation.{NS}.{species.id}.graze"
+        animate.append({"graze": "q.is_grazing"})
     base, overlay = species.egg_colors
     return {
         "format_version": "1.10.0",
@@ -74,7 +81,7 @@ def client_entity(species, hand=None):
                 "scripts": {
                     # Adult males are a little larger.
                     "scale": scale,
-                    "animate": ["walk", "look_at_target"],
+                    "animate": animate,
                 },
                 "render_controllers": [f"controller.render.{NS}.{species.id}"],
                 "spawn_egg": {"base_color": base, "overlay_color": overlay},
@@ -103,9 +110,23 @@ def render_controller(species, hand=None):
     }
 
 
-def walk_animation(species, hand=None):
+# How far the head dips while eating or drinking, in degrees.
+EAT_DIP = {"chicken": 60, "duck": 60, "goose": 65, "rabbit": 30}
+TAILS = ("a_tail", "b_tail", "fa_tail", "m_tail", "wool_tail")
+HEADS = ("a_head", "b_head")
+
+
+def animation_file(species, hand=None):
+    """walk, idle and eat for one species (plus graze for sheep).
+
+    - walk: leg swing follows distance moved and is scaled by move speed, as in vanilla,
+      so the legs come back to rest when the animal stops instead of freezing mid-stride.
+    - idle: a slow tail sway and a slight nod, blended in by the client entity when standing.
+    - eat: three seconds of head-down chewing. The care scripts play it when an animal is
+      fed or watered (care/state.js); `/playanimation` can play it too.
+    """
     names = set(bone_names(species, hand))
-    moves = {bone: [molang, 0, 0] for bone, molang in species.walk.items()}
+    moves = {bone: [f"({molang}) * q.modified_move_speed", 0, 0] for bone, molang in species.walk.items()}
     for bone, (axis, molang) in species.extra_animations.items():
         rotation = [0, 0, 0]
         rotation["xyz".index(axis)] = molang
@@ -121,10 +142,27 @@ def walk_animation(species, hand=None):
         if "b_head" in parents and parents["b_head"] != "head":
             # the baby's head is not under `head`, so look_at_target does not turn it
             bones["b_head"] = {"rotation": ["q.target_x_rotation", "q.target_y_rotation", 0]}
-    return {
-        "format_version": "1.8.0",
-        "animations": {f"animation.{NS}.{species.id}.walk": {"loop": True, "bones": bones}},
+    idle = {}
+    for name in TAILS:
+        if name in names:
+            idle[name] = {"rotation": [0, "math.sin(q.life_time * 90) * 8", 0]}
+    for name in HEADS:
+        if name in names:
+            idle[name] = {"rotation": ["math.sin(q.life_time * 60) * 2", 0, 0]}
+
+    dip = EAT_DIP.get(species.id, 45)
+    ease = "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1)"
+    eat = {name: {"rotation": [f"{ease} * ({dip} + math.sin(q.anim_time * 1080) * 6)", 0, 0]} for name in HEADS if name in names}
+    prefix = f"animation.{NS}.{species.id}"
+    animations = {
+        f"{prefix}.walk": {"loop": True, "bones": bones},
+        f"{prefix}.idle": {"loop": True, "bones": idle},
+        f"{prefix}.eat": {"loop": False, "animation_length": 3.0, "bones": eat},
     }
+    if species.id == "sheep":
+        graze = {name: {"rotation": [f"{dip} + math.sin(q.life_time * 1080) * 6", 0, 0]} for name in HEADS if name in names}
+        animations[f"{prefix}.graze"] = {"loop": True, "bones": graze}
+    return {"format_version": "1.8.0", "animations": animations}
 
 
 def preview_sheet(species, textures):
@@ -170,7 +208,7 @@ def main():
 
         write_json(RP / "entity" / f"{species.id}.entity.json", client_entity(species, hand))
         write_json(RP / "render_controllers" / f"{species.id}.render_controllers.json", render_controller(species, hand))
-        write_json(RP / "animations" / f"{species.id}.animation.json", walk_animation(species, hand))
+        write_json(RP / "animations" / f"{species.id}.animation.json", animation_file(species, hand))
 
         if hand:
             print(f"{species.id}: hand-made, {len(species.textures)} textures")

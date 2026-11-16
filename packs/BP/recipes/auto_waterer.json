@@ -24,6 +24,11 @@
     "result": {
       "item": "kaleidoscope_ranching:auto_waterer",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:auto_waterer"
+      }
+    ]
   }
 }

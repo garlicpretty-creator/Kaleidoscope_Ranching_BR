@@ -1,4 +1,5 @@
-"""Writes client entity, render controller and walk animation for an M4 animal.
+"""Writes client entity, render controller and animations (walk, idle, eat) for an M4 animal.
+The animations follow tools/gen_art.py animation_file(); keep the two in step.
 Usage: python client.py duck"""
 import json, sys
 from pathlib import Path
@@ -13,7 +14,10 @@ RULES = [
     ("a_", "!q.is_baby"),
     ("b_", "q.is_baby"),
 ]
-SWING = "math.cos(q.modified_distance_moved * 38.17)"
+# Scaled by move speed, as in vanilla, so the legs return to rest when the animal stops.
+SWING = "q.modified_move_speed * math.cos(q.modified_distance_moved * 38.17)"
+EAT_DIP = {"duck": 60, "goose": 65}
+IDLE_BLEND = "1.0 - math.clamp(q.modified_move_speed * 4, 0, 1)"
 
 SPECIES = {
     "duck": {
@@ -51,8 +55,8 @@ def main(sid):
         "materials": {"default": "entity_alphatest"},
         "textures": {v: f"textures/entity/ranching/{sid}/{v}" for v in ("female", "male", "baby")},
         "geometry": {"default": f"geometry.{NS}.{sid}"},
-        "animations": {"walk": f"animation.{NS}.{sid}.walk", "look_at_target": "animation.common.look_at_target"},
-        "scripts": {"scale": f"q.is_baby ? 1.0 : ({MALE} ? {s['scale_male']} : {s.get('scale_female', 1.0)})", "animate": ["walk", "look_at_target"]},
+        "animations": {"walk": f"animation.{NS}.{sid}.walk", "idle": f"animation.{NS}.{sid}.idle", "look_at_target": "animation.common.look_at_target"},
+        "scripts": {"scale": f"q.is_baby ? 1.0 : ({MALE} ? {s['scale_male']} : {s.get('scale_female', 1.0)})", "animate": ["walk", "look_at_target", {"idle": IDLE_BLEND}]},
         "render_controllers": [f"controller.render.{NS}.{sid}"],
         "spawn_egg": {"base_color": s["egg"][0], "overlay_color": s["egg"][1]},
     }}})
@@ -84,8 +88,15 @@ def main(sid):
                 anim[name] = {"rotation": rot}
     if s.get("baby_look"):
         anim["b_head"] = {"rotation": ["q.target_x_rotation", "q.target_y_rotation", 0]}
+    idle = {b: {"rotation": [0, "math.sin(q.life_time * 90) * 8", 0]} for b in ("a_tail", "b_tail") if b in bones}
+    idle.update({b: {"rotation": ["math.sin(q.life_time * 60) * 2", 0, 0]} for b in ("a_head", "b_head") if b in bones})
+    dip = EAT_DIP.get(sid, 45)
+    ease = "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1)"
+    eat = {b: {"rotation": [f"{ease} * ({dip} + math.sin(q.anim_time * 1080) * 6)", 0, 0]} for b in ("a_head", "b_head") if b in bones}
     dump(RP / "animations" / f"{sid}.animation.json", {"format_version": "1.8.0", "animations": {
-        f"animation.{NS}.{sid}.walk": {"loop": True, "bones": anim}}})
+        f"animation.{NS}.{sid}.walk": {"loop": True, "bones": anim},
+        f"animation.{NS}.{sid}.idle": {"loop": True, "bones": idle},
+        f"animation.{NS}.{sid}.eat": {"loop": False, "animation_length": 3.0, "bones": eat}}})
     print(sid, "bones:", bones)
 
 

@@ -248,7 +248,7 @@ def sheep():
             return light(t, v["skin"])
         return paint
 
-    index = f"(q.is_baby ? 2 : ({SEX_IS_MALE})) * 16 + math.clamp(q.color, 0, 15)"
+    index = f"(q.is_baby ? 2 : ({SEX_IS_MALE})) * 16 + math.clamp(q.property('kaleidoscope_ranching:wool'), 0, 15)"
     preview = [
         ("ewe", "female_white", {"sex": "female", "baby": False}),
         ("ram", "male_white", {"sex": "male", "baby": False}),

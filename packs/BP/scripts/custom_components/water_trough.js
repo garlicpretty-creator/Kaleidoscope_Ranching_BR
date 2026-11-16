@@ -3,7 +3,7 @@
 
 import { CARE } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
-import { ensureSettled, mark, isMarkedToday } from "../care/state.js";
+import { ensureSettled, mark, isMarkedToday, readyAt } from "../care/state.js";
 import {
   today, getState, setStates, animalsNear, blockGet, blockSet, mainhand, setMainhand,
   isCreative, actionbar,
@@ -41,7 +41,7 @@ function waterAnimals(block, auto) {
   for (const e of animals) {
     if (!SPECIES[e.typeId]) continue;
     ensureSettled(e, day);
-    if (!isMarkedToday(e, "water")) {
+    if (!isMarkedToday(e, "water") && readyAt(e, block, "water")) {
       mark(e, "water");
       used = true;
     }

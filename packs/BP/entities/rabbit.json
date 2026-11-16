@@ -102,11 +102,43 @@
           "search_range": 16,
           "search_height": 4,
           "goal_radius": 1.5,
-          "stay_duration": 60,
+          "stay_duration": 800,
           "target_selection_method": "nearest",
           "target_blocks": [
             "kaleidoscope_ranching:trough",
             "kaleidoscope_ranching:hay_rack",
+            "kaleidoscope_ranching:water_trough",
+            "kaleidoscope_ranching:auto_waterer"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:seeking_feed": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 5,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 800,
+          "target_selection_method": "nearest",
+          "target_blocks": [
+            "kaleidoscope_ranching:trough",
+            "kaleidoscope_ranching:hay_rack"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:seeking_water": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 5,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 800,
+          "target_selection_method": "nearest",
+          "target_blocks": [
             "kaleidoscope_ranching:water_trough",
             "kaleidoscope_ranching:auto_waterer"
           ]
@@ -408,16 +440,68 @@
       "kaleidoscope_ranching:sated": {
         "remove": {
           "component_groups": [
-            "kaleidoscope_ranching:seeking"
+            "kaleidoscope_ranching:seeking",
+            "kaleidoscope_ranching:seeking_feed",
+            "kaleidoscope_ranching:seeking_water"
           ]
         }
       },
       "kaleidoscope_ranching:hungry": {
-        "add": {
-          "component_groups": [
-            "kaleidoscope_ranching:seeking"
-          ]
-        }
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_feed",
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:seek_feed": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking",
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_feed"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:seek_water": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking",
+                "kaleidoscope_ranching:seeking_feed"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          }
+        ]
       },
       "kaleidoscope_ranching:add_ear_tag": {
         "sequence": [

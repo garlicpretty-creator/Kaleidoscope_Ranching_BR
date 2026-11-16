@@ -20,6 +20,11 @@
     "result": {
       "item": "kaleidoscope_ranching:beet_sugar_cube",
       "count": 2
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:beet_sugar_cube"
+      }
+    ]
   }
 }

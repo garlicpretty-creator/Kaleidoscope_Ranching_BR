@@ -16,13 +16,17 @@
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.goat.walk",
+        "idle": "animation.kaleidoscope_ranching.goat.idle",
         "look_at_target": "animation.common.look_at_target"
       },
       "scripts": {
         "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.1 : 1.0)",
         "animate": [
           "walk",
-          "look_at_target"
+          "look_at_target",
+          {
+            "idle": "1.0 - math.clamp(q.modified_move_speed * 4, 0, 1)"
+          }
         ]
       },
       "render_controllers": [

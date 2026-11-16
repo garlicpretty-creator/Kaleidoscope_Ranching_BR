@@ -1,9 +1,9 @@
 entity.kr_example:alpaca.name=羊驼
 item.spawn_egg.entity.kr_example:alpaca.name=羊驼刷怪蛋
-item.kr_example:alpaca_milk.name=羊驼奶
-item.kr_example:alpaca_milk_fine.name=优良羊驼奶
-item.kr_example:alpaca_milk_superb.name=极品羊驼奶
-item.kr_example:alpaca_carcass.name=羊驼屠体
-item.kr_example:hay_cube.name=干草块
-item.kr_example:alpaca_yogurt.name=羊驼酸奶
+item.kr_example:alpaca_milk=羊驼奶
+item.kr_example:alpaca_milk_fine=优良羊驼奶
+item.kr_example:alpaca_milk_superb=极品羊驼奶
+item.kr_example:alpaca_carcass=羊驼屠体
+item.kr_example:hay_cube=干草块
+item.kr_example:alpaca_yogurt=羊驼酸奶
 kr_example.born=一只小羊驼出生了！

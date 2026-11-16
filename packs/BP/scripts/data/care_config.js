@@ -21,6 +21,11 @@ export const CARE = {
 
   /** Radius (blocks) of trough / water trough / salt lick. */
   RADIUS: 8,
+  // An animal eats or drinks once it stands this close to the trough (blocks, horizontal).
+  EAT_RADIUS: 2.5,
+  // One that is in RADIUS but has not come this close after so many clock passes (30 s each)
+  // is served where it stands, so a fenced-off or tied animal still gets its feed.
+  EAT_WAIT_PASSES: 6,
   /** Vertical half-height of the pen volume scanned for manure. */
   PEN_HALF_HEIGHT: 3,
   /** Max animals one block processes per tick (server-cost cap, 企劃書 風險表). */

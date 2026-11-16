@@ -15,6 +15,15 @@
           ],
           "default": "female",
           "client_sync": true
+        },
+        "kaleidoscope_ranching:wool": {
+          "type": "int",
+          "range": [
+            0,
+            15
+          ],
+          "default": 0,
+          "client_sync": true
         }
       }
     },
@@ -100,11 +109,43 @@
           "search_range": 16,
           "search_height": 4,
           "goal_radius": 1.5,
-          "stay_duration": 60,
+          "stay_duration": 800,
           "target_selection_method": "nearest",
           "target_blocks": [
             "kaleidoscope_ranching:trough",
             "kaleidoscope_ranching:hay_rack",
+            "kaleidoscope_ranching:water_trough",
+            "kaleidoscope_ranching:auto_waterer"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:seeking_feed": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 5,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 800,
+          "target_selection_method": "nearest",
+          "target_blocks": [
+            "kaleidoscope_ranching:trough",
+            "kaleidoscope_ranching:hay_rack"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:seeking_water": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 5,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 800,
+          "target_selection_method": "nearest",
+          "target_blocks": [
             "kaleidoscope_ranching:water_trough",
             "kaleidoscope_ranching:auto_waterer"
           ]
@@ -476,16 +517,68 @@
       "kaleidoscope_ranching:sated": {
         "remove": {
           "component_groups": [
-            "kaleidoscope_ranching:seeking"
+            "kaleidoscope_ranching:seeking",
+            "kaleidoscope_ranching:seeking_feed",
+            "kaleidoscope_ranching:seeking_water"
           ]
         }
       },
       "kaleidoscope_ranching:hungry": {
-        "add": {
-          "component_groups": [
-            "kaleidoscope_ranching:seeking"
-          ]
-        }
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_feed",
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:seek_feed": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking",
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_feed"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:seek_water": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking",
+                "kaleidoscope_ranching:seeking_feed"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking_water"
+              ]
+            }
+          }
+        ]
       },
       "kaleidoscope_ranching:add_ear_tag": {
         "sequence": [
@@ -535,6 +628,11 @@
                 "kaleidoscope_ranching:color_0"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 0
+            }
           }
         ]
       },
@@ -567,6 +665,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_1"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 1
             }
           }
         ]
@@ -601,6 +704,11 @@
                 "kaleidoscope_ranching:color_2"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 2
+            }
           }
         ]
       },
@@ -633,6 +741,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_3"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 3
             }
           }
         ]
@@ -667,6 +780,11 @@
                 "kaleidoscope_ranching:color_4"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 4
+            }
           }
         ]
       },
@@ -699,6 +817,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_5"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 5
             }
           }
         ]
@@ -733,6 +856,11 @@
                 "kaleidoscope_ranching:color_6"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 6
+            }
           }
         ]
       },
@@ -765,6 +893,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_7"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 7
             }
           }
         ]
@@ -799,6 +932,11 @@
                 "kaleidoscope_ranching:color_8"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 8
+            }
           }
         ]
       },
@@ -831,6 +969,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_9"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 9
             }
           }
         ]
@@ -865,6 +1008,11 @@
                 "kaleidoscope_ranching:color_10"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 10
+            }
           }
         ]
       },
@@ -897,6 +1045,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_11"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 11
             }
           }
         ]
@@ -931,6 +1084,11 @@
                 "kaleidoscope_ranching:color_12"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 12
+            }
           }
         ]
       },
@@ -963,6 +1121,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_13"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 13
             }
           }
         ]
@@ -997,6 +1160,11 @@
                 "kaleidoscope_ranching:color_14"
               ]
             }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 14
+            }
           }
         ]
       },
@@ -1029,6 +1197,11 @@
               "component_groups": [
                 "kaleidoscope_ranching:color_15"
               ]
+            }
+          },
+          {
+            "set_property": {
+              "kaleidoscope_ranching:wool": 15
             }
           }
         ]

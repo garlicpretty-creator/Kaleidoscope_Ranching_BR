@@ -289,6 +289,11 @@ function toTimeOfDay(tick) {
   const target = Math.floor(now / DAY) * DAY + tick;
   __skipTime(target > now ? target - now : target + DAY - now);
 }
+/** Stands animals beside a block, as their seeking behaviour does in the game. */
+function walkTo(animals, block) {
+  for (const animal of [animals].flat()) animal.location = { x: block.location.x + 1.5, y: block.location.y, z: block.location.z + 0.5 };
+}
+
 function herdOf(n, type = "cow") {
   return Array.from({ length: n }, (_, i) => ranch(type, (i % 4) * 1.5 - 2, i % 2 ? "male" : "female", Math.floor(i / 4) * 2 + 1));
 }
@@ -318,7 +323,11 @@ test("M2 acceptance: five days of full care take every cow to five hearts", () =
     }
     hold(player, `${NS}:brush`);
     for (const cow of herd) assert(__interact(player, cow), "brushing goes through the router");
-    for (let pass = 0; pass < 5; pass++) {
+    walkTo(herd, trough);
+    __skipTime(2000);
+    runBlockClock();
+    walkTo(herd, water);
+    for (let pass = 0; pass < 4; pass++) {
       __skipTime(2000);
       runBlockClock();
     }
@@ -1242,8 +1251,9 @@ test("a trough in reach feeds first; the hay rack keeps its hay", () => {
   const player = __newPlayer(at(0));
   hold(player, "minecraft:hay_block", 1);
   use(HAY_RACK, rack, player);
-  place("trough", at(3), { fill: 5, kind: 5 });
+  const trough = place("trough", at(3), { fill: 5, kind: 5 });
   const cow = ranch("cow", 1, "female");
+  walkTo(cow, trough); // 1.5 blocks from the trough, within reach of the rack as well
   runBlockClock();
   equal(care.feedTierToday(cow), 3, "concentrate from the trough");
   equal(hayUnits(rack), 9, "hay untouched");
@@ -1538,15 +1548,36 @@ test("animals look for troughs until they have eaten and drunk, and again the ne
   assert(heifer.hasComponent(SEEK), "a new animal looks for feed");
   hold(player, `${NS}:mixed_feed`, 4);
   troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  walkTo(heifer, trough);
   runBlockClock();
   assert(heifer.hasComponent(SEEK), "fed but not yet watered: still looking");
+  const seekWater = cow.component_groups["kaleidoscope_ranching:seeking_water"]?.[SEEK];
+  equal(heifer.componentMap().get(SEEK).target_blocks.join(","), seekWater.target_blocks.join(","), "now it looks for water only");
+  assert(!seekWater.target_blocks.includes("kaleidoscope_ranching:trough"), "the water search skips feed troughs");
   hold(player, "minecraft:water_bucket");
   waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  walkTo(heifer, water);
   runBlockClock();
   assert(!heifer.hasComponent(SEEK), "fed and watered: stops looking");
   __skipTime(DAY);
   care.ensureSettled(heifer);
   assert(heifer.hasComponent(SEEK), "the next day it looks again");
+});
+
+test("an animal eats once it stands beside the trough; one kept away is fed after a wait", () => {
+  clearWorld();
+  const trough = place("trough", at(0), { fill: 5, kind: 5 });
+  const near = ranch("cow", 1, "female");
+  const far = ranch("cow", 6, "female");
+  walkTo(near, trough);
+  runBlockClock();
+  equal(care.feedTierToday(near), 3, "the cow beside the trough eats on the first pass");
+  equal(state(trough, "fill"), 4, "one portion gone");
+  const passesToFallback = 6; // CARE.EAT_WAIT_PASSES
+  for (let pass = 1; pass < passesToFallback; pass++) runBlockClock();
+  equal(state(trough, "fill"), 4, "the cow six blocks away has not eaten while it may still walk over");
+  runBlockClock();
+  equal(state(trough, "fill"), 3, "after the wait it is fed where it stands");
 });
 
 // --- Optional integration: Fishing Voyage ------------------------------------

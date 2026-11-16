@@ -177,7 +177,7 @@ function registryEntries(language) {
     entries.push([`entity.${NAMESPACE}:${id}.name`, name]);
     entries.push([`item.spawn_egg.entity.${NAMESPACE}:${id}.name`, name + eggWord]);
   }
-  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}.name`, localize(item[column])]);
+  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}`, localize(item[column])]);
   for (const block of BLOCKS) if (block.owner !== "m2") entries.push([`tile.${NAMESPACE}:${block.id}.name`, localize(block[column])]);
   return entries;
 }

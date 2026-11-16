@@ -6,56 +6,56 @@
       "bones": {
         "a_leg_fl": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 30) * 40",
+            "(-math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "b_leg_fl": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 30) * 40",
+            "(-math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "a_leg_fr": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 30) * 40",
+            "(-math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "b_leg_fr": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 30) * 40",
+            "(-math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "a_leg_bl": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 30) * 40",
+            "(math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "b_leg_bl": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 30) * 40",
+            "(math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "a_leg_br": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 30) * 40",
+            "(math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
         },
         "b_leg_br": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 30) * 40",
+            "(math.cos(q.modified_distance_moved * 30) * 40) * q.modified_move_speed",
             0,
             0
           ]
@@ -64,6 +64,59 @@
           "rotation": [
             "q.target_x_rotation",
             "q.target_y_rotation",
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.rabbit.idle": {
+      "loop": true,
+      "bones": {
+        "a_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.life_time * 90) * 8",
+            0
+          ]
+        },
+        "b_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.life_time * 90) * 8",
+            0
+          ]
+        },
+        "a_head": {
+          "rotation": [
+            "math.sin(q.life_time * 60) * 2",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "math.sin(q.life_time * 60) * 2",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.rabbit.eat": {
+      "loop": false,
+      "animation_length": 3.0,
+      "bones": {
+        "a_head": {
+          "rotation": [
+            "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1) * (30 + math.sin(q.anim_time * 1080) * 6)",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "math.clamp(q.anim_time * 3, 0, 1) * math.clamp((3 - q.anim_time) * 3, 0, 1) * (30 + math.sin(q.anim_time * 1080) * 6)",
+            0,
             0
           ]
         }
