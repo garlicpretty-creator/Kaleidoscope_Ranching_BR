@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "smoked_cheese_sandwich",
+    "metalness_emissive_roughness_subsurface": "smoked_cheese_sandwich_mers",
+    "normal": "smoked_cheese_sandwich_normal"
+  }
+}

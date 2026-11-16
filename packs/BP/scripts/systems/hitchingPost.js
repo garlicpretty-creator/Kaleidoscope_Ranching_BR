@@ -22,7 +22,7 @@ function tell(player, key, values) {
 
 const knotSpot = (location) => ({ x: location.x + 0.5, y: location.y + 0.9, z: location.z + 0.5 });
 
-function findKnot(block) {
+export function findKnot(block) {
   const id = getBlockData(block, {}).knot;
   const known = id && world.getEntity(id);
   if (known?.isValid) return known;
@@ -30,17 +30,17 @@ function findKnot(block) {
   return block.dimension.getEntities({ type: KNOT, location: knotSpot(block.location), maxDistance: 0.6 })[0];
 }
 
-function ensureKnot(block) {
+export function ensureKnot(block) {
   let knot = findKnot(block);
   if (!knot) knot = block.dimension.spawnEntity(KNOT, knotSpot(block.location));
   setBlockData(block, { knot: knot.id });
   return knot;
 }
 
-const leash = (entity) => entity.getComponent("minecraft:leashable");
+export const leash = (entity) => entity.getComponent("minecraft:leashable");
 
 /** Ranch animals within reach whose lead is held by `holder`. */
-function ledBy(holder, dimension, location) {
+export function ledBy(holder, dimension, location) {
   return dimension
     .getEntities({ location, maxDistance: GATHER_RADIUS })
     .filter((entity) => isRanchAnimal(entity) && leash(entity)?.leashHolder?.id === holder.id);
@@ -61,7 +61,7 @@ function use(block, player) {
   tell(player, "untied", [`${tied.length}`]);
 }
 
-function free(dimension, location, typeId) {
+export function free(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
   const knot = (data?.knot && world.getEntity(data.knot)) || dimension.getEntities({ type: KNOT, location: knotSpot(location), maxDistance: 0.6 })[0];
   if (!knot?.isValid) return;

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "berry_ice_cream",
+    "metalness_emissive_roughness_subsurface": "berry_ice_cream_mers",
+    "normal": "berry_ice_cream_normal"
+  }
+}

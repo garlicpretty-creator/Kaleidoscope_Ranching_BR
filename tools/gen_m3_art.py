@@ -41,6 +41,9 @@ SOUNDS = {
     "cheese_wheel": "cloth",
     "food_waste_bin": "wood",
     "meat_grinder": "metal",
+    "milking_rack": "wood",
+    "cream_separator": "metal",
+    "ice_cream_churn": "wood",
 }
 
 

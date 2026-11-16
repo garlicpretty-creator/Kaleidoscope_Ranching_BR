@@ -135,6 +135,32 @@ const OFFAL_LINE = [
   ["foie_gras_pate", "鵝肝醬", "Goose Liver Pâté", "dairy"],
 ];
 
+// 1.1 蛋奶線 (企劃書 1.1 三、蛋奶線).
+const DAIRY_LINE = [
+  ["skim_milk", "脫脂奶", "Skim Milk", "dairy"],
+  ["vanilla_ice_cream", "香草冰淇淋", "Vanilla Ice Cream", "dairy"],
+  ["berry_ice_cream", "莓果冰淇淋", "Berry Ice Cream", "dairy"],
+  ["chocolate_ice_cream", "可可冰淇淋", "Chocolate Ice Cream", "dairy"],
+  ["custard", "卡士達醬", "Custard", "dairy"],
+  // Rooted up by well-loved pigs in forests (systems/truffle.js).
+  ["truffle", "松露", "Truffle", "byproduct"],
+];
+
+// 1.1 起司線 (企劃書 1.1 四、起司線): a cheese per milk, aged and smoked wheels, whey and skim-milk curds.
+const CHEESE_LINE = [
+  ["goat_cheese", "山羊乳酪", "Goat Cheese", "dairy"],
+  ["aged_goat_cheese", "熟成山羊乳酪", "Aged Goat Cheese", "dairy"],
+  ["mozzarella", "莫札瑞拉", "Mozzarella", "dairy"],
+  ["chhurpi", "曲拉", "Chhurpi", "dairy"],
+  ["chhurpi_block", "曲拉塊", "Dried Chhurpi", "dairy"],
+  ["vintage_cheese_wheel", "陳年乳酪輪", "Vintage Cheese Wheel", "dairy"],
+  ["vintage_cheese_slice", "陳年乳酪片", "Vintage Cheese Slice", "dairy"],
+  ["smoked_cheese_wheel", "煙燻乳酪輪", "Smoked Cheese Wheel", "dairy"],
+  ["smoked_cheese_slice", "煙燻乳酪片", "Smoked Cheese Slice", "dairy"],
+  ["ricotta", "瑞可塔", "Ricotta", "dairy"],
+  ["milk_tofu", "奶豆腐", "Milk Tofu", "dairy"],
+];
+
 const BYPRODUCTS = [
   ["large_bone", "大骨", "Large Bone", "byproduct"],
   ["chicken_frame", "雞骨架", "Chicken Frame", "byproduct"],
@@ -193,6 +219,8 @@ export const ITEMS = [
   ...CUTS,
   ...MEAT_LINE,
   ...OFFAL_LINE,
+  ...DAIRY_LINE,
+  ...CHEESE_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,

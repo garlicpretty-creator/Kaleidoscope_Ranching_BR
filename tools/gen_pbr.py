@@ -73,14 +73,14 @@ RULES = [
     (r"^blocks/kaleidoscope_ranching/", "wood"),
     # Hand-made blocks (box-UV atlases)
     (r"^blocks/ranching/auto_feeder$", "metal"),
-    (r"^blocks/ranching/meat_grinder$", "metal"),
+    (r"^blocks/ranching/(meat_grinder|cream_separator)$", "metal"),
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
     (r"^blocks/ranching/cheese_wheel$", "fat"),
     (r"^blocks/ranching/", "wood"),
     # Items
     (r"^items/.*/(milking_pail|cowbell|manure_fork|ear_tag)$", "metal"),
-    (r"^items/.*/(nursing_bottle|\w+_milk(_fine|_superb)?|cream|whey|yogurt)$", "glass"),
-    (r"^items/.*/(butter|ghee|lard|beef_tallow|mutton_tallow|pork_fat|fresh_cheese|cheese_slice|aged_cheese_wheel)$", "fat"),
+    (r"^items/.*/(nursing_bottle|\w+_milk(_fine|_superb)?|cream|whey|yogurt|skim_milk)$", "glass"),
+    (r"^items/.*/(butter|ghee|lard|beef_tallow|mutton_tallow|pork_fat|fresh_cheese|cheese_slice|aged_cheese_wheel|\w*cheese\w*|mozzarella|chhurpi\w*|ricotta|milk_tofu|custard|\w+_ice_cream)$", "fat"),
     (r"^items/.*/(large_bone|cattle_horn|billy_goat_horn|chicken_frame)$", "bone"),
     (r"^items/.*/(\w*egg(_fine|_superb)?|fertilized_\w+)$", "shell"),
     (r"^items/.*/(down|yak_hair|pig_bristle|raw_hide|sheep_skin|rabbit_hide|brush)$", "fur"),

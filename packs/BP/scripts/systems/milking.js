@@ -21,7 +21,7 @@ import { emitRanchEvent } from "../core/events.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
-const LAST_MILKED_DAY = dp("last_milked_day");
+export const LAST_MILKED_DAY = dp("last_milked_day");
 const NURSING_FEEDS = dp("nursing_feeds");
 
 const TIER_INDEX = { plain: 0, fine: 1, superb: 2 };
@@ -29,16 +29,17 @@ const TIER_INDEX = { plain: 0, fine: 1, superb: 2 };
 const tierOf = (id) => (id.endsWith("_superb") ? 2 : id.endsWith("_fine") ? 1 : 0);
 
 // Plain milk first, so feeding uses the cheapest milk the player carries.
-const MILK_FOR_FEEDING = ITEMS.filter((item) => item.category === "milk")
+// 1.1: skim milk from the cream separator feeds babies too, before whole milk.
+const MILK_FOR_FEEDING = [rid("skim_milk"), ...ITEMS.filter((item) => item.category === "milk")
   .map((item) => item.id)
   .sort((a, b) => tierOf(a) - tierOf(b))
-  .map(rid);
+  .map(rid)];
 
 function tell(player, key) {
   player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
 }
 
-function milkTiers(species) {
+export function milkTiers(species) {
   const product = species.dailyProduct;
   return (product.tierItems ?? tierIds(product.item)).map(rid);
 }

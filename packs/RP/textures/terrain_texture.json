@@ -109,6 +109,9 @@
     "kr_compost_bin": {
       "textures": "textures/blocks/ranching/compost_bin"
     },
+    "kr_cream_separator": {
+      "textures": "textures/blocks/ranching/cream_separator"
+    },
     "kr_feed_mixer": {
       "textures": "textures/blocks/ranching/feed_mixer"
     },
@@ -124,11 +127,17 @@
     "kr_hitching_post": {
       "textures": "textures/blocks/ranching/hitching_post"
     },
+    "kr_ice_cream_churn": {
+      "textures": "textures/blocks/ranching/ice_cream_churn"
+    },
     "kr_incubator": {
       "textures": "textures/blocks/ranching/incubator"
     },
     "kr_meat_grinder": {
       "textures": "textures/blocks/ranching/meat_grinder"
+    },
+    "kr_milking_rack": {
+      "textures": "textures/blocks/ranching/milking_rack"
     },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"

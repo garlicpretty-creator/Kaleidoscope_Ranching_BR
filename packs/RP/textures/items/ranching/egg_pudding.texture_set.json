@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "egg_pudding",
+    "metalness_emissive_roughness_subsurface": "egg_pudding_mers",
+    "normal": "egg_pudding_normal"
+  }
+}

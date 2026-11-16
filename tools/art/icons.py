@@ -466,6 +466,30 @@ def draw(item_id):
         tripe(c, (200, 180, 150) if base == "beef_tripe" else (236, 228, 210))
     elif base == "foie_gras_pate":
         jar(c, (220, 180, 140))
+    # --- 1.1 蛋奶線與起司線 ---
+    elif base == "skim_milk":
+        bottle(c, (232, 238, 244))
+    elif base.endswith("_ice_cream"):
+        cone = {"vanilla_ice_cream": (250, 244, 220), "berry_ice_cream": (236, 150, 180), "chocolate_ice_cream": (120, 76, 50)}[base]
+        c.fill(ellipse(8, 6, 4.5, 3.8), cone)
+        c.fill({(x, y) for x in range(4, 13) for y in range(8, 15) if abs(x + .5 - 8) <= (15 - y) * 0.6}, (214, 160, 90))
+    elif base == "custard":
+        jar(c, (250, 220, 120))
+    elif base == "truffle":
+        blob(c, (70, 52, 40), 4.5, 4)
+    elif base in ("goat_cheese", "mozzarella", "chhurpi", "ricotta", "milk_tofu"):
+        block(c, {"goat_cheese": (250, 250, 242), "mozzarella": (252, 250, 236), "chhurpi": (238, 228, 200),
+                  "ricotta": (252, 252, 246), "milk_tofu": (246, 240, 220)}[base])
+    elif base in ("aged_goat_cheese", "chhurpi_block"):
+        block(c, (236, 220, 170) if base == "aged_goat_cheese" else (220, 200, 160))
+    elif base == "vintage_cheese_wheel":
+        wheel(c, (226, 176, 70), (150, 100, 40))
+    elif base == "smoked_cheese_wheel":
+        wheel(c, (220, 170, 90), (120, 70, 30))
+    elif base == "vintage_cheese_slice":
+        wedge(c, (226, 180, 76))
+    elif base == "smoked_cheese_slice":
+        wedge(c, (206, 150, 80))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

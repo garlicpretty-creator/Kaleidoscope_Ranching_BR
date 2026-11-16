@@ -206,6 +206,87 @@ export const DISHES = [
     slots: [["minecraft:bread"], [r("foie_gras_pate")]],
     look: ["plate", [214, 170, 120]],
   },
+
+  // --- 1.1 蛋奶線 ----------------------------------------------------------------
+  // Condensed milk and milk skin are simmered in Cookery's stockpot; they are
+  // ingredients first, but can be eaten as they are.
+  {
+    id: "condensed_milk", zh: "煉乳", en: "Condensed Milk", food: [4, 0.5], station: "stockpot", carrier: "minecraft:glass_bottle", time: 600,
+    slots: [ANY_MILK, ANY_MILK, ["minecraft:sugar"]],
+    look: ["bottle", [244, 226, 180]],
+  },
+  {
+    id: "milk_skin", zh: "奶皮", en: "Milk Skin", food: [3, 0.5], station: "stockpot", carrier: "", time: 600,
+    slots: [ANY_MILK, ANY_MILK],
+    look: ["plate", [246, 236, 200]],
+  },
+  {
+    id: "condensed_milk_toast", zh: "煉乳吐司", en: "Condensed Milk Toast", food: [7, 0.7], station: "crafting", carrier: "",
+    slots: [["minecraft:bread"], [r("condensed_milk")]],
+    look: ["plate", [236, 206, 150]],
+  },
+  {
+    id: "milk_skin_tea", zh: "奶皮子奶茶", en: "Milk Skin Tea", food: [5, 0.6], station: "stockpot", carrier: "minecraft:glass_bottle", time: 300,
+    slots: [[KC("dried_tea_leaves")], [r("milk_skin")], ANY_MILK],
+    look: ["bottle", [210, 176, 130]],
+  },
+  {
+    id: "double_skin_milk", zh: "雙皮奶", en: "Double-skin Milk Pudding", food: [6, 0.6], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("milk_skin")], ANY_MILK, ["minecraft:sugar"]],
+    look: ["bowl", [250, 246, 230]],
+  },
+  {
+    id: "egg_pudding", zh: "雞蛋布丁", en: "Egg Pudding", food: [6, 0.6], station: "steamer", carrier: BOWL, time: 300,
+    input: r("custard"),
+    look: ["bowl", [246, 214, 120]],
+  },
+  {
+    id: "egg_tart", zh: "蛋塔", en: "Egg Tart", food: [6, 0.7], station: "furnace", carrier: "",
+    input: r("raw_egg_tart"),
+    look: ["plate", [240, 190, 80]],
+  },
+  {
+    id: "truffle_eggs", zh: "松露炒蛋", en: "Truffle Scrambled Eggs", food: [9, 0.85], station: "wok", carrier: "", time: 200,
+    slots: [[r("truffle")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    look: ["plate", [240, 210, 110]],
+  },
+
+  // --- 1.1 起司線 ----------------------------------------------------------------
+  {
+    id: "cheese_fondue", zh: "起司火鍋", en: "Cheese Fondue", food: [11, 0.85], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("vintage_cheese_slice")], [r("vintage_cheese_slice")], ["minecraft:bread"]],
+    look: ["bowl", [244, 206, 100]],
+  },
+  {
+    id: "margherita_pizza", zh: "瑪格麗特披薩", en: "Margherita Pizza", food: [12, 0.85], station: "furnace", carrier: "",
+    input: r("raw_pizza"),
+    look: ["plate", [220, 110, 70]],
+  },
+  {
+    id: "ricotta_pancakes", zh: "瑞可塔鬆餅", en: "Ricotta Pancakes", food: [8, 0.75], station: "wok", carrier: "", time: 200,
+    slots: [[r("ricotta")], [KC("flour")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    look: ["plate", [232, 196, 130]],
+  },
+  {
+    id: "smoked_cheese_sandwich", zh: "煙燻起司三明治", en: "Smoked Cheese Sandwich", food: [8, 0.75], station: "crafting", carrier: "",
+    slots: [["minecraft:bread"], [r("smoked_cheese_slice")]],
+    look: ["plate", [200, 150, 80]],
+  },
+  {
+    id: "goat_cheese_salad", zh: "山羊乳酪沙拉", en: "Goat Cheese Salad", food: [7, 0.7], station: "crafting", carrier: BOWL,
+    slots: [[r("aged_goat_cheese")], [KC("lettuce")], [KC("tomato")], [BOWL]],
+    look: ["bowl", [150, 190, 90]],
+  },
+  {
+    id: "truffle_gratin", zh: "松露乳酪焗烤", en: "Truffle Cheese Gratin", food: [12, 0.85], station: "furnace", carrier: BOWL,
+    input: r("raw_truffle_gratin"),
+    look: ["bowl", [210, 170, 80]],
+  },
+  {
+    id: "chhurpi_butter_tea", zh: "曲拉酥油茶", en: "Chhurpi Butter Tea", food: [6, 0.7], station: "stockpot", carrier: "minecraft:glass_bottle", time: 300,
+    slots: [[r("chhurpi_block")], [r("ghee")], [KC("dried_tea_leaves")]],
+    look: ["bottle", [214, 180, 120]],
+  },
 ];
 
 /**
@@ -225,10 +306,29 @@ export const DISH_PREPS = [
     id: "raw_cheese_gratin", zh: "焗烤生料", en: "Unbaked Cheese Gratin",
     makes: [["minecraft:potato", r("cheese_slice"), r("cream"), BOWL]],
   },
+  // 1.1
+  {
+    id: "raw_egg_tart", zh: "蛋塔生料", en: "Unbaked Egg Tart",
+    makes: [[r("custard"), KC("raw_dough")]],
+  },
+  {
+    id: "raw_pizza", zh: "披薩生料", en: "Unbaked Pizza",
+    makes: [[KC("raw_dough"), KC("tomato"), r("mozzarella")]],
+  },
+  {
+    id: "raw_truffle_gratin", zh: "松露焗烤生料", en: "Unbaked Truffle Gratin",
+    makes: [[r("truffle"), r("cheese_slice"), "minecraft:potato", BOWL]],
+  },
 ];
 
 /** Dairy and egg products shown in the guidebook's dairy chapter. */
-export const DAIRY_PRODUCTS = ["butter", "cream", "ghee", "yogurt", "fresh_cheese", "aged_cheese_wheel", "cheese_slice", "whey", "salted_duck_egg", "century_egg"];
+export const DAIRY_PRODUCTS = [
+  "butter", "cream", "ghee", "yogurt", "fresh_cheese", "aged_cheese_wheel", "cheese_slice", "whey", "salted_duck_egg", "century_egg",
+  // 1.1 蛋奶線與起司線
+  "skim_milk", "vanilla_ice_cream", "berry_ice_cream", "chocolate_ice_cream", "custard", "truffle",
+  "goat_cheese", "aged_goat_cheese", "mozzarella", "chhurpi", "chhurpi_block", "vintage_cheese_wheel", "vintage_cheese_slice",
+  "smoked_cheese_wheel", "smoked_cheese_slice", "ricotta", "milk_tofu",
+];
 
 /** 1.1 meat and offal products shown in the guidebook's butchery chapter. */
 export const MEAT_PRODUCTS = [

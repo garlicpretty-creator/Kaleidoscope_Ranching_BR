@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_raw_egg_tart_0"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:custard"
+      },
+      {
+        "item": "kaleidoscope_cookery:raw_dough"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:raw_egg_tart",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:raw_egg_tart"
+      }
+    ]
+  }
+}

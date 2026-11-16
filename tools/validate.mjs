@@ -157,13 +157,14 @@ Object.values(SPECIES).forEach((row) => [row.treat, ...(row.brushDrops ?? []).ma
 PROCESSING_RECIPES.forEach((recipe) => {
   recipe.inputs.forEach((input) => (input.anyOf ?? [input.item]).forEach(note));
   recipe.outputs.forEach((output) => note(output.item));
+  (recipe.aged?.outputs ?? []).forEach((output) => note(output.item)); // 1.1 熟成分級
 });
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
 {
   // 1.1: butcher-rack air-drying and water-trough washing (input → output).
-  const { DRYING = {}, WASHING = {} } = await load("processing.js");
-  for (const table of [DRYING, WASHING]) for (const [from, to] of Object.entries(table)) [from, to].forEach(note);
+  const { DRYING = {}, WASHING = {}, SMOKING = {} } = await load("processing.js");
+  for (const table of [DRYING, WASHING, SMOKING]) for (const [from, to] of Object.entries(table)) [from, to].forEach(note);
 }
 
 // M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla

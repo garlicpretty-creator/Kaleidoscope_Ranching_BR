@@ -21,7 +21,9 @@ const CARCASSES = ANIMALS.map((animal) => animal.id);
 const FULL = { origin: [-8, 0, -8], size: [16, 16, 16] };
 const box = (x, y, z, w, h, d) => ({ origin: [x, y, z], size: [w, h, d] });
 
-const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder"];
+const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder", "ice_cream_churn"];
+// 1.1: stations that also run on the ranch clock with containers above and below (data/processing.js AUTO_STATIONS).
+const AUTO_STATIONS = ["cream_separator"];
 
 const DEFS = {
   butcher_rack: {
@@ -55,6 +57,15 @@ const DEFS = {
     selection: box(-7, 0, -7, 14, 12, 14),
     seconds: 1,
     light: true,
+  },
+  // 1.1 擠奶架 (systems/milkingRack.js): one animal tied to it, milked once a day.
+  milking_rack: {
+    component: "milking_rack",
+    states: {},
+    bones: {},
+    collision: box(-8, 0, -8, 16, 12, 16),
+    selection: box(-8, 0, -8, 16, 12, 16),
+    seconds: 1.5,
   },
   hitching_post: {
     component: "hitching_post",
@@ -96,6 +107,19 @@ const DEFS = {
     seconds: 1,
     mapColor: "#6f7a5a",
   },
+  ...Object.fromEntries(
+    AUTO_STATIONS.map((id) => [
+      id,
+      {
+        component: "auto_station",
+        states: { [S("busy")]: [false, true] },
+        bones: { busy: state("busy") },
+        collision: FULL,
+        selection: FULL,
+        seconds: 1.5,
+      },
+    ])
+  ),
   ...Object.fromEntries(
     STATIONS.map((id) => [
       id,

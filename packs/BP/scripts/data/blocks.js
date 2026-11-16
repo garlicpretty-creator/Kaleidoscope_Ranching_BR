@@ -31,4 +31,8 @@ export const BLOCKS = [
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],
   // 1.1 肉類線: cranked, one mince per use (data/processing.js).
   ["meat_grinder", "絞肉機", "Meat Grinder", "processing"],
+  // 1.1 蛋奶線
+  ["milking_rack", "擠奶架", "Milking Rack", "husbandry"],
+  ["cream_separator", "奶油分離器", "Cream Separator", "processing"],
+  ["ice_cream_churn", "冰淇淋桶", "Ice Cream Churn", "processing"],
 ].map(([id, zh, en, group, owner = "ranching"]) => ({ id, zh, en, group, owner }));

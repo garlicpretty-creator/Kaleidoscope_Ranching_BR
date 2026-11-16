@@ -51,6 +51,24 @@ const OVERRIDES = {
   beef_jerky: food(4, 0.6, { always: true }),
   foie_gras_pate: { stack: 16, ...food(4, 0.8) },
   sausage_casing: {},
+  // 1.1 蛋奶線與起司線
+  skim_milk: { stack: 16, ...food(2, 0.3, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
+  vanilla_ice_cream: { stack: 16, ...food(4, 0.4, { always: true }) },
+  berry_ice_cream: { stack: 16, ...food(5, 0.5, { always: true }) },
+  chocolate_ice_cream: { stack: 16, ...food(5, 0.5, { always: true }) },
+  custard: { stack: 16 },
+  truffle: { stack: 16 },
+  goat_cheese: food(3, 0.6),
+  aged_goat_cheese: food(4, 0.7),
+  mozzarella: food(3, 0.6),
+  chhurpi: food(2, 0.5),
+  chhurpi_block: food(3, 0.7),
+  vintage_cheese_wheel: { stack: 16 },
+  vintage_cheese_slice: food(3, 0.8),
+  smoked_cheese_wheel: { stack: 16 },
+  smoked_cheese_slice: food(3, 0.7),
+  ricotta: food(2, 0.5),
+  milk_tofu: food(3, 0.5),
   // Item custom components (systems/m4.js); they need item format 1.21.90.
   cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
   animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
@@ -184,6 +202,12 @@ const RECIPES = [
   // 1.1 肉類線與內臟線
   shaped("meat_grinder", ["III", "SIS", "PPP"], { I: { item: "minecraft:iron_ingot" }, S: { item: "minecraft:stick" }, P: planks }, "meat_grinder"),
   shapeless("sausage_casing", [{ item: rid("cleaned_intestine") }], "sausage_casing", 2),
+  // 1.1 蛋奶線與起司線
+  shaped("milking_rack", ["F F", "PBP", "P P"], { F: { item: "minecraft:oak_fence" }, P: planks, B: { item: "minecraft:bucket" } }, "milking_rack"),
+  shaped("cream_separator", ["III", " B ", "IPI"], { I: { item: "minecraft:iron_ingot" }, B: { item: "minecraft:bucket" }, P: planks }, "cream_separator"),
+  shaped("ice_cream_churn", [" S ", "PIP", "PPP"], { S: { item: "minecraft:stick" }, I: { item: "minecraft:ice" }, P: planks }, "ice_cream_churn"),
+  shapeless("vintage_cheese_slices", [{ item: rid("vintage_cheese_wheel") }], "vintage_cheese_slice", 5),
+  shapeless("smoked_cheese_slices", [{ item: rid("smoked_cheese_wheel") }], "smoked_cheese_slice", 4),
 
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),

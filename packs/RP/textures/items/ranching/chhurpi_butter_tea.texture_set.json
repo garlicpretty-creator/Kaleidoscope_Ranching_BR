@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "chhurpi_butter_tea",
+    "metalness_emissive_roughness_subsurface": "chhurpi_butter_tea_mers",
+    "normal": "chhurpi_butter_tea_normal"
+  }
+}
