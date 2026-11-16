@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_hitching_post"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "N",
+      "F",
+      "F"
+    ],
+    "key": {
+      "N": {
+        "item": "minecraft:iron_nugget"
+      },
+      "F": {
+        "item": "minecraft:oak_fence"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:hitching_post",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:hitching_post"
+      }
+    ]
+  }
+}

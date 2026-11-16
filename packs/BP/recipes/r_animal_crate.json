@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_animal_crate"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "PBP",
+      "B B",
+      "PBP"
+    ],
+    "key": {
+      "P": {
+        "tag": "minecraft:planks"
+      },
+      "B": {
+        "item": "minecraft:iron_bars"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:animal_crate",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:animal_crate"
+      }
+    ]
+  }
+}

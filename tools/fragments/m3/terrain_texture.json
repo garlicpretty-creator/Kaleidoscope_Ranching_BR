@@ -28,6 +28,9 @@
     },
     "kr_hay_rack": {
       "textures": "textures/blocks/ranching/hay_rack"
+    },
+    "kr_hitching_post": {
+      "textures": "textures/blocks/ranching/hitching_post"
     }
   }
 }

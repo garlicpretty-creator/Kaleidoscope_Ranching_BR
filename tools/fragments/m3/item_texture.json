@@ -244,6 +244,75 @@
     },
     "kr_cowbell": {
       "textures": "textures/items/ranching/cowbell"
+    },
+    "kr_animal_crate": {
+      "textures": "textures/items/ranching/animal_crate"
+    },
+    "kr_cream_stew": {
+      "textures": "textures/items/ranching/cream_stew"
+    },
+    "kr_bone_broth": {
+      "textures": "textures/items/ranching/bone_broth"
+    },
+    "kr_old_duck_soup": {
+      "textures": "textures/items/ranching/old_duck_soup"
+    },
+    "kr_braised_brisket": {
+      "textures": "textures/items/ranching/braised_brisket"
+    },
+    "kr_yak_stew": {
+      "textures": "textures/items/ranching/yak_stew"
+    },
+    "kr_goose_stew": {
+      "textures": "textures/items/ranching/goose_stew"
+    },
+    "kr_trotter_soup": {
+      "textures": "textures/items/ranching/trotter_soup"
+    },
+    "kr_century_egg_congee": {
+      "textures": "textures/items/ranching/century_egg_congee"
+    },
+    "kr_milk_tea": {
+      "textures": "textures/items/ranching/milk_tea"
+    },
+    "kr_salted_egg_yolk_greens": {
+      "textures": "textures/items/ranching/salted_egg_yolk_greens"
+    },
+    "kr_braised_pork_belly": {
+      "textures": "textures/items/ranching/braised_pork_belly"
+    },
+    "kr_tomato_duck_egg": {
+      "textures": "textures/items/ranching/tomato_duck_egg"
+    },
+    "kr_butter_steak": {
+      "textures": "textures/items/ranching/butter_steak"
+    },
+    "kr_cumin_lamb_chops": {
+      "textures": "textures/items/ranching/cumin_lamb_chops"
+    },
+    "kr_spicy_chicken_legs": {
+      "textures": "textures/items/ranching/spicy_chicken_legs"
+    },
+    "kr_ghee_rice": {
+      "textures": "textures/items/ranching/ghee_rice"
+    },
+    "kr_steamed_egg": {
+      "textures": "textures/items/ranching/steamed_egg"
+    },
+    "kr_cheese_gratin": {
+      "textures": "textures/items/ranching/cheese_gratin"
+    },
+    "kr_cheese_toast": {
+      "textures": "textures/items/ranching/cheese_toast"
+    },
+    "kr_berry_yogurt": {
+      "textures": "textures/items/ranching/berry_yogurt"
+    },
+    "kr_egg_custard": {
+      "textures": "textures/items/ranching/egg_custard"
+    },
+    "kr_raw_cheese_gratin": {
+      "textures": "textures/items/ranching/raw_cheese_gratin"
     }
   }
 }

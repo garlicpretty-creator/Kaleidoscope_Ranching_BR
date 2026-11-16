@@ -1,0 +1,37 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:buffalo",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female": "textures/entity/ranching/buffalo/female",
+        "male": "textures/entity/ranching/buffalo/male",
+        "baby": "textures/entity/ranching/buffalo/baby"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.cow"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.cow.walk",
+        "look_at_target": "animation.common.look_at_target"
+      },
+      "scripts": {
+        "scale": "((!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male') ? 1.1 : 1.0) * 1.15",
+        "animate": [
+          "walk",
+          "look_at_target"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.cow"
+      ],
+      "spawn_egg": {
+        "base_color": "#3E3E44",
+        "overlay_color": "#9A8F80"
+      }
+    }
+  }
+}

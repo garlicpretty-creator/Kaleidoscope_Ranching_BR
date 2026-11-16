@@ -23,9 +23,48 @@ const TUNING = {
   pig: { family: "pig", health: 10, speed: 0.25, box: [0.9, 0.9], mass: 0.75, saddle: true },
   chicken: { family: "chicken", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true },
   rabbit: { family: "rabbit", health: 3, speed: 0.3, box: [0.4, 0.5], mass: 0.4, variants: 6 },
+  // M4. No vanilla counterpart, so they also get spawn rules (SPAWN below).
+  duck: { family: "duck", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true, swims: true },
+  goose: { family: "goose", health: 8, speed: 0.25, box: [0.7, 1.0], mass: 0.6, noFallDamage: true, swims: true, guard: true },
+  buffalo: { family: "buffalo", health: 14, speed: 0.2, box: [1.1, 1.4], mass: 1.2 },
+  yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1 },
+};
+
+// Natural spawning for the M4 animals, modelled on vanilla cows. Biome tags are
+// Bedrock's; an animal spawns where any of its tags is present.
+const SPAWN = {
+  duck: { tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], weight: 8, herd: [2, 4] },
+  goose: { tags: ["plains", "river"], blocks: ["minecraft:grass_block"], weight: 6, herd: [2, 3] },
+  buffalo: { tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 6, herd: [2, 3] },
+  yak: { tags: ["mountains", "meadow", "snowy_slopes", "frozen_peaks"], blocks: ["minecraft:grass_block", "minecraft:snow", "minecraft:stone"], weight: 6, herd: [2, 4] },
 };
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
+
+// A gander drives hostile mobs off: adult males only (babies never pick a target).
+function guardComponents() {
+  return {
+    "minecraft:attack": { damage: 2 },
+    "minecraft:behavior.melee_attack": { priority: 3, speed_multiplier: 1.3, track_target: true },
+    "minecraft:behavior.nearest_attackable_target": {
+      priority: 2,
+      must_see: true,
+      reselect_targets: true,
+      entity_types: [
+        {
+          filters: {
+            all_of: [
+              { test: "is_family", subject: "other", value: "monster" },
+              { test: "is_family", subject: "other", operator: "!=", value: "creeper" },
+              { test: "is_baby", subject: "self", value: false },
+            ],
+          },
+          max_dist: 8,
+        },
+      ],
+    },
+  };
+}
 
 function buildEntity(animal, t) {
   const sexFamily = (sex) => ({
@@ -69,8 +108,20 @@ function buildEntity(animal, t) {
     },
     [g("adult")]: adult,
     [g("sex_female")]: sexFamily("female"),
-    [g("sex_male")]: sexFamily("male"),
+    [g("sex_male")]: { ...sexFamily("male"), ...(t.guard ? guardComponents() : {}) },
     [g("wild")]: { "minecraft:despawn": { despawn_from_distance: {} } },
+    // Rung for by the cowbell (systems/cowbell.js): follow a player holding it
+    // from far away for one minute.
+    [g("called")]: {
+      "minecraft:behavior.tempt": {
+        priority: 3,
+        speed_multiplier: 1.3,
+        within_radius: 32,
+        can_tempt_vertically: true,
+        items: [rid("cowbell"), ...animal.temptItems.map(rid)],
+      },
+      "minecraft:timer": { looping: false, time: 60, time_down_event: { event: g("uncalled"), target: "self" } },
+    },
     [g("persistent")]: { "minecraft:persistent": {} },
   };
 
@@ -140,7 +191,9 @@ function buildEntity(animal, t) {
     // Death drops are handled by script (the carcass); see systems/carcass.js.
     "minecraft:loot": { table: `loot_tables/${NS}/empty.json` },
     "minecraft:movement": { value: t.speed },
-    "minecraft:navigation.walk": { can_path_over_water: true, avoid_water: true, avoid_damage_blocks: true },
+    "minecraft:navigation.walk": t.swims
+      ? { can_path_over_water: true, can_swim: true, avoid_water: false, avoid_damage_blocks: true }
+      : { can_path_over_water: true, avoid_water: true, avoid_damage_blocks: true },
     "minecraft:movement.basic": {},
     "minecraft:jump.static": {},
     "minecraft:can_climb": {},
@@ -217,6 +270,8 @@ function buildEntity(animal, t) {
     [g("make_persistent")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
     },
+    [g("called")]: { sequence: [{ remove: { component_groups: [g("called")] } }, { add: { component_groups: [g("called")] } }] },
+    [g("uncalled")]: { remove: { component_groups: [g("called")] } },
     // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).
     [g("add_ear_tag")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
@@ -270,6 +325,119 @@ for (const animal of ANIMALS) {
   writeFileSync(join(outDir, `${animal.id}.json`), JSON.stringify(buildEntity(animal, tuning), null, 2) + "\n");
   written++;
 }
+
+// --- Spawn rules (M4) -----------------------------------------------------------
+
+const spawnDir = join(root, "packs/BP/spawn_rules");
+mkdirSync(spawnDir, { recursive: true });
+for (const [id, rule] of Object.entries(SPAWN)) {
+  if (!TUNING[id]) continue;
+  writeFileSync(
+    join(spawnDir, `${id}.json`),
+    JSON.stringify(
+      {
+        format_version: "1.8.0",
+        "minecraft:spawn_rules": {
+          description: { identifier: rid(id), population_control: "animal" },
+          conditions: [
+            {
+              "minecraft:spawns_on_surface": {},
+              "minecraft:spawns_on_block_filter": rule.blocks,
+              "minecraft:brightness_filter": { min: 7, max: 15, adjust_for_weather: false },
+              "minecraft:weight": { default: rule.weight },
+              "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
+              "minecraft:density_limit": { surface: 4 },
+              "minecraft:biome_filter": { any_of: rule.tags.map((tag) => ({ test: "has_biome_tag", value: tag })) },
+            },
+          ],
+        },
+      },
+      null,
+      2
+    ) + "\n"
+  );
+}
+
+// --- Hitch knot (M4) -------------------------------------------------------------
+// An invisible, motionless entity the hitching post leashes animals to
+// (systems/hitchingPost.js). Bedrock only lets entities hold leads.
+
+writeFileSync(
+  join(outDir, "hitch_knot.json"),
+  JSON.stringify(
+    {
+      format_version: "1.21.0",
+      "minecraft:entity": {
+        description: { identifier: rid("hitch_knot"), is_spawnable: false, is_summonable: true, is_experimental: false },
+        components: {
+          "minecraft:type_family": { family: ["ranching_hitch_knot", "inanimate"] },
+          "minecraft:collision_box": { width: 0.25, height: 0.25 },
+          "minecraft:health": { value: 1, max: 1 },
+          "minecraft:damage_sensor": { triggers: { cause: "all", deals_damage: "no" } },
+          "minecraft:physics": { has_gravity: false, has_collision: false },
+          "minecraft:pushable": { is_pushable: false, is_pushable_by_piston: false },
+          "minecraft:persistent": {},
+          "minecraft:knockback_resistance": { value: 1 },
+          "minecraft:loot": { table: `loot_tables/${NS}/empty.json` },
+          "minecraft:is_hidden_when_invisible": {},
+        },
+      },
+    },
+    null,
+    2
+  ) + "\n"
+);
+const rpRoot = join(root, "packs/RP");
+for (const [path, data] of [
+  [
+    "entity/hitch_knot.entity.json",
+    {
+      format_version: "1.10.0",
+      "minecraft:client_entity": {
+        description: {
+          identifier: rid("hitch_knot"),
+          materials: { default: "entity_alphatest" },
+          textures: { default: "textures/entity/ranching/hitch_knot" },
+          geometry: { default: "geometry.kaleidoscope_ranching.hitch_knot" },
+          render_controllers: ["controller.render.kaleidoscope_ranching.hitch_knot"],
+        },
+      },
+    },
+  ],
+  [
+    "models/entity/hitch_knot.geo.json",
+    {
+      format_version: "1.12.0",
+      "minecraft:geometry": [
+        {
+          description: { identifier: "geometry.kaleidoscope_ranching.hitch_knot", texture_width: 16, texture_height: 16 },
+          bones: [{ name: "knot", pivot: [0, 0, 0] }],
+        },
+      ],
+    },
+  ],
+  [
+    "render_controllers/hitch_knot.render_controllers.json",
+    {
+      format_version: "1.8.0",
+      render_controllers: {
+        "controller.render.kaleidoscope_ranching.hitch_knot": {
+          geometry: "Geometry.default",
+          materials: [{ "*": "Material.default" }],
+          textures: ["Texture.default"],
+        },
+      },
+    },
+  ],
+]) {
+  mkdirSync(dirname(join(rpRoot, path)), { recursive: true });
+  writeFileSync(join(rpRoot, path), JSON.stringify(data, null, 2) + "\n");
+}
+// A fully transparent 16x16 PNG: the knot draws nothing, only the lead does.
+const KNOT_PNG =
+  "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAEklEQVR4nGNgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC";
+mkdirSync(join(rpRoot, "textures/entity/ranching"), { recursive: true });
+writeFileSync(join(rpRoot, "textures/entity/ranching/hitch_knot.png"), Buffer.from(KNOT_PNG, "base64"));
 
 const lootDir = join(root, `packs/BP/loot_tables/${NS}`);
 mkdirSync(lootDir, { recursive: true });

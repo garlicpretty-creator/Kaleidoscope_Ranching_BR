@@ -161,10 +161,34 @@ PROCESSING_RECIPES.forEach((recipe) => {
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
 
+// M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla
+// item or a Cookery item; Ranching ones must be registered.
+{
+  const { DISHES, DISH_PREPS } = await load("dishes.js");
+  const checkIngredient = (where, id) => {
+    if (typeof id !== "string") return; // a { tag } slot
+    const [ns, name] = id.includes(":") ? id.split(":") : ["kaleidoscope_ranching", id];
+    if (ns === "kaleidoscope_ranching") {
+      note(name);
+      if (!itemIds.has(name)) fail(`dishes.js: ${where} uses unregistered "${id}"`);
+    } else if (ns !== "minecraft" && ns !== "kaleidoscope_cookery") fail(`dishes.js: ${where} uses "${id}" from an unknown namespace`);
+  };
+  for (const dish of DISHES) {
+    note(dish.id);
+    (dish.slots ?? []).flat().forEach((id) => checkIngredient(dish.id, id));
+    if (dish.input) checkIngredient(dish.id, dish.input);
+    if (["stockpot", "wok"].includes(dish.station) && (dish.slots.length < 1 || dish.slots.length > 9)) fail(`dishes.js: ${dish.id} needs 1-9 slots for Cookery`);
+  }
+  for (const prep of DISH_PREPS) {
+    note(prep.id);
+    prep.makes.flat().forEach((id) => checkIngredient(prep.id, id));
+  }
+}
+
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.
-const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle"]);
+const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate"]);
 for (const item of ITEMS) {
   if (item.owner === "m2") continue;
   if (!referenced.has(item.id) && !CRAFTED_OR_INTERACTIVE.has(item.id)) fail(`items.js: "${item.id}" is declared but no table produces or uses it`);
@@ -329,6 +353,18 @@ for (const item of ITEMS) {
   const entry = iconPrompts[item.id];
   if (!entry) fail(`tools/art/icon_prompts.json: no entry for item "${item.id}"`);
   else if (!entry.prompt && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
+}
+
+// --- Simplified Chinese names (data/zh_cn.js) ---------------------------------
+
+{
+  const { toSimplified, TRADITIONAL_HINTS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/zh_cn.js")).href);
+  const { ANIMAL_NAMES } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/items.js")).href);
+  const names = [...ITEMS.filter((i) => i.owner !== "m2"), ...BLOCKS.filter((b) => b.owner !== "m2")].map((row) => [row.id, row.zh]);
+  for (const [id, zh] of [...names, ...ANIMAL_NAMES.map(([id, zh]) => [id, zh])]) {
+    const left = [...toSimplified(zh)].filter((ch) => TRADITIONAL_HINTS.includes(ch));
+    if (left.length) fail(`zh_CN name of "${id}" (${toSimplified(zh)}) still has Traditional characters: ${left.join("")}; add them to data/zh_cn.js`);
+  }
 }
 
 if (errors.length) {

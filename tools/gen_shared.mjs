@@ -24,6 +24,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const load = (name) => import(pathToFileURL(join(root, "packs", "BP", "scripts", "data", name)).href);
 const { ITEMS, NAMESPACE, ANIMAL_NAMES } = await load("items.js");
 const { BLOCKS } = await load("blocks.js");
+const { toSimplified } = await load("zh_cn.js");
 
 const LANGUAGES = ["en_US", "zh_TW", "zh_CN"];
 const fragmentsDir = join(root, "tools", "fragments");
@@ -35,8 +36,8 @@ const errors = [];
 
 // --- Language files -------------------------------------------------------
 
-// Strings that do not come from a registry. zh_CN registry names currently
-// fall back to zh_TW until the registries gain a zh_CN column.
+// Strings that do not come from a registry. Registry names in zh_CN are made
+// from the zh_TW names by data/zh_cn.js.
 const STATIC = {
   en_US: {
     "pack.name": "Kaleidoscope Ranching",
@@ -66,6 +67,15 @@ const STATIC = {
     [`${NAMESPACE}.message.hay_rack.status`]: "Hay rack: %s/%s units of hay.",
     [`${NAMESPACE}.message.hay_rack.only_grass`]: "The hay rack only takes hay, wheat, forage and alfalfa.",
     [`${NAMESPACE}.message.hay_rack.full`]: "The hay rack is full.",
+    [`${NAMESPACE}.message.crate.leashed`]: "Take the lead off before crating it.",
+    [`${NAMESPACE}.message.crate.ridden`]: "Someone is riding it.",
+    [`${NAMESPACE}.message.crate.no_room`]: "No room to let it out here.",
+    [`${NAMESPACE}.message.crate.missing`]: "The add-on that adds %s is not loaded.",
+    [`${NAMESPACE}.message.hitching_post.tied`]: "Tied %s animal(s) to the post.",
+    [`${NAMESPACE}.message.hitching_post.untied`]: "Took %s animal(s) off the post.",
+    [`${NAMESPACE}.message.hitching_post.empty`]: "Lead animals here to tie them to the post.",
+    [`${NAMESPACE}.message.cowbell.called`]: "%s animal(s) answer the bell.",
+    [`${NAMESPACE}.message.cowbell.nobody`]: "No animal that trusts you (3 hearts) is in earshot.",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[Kaleidoscope Ranching]§r Kaleidoscope Cookery did not respond. Check that Cookery 1.6.6 or newer is active and loaded above Ranching.",
   },
   zh_TW: {
@@ -96,6 +106,15 @@ const STATIC = {
     [`${NAMESPACE}.message.hay_rack.status`]: "乾草架：乾草 %s/%s 份。",
     [`${NAMESPACE}.message.hay_rack.only_grass`]: "乾草架只能放乾草、小麥、飼草和苜蓿。",
     [`${NAMESPACE}.message.hay_rack.full`]: "乾草架滿了。",
+    [`${NAMESPACE}.message.crate.leashed`]: "先解開牽繩才能裝籠。",
+    [`${NAMESPACE}.message.crate.ridden`]: "有人正騎著牠。",
+    [`${NAMESPACE}.message.crate.no_room`]: "這裡沒有空間放出來。",
+    [`${NAMESPACE}.message.crate.missing`]: "加入 %s 的附加包沒有載入。",
+    [`${NAMESPACE}.message.hitching_post.tied`]: "把 %s 隻動物拴在樁上。",
+    [`${NAMESPACE}.message.hitching_post.untied`]: "從樁上牽回 %s 隻動物。",
+    [`${NAMESPACE}.message.hitching_post.empty`]: "牽著動物來點擊，就能拴在樁上。",
+    [`${NAMESPACE}.message.cowbell.called`]: "%s 隻動物聽到鈴聲過來了。",
+    [`${NAMESPACE}.message.cowbell.nobody`]: "附近沒有信任你（3 顆心以上）的動物。",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[森羅物語：樂牧]§r 沒有收到《森羅物語：廚房》的回應。請確認已啟用 1.6.6 以上的廚房，且載入順序在樂牧之上。",
   },
   zh_CN: {
@@ -126,6 +145,15 @@ const STATIC = {
     [`${NAMESPACE}.message.hay_rack.status`]: "干草架：干草 %s/%s 份。",
     [`${NAMESPACE}.message.hay_rack.only_grass`]: "干草架只能放干草、小麦、饲草和苜蓿。",
     [`${NAMESPACE}.message.hay_rack.full`]: "干草架满了。",
+    [`${NAMESPACE}.message.crate.leashed`]: "先解开拴绳才能装笼。",
+    [`${NAMESPACE}.message.crate.ridden`]: "有人正骑着它。",
+    [`${NAMESPACE}.message.crate.no_room`]: "这里没有空间放出来。",
+    [`${NAMESPACE}.message.crate.missing`]: "加入 %s 的附加包没有加载。",
+    [`${NAMESPACE}.message.hitching_post.tied`]: "把 %s 只动物拴在桩上。",
+    [`${NAMESPACE}.message.hitching_post.untied`]: "从桩上牵回 %s 只动物。",
+    [`${NAMESPACE}.message.hitching_post.empty`]: "牵着动物来点击，就能拴在桩上。",
+    [`${NAMESPACE}.message.cowbell.called`]: "%s 只动物听到铃声过来了。",
+    [`${NAMESPACE}.message.cowbell.nobody`]: "附近没有信任你（3 颗心以上）的动物。",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[森罗物语：乐牧]§r 没有收到《森罗物语：厨房》的回应。请确认已启用 1.6.6 以上的厨房，且加载顺序在乐牧之上。",
   },
 };
@@ -133,14 +161,15 @@ const STATIC = {
 function registryEntries(language) {
   const column = language === "en_US" ? "en" : "zh";
   const eggWord = { en_US: " Spawn Egg", zh_TW: "生怪蛋", zh_CN: "刷怪蛋" }[language];
+  const localize = language === "zh_CN" ? toSimplified : (text) => text;
   const entries = Object.entries(STATIC[language]);
   for (const [id, zh, en] of ANIMAL_NAMES) {
-    const name = column === "en" ? en : zh;
+    const name = column === "en" ? en : localize(zh);
     entries.push([`entity.${NAMESPACE}:${id}.name`, name]);
     entries.push([`item.spawn_egg.entity.${NAMESPACE}:${id}.name`, name + eggWord]);
   }
-  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}.name`, item[column]]);
-  for (const block of BLOCKS) if (block.owner !== "m2") entries.push([`tile.${NAMESPACE}:${block.id}.name`, block[column]]);
+  for (const item of ITEMS) if (item.owner !== "m2") entries.push([`item.${NAMESPACE}:${item.id}.name`, localize(item[column])]);
+  for (const block of BLOCKS) if (block.owner !== "m2") entries.push([`tile.${NAMESPACE}:${block.id}.name`, localize(block[column])]);
   return entries;
 }
 

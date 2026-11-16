@@ -54,6 +54,14 @@ const DEFS = {
     seconds: 1,
     light: true,
   },
+  hitching_post: {
+    component: "hitching_post",
+    states: {},
+    bones: {},
+    collision: box(-3, 0, -3, 6, 16, 6),
+    selection: box(-3, 0, -3, 6, 16, 6),
+    seconds: 1,
+  },
   hay_rack: {
     component: "hay_rack",
     states: { [S("hay")]: [0, 1, 2, 3] },
