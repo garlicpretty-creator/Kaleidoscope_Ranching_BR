@@ -209,7 +209,9 @@ for (const file of readdirSync(join(root, "packs", "BP", "recipes"), { recursive
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.
 // The two dairy drinks are made in the Tavern's shaker (api/tavern.js registers the recipes).
-const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate", "cream_cocoa", "yogurt_berry_drink"]);
+const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate", "cream_cocoa", "yogurt_berry_drink",
+  // Milk wine ferments in the Tavern's barrel (api/tavern.js barrel recipes).
+  "milk_wine", "yak_milk_wine"]);
 for (const item of ITEMS) {
   if (item.owner === "m2") continue;
   if (!referenced.has(item.id) && !CRAFTED_OR_INTERACTIVE.has(item.id)) fail(`items.js: "${item.id}" is declared but no table produces or uses it`);
@@ -467,7 +469,11 @@ for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && 
     // 1.1 (systems/workAnimals.js): used on a buffalo or another animal.
     "harness", "plough", "animal_blanket",
     // 1.1 (systems/disease.js): used on a sick or dirty animal.
-    "vet_medicine", "soap"];
+    "vet_medicine", "soap",
+    // 1.1 (systems/packBag.js): put on a yak.
+    "pack_bag",
+    // 1.1 (api/tavern.js): the milk buckets are Tavern fluids, the horn cup the wine's carrier.
+    "fresh_milk_bucket", "yak_milk_bucket", "horn_cup"];
   // Registered with Cookery as wok oil (api/cookeryRecipes.js register_oil_container).
   take("lard");
   CLICKED.forEach(take);

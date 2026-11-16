@@ -122,7 +122,11 @@
               "kaleidoscope_ranching:ricotta",
               "kaleidoscope_ranching:milk_tofu",
               "kaleidoscope_ranching:cream_cocoa",
-              "kaleidoscope_ranching:yogurt_berry_drink"
+              "kaleidoscope_ranching:yogurt_berry_drink",
+              "kaleidoscope_ranching:fresh_milk_bucket",
+              "kaleidoscope_ranching:yak_milk_bucket",
+              "kaleidoscope_ranching:milk_wine",
+              "kaleidoscope_ranching:yak_milk_wine"
             ]
           },
           {
@@ -248,6 +252,7 @@
             "items": [
               "kaleidoscope_ranching:leather_apron",
               "kaleidoscope_ranching:lasso",
+              "kaleidoscope_ranching:pack_bag",
               "kaleidoscope_ranching:feather_duster",
               "kaleidoscope_ranching:wool_hat",
               "kaleidoscope_ranching:wool_scarf",
@@ -259,6 +264,7 @@
               "kaleidoscope_ranching:herding_horn",
               "kaleidoscope_ranching:vet_medicine",
               "kaleidoscope_ranching:soap",
+              "kaleidoscope_ranching:horn_cup",
               "kaleidoscope_ranching:milking_pail",
               "kaleidoscope_ranching:nursing_bottle",
               "kaleidoscope_ranching:cowbell",

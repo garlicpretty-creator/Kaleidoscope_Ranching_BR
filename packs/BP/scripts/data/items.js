@@ -156,6 +156,8 @@ const LEATHER_LINE = [
   ["oiled_leather", "油鞣皮革", "Oiled Leather", "material"],
   ["leather_apron", "皮圍裙", "Leather Apron", "tool"],
   ["lasso", "套索", "Lasso", "tool"],
+  // Worn by an adult yak (systems/packBag.js): 15 slots carried on the animal.
+  ["pack_bag", "馱袋", "Pack Bag", "tool"],
 ];
 const FLUFF_LINE = [
   ["goat_cashmere", "山羊絨", "Goat Cashmere", "byproduct"],
@@ -188,6 +190,13 @@ const HEALTH_LINE = [
   ["soap", "肥皂", "Soap", "tool"],
   ["cream_cocoa", "鮮奶油可可飲", "Cream Cocoa", "drink"],
   ["yogurt_berry_drink", "優格莓果飲", "Yogurt Berry Drink", "drink"],
+  // Milk wine ferments in the Tavern's barrel: the buckets are its fluids, the
+  // horn cup carries the wine out and comes back when the wine is drunk.
+  ["fresh_milk_bucket", "桶裝鮮奶", "Bucket of Fresh Milk", "drink"],
+  ["yak_milk_bucket", "桶裝氂牛奶", "Bucket of Yak Milk", "drink"],
+  ["horn_cup", "角杯", "Horn Cup", "tool"],
+  ["milk_wine", "奶酒", "Milk Wine", "drink"],
+  ["yak_milk_wine", "氂牛奶酒", "Yak Milk Wine", "drink"],
 ];
 
 // 1.1 孵化與飼料線 (企劃書 1.1 八).

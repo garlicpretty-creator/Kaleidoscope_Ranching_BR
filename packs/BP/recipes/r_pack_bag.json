@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_pack_bag"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "FLF",
+      "L L",
+      "LLL"
+    ],
+    "key": {
+      "F": {
+        "item": "kaleidoscope_ranching:felt"
+      },
+      "L": {
+        "item": "kaleidoscope_ranching:oiled_leather"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:pack_bag",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:pack_bag"
+      }
+    ]
+  }
+}

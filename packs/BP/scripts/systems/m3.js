@@ -13,6 +13,7 @@ import { startSleep } from "./sleep.js";
 import { startDisease } from "./disease.js";
 import { discoverTaggedItems } from "../core/tags.js";
 import { world } from "@minecraft/server";
+import { startPackBag } from "./packBag.js";
 import { hornItemComponent, penGateComponent, penGateTopComponent, startWorkAnimals } from "./workAnimals.js";
 import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./textiles.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
@@ -52,4 +53,5 @@ export function startM3() {
   // 1.1 標籤契約: other add-ons' tagged items join once the world has loaded.
   world.afterEvents.worldLoad?.subscribe(() => system.runTimeout(discoverTaggedItems, 40));
   startWorkAnimals();
+  startPackBag();
 }

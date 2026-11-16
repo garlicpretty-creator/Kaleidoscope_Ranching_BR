@@ -119,6 +119,13 @@
             "kaleidoscope_ranching:auto_waterer"
           ]
         }
+      },
+      "kaleidoscope_ranching:pack_bag": {
+        "minecraft:inventory": {
+          "container_type": "inventory",
+          "inventory_size": 15,
+          "private": false
+        }
       }
     },
     "components": {
@@ -431,6 +438,20 @@
             }
           }
         ]
+      },
+      "kaleidoscope_ranching:put_on_pack_bag": {
+        "add": {
+          "component_groups": [
+            "kaleidoscope_ranching:pack_bag"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:take_off_pack_bag": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:pack_bag"
+          ]
+        }
       }
     }
   }

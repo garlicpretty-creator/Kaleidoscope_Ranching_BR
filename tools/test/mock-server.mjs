@@ -235,6 +235,11 @@ export class Entity {
       };
     }
     if (id === "minecraft:rideable") return { ...data, getRiders: () => this.riders ?? [] };
+    // An entity's own inventory (the yak's pack bag); it lives as long as the entity.
+    if (id === "minecraft:inventory") {
+      this.inventoryContainer ??= new Container(data.inventory_size ?? 5);
+      return { container: this.inventoryContainer };
+    }
     return data;
   }
   getProperty(key) {

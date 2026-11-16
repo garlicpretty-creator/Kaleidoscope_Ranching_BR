@@ -29,7 +29,7 @@ const TUNING = {
   duck: { family: "duck", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true, swims: true },
   goose: { family: "goose", health: 8, speed: 0.25, box: [0.7, 1.0], mass: 0.6, noFallDamage: true, swims: true, guard: true },
   buffalo: { family: "buffalo", health: 14, speed: 0.2, box: [1.1, 1.4], mass: 1.2 },
-  yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1 },
+  yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1, packBag: true },
 };
 
 // Natural spawning for the M4 animals, modelled on vanilla cows. Biome tags are
@@ -379,6 +379,12 @@ function buildEntity(animal, t) {
       events[g(`set_variant_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`variant_${i}`)] } }] };
     }
   }
+  // 1.1 馱袋 (systems/packBag.js): 15 slots on the animal; they drop when it dies.
+  if (t.packBag) {
+    groups[g("pack_bag")] = { "minecraft:inventory": { container_type: "inventory", inventory_size: 15, private: false } };
+    events[g("put_on_pack_bag")] = { add: { component_groups: [g("pack_bag")] } };
+    events[g("take_off_pack_bag")] = { remove: { component_groups: [g("pack_bag")] } };
+  }
   if (t.saddle) {
     events[g("on_saddled")] = {
       sequence: [{ remove: { component_groups: [g("unsaddled")] } }, { add: { component_groups: [g("saddled")] } }],
@@ -528,6 +534,93 @@ const KNOT_PNG =
   "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAEklEQVR4nGNgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC";
 mkdirSync(join(rpRoot, "textures/entity/ranching"), { recursive: true });
 writeFileSync(join(rpRoot, "textures/entity/ranching/hitch_knot.png"), Buffer.from(KNOT_PNG, "base64"));
+
+// --- Milk in the Tavern's barrel (1.1 酒館握手, api/tavern.js) -------------------
+// The Tavern draws an open barrel's liquid with a visual entity named by the
+// fluid; this one is Ranching's milk. It has the Tavern's level property
+// (kt_art:amount, 0..4000), which the Tavern sets; geometry, animation and
+// texture are Ranching's own, so nothing is borrowed from the Tavern's assets.
+const MILK_VISUAL = rid("milk_barrel_visual");
+writeFileSync(
+  join(outDir, "milk_barrel_visual.json"),
+  JSON.stringify(
+    {
+      format_version: "1.21.0",
+      "minecraft:entity": {
+        description: {
+          identifier: MILK_VISUAL,
+          is_spawnable: false,
+          is_summonable: true,
+          is_experimental: false,
+          properties: { "kt_art:amount": { type: "int", range: [0, 4000], default: 4000, client_sync: true } },
+        },
+        components: {
+          "minecraft:type_family": { family: ["kt_runtime_visual", "inanimate"] },
+          "minecraft:collision_box": { width: 0, height: 0 },
+          "minecraft:health": { value: 1, max: 1 },
+          "minecraft:damage_sensor": { triggers: [{ cause: "all", deals_damage: "no" }] },
+          "minecraft:physics": { has_gravity: false, has_collision: false },
+          "minecraft:pushable": { is_pushable: false, is_pushable_by_piston: false },
+          "minecraft:persistent": {},
+          "minecraft:loot": { table: `loot_tables/${NS}/empty.json` },
+        },
+      },
+    },
+    null,
+    2
+  ) + "\n"
+);
+for (const [path, data] of [
+  [
+    "entity/milk_barrel_visual.entity.json",
+    {
+      format_version: "1.10.0",
+      "minecraft:client_entity": {
+        description: {
+          identifier: MILK_VISUAL,
+          materials: { default: "entity_alphablend" },
+          textures: { default: "textures/entity/ranching/milk_surface" },
+          geometry: { default: "geometry.kaleidoscope_ranching.milk_surface" },
+          animations: { level: "animation.kaleidoscope_ranching.milk_level" },
+          scripts: { animate: ["level"] },
+          render_controllers: ["controller.render.kaleidoscope_ranching.hitch_knot"],
+        },
+      },
+    },
+  ],
+  [
+    "models/entity/milk_surface.geo.json",
+    {
+      format_version: "1.12.0",
+      "minecraft:geometry": [
+        {
+          description: { identifier: "geometry.kaleidoscope_ranching.milk_surface", texture_width: 16, texture_height: 16, visible_bounds_width: 4, visible_bounds_height: 4, visible_bounds_offset: [0, 1.5, 0] },
+          bones: [{ name: "surface", pivot: [0, 0, 0], cubes: [{ origin: [-8, 0, -8], size: [16, 0, 16], uv: { up: { uv: [0, 0], uv_size: [16, 16] } } }] }],
+        },
+      ],
+    },
+  ],
+  [
+    "animations/milk_level.animation.json",
+    {
+      format_version: "1.8.0",
+      animations: {
+        // Same travel as the Tavern's own barrel liquids, so the surface lines up with its barrel.
+        "animation.kaleidoscope_ranching.milk_level": {
+          loop: true,
+          bones: { surface: { position: [0, "32 + 10.4 * query.property('kt_art:amount') / 4000", 0], scale: "query.property('kt_art:amount') > 0 ? 1 : 0" } },
+        },
+      },
+    },
+  ],
+]) {
+  mkdirSync(dirname(join(rpRoot, path)), { recursive: true });
+  writeFileSync(join(rpRoot, path), JSON.stringify(data, null, 2) + "\n");
+}
+
+// A creamy, slightly mottled 16x16 surface for the milk visual above.
+const MILK_PNG = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABv0lEQVR42lWTubYcKwxFN2Lu/v8PfLEDR7cpJslBP1h2RQRI7DOU+/n93y/nHABzTnLOOOfovd+ziLDWwswQEZxzqCq9d8LeGzPDzKi1svdGVYkx4r1nzskYA4AYI8451lrMOQGQEAIigvcegJQSIQTMjDnnXZhzpvcOwBiDEMK5G5hzYmYXXUQYY+Cc4/V6XXkH33tPCAFVRT6fDzlnSil3WFX/GXyeBzMD4OfnB1WltfaVcAwZYyAiiAgpJVpr9yXvPTFG1lrknC8JgOSc7/BaC1VlrcX7/b4mAqy1EBFijBzf9t5I751aKyJCzhlVZe/NWovjj3OOvffVPeckpfRdEELgeR7WWnjvMbMbl5lxCE8HRAQzY+/97cjBSSnx+XwwM57nwXtPaw1Vvcv+JrvFaq3djEsp1FoB6L3foUN0JIQQKKXwer0IpRQASim01q4Xe2/e7/f15O+vtUYI4SvhlGjOSa2VWiuqSkoJgOd5bmxrLQCcczjnSCkhe++78bRvrcUYg947KaWb/yExM0II3+I5526MIQRaa19t/3e9937/vFrrJT2pSYzxonrv72VVxcxuG/fe7L3v0vPgH7X6XRI55JXSAAAAAElFTkSuQmCC";
+writeFileSync(join(rpRoot, "textures/entity/ranching/milk_surface.png"), Buffer.from(MILK_PNG, "base64"));
 
 // --- Animal sounds (RP sounds.json) --------------------------------------------
 // Custom entities are silent unless sounds.json maps their sound events. The six

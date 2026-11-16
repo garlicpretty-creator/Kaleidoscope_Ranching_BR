@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "fresh_milk_bucket",
+    "metalness_emissive_roughness_subsurface": "fresh_milk_bucket_mers",
+    "normal": "fresh_milk_bucket_normal"
+  }
+}

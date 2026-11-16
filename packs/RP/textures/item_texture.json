@@ -320,6 +320,9 @@
     "kr_lasso": {
       "textures": "textures/items/ranching/lasso"
     },
+    "kr_pack_bag": {
+      "textures": "textures/items/ranching/pack_bag"
+    },
     "kr_goat_cashmere": {
       "textures": "textures/items/ranching/goat_cashmere"
     },
@@ -391,6 +394,21 @@
     },
     "kr_yogurt_berry_drink": {
       "textures": "textures/items/ranching/yogurt_berry_drink"
+    },
+    "kr_fresh_milk_bucket": {
+      "textures": "textures/items/ranching/fresh_milk_bucket"
+    },
+    "kr_yak_milk_bucket": {
+      "textures": "textures/items/ranching/yak_milk_bucket"
+    },
+    "kr_horn_cup": {
+      "textures": "textures/items/ranching/horn_cup"
+    },
+    "kr_milk_wine": {
+      "textures": "textures/items/ranching/milk_wine"
+    },
+    "kr_yak_milk_wine": {
+      "textures": "textures/items/ranching/yak_milk_wine"
     },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"

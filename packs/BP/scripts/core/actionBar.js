@@ -51,6 +51,9 @@ const QUIET = new Set(
     "message.horn.herding",
     "message.horn.done",
     "message.sheepdog.made",
+    "message.pack_bag.on",
+    "message.pack_bag.off",
+    "message.pack_bag.stored",
     // (The candling lamp's read-out stays: showing hatching progress is what the tool is for.)
   ].map((key) => `${NS}.${key}`)
 );

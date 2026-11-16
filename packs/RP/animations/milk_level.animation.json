@@ -1,0 +1,18 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.milk_level": {
+      "loop": true,
+      "bones": {
+        "surface": {
+          "position": [
+            0,
+            "32 + 10.4 * query.property('kt_art:amount') / 4000",
+            0
+          ],
+          "scale": "query.property('kt_art:amount') > 0 ? 1 : 0"
+        }
+      }
+    }
+  }
+}
