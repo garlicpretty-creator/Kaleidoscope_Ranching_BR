@@ -37,6 +37,10 @@
 | `tools/` | 驗證、語言檔生成、美術生成、打包腳本 |
 | `docs/` | 企劃書與美術預覽 |
 
+## 物品圖示（RetroDiffusion）
+
+物品圖示可以用 RetroDiffusion 重畫：提示詞在 `tools/art/icon_prompts.json`，流程寫在 `tools/art/rd_icons.py` 開頭。要在連得到 RetroDiffusion 的環境執行，金鑰放在環境變數 `RETRODIFFUSION_API_KEY`，不要寫進檔案或貼到任何地方。選定的圖示存在 `art/icons/`，`npm run generate` 會套用；還沒選的維持程式畫的版本。
+
 ## 開發指令
 
 需要 Node.js 與 Python 3（含 Pillow）。

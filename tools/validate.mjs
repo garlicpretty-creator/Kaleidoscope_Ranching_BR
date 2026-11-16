@@ -320,6 +320,17 @@ if (exists(example)) {
 
 // --- Report ---------------------------------------------------------------
 
+// --- RetroDiffusion icon prompts (tools/art/rd_icons.py) -----------------------
+// Every registry item needs a prompt, or a `from` + `badge` entry, so new items
+// are not forgotten when the icons are regenerated.
+
+const iconPrompts = readJson(join(root, "tools/art/icon_prompts.json")).items;
+for (const item of ITEMS) {
+  const entry = iconPrompts[item.id];
+  if (!entry) fail(`tools/art/icon_prompts.json: no entry for item "${item.id}"`);
+  else if (!entry.prompt && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
+}
+
 if (errors.length) {
   console.error(`validate: ${errors.length} problem(s)`);
   for (const message of errors) console.error("  - " + message);
