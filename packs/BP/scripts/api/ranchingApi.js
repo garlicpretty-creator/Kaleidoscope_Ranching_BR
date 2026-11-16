@@ -37,7 +37,7 @@ import { HARNESSED } from "../systems/workAnimals.js";
 import { PACKED } from "../systems/packBag.js";
 
 export const API_VERSION = 1;
-export const PACK_VERSION = "0.5.0";
+export const PACK_VERSION = "1.1.0";
 const NS = "kaleidoscope_ranching";
 const EV = (name) => `${NS}:${name}`;
 
