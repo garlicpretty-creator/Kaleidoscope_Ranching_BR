@@ -1,0 +1,26 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_calcium_powder"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:eggshell",
+        "count": 4
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:calcium_powder",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:calcium_powder"
+      }
+    ]
+  }
+}

@@ -353,6 +353,60 @@
     "kr_milk_tofu": {
       "textures": "textures/items/ranching/milk_tofu"
     },
+    "kr_oiled_leather": {
+      "textures": "textures/items/ranching/oiled_leather"
+    },
+    "kr_leather_apron": {
+      "textures": "textures/items/ranching/leather_apron"
+    },
+    "kr_lasso": {
+      "textures": "textures/items/ranching/lasso"
+    },
+    "kr_goat_cashmere": {
+      "textures": "textures/items/ranching/goat_cashmere"
+    },
+    "kr_rabbit_fur": {
+      "textures": "textures/items/ranching/rabbit_fur"
+    },
+    "kr_yarn": {
+      "textures": "textures/items/ranching/yarn"
+    },
+    "kr_fine_yarn": {
+      "textures": "textures/items/ranching/fine_yarn"
+    },
+    "kr_feather_duster": {
+      "textures": "textures/items/ranching/feather_duster"
+    },
+    "kr_felt": {
+      "textures": "textures/items/ranching/felt"
+    },
+    "kr_wool_cloth": {
+      "textures": "textures/items/ranching/wool_cloth"
+    },
+    "kr_plush_cloth": {
+      "textures": "textures/items/ranching/plush_cloth"
+    },
+    "kr_wool_hat": {
+      "textures": "textures/items/ranching/wool_hat"
+    },
+    "kr_wool_scarf": {
+      "textures": "textures/items/ranching/wool_scarf"
+    },
+    "kr_egg_candler": {
+      "textures": "textures/items/ranching/egg_candler"
+    },
+    "kr_eggshell": {
+      "textures": "textures/items/ranching/eggshell"
+    },
+    "kr_calcium_powder": {
+      "textures": "textures/items/ranching/calcium_powder"
+    },
+    "kr_calcium_feed": {
+      "textures": "textures/items/ranching/calcium_feed"
+    },
+    "kr_silage": {
+      "textures": "textures/items/ranching/silage"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },

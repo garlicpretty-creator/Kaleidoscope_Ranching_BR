@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_silage_barrel"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "NNN",
+      " B "
+    ],
+    "key": {
+      "N": {
+        "item": "minecraft:iron_nugget"
+      },
+      "B": {
+        "item": "minecraft:barrel"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:silage_barrel",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:silage_barrel"
+      }
+    ]
+  }
+}

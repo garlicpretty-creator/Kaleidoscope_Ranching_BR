@@ -16,6 +16,7 @@ import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
+import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
@@ -165,7 +166,8 @@ function hang(block, player, item) {
 function cut(block, player, data) {
   const cuts = cutsOf(data.carcass);
   for (const { typeId, amount } of rollCut(cuts[data.stroke], data)) give(player, typeId, amount);
-  damageMainHand(player, DURABILITY_PER_STROKE);
+  // 1.1 皮圍裙: a leather apron sometimes spares the blade.
+  if (!(wearing(player, "Chest", "leather_apron") && Math.random() < APRON_SAVE_CHANCE)) damageMainHand(player, DURABILITY_PER_STROKE);
   block.dimension.playSound("dig.cloth", block.location);
 
   const next = nextCut(cuts, data, data.stroke + 1);

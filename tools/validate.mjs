@@ -191,6 +191,18 @@ WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
   }
 }
 
+// 1.1: every crafting and furnace recipe the generators wrote counts too, as a
+// source (its result) and a use (its ingredients).
+for (const file of readdirSync(join(root, "packs", "BP", "recipes"), { recursive: true }).filter((f) => String(f).endsWith(".json"))) {
+  const data = JSON.parse(readFileSync(join(root, "packs", "BP", "recipes", String(file)), "utf8"));
+  const recipe = Object.values(data).find((v) => v && typeof v === "object" && v.description);
+  if (!recipe) continue;
+  const ids = [
+    ...Object.values(recipe.key ?? {}), ...(recipe.ingredients ?? []), recipe.input, recipe.output, recipe.result,
+  ].map((entry) => (typeof entry === "string" ? entry : entry?.item));
+  ids.forEach((id) => typeof id === "string" && id.startsWith("kaleidoscope_ranching:") && note(local(id)));
+}
+
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.

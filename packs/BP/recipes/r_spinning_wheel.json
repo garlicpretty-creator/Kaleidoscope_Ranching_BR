@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_spinning_wheel"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SSS",
+      "PTP",
+      "P P"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:stick"
+      },
+      "T": {
+        "item": "minecraft:string"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:spinning_wheel",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:spinning_wheel"
+      }
+    ]
+  }
+}

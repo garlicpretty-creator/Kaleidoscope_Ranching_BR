@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "egg_candler",
+    "metalness_emissive_roughness_subsurface": "egg_candler_mers",
+    "normal": "egg_candler_normal"
+  }
+}

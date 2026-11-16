@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "wool_hat",
+    "metalness_emissive_roughness_subsurface": "wool_hat_mers",
+    "normal": "wool_hat_normal"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "silage_barrel",
+    "metalness_emissive_roughness_subsurface": "silage_barrel_mers",
+    "normal": "silage_barrel_normal"
+  }
+}

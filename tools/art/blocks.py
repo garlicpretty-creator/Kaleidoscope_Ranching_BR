@@ -21,6 +21,10 @@ MINCE = (206, 108, 104)
 MILK = (246, 244, 236)
 CREAM = (250, 236, 200)
 STRAW = (222, 192, 104)
+CLOTH = (244, 242, 236)
+YARN = (236, 228, 214)
+DOWN = (250, 250, 246)
+SILAGE = (150, 160, 70)
 
 
 def light(t, base):
@@ -51,6 +55,14 @@ def paint(t):
         return light(t, CREAM)
     if p == "straw":
         return light(t, STRAW if hash01("s", t.point) > 0.25 else shade(STRAW, 0.85))
+    if p == "cloth":
+        return light(t, CLOTH if (int(t.point[0]) + int(t.point[2])) % 2 else shade(CLOTH, 0.94))
+    if p == "yarn":
+        return light(t, YARN)
+    if p == "down":
+        return light(t, DOWN)
+    if p == "silage":
+        return light(t, SILAGE if hash01("g", t.point) > 0.3 else shade(SILAGE, 0.85))
     if p == "hide":
         # Cured hide: tan with a few darker blotches.
         return light(t, HIDE if hash01("h", t.point) > 0.2 else shade(HIDE, 0.85))
@@ -136,10 +148,84 @@ def ice_cream_churn():
     return Model("geometry.kaleidoscope_ranching.ice_cream_churn", bones, cubes, 64, 64)
 
 
+def spinning_wheel():
+    # A wooden wheel on a slanted bench with a spindle; while busy, yarn on the spindle.
+    bones = [Bone("frame", None, (0, 0, 0)), Bone("busy", "frame", (5, 9, 0))]
+    cubes = [
+        Cube("frame", "dark_wood", (-7, 4, -2), (14, 2, 4)),
+        Cube("frame", "dark_wood", (-6, 0, -2), (2, 4, 1), name="leg"),
+        Cube("frame", "dark_wood", (4, 0, 1), (2, 4, 1), mirror_of="leg"),
+        Cube("frame", "dark_wood", (-6, 0, 1), (2, 4, 1), mirror_of="leg"),
+        Cube("frame", "wood", (-5, 6, -0.5), (1, 9, 1), name="upright"),
+        Cube("frame", "wood", (-9, 7, -0.5), (9, 9, 1)),
+        Cube("frame", "iron", (4, 6, -0.5), (1, 4, 1)),
+        Cube("busy", "yarn", (3, 9, -1), (3, 2, 2)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.spinning_wheel", bones, cubes, 64, 64)
+
+
+def weaving_loom():
+    # A frame loom with a cloth on it; while busy, the cloth grows.
+    bones = [Bone("frame", None, (0, 0, 0)), Bone("busy", "frame", (0, 4, 0))]
+    cubes = [
+        Cube("frame", "dark_wood", (-7, 0, -5), (2, 14, 2), name="post"),
+        Cube("frame", "dark_wood", (5, 0, -5), (2, 14, 2), mirror_of="post"),
+        Cube("frame", "dark_wood", (-7, 0, 3), (2, 8, 2), name="back"),
+        Cube("frame", "dark_wood", (5, 0, 3), (2, 8, 2), mirror_of="back"),
+        Cube("frame", "wood", (-5, 12, -5), (10, 2, 2)),
+        Cube("frame", "wood", (-5, 6, -5), (10, 1, 10)),
+        Cube("frame", "yarn", (-5, 7, -5), (10, 5, 1)),
+        Cube("busy", "cloth", (-5, 3, -5), (10, 3, 1)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.weaving_loom", bones, cubes, 64, 64)
+
+
+def silage_barrel():
+    # A sealed wooden barrel with iron hoops; while busy, the lid is weighted with a stone.
+    bones = [Bone("barrel", None, (0, 0, 0)), Bone("busy", "barrel", (0, 14, 0))]
+    cubes = [
+        Cube("barrel", "wood", (-6, 0, -6), (12, 14, 12)),
+        Cube("barrel", "iron", (-7, 2, -7), (14, 1, 14), name="hoop"),
+        Cube("barrel", "iron", (-7, 11, -7), (14, 1, 14), mirror_of="hoop"),
+        Cube("barrel", "dark_wood", (-5, 14, -5), (10, 1, 10)),
+        Cube("busy", "silage", (-2, 15, -2), (4, 2, 4)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.silage_barrel", bones, cubes, 64, 64)
+
+
+def rug():
+    bones = [Bone("rug", None, (0, 0, 0))]
+    cubes = [Cube("rug", "cloth", (-8, 0, -8), (16, 1, 16))]
+    return Model("geometry.kaleidoscope_ranching.rug", bones, cubes, 64, 64)
+
+
+def down_pillow():
+    bones = [Bone("pillow", None, (0, 0, 0))]
+    cubes = [
+        Cube("pillow", "down", (-6, 0, -4), (12, 3, 8)),
+        Cube("pillow", "cloth", (-5, 3, -3), (10, 1, 6)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.down_pillow", bones, cubes, 64, 64)
+
+
+def down_quilt():
+    bones = [Bone("quilt", None, (0, 0, 0))]
+    cubes = [
+        Cube("quilt", "down", (-8, 0, -8), (16, 2, 16)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.down_quilt", bones, cubes, 64, 64)
+
+
 ALL = {
     "tanning_rack": tanning_rack,
     "meat_grinder": meat_grinder,
     "milking_rack": milking_rack,
     "cream_separator": cream_separator,
     "ice_cream_churn": ice_cream_churn,
+    "spinning_wheel": spinning_wheel,
+    "weaving_loom": weaving_loom,
+    "silage_barrel": silage_barrel,
+    "rug": rug,
+    "down_pillow": down_pillow,
+    "down_quilt": down_quilt,
 }

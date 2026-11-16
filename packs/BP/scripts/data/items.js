@@ -161,6 +161,37 @@ const CHEESE_LINE = [
   ["milk_tofu", "奶豆腐", "Milk Tofu", "dairy"],
 ];
 
+// 1.1 皮革線、絨毛線、布料線 (企劃書 1.1 五～七). The harness, pack bag, gloves
+// and animal blanket belong to M10 (they work with the plough, the yak's
+// storage, sleeping and the cold rule).
+const LEATHER_LINE = [
+  ["oiled_leather", "油鞣皮革", "Oiled Leather", "material"],
+  ["leather_apron", "皮圍裙", "Leather Apron", "tool"],
+  ["lasso", "套索", "Lasso", "tool"],
+];
+const FLUFF_LINE = [
+  ["goat_cashmere", "山羊絨", "Goat Cashmere", "byproduct"],
+  ["rabbit_fur", "兔毛", "Rabbit Fur", "byproduct"],
+  ["yarn", "毛線", "Yarn", "material"],
+  ["fine_yarn", "絨線", "Fine Yarn", "material"],
+  ["feather_duster", "羽毛撣", "Feather Duster", "tool"],
+];
+const CLOTH_LINE = [
+  ["felt", "毛氈", "Felt", "material"],
+  ["wool_cloth", "毛呢布", "Wool Cloth", "material"],
+  ["plush_cloth", "絨布", "Plush Cloth", "material"],
+  ["wool_hat", "毛帽", "Wool Hat", "tool"],
+  ["wool_scarf", "圍巾", "Wool Scarf", "tool"],
+];
+// 1.1 孵化與飼料線 (企劃書 1.1 八).
+const HATCH_FEED_LINE = [
+  ["egg_candler", "照蛋燈", "Egg Candler", "tool"],
+  ["eggshell", "蛋殼", "Eggshell", "byproduct"],
+  ["calcium_powder", "鈣粉", "Calcium Powder", "byproduct"],
+  ["calcium_feed", "鈣質飼料", "Calcium Feed", "feed"],
+  ["silage", "青貯料", "Silage", "feed"],
+];
+
 const BYPRODUCTS = [
   ["large_bone", "大骨", "Large Bone", "byproduct"],
   ["chicken_frame", "雞骨架", "Chicken Frame", "byproduct"],
@@ -221,6 +252,10 @@ export const ITEMS = [
   ...OFFAL_LINE,
   ...DAIRY_LINE,
   ...CHEESE_LINE,
+  ...LEATHER_LINE,
+  ...FLUFF_LINE,
+  ...CLOTH_LINE,
+  ...HATCH_FEED_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,
