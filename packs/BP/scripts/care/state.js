@@ -50,7 +50,10 @@ function tryEvent(e, name) {
 export function ensureSettled(e, day = today()) {
   if (!e?.isValid) return readRecord(e);
   const before = e.getDynamicProperty("kr:care_day");
-  const { rec, changed, manure } = settle(readRecord(e), day, cleanNeedEnabled());
+  const prior = readRecord(e);
+  const { rec, changed, manure } = settle({ ...prior }, day, cleanNeedEnabled());
+  // 1.1 疾病: a sick animal's affection does not rise (systems/disease.js).
+  if (isSick(e) && typeof prior.aff === "number" && rec.aff > prior.aff) rec.aff = prior.aff;
   if (changed) {
     writeRecord(e, rec);
     updateRoster(e); // keeps the ear-tag roster's last-seen location fresh, once a day
@@ -79,7 +82,16 @@ export function getAffection(e) {
   return e.getDynamicProperty("kr:aff") ?? CARE.START_POINTS;
 }
 export function setAffection(e, points) {
+  // 1.1 疾病: no affection gained while sick (losing it still counts).
+  if (isSick(e) && points > getAffection(e)) return;
   e.setDynamicProperty("kr:aff", clampPoints(points));
+}
+function isSick(e) {
+  try {
+    return e.getDynamicProperty("kaleidoscope_ranching:sick") === true;
+  } catch {
+    return false;
+  }
 }
 export function addAffection(e, delta) {
   ensureSettled(e);

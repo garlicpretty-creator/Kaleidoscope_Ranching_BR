@@ -42,6 +42,9 @@ const { ANIMALS, NEEDS, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load
 const { FEEDS, KIND_TIER } = await load("feeds.js");
 const { SPECIES } = await load("species.js");
 const { PROCESSING_RECIPES, VANILLA_COOKING, WOK_MEATS } = await load("processing.js");
+const { TAGGED } = await load("tags.js");
+/** A recipe input's item ids; a { tag } input stands for Ranching's own items with that tag (data/tags.js). */
+const inputIdsOf = (input) => (input.tag ? TAGGED[input.tag] ?? [] : input.anyOf ?? [input.item]);
 const { BUTCHER_TABLE } = await load("butcher.js");
 
 const itemIds = new Set(ITEMS.map((item) => item.id));
@@ -126,7 +129,7 @@ for (const recipe of PROCESSING_RECIPES) {
   const where = `processing.js ${recipe.id}`;
   if (!blockIds.has(recipe.station)) fail(`${where}: station "${recipe.station}" is not declared in blocks.js`);
   if (!(recipe.ticks >= 0)) fail(`${where}: bad ticks`);
-  for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach((id) => checkItem(id, where));
+  for (const input of recipe.inputs) inputIdsOf(input).forEach((id) => checkItem(id, where));
   for (const output of recipe.outputs) checkItem(output.item, where);
 }
 for (const recipe of VANILLA_COOKING) {
@@ -154,7 +157,7 @@ Object.values(BUTCHER_TABLE).forEach((entry) => entry.cuts.forEach((cut) => note
 Object.keys(FEEDS).forEach((item) => note(local(item)));
 Object.values(SPECIES).forEach((row) => [row.treat, ...(row.brushDrops ?? []).map(([item]) => item)].forEach((id) => note(local(id))));
 PROCESSING_RECIPES.forEach((recipe) => {
-  recipe.inputs.forEach((input) => (input.anyOf ?? [input.item]).forEach(note));
+  recipe.inputs.forEach((input) => inputIdsOf(input).forEach(note));
   recipe.outputs.forEach((output) => note(output.item));
   (recipe.aged?.outputs ?? []).forEach((output) => note(output.item)); // 1.1 熟成分級
 });
@@ -205,7 +208,8 @@ for (const file of readdirSync(join(root, "packs", "BP", "recipes"), { recursive
 // Items whose source or use is a crafting recipe or an interaction that is not
 // modelled as a table yet. Listed explicitly so a new orphan is still caught.
 // M2 items are produced and used by M2's own generator and scripts.
-const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate"]);
+// The two dairy drinks are made in the Tavern's shaker (api/tavern.js registers the recipes).
+const CRAFTED_OR_INTERACTIVE = new Set(["cheese_slice", "cowbell", "nursing_bottle", "dried_yak_dung", "animal_crate", "cream_cocoa", "yogurt_berry_drink"]);
 for (const item of ITEMS) {
   if (item.owner === "m2") continue;
   if (!referenced.has(item.id) && !CRAFTED_OR_INTERACTIVE.has(item.id)) fail(`items.js: "${item.id}" is declared but no table produces or uses it`);
@@ -427,7 +431,7 @@ for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && 
     for (const entry of [...Object.values(recipe.key ?? {}), ...(recipe.ingredients ?? [])]) take(typeof entry === "string" ? entry : entry.item);
     if (recipe.input) take(typeof recipe.input === "string" ? recipe.input : recipe.input.item);
   }
-  for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach(take);
+  for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) inputIdsOf(input).forEach(take);
   for (const recipe of VANILLA_COOKING) take(recipe.input);
   // 1.1: air-dried on the butcher rack, washed at the water trough.
   {
@@ -461,7 +465,9 @@ for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && 
   // Used by clicking an animal or a block (scripts), not by a recipe.
   const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag",
     // 1.1 (systems/workAnimals.js): used on a buffalo or another animal.
-    "harness", "plough", "animal_blanket"];
+    "harness", "plough", "animal_blanket",
+    // 1.1 (systems/disease.js): used on a sick or dirty animal.
+    "vet_medicine", "soap"];
   // Registered with Cookery as wok oil (api/cookeryRecipes.js register_oil_container).
   take("lard");
   CLICKED.forEach(take);

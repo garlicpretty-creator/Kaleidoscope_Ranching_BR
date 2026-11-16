@@ -36,8 +36,8 @@ export const PROCESSING_RECIPES = [
   { id: "aging/chhurpi", station: "aging_rack", inputs: [{ item: "chhurpi", count: 2 }], outputs: [{ item: "chhurpi_block", count: 2 }], ticks: DAY * 2 },
 
   // Tanning rack (企劃書 1.1, moved into 1.0): hides from the butcher rack become leather.
-  { id: "tan/raw_hide", station: "tanning_rack", inputs: [{ item: "raw_hide", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
-  { id: "tan/pig_skin", station: "tanning_rack", inputs: [{ item: "pig_skin", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
+  // Raw hide and pig skin, plus other add-ons' hides (tag kaleidoscope_ranching:hide, data/tags.js).
+  { id: "tan/hide", station: "tanning_rack", inputs: [{ tag: "hide", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
   // Sheepskin keeps its fleece: leather plus a little wool.
   { id: "tan/sheep_skin", station: "tanning_rack", inputs: [{ item: "sheep_skin", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }, { item: "minecraft:white_wool", count: 1 }], ticks: DAY },
 
@@ -52,7 +52,6 @@ export const PROCESSING_RECIPES = [
 
 // --- 1.1 肉類線與內臟線 -----------------------------------------------------
 
-const ANY_MINCE = ["pork_mince", "beef_mince", "mutton_mince"];
 
 // The meat grinder is cranked: every use turns the held meat into one mince at
 // once (ticks 0), like one stroke on the butcher rack.
@@ -60,7 +59,8 @@ PROCESSING_RECIPES.push(
   { id: "grind/pork", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:porkchop"], count: 1 }], outputs: [{ item: "pork_mince", count: 1 }], ticks: 0 },
   { id: "grind/beef", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:beef", "buffalo_meat", "yak_meat"], count: 1 }], outputs: [{ item: "beef_mince", count: 1 }], ticks: 0 },
   { id: "grind/mutton", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:mutton"], count: 1 }], outputs: [{ item: "mutton_mince", count: 1 }], ticks: 0 },
-  { id: "grind/sausage", station: "meat_grinder", inputs: [{ anyOf: ANY_MINCE, count: 2 }, { item: "sausage_casing", count: 1 }], outputs: [{ item: "raw_sausage", count: 2 }], ticks: 0 },
+  // { tag } inputs: Ranching's items plus other add-ons' (data/tags.js 標籤契約).
+  { id: "grind/sausage", station: "meat_grinder", inputs: [{ tag: "mince", count: 2 }, { item: "sausage_casing", count: 1 }], outputs: [{ item: "raw_sausage", count: 2 }], ticks: 0 },
   { id: "churn/foie_gras_pate", station: "butter_churn", inputs: [{ item: "goose_liver", count: 1 }, { item: "butter", count: 1 }], outputs: [{ item: "foie_gras_pate", count: 1 }], ticks: 600 },
 );
 
@@ -90,12 +90,11 @@ const ANY_WOOL = WOOL_COLORS.map((color) => `minecraft:${color}_wool`);
 PROCESSING_RECIPES.push(
   // Tanning rack: rabbit hide without waiting for four, and oiled leather from tallow.
   { id: "tan/rabbit_hide", station: "tanning_rack", inputs: [{ item: "minecraft:rabbit_hide", count: 4 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
-  { id: "tan/oiled_leather", station: "tanning_rack", inputs: [{ item: "minecraft:leather", count: 1 }, { anyOf: ["beef_tallow", "mutton_tallow"], count: 1 }], outputs: [{ item: "oiled_leather", count: 1 }], ticks: DAY },
+  { id: "tan/oiled_leather", station: "tanning_rack", inputs: [{ item: "minecraft:leather", count: 1 }, { tag: "tallow", count: 1 }], outputs: [{ item: "oiled_leather", count: 1 }], ticks: DAY },
   // Spinning wheel (automated): fleece into yarn, fine fleece into fine yarn.
   { id: "spin/wool", station: "spinning_wheel", inputs: [{ anyOf: ANY_WOOL, count: 1 }], outputs: [{ item: "yarn", count: 2 }], ticks: DAY / 2 },
-  { id: "spin/yak_hair", station: "spinning_wheel", inputs: [{ item: "yak_hair", count: 2 }], outputs: [{ item: "yarn", count: 2 }], ticks: DAY / 2 },
-  { id: "spin/goat_cashmere", station: "spinning_wheel", inputs: [{ item: "goat_cashmere", count: 2 }], outputs: [{ item: "fine_yarn", count: 2 }], ticks: DAY / 2 },
-  { id: "spin/rabbit_fur", station: "spinning_wheel", inputs: [{ item: "rabbit_fur", count: 2 }], outputs: [{ item: "fine_yarn", count: 2 }], ticks: DAY / 2 },
+  { id: "spin/fleece", station: "spinning_wheel", inputs: [{ tag: "fleece", count: 2 }], outputs: [{ item: "yarn", count: 2 }], ticks: DAY / 2 },
+  { id: "spin/fine_fleece", station: "spinning_wheel", inputs: [{ tag: "fine_fleece", count: 2 }], outputs: [{ item: "fine_yarn", count: 2 }], ticks: DAY / 2 },
   // Weaving loom (automated).
   { id: "weave/wool_cloth", station: "weaving_loom", inputs: [{ item: "yarn", count: 2 }], outputs: [{ item: "wool_cloth", count: 1 }], ticks: DAY / 2 },
   { id: "weave/plush_cloth", station: "weaving_loom", inputs: [{ item: "fine_yarn", count: 2 }], outputs: [{ item: "plush_cloth", count: 1 }], ticks: DAY / 2 },

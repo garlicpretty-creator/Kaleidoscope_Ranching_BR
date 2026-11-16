@@ -31,6 +31,8 @@ function hold(player, typeId, amount = 1) {
 }
 function clearWorld() {
   for (const key of world.getDynamicPropertyIds()) world.setDynamicProperty(key, undefined);
+  // 1.1 illness is random; tests switch it on where they test it (M11).
+  world.setDynamicProperty("kr:cfg:disease", false);
   overworld.entities = [];
   overworld.items = [];
   overworld.blocks = new Map();
@@ -2329,6 +2331,157 @@ test("M10: every animal's client entity plays its sleep pose while asleep", () =
     const behaviour = JSON.parse(readFileSync(new URL(`../../packs/BP/entities/${id}.json`, import.meta.url), "utf8"))["minecraft:entity"];
     assert(behaviour.events["kaleidoscope_ranching:fall_asleep"], `${id} can fall asleep`);
   }
+});
+
+// --- 1.1 M11: health, the 1.1 API, Fishing and Tavern handshakes --------------------
+
+const disease = await import("../../packs/BP/scripts/systems/disease.js");
+const tagsCore = await import("../../packs/BP/scripts/core/tags.js");
+const fishingApi = await import("../../packs/BP/scripts/api/fishing.js");
+const tavernApi = await import("../../packs/BP/scripts/api/tavern.js");
+const dayNow = () => Math.floor(world.getAbsoluteTime() / 24000);
+
+test("M11: two days without water can make an animal sick: no milk, no breeding, no affection gain", () => {
+  clearWorld();
+  world.setDynamicProperty(disease.CFG_DISEASE, true);
+  const cow = ranch("cow", 2, "female");
+  cow.setDynamicProperty("kr:water_day", dayNow() - 2);
+  assert(!disease.checkHealth(cow, 0.99), "a lucky roll stays healthy");
+  __skipTime(24000);
+  cow.setDynamicProperty("kr:water_day", dayNow() - 2);
+  assert(disease.checkHealth(cow, 0), "falls ill");
+  assert(!husbandry.production(cow, dayNow()).produces, "no milk");
+  assert(!husbandry.canBreed(cow), "no breeding");
+  care.setAffection(cow, 40);
+  const before = care.getAffection(cow);
+  care.setAffection(cow, before + 20);
+  equal(care.getAffection(cow), before, "affection does not rise");
+  const player = __newPlayer(at(0, -3));
+  hold(player, "kaleidoscope_ranching:vet_medicine", 1);
+  __interact(player, cow);
+  __advance(1);
+  assert(!disease.isSick(cow), "medicine cures it");
+  equal(player.inventory.count("kaleidoscope_ranching:vet_medicine"), 0, "one used");
+});
+
+test("M11: soap keeps the dirt away for the day and counts as grooming; switching illness off cures", () => {
+  clearWorld();
+  world.setDynamicProperty(disease.CFG_DISEASE, true);
+  const pig = ranch("pig", 2, "female");
+  pig.setDynamicProperty("kr:clean_day", dayNow() - 3);
+  equal(disease.riskOf(pig), "dirt", "a dirty pen is a risk");
+  const player = __newPlayer(at(0, -3));
+  hold(player, "kaleidoscope_ranching:soap", 1);
+  __interact(player, pig);
+  __advance(1);
+  equal(disease.riskOf(pig), null, "soaped: no risk today");
+  assert(care.isMarkedToday(pig, "groom"), "groomed");
+  pig.setDynamicProperty(disease.SICK, true);
+  system.afterEvents.scriptEventReceive.fire({ id: "kaleidoscope_ranching:config", message: "disease off", sourceType: "Server" });
+  __skipTime(24000);
+  disease.checkHealth(pig, 0);
+  assert(!disease.isSick(pig), "illness off cures it");
+});
+
+test("M11: calcium feed gives a hen a chance of a second egg", () => {
+  clearWorld();
+  const nest = nestAt();
+  NEST.onPlace({ block: nest, dimension: overworld });
+  const hen = ranch("chicken", 1, "female");
+  care.mark(hen, "fed", { fed_tier: 3, fed_kind: 7 });
+  const random = Math.random;
+  Math.random = () => 0.99; // above the extra-egg chance
+  try {
+    __advance(700);
+  } finally {
+    Math.random = random;
+  }
+  const player = __newPlayer(at(0));
+  hold(player, "minecraft:stick", 1);
+  use(NEST, nest, player);
+  equal(player.inventory.count("minecraft:egg"), 1, "a high roll: one egg");
+  __skipTime(24000);
+  care.mark(hen, "fed", { fed_tier: 3, fed_kind: 7 });
+  Math.random = () => 0.1;
+  try {
+    __advance(700);
+  } finally {
+    Math.random = random;
+  }
+  hold(player, "minecraft:stick", 1);
+  use(NEST, nest, player);
+  equal(player.inventory.count("minecraft:egg"), 3, "a low roll: two eggs that day");
+});
+
+test("M11: the 1.1 API takes new feed kinds, animal fields, offal cuts and remedies, and answers more", () => {
+  clearWorld();
+  system.__scriptEvents.length = 0;
+  system.sendScriptEvent(`${API}:api_ping`, "");
+  const caps = sent("api_ready").at(-1).capabilities;
+  for (const cap of ["recipes_1_1", "butcher_offal", "animal_1_1", "feed_1_1", "remedy", "events_1_1", "query_1_1", "tag_contract"]) assert(caps.includes(cap), cap);
+  equal(call("register_feed", { item: "kr_test:silage_cube", kind: "ruminant" }).ok, true, "ruminant feed");
+  equal(call("register_remedy", { item: "kr_test:herb" }).ok, true, "remedy");
+  equal(call("register_animal", { id: "kr_test:llama", reproduction: "gestation", breedItems: ["minecraft:wheat"], sleep: "lie", moult: ["kr_test:fibre", 0.5], coldHardy: true, harness: true, forage: { item: "kr_test:root", minHearts: 2 } }).ok, true, "animal with 1.1 fields");
+  equal(call("register_animal", { id: "kr_test:bad", reproduction: "gestation", breedItems: ["minecraft:wheat"], sleep: "float" }).ok, false, "unknown pose refused");
+  equal(call("register_butcher", { carcass: "kr_test:llama_carcass", cuts: [{ item: "kr_test:hide", count: [1, 1], skin: true }, { item: "kr_test:liver", count: [1, 1], offal: true }] }).ok, true, "offal cut");
+  const cow = ranch("cow", 2, "female");
+  cow.setDynamicProperty(disease.SICK, true);
+  system.sendScriptEvent(`${API}:query_animal`, JSON.stringify({ entity: cow.id }));
+  const info = sent("animal_info").at(-1);
+  equal(info.sick, true, "sick reported");
+  equal(info.sleeping, false, "sleeping reported");
+  const player = __newPlayer(at(0, -3));
+  hold(player, "kr_test:herb", 1);
+  __interact(player, cow);
+  __advance(1);
+  assert(!disease.isSick(cow), "a registered remedy cures");
+});
+
+test("M11: other add-ons' tagged hides tan and tagged offal feeds pigs", () => {
+  clearWorld();
+  assert(tagsCore.addTagged("hide", "kr_test:alpaca_hide"), "tagged hide added");
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  hold(player, "kr_test:alpaca_hide", 1);
+  use(STATION, rack, player);
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 1, "leather from a tagged hide");
+  tagsCore.addTagged("offal", "kr_test:lungs");
+  assert(LIVE_FEEDS["kr_test:lungs"], "tagged offal is feed");
+});
+
+test("M11: with Fishing, Ranching baits are registered, fish bones grind to calcium and sea salt dries faster", () => {
+  clearWorld();
+  system.__scriptEvents.length = 0;
+  fishingApi.onFishingReady(JSON.stringify({ api: 1, version: "1.6.2" }));
+  const bait = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_fishing:register_bait").map((e) => JSON.parse(e.message)).at(-1);
+  assert(bait?.baits.some((b) => b.id === "kaleidoscope_ranching:chicken_gizzard" && b.biteFactor >= 0.5 && b.biteFactor <= 1), "gizzard bait");
+  const player = __newPlayer(at(0));
+  const grinder = stationAt("meat_grinder");
+  hold(player, "kaleidoscope_fishing:fish_bones", 2);
+  use(STATION, grinder, player);
+  equal(player.inventory.count("kaleidoscope_ranching:calcium_powder"), 1, "calcium from fish bones");
+  const rack = rackAt();
+  player.inventory.setItem(5, new ItemStack("kaleidoscope_fishing:sea_salt", 1));
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_fishing:sea_salt"), 0, "salt used");
+  __skipTime(24000 * 2);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_pork_belly"), 1, "salted: done in two days");
+});
+
+test("M11: with the Tavern, the extension goes out and its grapes become feed", () => {
+  clearWorld();
+  system.__scriptEvents.length = 0;
+  system.afterEvents.scriptEventReceive.fire({ id: "kaleidoscope_tavern:api_ready", message: JSON.stringify({ api: 1, version: "0.3.0", capabilities: ["shaker_recipes", "external_shaker_inputs", "guide_pages"] }), sourceType: "Server" });
+  __advance(40);
+  const begin = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_tavern:extension_begin").map((e) => JSON.parse(e.message)).at(-1);
+  equal(begin?.source, "kaleidoscope_ranching", "extension sent");
+  assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_tavern:extension_commit"), "and committed");
+  assert(LIVE_FEEDS["kaleidoscope_tavern:grape"], "grapes are feed");
+  equal(tavernApi.TAVERN_EXTENSION.recipes.length, 2, "two shaker drinks");
 });
 
 // --- Report ---------------------------------------------------------------

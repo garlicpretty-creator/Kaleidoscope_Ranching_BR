@@ -26,7 +26,7 @@ const GROUPS = [
   { id: "feed", from: ["feed", "treat"], icon: "mixed_feed", zh: "飼料與零食", en: "Feed and Treats" },
   { id: "milk", from: ["milk"], icon: "cow_milk", zh: "乳品", en: "Milk" },
   { id: "eggs", from: ["egg", "fertilized_egg", "preserved"], icon: "duck_egg", zh: "蛋", en: "Eggs" },
-  { id: "dairy", from: ["dairy"], icon: "butter", zh: "乳製品", en: "Dairy" },
+  { id: "dairy", from: ["dairy", "drink"], icon: "butter", zh: "乳製品", en: "Dairy" },
   { id: "carcasses", from: ["carcass"], icon: "cow_carcass", zh: "屠體", en: "Carcasses" },
   { id: "meat", from: ["meat", "cut", "mince", "cured", "offal"], icon: "beef_brisket", zh: "肉品", en: "Meat" },
   { id: "materials", from: ["material"], icon: "wool_cloth", zh: "布料與皮革", en: "Cloth and Leather" },

@@ -380,6 +380,18 @@
     "kr_herding_horn": {
       "textures": "textures/items/ranching/herding_horn"
     },
+    "kr_vet_medicine": {
+      "textures": "textures/items/ranching/vet_medicine"
+    },
+    "kr_soap": {
+      "textures": "textures/items/ranching/soap"
+    },
+    "kr_cream_cocoa": {
+      "textures": "textures/items/ranching/cream_cocoa"
+    },
+    "kr_yogurt_berry_drink": {
+      "textures": "textures/items/ranching/yogurt_berry_drink"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },

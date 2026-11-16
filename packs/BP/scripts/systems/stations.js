@@ -26,6 +26,7 @@ import { countItems, dropItems, give, mainHand, takeItems } from "../core/invent
 import { nowTick } from "../core/time.js";
 import { showActionBar } from "../core/actionBar.js";
 import { containerOf, countIn, putInto, takeFrom } from "../core/containers.js";
+import { taggedItems } from "../core/tags.js";
 import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
 
 // ## The duration is stored with the running batch. A recipe another add-on
@@ -47,7 +48,8 @@ function setBusy(block, busy) {
 // ## Recipes come from core/content.js: data/processing.js plus recipes other
 // ## add-ons registered this session (kaleidoscope_ranching:register_recipe).
 
-const inputIds = (input) => (input.anyOf ?? [input.item]).map(rid);
+// 1.1: { tag } inputs take every item carrying a contract tag (core/tags.js).
+const inputIds = (input) => (input.tag ? taggedItems(input.tag) : (input.anyOf ?? [input.item]).map(rid));
 
 /** Takes a recipe's inputs and returns { taken }, or null if something is missing. */
 function takeInputs(player, recipe, heldId) {

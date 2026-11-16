@@ -67,12 +67,24 @@ export function getAffection(entity) {
   return Math.max(AFFECTION.min, Math.min(AFFECTION.max, Number.isFinite(value) ? value : AFFECTION.min));
 }
 
+// 1.1 疾病 (systems/disease.js): a sick animal gives nothing and does not breed.
+const SICK = "kaleidoscope_ranching:sick";
+const sick = (entity) => {
+  try {
+    return entity.getDynamicProperty(SICK) === true;
+  } catch {
+    return false;
+  }
+};
+
 export function canBreed(entity) {
+  if (sick(entity)) return false;
   return safe("canBreed", true, entity) !== false;
 }
 
 /** @returns {{ produces: boolean }} (a provider's `quality` is ignored: products have no grades) */
 export function production(entity, day) {
+  if (sick(entity)) return { produces: false, quality: "plain" };
   const result = safe("production", null, entity, day);
   return { produces: result?.produces !== false };
 }

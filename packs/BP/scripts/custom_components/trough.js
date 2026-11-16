@@ -62,7 +62,8 @@ export function tickTrough(block) {
       if (clean) mark(e, "clean");
     }
     if (fill > 0 && sp.eats.includes(kind) && !isMarkedToday(e, "fed")) {
-      mark(e, "fed", { fed_tier: KIND_TIER[kind] ?? 1 });
+      // fed_kind: 1.1 calcium feed gives hens an extra egg (systems/nest.js).
+      mark(e, "fed", { fed_tier: KIND_TIER[kind] ?? 1, fed_kind: kind });
       fill--;
     }
   }

@@ -8,6 +8,8 @@
 
 import { world } from "@minecraft/server";
 import { AFFECTION } from "../data/animals.js";
+import { animalByType } from "../core/content.js";
+import { isRanchAnimal } from "../core/animal.js";
 import { isBaby } from "../core/animal.js";
 import { registerClockTask } from "../core/clock.js";
 import { emitRanchEvent } from "../core/events.js";
@@ -43,20 +45,25 @@ function inForest(dimension, location) {
 }
 
 /** One pig's daily try. Returns true when it found a truffle. */
+/** What a type digs up: the pig's truffle, or a registered `forage` (1.1 API). */
+const forageOf = (typeId) =>
+  typeId === rid("pig") ? { item: rid("truffle"), chance: TRUFFLE_CHANCE, minHearts: TRUFFLE_MIN_HEARTS } : animalByType(typeId)?.forage;
+
 export function rootForTruffle(pig, roll = Math.random()) {
   const day = today();
-  if (pig.getDynamicProperty(LAST_TRY_DAY) === day) return false;
+  const forage = forageOf(pig.typeId);
+  if (!forage || pig.getDynamicProperty(LAST_TRY_DAY) === day) return false;
   pig.setDynamicProperty(LAST_TRY_DAY, day);
-  if (isBaby(pig) || getAffection(pig) < TRUFFLE_MIN_HEARTS) return false;
+  if (isBaby(pig) || getAffection(pig) < forage.minHearts) return false;
   const { x, y, z } = pig.location;
   let soil;
   try {
     soil = pig.dimension.getBlock({ x: Math.floor(x), y: Math.floor(y) - 1, z: Math.floor(z) })?.typeId;
   } catch {}
   if (!SOILS.includes(soil) || !inForest(pig.dimension, pig.location)) return false;
-  if (roll >= TRUFFLE_CHANCE) return false;
-  dropItems(pig.dimension, rid("truffle"), 1, { x, y: y + 0.3, z });
-  emitRanchEvent("foraged", { animal: pig.typeId, entity: pig.id, items: { [rid("truffle")]: 1 } });
+  if (roll >= forage.chance) return false;
+  dropItems(pig.dimension, forage.item, 1, { x, y: y + 0.3, z });
+  emitRanchEvent("foraged", { animal: pig.typeId, entity: pig.id, items: { [forage.item]: 1 } });
   try {
     pig.dimension.playSound("mob.pig.say", pig.location, { pitch: 1.3 });
   } catch {}
@@ -68,10 +75,10 @@ export function findTruffles() {
   for (const player of world.getAllPlayers()) {
     let pigs = [];
     try {
-      pigs = player.dimension.getEntities({ type: rid("pig"), location: player.location, maxDistance: TRUFFLE_RANGE });
+      pigs = player.dimension.getEntities({ location: player.location, maxDistance: TRUFFLE_RANGE });
     } catch {}
     for (const pig of pigs) {
-      if (seen.has(pig.id)) continue;
+      if (seen.has(pig.id) || !isRanchAnimal(pig) || !forageOf(pig.typeId)) continue;
       seen.add(pig.id);
       rootForTruffle(pig);
     }

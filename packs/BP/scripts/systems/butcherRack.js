@@ -14,7 +14,7 @@ import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../co
 import { rid, shortId } from "../core/ids.js";
 import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
-import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
+import { consumeMainHand, damageMainHand, dropItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
 import { showActionBar } from "../core/actionBar.js";
 import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
@@ -61,10 +61,16 @@ export function dryingResult(typeId) {
   return out ? rid(out) : undefined;
 }
 
+// 1.1 漁歌握手: Fishing's sea salt, carried when hanging a piece, cures it a day sooner.
+const SEA_SALT = "kaleidoscope_fishing:sea_salt";
+const SALTED_TICKS = DRYING_TICKS - 24000;
+const ticksOf = (piece) => (piece.salted ? SALTED_TICKS : DRYING_TICKS);
+
 function hangToDry(block, player, item, data) {
   const pieces = data?.drying ?? [];
   if (pieces.length >= DRYING_SLOTS) return tell(player, "drying_full", [String(DRYING_SLOTS)]);
-  pieces.push({ item: item.typeId, start: nowTick() });
+  const salted = Boolean(takeItems(player, [SEA_SALT], 1));
+  pieces.push({ item: item.typeId, start: nowTick(), ...(salted ? { salted: true } : {}) });
   consumeMainHand(player);
   setBlockData(block, { drying: pieces });
   block.dimension.playSound("block.itemframe.add_item", block.location);
@@ -77,7 +83,7 @@ function takeDown(block, player, data) {
   const left = [];
   let taken = 0;
   for (const piece of data.drying) {
-    if (now >= piece.start + DRYING_TICKS) {
+    if (now >= piece.start + ticksOf(piece)) {
       const out = dryingResult(piece.item);
       if (out) give(player, out, 1);
       taken++;
@@ -87,7 +93,7 @@ function takeDown(block, player, data) {
   else clearBlockData(block.dimension, block.location);
   if (taken) block.dimension.playSound("random.pop", block.location);
   if (!left.length) return;
-  const soonest = Math.min(...left.map((piece) => piece.start + DRYING_TICKS - now));
+  const soonest = Math.min(...left.map((piece) => piece.start + ticksOf(piece) - now));
   tell(player, "drying_left", [String(left.length), String(Math.ceil(soonest / TICKS_PER_MINUTE))]);
 }
 
@@ -192,7 +198,7 @@ function spill(dimension, location, typeId) {
     // Finished pieces drop dried; the rest drop as they went up.
     const now = nowTick();
     for (const piece of data.drying) {
-      const done = now >= piece.start + DRYING_TICKS;
+      const done = now >= piece.start + ticksOf(piece);
       dropItems(dimension, done ? dryingResult(piece.item) ?? piece.item : piece.item, 1, at);
     }
     return;
@@ -226,7 +232,7 @@ export const butcherRackComponent = {
     if (data?.drying) {
       if (item && dryingResult(item.typeId)) {
         // Take down whatever is done first, so a full rack makes room by itself.
-        if (data.drying.some((piece) => nowTick() >= piece.start + DRYING_TICKS)) return takeDown(block, player, data);
+        if (data.drying.some((piece) => nowTick() >= piece.start + ticksOf(piece))) return takeDown(block, player, data);
         return hangToDry(block, player, item, data);
       }
       if (item && butcherEntry(item.typeId)) return tell(player, "drying_busy");

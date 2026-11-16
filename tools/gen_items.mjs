@@ -14,6 +14,9 @@ const { ITEMS, NAMESPACE } = await load("items.js");
 const { ANIMALS } = await load("animals.js");
 const { VANILLA_COOKING } = await load("processing.js");
 const { DISHES, DISH_PREPS } = await load("dishes.js");
+const { TAGGED, tagId } = await load("tags.js");
+const CONTRACT_TAGS = new Map();
+for (const [name, ids] of Object.entries(TAGGED)) for (const id of ids) CONTRACT_TAGS.set(id, [...(CONTRACT_TAGS.get(id) ?? []), tagId(name)]);
 const DISH_BY_ID = new Map(DISHES.map((dish) => [dish.id, dish]));
 
 const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
@@ -74,6 +77,11 @@ const OVERRIDES = {
   lasso: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:lasso": {}, "minecraft:durability": { max_durability: 64 }, "minecraft:cooldown": { category: "kr_lasso", duration: 1 } } },
   feather_duster: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:feather_duster": {}, "minecraft:durability": { max_durability: 64 } } },
   egg_candler: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:egg_candler": {} } },
+  vet_medicine: { stack: 16 },
+  soap: { stack: 16 },
+  // Tavern shaker drinks (api/tavern.js); drinking gives the bottle back.
+  cream_cocoa: { stack: 16, ...food(4, 0.6, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
+  yogurt_berry_drink: { stack: 16, ...food(4, 0.6, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   harness: { stack: 1 },
   plough: { stack: 1 },
   animal_blanket: { stack: 16 },
@@ -147,6 +155,8 @@ function componentsFor(item) {
   Object.assign(c, overrideComponents, components);
   if (overrideStack) stack = overrideStack;
   if (c["minecraft:food"] && !tags.includes("minecraft:is_food")) tags.push("minecraft:is_food");
+  // 1.1 標籤契約 (data/tags.js).
+  for (const tag of CONTRACT_TAGS.get(item.id) ?? []) if (!tags.includes(tag)) tags.push(tag);
 
   return {
     "minecraft:icon": `kr_${item.id}`,
@@ -246,6 +256,8 @@ const RECIPES = [
   shapeless("leather_gloves", [{ item: rid("oiled_leather"), count: 2 }], "leather_gloves"),
   shapeless("herding_horn_cattle", [{ item: rid("cattle_horn") }, { item: "minecraft:string" }], "herding_horn"),
   shapeless("herding_horn_goat", [{ item: rid("billy_goat_horn") }, { item: "minecraft:string" }], "herding_horn"),
+  // 1.1 健康 (systems/disease.js): soap from any tallow (tag kaleidoscope_ranching:tallow, data/tags.js).
+  shapeless("soap", [{ tag: tagId("tallow") }, { item: "minecraft:charcoal" }, { item: "minecraft:water_bucket" }], "soap", 2),
 
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),
@@ -279,6 +291,23 @@ RECIPES.push([
     },
   },
 ]);
+
+// 1.1 獸藥 is mixed in the feed mixer too: alfalfa, a flower and a water bottle.
+for (const flower of ["dandelion", "poppy", "cornflower"]) {
+  RECIPES.push([
+    `vet_medicine_${flower}`,
+    {
+      format_version: "1.20.10",
+      "minecraft:recipe_shapeless": {
+        description: { identifier: rid(`m11_vet_medicine_${flower}`) },
+        tags: [`${NAMESPACE}_feed_mixer`],
+        ingredients: [{ item: rid("alfalfa") }, { item: `minecraft:${flower}` }, { item: "minecraft:potion", data: 0 }],
+        result: { item: rid("vet_medicine"), count: 1 },
+        unlock: [{ item: rid("alfalfa") }],
+      },
+    },
+  ]);
+}
 
 // --- M5 dish recipes made outside Cookery ---------------------------------------
 

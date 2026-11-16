@@ -28,6 +28,7 @@ import { dp, rid } from "../core/ids.js";
 import { today } from "../core/time.js";
 import { addAffection } from "../care/state.js";
 import { sexOf } from "../core/animal.js";
+import { animalByType } from "../core/content.js";
 
 export const SLEEP_START = 13000;
 export const WAKE = 23000;
@@ -40,6 +41,8 @@ export const COLD_NIGHT_POINTS = 4;
 const RANGE = 64;
 const CHECK_INTERVAL = 20;
 
+/** Poses register_animal may name (1.1 API); built-in animals pose by their model. */
+export const SLEEP_POSES = ["lie", "side", "roost", "curl"];
 export const SLEEPING = "kaleidoscope_ranching:sleeping";
 export const CFG_SLEEP = "kr:cfg:sleep";
 const WOKE_AT = dp("woke_at");
@@ -120,7 +123,8 @@ export function settleNight(animal) {
     emitRanchEvent("slept_well", { animal: animal.typeId, entity: animal.id });
     return "slept_well";
   }
-  if (!sheltered && animal.typeId !== rid("yak") && animal.getDynamicProperty(BLANKET) !== true && isCold(animal)) {
+  const hardy = animal.typeId === rid("yak") || animalByType(animal.typeId)?.coldHardy === true;
+  if (!sheltered && !hardy && animal.getDynamicProperty(BLANKET) !== true && isCold(animal)) {
     addAffection(animal, -COLD_NIGHT_POINTS);
     return "cold";
   }
