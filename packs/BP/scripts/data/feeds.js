@@ -9,6 +9,8 @@ export const KIND = {
   VEG: 3, // 蔬菜·廚餘 (pigs, rabbits)
   MIXED: 4, // 混合飼料 (everyone)
   CONCENTRATE: 5, // 精飼料 (everyone)
+  SILAGE: 6, // 1.1 青貯料 (ruminants only)
+  CALCIUM: 7, // 1.1 鈣質飼料 (poultry only)
 };
 
 export const KIND_TIER = {
@@ -17,6 +19,9 @@ export const KIND_TIER = {
   [KIND.VEG]: 1,
   [KIND.MIXED]: 2,
   [KIND.CONCENTRATE]: 3,
+  // 1.1: concentrate-grade feeds for one group only (企劃書 1.1 八、孵化與飼料線).
+  [KIND.SILAGE]: 3,
+  [KIND.CALCIUM]: 3,
 };
 
 /** itemId → { kind, units } */
@@ -50,6 +55,8 @@ export const FEEDS = {
   // trough as mixed feed, so pigs and cattle drink it.
   "kaleidoscope_ranching:whey": { kind: KIND.MIXED, units: 2 },
   "kaleidoscope_ranching:concentrate_feed": { kind: KIND.CONCENTRATE, units: 1 },
+  "kaleidoscope_ranching:silage": { kind: KIND.SILAGE, units: 1 },
+  "kaleidoscope_ranching:calcium_feed": { kind: KIND.CALCIUM, units: 1 },
 };
 
 /** External feeds registered at runtime (M5 API will call this). */

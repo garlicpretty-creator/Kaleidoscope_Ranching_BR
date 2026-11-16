@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "rug_light_gray",
+    "metalness_emissive_roughness_subsurface": "rug_light_gray_mers",
+    "normal": "rug_light_gray_normal"
+  }
+}

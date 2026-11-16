@@ -1,0 +1,30 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_leather_apron"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "L L",
+      "LLL",
+      " L "
+    ],
+    "key": {
+      "L": {
+        "item": "kaleidoscope_ranching:oiled_leather"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:leather_apron",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:leather_apron"
+      }
+    ]
+  }
+}

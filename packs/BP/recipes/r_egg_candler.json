@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_egg_candler"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "G",
+      "T",
+      "I"
+    ],
+    "key": {
+      "G": {
+        "item": "minecraft:glass"
+      },
+      "T": {
+        "item": "minecraft:torch"
+      },
+      "I": {
+        "item": "minecraft:iron_ingot"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:egg_candler",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:egg_candler"
+      }
+    ]
+  }
+}

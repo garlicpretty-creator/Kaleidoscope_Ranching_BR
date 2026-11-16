@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "oiled_leather",
+    "metalness_emissive_roughness_subsurface": "oiled_leather_mers",
+    "normal": "oiled_leather_normal"
+  }
+}

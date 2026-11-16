@@ -87,8 +87,32 @@ PROCESSING_RECIPES.push(
   { id: "churn/custard", station: "butter_churn", inputs: [{ anyOf: ANY_CHICKEN_EGG, count: 2 }, { anyOf: ANY_MILK, count: 1 }, { item: "minecraft:sugar", count: 1 }], outputs: [{ item: "custard", count: 2 }], ticks: 300 },
 );
 
+// --- 1.1 皮革線、絨毛線、布料線、孵化與飼料線 ---------------------------------
+
+const WOOL_COLORS = [
+  "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+  "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+];
+const ANY_WOOL = WOOL_COLORS.map((color) => `minecraft:${color}_wool`);
+
+PROCESSING_RECIPES.push(
+  // Tanning rack: rabbit hide without waiting for four, and oiled leather from tallow.
+  { id: "tan/rabbit_hide", station: "tanning_rack", inputs: [{ item: "minecraft:rabbit_hide", count: 4 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
+  { id: "tan/oiled_leather", station: "tanning_rack", inputs: [{ item: "minecraft:leather", count: 1 }, { anyOf: ["beef_tallow", "mutton_tallow"], count: 1 }], outputs: [{ item: "oiled_leather", count: 1 }], ticks: DAY },
+  // Spinning wheel (automated): fleece into yarn, fine fleece into fine yarn.
+  { id: "spin/wool", station: "spinning_wheel", inputs: [{ anyOf: ANY_WOOL, count: 1 }], outputs: [{ item: "yarn", count: 2 }], ticks: DAY / 2 },
+  { id: "spin/yak_hair", station: "spinning_wheel", inputs: [{ item: "yak_hair", count: 2 }], outputs: [{ item: "yarn", count: 2 }], ticks: DAY / 2 },
+  { id: "spin/goat_cashmere", station: "spinning_wheel", inputs: [{ item: "goat_cashmere", count: 2 }], outputs: [{ item: "fine_yarn", count: 2 }], ticks: DAY / 2 },
+  { id: "spin/rabbit_fur", station: "spinning_wheel", inputs: [{ item: "rabbit_fur", count: 2 }], outputs: [{ item: "fine_yarn", count: 2 }], ticks: DAY / 2 },
+  // Weaving loom (automated).
+  { id: "weave/wool_cloth", station: "weaving_loom", inputs: [{ item: "yarn", count: 2 }], outputs: [{ item: "wool_cloth", count: 1 }], ticks: DAY / 2 },
+  { id: "weave/plush_cloth", station: "weaving_loom", inputs: [{ item: "fine_yarn", count: 2 }], outputs: [{ item: "plush_cloth", count: 1 }], ticks: DAY / 2 },
+  // Silage barrel (automated): forage sealed for three days.
+  { id: "silage/forage", station: "silage_barrel", inputs: [{ item: "forage", count: 4 }], outputs: [{ item: "silage", count: 4 }], ticks: DAY * 3 },
+);
+
 /** Stations that also run on the ranch clock with containers above and below (systems/stations.js). */
-export const AUTO_STATIONS = ["cream_separator"];
+export const AUTO_STATIONS = ["cream_separator", "spinning_wheel", "weaving_loom", "silage_barrel"];
 
 /** Aging-rack outputs that come out smoked over a lit campfire (企劃書 1.1 煙燻乳酪). */
 export const SMOKING = {

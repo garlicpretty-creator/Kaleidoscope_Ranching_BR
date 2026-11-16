@@ -80,5 +80,23 @@
   },
   "kaleidoscope_ranching:ice_cream_churn": {
     "sound": "wood"
+  },
+  "kaleidoscope_ranching:spinning_wheel": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:weaving_loom": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:silage_barrel": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:rug": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:down_pillow": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:down_quilt": {
+    "sound": "cloth"
   }
 }

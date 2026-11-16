@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "rug_red",
+    "metalness_emissive_roughness_subsurface": "rug_red_mers",
+    "normal": "rug_red_normal"
+  }
+}

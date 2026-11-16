@@ -490,6 +490,43 @@ def draw(item_id):
         wedge(c, (226, 180, 76))
     elif base == "smoked_cheese_slice":
         wedge(c, (206, 150, 80))
+    # --- 1.1 皮革線、絨毛線、布料線、孵化與飼料線 ---
+    elif base == "oiled_leather":
+        sheet(c, (130, 80, 46), (110, 66, 38))
+    elif base == "leather_apron":
+        c.fill(rect(5, 3, 10, 5), (130, 80, 46))
+        c.fill(rect(3, 6, 12, 14), (130, 80, 46))
+    elif base == "lasso":
+        c.fill(ellipse(8, 7, 5, 4) - ellipse(8, 7, 3.5, 2.6), (150, 100, 60))
+        c.fill(rect(7, 11, 8, 14), (150, 100, 60))
+    elif base in ("goat_cashmere", "rabbit_fur"):
+        fluff(c, (236, 228, 214) if base == "goat_cashmere" else (214, 200, 186))
+    elif base in ("yarn", "fine_yarn"):
+        c.fill(ellipse(8, 8.5, 5, 5), (232, 222, 206) if base == "yarn" else (246, 240, 232))
+        for x in range(4, 13, 2):
+            c.put(x, 8, (200, 188, 170))
+    elif base == "feather_duster":
+        fluff(c, (220, 220, 214))
+        c.fill(rect(7, 10, 8, 15), (130, 90, 50))
+    elif base in ("felt", "wool_cloth", "plush_cloth"):
+        sheet(c, {"felt": (200, 190, 176), "wool_cloth": (220, 210, 190), "plush_cloth": (246, 244, 238)}[base])
+    elif base == "wool_hat":
+        c.fill(ellipse(8, 9, 5.5, 4.5), (180, 60, 50))
+        c.fill(rect(2, 11, 13, 12), (240, 236, 226))
+    elif base == "wool_scarf":
+        c.fill(rect(3, 4, 12, 6), (60, 110, 170))
+        c.fill(rect(9, 6, 11, 14), (60, 110, 170))
+    elif base == "egg_candler":
+        c.fill(rect(6, 9, 9, 14), (150, 156, 164))
+        c.fill(ellipse(7.5, 6, 3, 3.5), (250, 220, 120))
+    elif base == "eggshell":
+        egg(c, (236, 224, 200), (250, 246, 236))
+    elif base == "calcium_powder":
+        pile(c, (244, 244, 238))
+    elif base == "calcium_feed":
+        sack(c, (220, 220, 200))
+    elif base == "silage":
+        bundle(c, (150, 160, 70))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

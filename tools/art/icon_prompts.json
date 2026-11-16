@@ -202,6 +202,24 @@
     "chhurpi_butter_tea": { "prompt": "glass bottle of tibetan butter tea" },
     "raw_egg_tart": { "prompt": "unbaked pastry shell filled with pale custard" },
     "raw_pizza": { "prompt": "unbaked pizza dough with tomato sauce and mozzarella" },
-    "raw_truffle_gratin": { "prompt": "bowl of sliced potato cheese and black truffle ready to bake" }
+    "raw_truffle_gratin": { "prompt": "bowl of sliced potato cheese and black truffle ready to bake" },
+    "oiled_leather": { "prompt": "folded sheet of dark glossy oiled leather" },
+    "leather_apron": { "prompt": "brown leather butcher apron with neck strap" },
+    "lasso": { "prompt": "coiled brown leather lasso rope with a loop" },
+    "goat_cashmere": { "prompt": "soft fluffy tuft of cream goat cashmere" },
+    "rabbit_fur": { "prompt": "soft fluffy tuft of light brown rabbit fur" },
+    "yarn": { "prompt": "ball of cream wool yarn" },
+    "fine_yarn": { "prompt": "ball of soft white fine cashmere yarn" },
+    "feather_duster": { "prompt": "feather duster with a wooden handle" },
+    "felt": { "prompt": "folded sheet of grey wool felt" },
+    "wool_cloth": { "prompt": "folded bolt of beige woolen cloth" },
+    "plush_cloth": { "prompt": "folded bolt of soft white plush cloth" },
+    "wool_hat": { "prompt": "red knitted wool hat with a white brim" },
+    "wool_scarf": { "prompt": "blue knitted wool scarf" },
+    "egg_candler": { "prompt": "small brass egg candling lamp glowing yellow" },
+    "eggshell": { "prompt": "broken pale eggshell halves" },
+    "calcium_powder": { "prompt": "small pile of white calcium powder" },
+    "calcium_feed": { "prompt": "small sack of pale grey poultry calcium feed" },
+    "silage": { "prompt": "bundle of fermented green silage grass" }
   }
 }

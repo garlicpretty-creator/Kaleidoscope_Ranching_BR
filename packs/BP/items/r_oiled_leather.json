@@ -1,0 +1,15 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:oiled_leather",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_oiled_leather",
+      "minecraft:max_stack_size": 64
+    }
+  }
+}

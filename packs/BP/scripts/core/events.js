@@ -21,6 +21,7 @@ export function onRanchEvent(listener) {
  *   "cared"      a player cared for it      { animal, entity, player, kind }
  *                kind: "pet" | "brush" | "treat" | "ear_tag" | "nursing_bottle"
  *   "foraged"    an animal dug something up { animal, entity, items: { itemId: count } } (1.1 松露)
+ *   "moulted"    a duck or goose shed down  { animal, entity, items: { itemId: count } } (1.1 換羽)
  */
 export function emitRanchEvent(type, data) {
   for (const listener of listeners) {
