@@ -875,6 +875,19 @@ if (exists(example)) {
   const sets = textureFiles.filter((path) => path.endsWith(".texture_set.json"));
   const manifest = JSON.parse(readFileSync(join(rp, "manifest.json"), "utf8"));
   if (!manifest.capabilities?.includes("pbr")) fail("RP manifest does not declare the pbr capability");
+  // One version everywhere: both pack headers and modules, the packs' links to each other, and
+  // the version the script API reports to other add-ons (api/ranchingApi.js PACK_VERSION).
+  {
+    const bpManifest = JSON.parse(readFileSync(join(bp, "manifest.json"), "utf8"));
+    const version = bpManifest.header.version.join(".");
+    const own = new Set([bpManifest.header.uuid, manifest.header.uuid]);
+    for (const [name, m] of [["BP", bpManifest], ["RP", manifest]]) {
+      const versions = [m.header.version, ...m.modules.map((mod) => mod.version), ...(m.dependencies ?? []).filter((d) => own.has(d.uuid)).map((d) => d.version)];
+      for (const v of versions) if (v.join(".") !== version) fail(`${name} manifest: version ${v.join(".")} differs from ${version}`);
+    }
+    const api = readFileSync(join(bp, "scripts/api/ranchingApi.js"), "utf8").match(/PACK_VERSION = "([^"]+)"/)?.[1];
+    if (api !== version) fail(`api/ranchingApi.js PACK_VERSION ${api} differs from the manifest version ${version}`);
+  }
   /** PNG width, height and colour type (2 = RGB, 6 = RGBA) from the IHDR chunk. */
   const pngHeader = (path) => {
     const b = readFileSync(path);

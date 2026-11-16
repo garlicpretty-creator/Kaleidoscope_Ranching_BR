@@ -4,7 +4,7 @@
     "name": "pack.name",
     "description": "pack.description",
     "uuid": "54cfbd31-aa9e-47fa-9672-9e735de91a8e",
-    "version": [0, 0, 1],
+    "version": [1, 1, 0],
     "min_engine_version": [1, 26, 1]
   },
   "metadata": {
@@ -15,20 +15,20 @@
     {
       "type": "data",
       "uuid": "0800c167-8478-4faf-857b-b4dd04ddd55a",
-      "version": [0, 0, 1]
+      "version": [1, 1, 0]
     },
     {
       "type": "script",
       "language": "javascript",
       "uuid": "ddf85f80-006e-4843-9cf1-9dff4740da0e",
       "entry": "scripts/main.js",
-      "version": [0, 0, 1]
+      "version": [1, 1, 0]
     }
   ],
   "dependencies": [
     {
       "uuid": "838610ca-31db-4a0d-88b8-11740825d5db",
-      "version": [0, 0, 1]
+      "version": [1, 1, 0]
     },
     {
       "uuid": "9944f731-cc4c-4299-bdd5-f8799c1d832e",

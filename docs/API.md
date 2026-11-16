@@ -10,7 +10,7 @@
 2. 樂牧會回 `kaleidoscope_ranching:api_ready`：
 
 ```json
-{ "api": 1, "version": "0.5.0", "capabilities": ["register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result", "query_animal", "care_events"] }
+{ "api": 1, "version": "1.1.0", "capabilities": ["register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result", "query_animal", "care_events"] }
 ```
 
 樂牧在世界載入約 1 秒後也會主動送一次 `api_ready`，所以只監聽不 ping 也收得到。收到 `api_ready` 之後再送出註冊，送之前先確認 `capabilities` 裡有你要用的項目。
