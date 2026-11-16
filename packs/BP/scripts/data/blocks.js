@@ -28,6 +28,11 @@ export const BLOCKS = [
   ["tanning_rack", "鞣皮架", "Tanning Rack", "processing"],
   ["fermenting_jar", "發酵罐", "Fermenting Jar", "processing"],
   ["cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "processing"],
+  // Placed food (data/placedFoods.js): the other two wheels, and two dishes eaten in place.
+  ["vintage_cheese_wheel", "陳年乳酪輪", "Vintage Cheese Wheel", "processing"],
+  ["smoked_cheese_wheel", "煙燻乳酪輪", "Smoked Cheese Wheel", "processing"],
+  ["placed_pizza", "瑪格麗特披薩", "Margherita Pizza", "processing"],
+  ["placed_fondue", "起司火鍋", "Cheese Fondue", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],
   // 1.1 肉類線: cranked, one mince per use (data/processing.js).
   ["meat_grinder", "絞肉機", "Meat Grinder", "processing"],

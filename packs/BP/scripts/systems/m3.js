@@ -18,6 +18,7 @@ import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
 import { cheeseWheelComponent } from "./cheeseWheel.js";
 import { foodWasteBinComponent } from "./foodWasteBin.js";
+import { placedFoodComponent } from "./placedFood.js";
 
 export function startM3() {
   system.beforeEvents.startup.subscribe(({ blockComponentRegistry, itemComponentRegistry }) => {
@@ -28,6 +29,7 @@ export function startM3() {
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:hay_rack", hayRackComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:cheese_wheel", cheeseWheelComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:food_waste_bin", foodWasteBinComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:placed_food", placedFoodComponent);
     // 1.1
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:auto_station", autoStationComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:milking_rack", milkingRackComponent);

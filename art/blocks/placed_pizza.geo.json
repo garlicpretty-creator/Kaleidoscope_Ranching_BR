@@ -1,0 +1,219 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.placed_pizza",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "board",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -8
+              ],
+              "size": [
+                16,
+                1,
+                16
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_1",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0,
+                1,
+                0
+              ],
+              "size": [
+                6,
+                2,
+                7
+              ],
+              "uv": [
+                0,
+                17
+              ]
+            },
+            {
+              "origin": [
+                0,
+                1,
+                0
+              ],
+              "size": [
+                7,
+                2,
+                6
+              ],
+              "uv": [
+                26,
+                17
+              ]
+            }
+          ],
+          "parent": "board"
+        },
+        {
+          "name": "piece_2",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0,
+                1,
+                -7
+              ],
+              "size": [
+                6,
+                2,
+                7
+              ],
+              "uv": [
+                0,
+                26
+              ]
+            },
+            {
+              "origin": [
+                0,
+                1,
+                -6
+              ],
+              "size": [
+                7,
+                2,
+                6
+              ],
+              "uv": [
+                26,
+                26
+              ]
+            }
+          ],
+          "parent": "board"
+        },
+        {
+          "name": "piece_3",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                0
+              ],
+              "size": [
+                6,
+                2,
+                7
+              ],
+              "uv": [
+                0,
+                35
+              ]
+            },
+            {
+              "origin": [
+                -7,
+                1,
+                0
+              ],
+              "size": [
+                7,
+                2,
+                6
+              ],
+              "uv": [
+                26,
+                35
+              ]
+            }
+          ],
+          "parent": "board"
+        },
+        {
+          "name": "piece_4",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -7
+              ],
+              "size": [
+                6,
+                2,
+                7
+              ],
+              "uv": [
+                0,
+                44
+              ]
+            },
+            {
+              "origin": [
+                -7,
+                1,
+                -6
+              ],
+              "size": [
+                7,
+                2,
+                6
+              ],
+              "uv": [
+                26,
+                44
+              ]
+            }
+          ],
+          "parent": "board"
+        }
+      ]
+    }
+  ]
+}

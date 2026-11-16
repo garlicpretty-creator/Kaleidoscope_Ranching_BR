@@ -632,6 +632,86 @@ test("breaking a cheese wheel gives back the whole wheel, or the slices left", (
   equal(atWheel.reduce((n, d) => n + d.item.amount, 0), 3, "three slices left");
 });
 
+test("vintage and smoked wheels are placed and cut into their own slices", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  for (const [kind, x] of [["vintage", 20], ["smoked", 22]]) {
+    const block = `kaleidoscope_ranching:${kind}_cheese_wheel`;
+    equal(new ItemStack(block).typeId, block, "the wheel item exists");
+    let wheel = __place(overworld, { x, y: 64, z: 0 }, block, { "kaleidoscope_ranching:cut": 0 });
+    hold(player, "minecraft:iron_sword");
+    use(WHEEL, wheel, player);
+    equal(player.inventory.count(`kaleidoscope_ranching:${kind}_cheese_slice`), 1, `${kind} slice`);
+    equal(player.inventory.count("kaleidoscope_ranching:cheese_slice"), 0, "not the aged slice");
+    overworld.items = [];
+    breakBlock(WHEEL, wheel);
+    equal(dropsOf(`kaleidoscope_ranching:${kind}_cheese_slice`).reduce((n, d) => n + d.item.amount, 0), 3, "three slices left");
+    overworld.items = [];
+    wheel = __place(overworld, { x, y: 64, z: 2 }, block, { "kaleidoscope_ranching:cut": 0 });
+    breakBlock(WHEEL, wheel);
+    equal(dropsOf(block).length, 1, `uncut ${kind} wheel back`);
+  }
+});
+
+const PLACED = COMPONENTS["kaleidoscope_ranching:placed_food"];
+
+test("a placed pizza is eaten in four slices of three hunger, and not when full", () => {
+  clearWorld();
+  overworld.items = [];
+  const player = __newPlayer(at(0));
+  player.hunger = 4;
+  const pizza = __place(overworld, { x: 30, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
+  for (let n = 1; n <= 4; n++) {
+    use(PLACED, pizza, player);
+    equal(player.hunger, 4 + 3 * n, `slice ${n} feeds`);
+    if (n < 4) equal(state(pizza, "cut"), n, `eaten state ${n}`);
+  }
+  equal(pizza.permutation.type.id, "minecraft:air", "the last slice takes the pizza");
+
+  const second = __place(overworld, { x: 32, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
+  player.hunger = 20;
+  use(PLACED, second, player);
+  equal(state(second, "cut"), 0, "nothing eaten when full");
+  assert(player.actionBar.at(-1).translate.endsWith("food.full"), "told they are full");
+  breakBlock(PLACED, second);
+  equal(dropsOf("kaleidoscope_ranching:margherita_pizza").length, 1, "an untouched pizza is picked up whole");
+
+  overworld.items = [];
+  const third = __place(overworld, { x: 34, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
+  player.hunger = 4;
+  use(PLACED, third, player);
+  breakBlock(PLACED, third);
+  equal(overworld.items.length, 0, "a started pizza gives nothing back");
+});
+
+test("a placed fondue hands the bowl back with the last dip, or when broken once started", () => {
+  clearWorld();
+  overworld.items = [];
+  const player = __newPlayer(at(0));
+  player.hunger = 0;
+  const pot = __place(overworld, { x: 40, y: 64, z: 0 }, "kaleidoscope_ranching:placed_fondue", { "kaleidoscope_ranching:cut": 0 });
+  for (let n = 1; n <= 4; n++) use(PLACED, pot, player);
+  equal(player.hunger, 12, "four dips of three");
+  equal(player.inventory.count("minecraft:bowl"), 1, "the bowl comes back");
+  equal(overworld.items.length, 0, "and only once: nothing is dropped as well");
+  equal(pot.permutation.type.id, "minecraft:air", "the pot is gone");
+
+  const second = __place(overworld, { x: 42, y: 64, z: 0 }, "kaleidoscope_ranching:placed_fondue", { "kaleidoscope_ranching:cut": 0 });
+  player.hunger = 0;
+  use(PLACED, second, player);
+  breakBlock(PLACED, second);
+  equal(dropsOf("minecraft:bowl").length, 1, "a started fondue drops its bowl");
+  equal(dropsOf("kaleidoscope_ranching:cheese_fondue").length, 0, "but not the dish");
+});
+
+test("the placeable foods carry a block placer and keep their own food value", () => {
+  const item = (id) => JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${id}.json`, import.meta.url), "utf8"))["minecraft:item"].components;
+  for (const [id, block] of [["aged_cheese_wheel", "cheese_wheel"], ["vintage_cheese_wheel", "vintage_cheese_wheel"], ["smoked_cheese_wheel", "smoked_cheese_wheel"], ["margherita_pizza", "placed_pizza"], ["cheese_fondue", "placed_fondue"]]) {
+    equal(item(id)["minecraft:block_placer"]?.block, `kaleidoscope_ranching:${block}`, `${id} places ${block}`);
+  }
+  equal(item("margherita_pizza")["minecraft:food"].nutrition, 12, "the pizza can still be eaten from the hand");
+});
+
 // --- M3: milking and nursing ----------------------------------------------
 
 test("milking gives one bottle per cow per day and needs an empty bottle", () => {
