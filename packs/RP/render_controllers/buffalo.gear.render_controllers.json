@@ -1,0 +1,36 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.buffalo.gear": {
+      "geometry": "Geometry.gear",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.gear"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "gear_harness": "q.property('kaleidoscope_ranching:gear_harness') && !q.is_baby"
+        },
+        {
+          "gear_plough": "q.property('kaleidoscope_ranching:gear_plough') && !q.is_baby"
+        },
+        {
+          "gear_plough_chains": "q.property('kaleidoscope_ranching:gear_plough') && !q.is_baby && !q.property('kaleidoscope_ranching:sleeping')"
+        },
+        {
+          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby"
+        },
+        {
+          "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby"
+        }
+      ]
+    }
+  }
+}

@@ -1,7 +1,7 @@
 // M3 bootstrap: carcasses, butcher rack, milking, nests and processing.
 
 import { system } from "@minecraft/server";
-import { butcherRackComponent } from "./butcherRack.js";
+import { butcherRackComponent, startSavedDrying } from "./butcherRack.js";
 import { startCarcassDrops } from "./carcass.js";
 import { startMilking } from "./milking.js";
 import { candlerItemComponent, incubatorComponent, nestBoxComponent, startNests } from "./nest.js";
@@ -55,5 +55,6 @@ export function startM3() {
   // 1.1 標籤契約: other add-ons' tagged items join once the world has loaded.
   world.afterEvents.worldLoad?.subscribe(() => system.runTimeout(discoverTaggedItems, 40));
   startWorkAnimals();
+  startSavedDrying();
   startPackBag();
 }

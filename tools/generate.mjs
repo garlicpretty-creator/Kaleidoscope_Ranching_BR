@@ -13,9 +13,14 @@ const STEPS = [
   ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
   ["py", "tools/m2/gen_content.py"],
+  // 1.1 掛架風乾: the drying pieces on the hand-made rack, before gen_m3_art installs it.
+  ["py", "art_src/m4_scripts/rack_drying.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
   ["node", "tools/gen_sleep.mjs"],
+  // 1.1 美術: gear layered on the animals (fitted to the models as they are now), worn items.
+  ["py", "art_src/m4_scripts/gear.py"],
+  ["py", "art_src/m4_scripts/wearables.py"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
   ["node", "tools/gen_catalog.mjs"],

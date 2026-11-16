@@ -1,0 +1,33 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.sheep.gear": {
+      "geometry": "Geometry.gear",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.gear"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "gear_blanket_sheared": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && q.is_sheared"
+        },
+        {
+          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && !q.is_sheared"
+        },
+        {
+          "gear_blanket_baby_sheared": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby && q.is_sheared"
+        },
+        {
+          "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby && !q.is_sheared"
+        }
+      ]
+    }
+  }
+}

@@ -21,6 +21,7 @@ import { ItemStack, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { isBaby } from "../core/animal.js";
 import { animalByType } from "../core/content.js";
+import { showGear } from "../core/gear.js";
 import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, give, giveStack, mainHand } from "../core/inventory.js";
@@ -59,9 +60,19 @@ export function putOnPackBag(player, animal) {
   }
   if (!bagOf(animal)) return tell(player, "cannot");
   animal.setDynamicProperty(PACKED, true);
+  showGear(animal, "pack_bag", true);
   consumeMainHand(player);
   animal.dimension.playSound("mob.horse.armor", animal.location);
   tell(player, "on");
+}
+
+/** Gives an animal let out of a crate (systems/crate.js) its bag's storage back. A crate only
+ *  takes an animal whose bag is empty, so there is nothing to put back in it. */
+export function resumePackBag(animal) {
+  if (!wearsPackBag(animal) || bagOf(animal)) return;
+  try {
+    animal.triggerEvent(PUT_ON);
+  } catch {}
 }
 
 /** Puts the player's whole main-hand stack into the bag; what does not fit stays in hand. */
@@ -109,6 +120,7 @@ export function takeOffPackBag(player, animal) {
     animal.triggerEvent(TAKE_OFF);
   } catch {}
   animal.setDynamicProperty(PACKED, undefined);
+  showGear(animal, "pack_bag", false);
   give(player, PACK_BAG);
   tell(player, "off");
   return true;

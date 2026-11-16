@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:wool_scarf",
+      "materials": {
+        "default": "armor",
+        "held": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/wearables/wool_scarf",
+        "held": "textures/items/ranching/wool_scarf"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.wearable.wool_scarf",
+        "held": "geometry.kaleidoscope_ranching.wearable.wool_scarf.held"
+      },
+      "render_controllers": [
+        {
+          "controller.render.kaleidoscope_ranching.wearable": "c.item_slot == 'chest'"
+        },
+        {
+          "controller.render.kaleidoscope_ranching.wearable_held": "c.item_slot != 'chest'"
+        }
+      ]
+    }
+  }
+}

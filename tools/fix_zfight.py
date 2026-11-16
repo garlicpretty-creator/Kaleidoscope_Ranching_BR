@@ -53,10 +53,18 @@ def compile_condition(text):
     return lambda env: bool(eval(code, {}, {"env": env}))
 
 
+class Props(dict):
+    """Entity properties; any other bool property (the gear an animal wears) counts as on, so
+    the bones it shows are checked against each other."""
+
+    def __missing__(self, key):
+        return 1
+
+
 def entity_envs():
     for baby, sex, sheared, saddled, asleep in itertools.product((0, 1), ("female", "male"), (0, 1), (0, 1), (0, 1)):
         yield {"is_baby": baby, "is_sheared": sheared, "is_saddled": saddled,
-               "prop": {"kaleidoscope_ranching:sex": sex, "kaleidoscope_ranching:sleeping": asleep}, "state": {}}
+               "prop": Props({"kaleidoscope_ranching:sex": sex, "kaleidoscope_ranching:sleeping": asleep}), "state": {}}
 
 
 def state_values(spec):

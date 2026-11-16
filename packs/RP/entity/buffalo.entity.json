@@ -9,10 +9,12 @@
       "textures": {
         "female": "textures/entity/ranching/buffalo/female",
         "male": "textures/entity/ranching/buffalo/male",
-        "baby": "textures/entity/ranching/buffalo/baby"
+        "baby": "textures/entity/ranching/buffalo/baby",
+        "gear": "textures/entity/ranching/gear/buffalo"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.buffalo"
+        "default": "geometry.kaleidoscope_ranching.buffalo",
+        "gear": "geometry.kaleidoscope_ranching.buffalo.gear"
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.buffalo.walk",
@@ -32,7 +34,10 @@
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.buffalo"
+        "controller.render.kaleidoscope_ranching.buffalo",
+        {
+          "controller.render.kaleidoscope_ranching.buffalo.gear": "q.property('kaleidoscope_ranching:gear_harness') || q.property('kaleidoscope_ranching:gear_plough') || q.property('kaleidoscope_ranching:gear_blanket')"
+        }
       ],
       "spawn_egg": {
         "base_color": "#3C3A3A",

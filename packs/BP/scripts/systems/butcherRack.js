@@ -6,7 +6,7 @@
 // (data/processing.js DRYING). Each piece keeps its own start time; using the
 // rack takes down every piece that is done. A drying rack takes no carcass.
 
-import { ItemStack } from "@minecraft/server";
+import { ItemStack, system, world } from "@minecraft/server";
 import { DURABILITY_PER_STROKE, KNIFE_TAG, VANILLA_BLADE_TAGS } from "../data/butcher.js";
 import { DRYING, DRYING_SLOTS, DRYING_TICKS } from "../data/processing.js";
 import { animalByCarcass, butcherEntry } from "../core/content.js";
@@ -22,6 +22,7 @@ import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
 const STATE_CUT = "kaleidoscope_ranching:cut";
+const STATE_DRYING = "kaleidoscope_ranching:drying";
 
 const WOOL_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -66,6 +67,13 @@ const SEA_SALT = "kaleidoscope_fishing:sea_salt";
 const SALTED_TICKS = DRYING_TICKS - 24000;
 const ticksOf = (piece) => (piece.salted ? SALTED_TICKS : DRYING_TICKS);
 
+/** Shows `count` pieces hanging from the beam (bones dry_1 … dry_<DRYING_SLOTS>). */
+function showDrying(block, count) {
+  try {
+    block.setPermutation(block.permutation.withState(STATE_DRYING, Math.max(0, Math.min(DRYING_SLOTS, count))));
+  } catch {}
+}
+
 function hangToDry(block, player, item, data) {
   const pieces = data?.drying ?? [];
   if (pieces.length >= DRYING_SLOTS) return tell(player, "drying_full", [String(DRYING_SLOTS)]);
@@ -73,6 +81,7 @@ function hangToDry(block, player, item, data) {
   pieces.push({ item: item.typeId, start: nowTick(), ...(salted ? { salted: true } : {}) });
   consumeMainHand(player);
   setBlockData(block, { drying: pieces });
+  showDrying(block, pieces.length);
   block.dimension.playSound("block.itemframe.add_item", block.location);
   tell(player, "drying_hung", [String(pieces.length), String(DRYING_SLOTS)]);
 }
@@ -91,10 +100,59 @@ function takeDown(block, player, data) {
   }
   if (left.length) setBlockData(block, { drying: left });
   else clearBlockData(block.dimension, block.location);
+  showDrying(block, left.length);
   if (taken) block.dimension.playSound("random.pop", block.location);
   if (!left.length) return;
   const soonest = Math.min(...left.map((piece) => piece.start + ticksOf(piece) - now));
   tell(player, "drying_left", [String(left.length), String(Math.ceil(soonest / TICKS_PER_MINUTE))]);
+}
+
+// ## Racks saved before the drying pieces were drawn have the pieces in block data but a
+// ## `drying` state of 0. Once per session the stored racks are looked up and the state is
+// ## set from the data; racks in unloaded chunks are tried again on later passes.
+const RACK = "kaleidoscope_ranching:butcher_rack";
+const STORE_KEY = /^kaleidoscope_ranching:block:(.+):(-?\d+),(-?\d+),(-?\d+)$/;
+let savedRacks;
+
+/** Brings the drying state of stored racks in line with their data. Returns how many could
+ *  not be reached yet (their chunk is not loaded). */
+export function showSavedDrying() {
+  if (!savedRacks) {
+    savedRacks = [];
+    for (const id of world.getDynamicPropertyIds()) {
+      const at = id.match(STORE_KEY);
+      if (!at) continue;
+      try {
+        const record = JSON.parse(world.getDynamicProperty(id));
+        if (record?.type === RACK && record.data?.drying?.length) {
+          savedRacks.push({ dimension: at[1], location: { x: +at[2], y: +at[3], z: +at[4] } });
+        }
+      } catch {}
+    }
+  }
+  savedRacks = savedRacks.filter(({ dimension, location }) => {
+    let block;
+    try {
+      block = world.getDimension(dimension).getBlock(location);
+    } catch {}
+    if (!block) return true; // not loaded: try again later
+    if (block.typeId !== RACK) return false;
+    const count = getBlockData(block)?.drying?.length ?? 0;
+    if (block.permutation.getState(STATE_DRYING) !== Math.min(DRYING_SLOTS, count)) showDrying(block, count);
+    return false;
+  });
+  const left = savedRacks.length;
+  if (!left) savedRacks = undefined; // done; a later call looks again
+  return left;
+}
+
+/** Started with the other M3 systems (systems/m3.js). */
+export function startSavedDrying() {
+  const pass = () => {
+    if (showSavedDrying() === 0) system.clearRun(timer);
+  };
+  const timer = system.runInterval(pass, 600);
+  system.runTimeout(pass, 100);
 }
 
 export function isBlade(item) {
