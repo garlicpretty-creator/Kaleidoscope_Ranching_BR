@@ -383,11 +383,20 @@ def item_defs():
 R = []
 def it(i):
     return {"tag": i[4:]} if i.startswith("tag:") else {"item": i}
+def unlock(ingredients):
+    """1.20+ recipes need unlock data: shown once the player holds any ingredient (tags cannot unlock)."""
+    items = []
+    for ingredient in ingredients:
+        if "item" in ingredient and {"item": ingredient["item"]} not in items:
+            items.append({"item": ingredient["item"]})
+    return items or [{"context": "AlwaysUnlocked"}]
+
 def shaped(name, pattern, key, result, count=1, tag="crafting_table"):
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shaped": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "pattern": pattern,
         "key": {k: it(v) for k, v in key.items()},
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock([it(v) for v in key.values()])}}))
 def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
     ing = []
     for x in ingredients:
@@ -395,7 +404,8 @@ def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
         ing.append({**it(i if ":" in i else f"{NS}:{i}"), "count": n})
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shapeless": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "ingredients": ing,
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock(ing)}}))
 
 def recipes():
     P, I = "tag:minecraft:planks", "minecraft:iron_ingot"

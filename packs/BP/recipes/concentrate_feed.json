@@ -24,6 +24,17 @@
     "result": {
       "item": "kaleidoscope_ranching:concentrate_feed",
       "count": 4
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:mixed_feed"
+      },
+      {
+        "item": "minecraft:wheat"
+      },
+      {
+        "item": "minecraft:bone_meal"
+      }
+    ]
   }
 }

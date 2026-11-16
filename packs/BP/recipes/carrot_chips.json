@@ -20,6 +20,14 @@
     "result": {
       "item": "kaleidoscope_ranching:carrot_chips",
       "count": 2
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:carrot"
+      },
+      {
+        "item": "minecraft:sugar"
+      }
+    ]
   }
 }

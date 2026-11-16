@@ -16,6 +16,11 @@
     "result": {
       "item": "kaleidoscope_ranching:forage",
       "count": 12
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:hay_block"
+      }
+    ]
   }
 }

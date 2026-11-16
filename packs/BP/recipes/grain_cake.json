@@ -20,6 +20,14 @@
     "result": {
       "item": "kaleidoscope_ranching:grain_cake",
       "count": 2
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:wheat_seeds"
+      },
+      {
+        "item": "minecraft:wheat"
+      }
+    ]
   }
 }

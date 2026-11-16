@@ -11,6 +11,8 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, damageMainHand } from "../core/inventory.js";
 
 const SHEEP = rid("sheep");
+// Mirrors minecraft:color for the client (the render controller picks the wool texture from it).
+const WOOL_COLOR = rid("wool_color");
 const PIG = rid("pig");
 
 // Index = Bedrock colour value.
@@ -58,6 +60,15 @@ export function startVanillaParity() {
       entity.dimension.playSound("mob.sheep.shear", entity.location);
       damageMainHand(player);
     },
+  });
+
+  // Sheep saved before wool_color existed load with it at 0 (white); copy their real colour over.
+  world.afterEvents.entityLoad.subscribe(({ entity }) => {
+    try {
+      if (entity.typeId !== SHEEP) return;
+      const color = colorOf(entity) & 15;
+      if (entity.getProperty(WOOL_COLOR) !== color) entity.setProperty(WOOL_COLOR, color);
+    } catch {}
   });
 
   world.afterEvents.entityDie.subscribe(({ deadEntity }) => {

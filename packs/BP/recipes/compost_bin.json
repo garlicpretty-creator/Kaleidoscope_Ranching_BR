@@ -20,6 +20,11 @@
     "result": {
       "item": "kaleidoscope_ranching:compost_bin",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "context": "AlwaysUnlocked"
+      }
+    ]
   }
 }

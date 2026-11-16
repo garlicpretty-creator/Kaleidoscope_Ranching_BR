@@ -1185,6 +1185,16 @@ test("dye recolours a sheep and is used up", () => {
   __interact(player, sheep);
   equal(sheep.getComponent("minecraft:color").value, 5, "lime");
   equal(player.inventory.count("minecraft:lime_dye"), 0, "dye used");
+  equal(sheep.getProperty("kaleidoscope_ranching:wool_color"), 5, "the client sees lime through wool_color");
+});
+
+test("a sheep saved before wool_color existed gets its colour on load", () => {
+  clearWorld();
+  const sheep = ranch("sheep", 1);
+  sheep.triggerEvent("kaleidoscope_ranching:set_color_14");
+  sheep.setProperty("kaleidoscope_ranching:wool_color", 0); // as an old save loads it
+  world.afterEvents.entityLoad.fire({ entity: sheep });
+  equal(sheep.getProperty("kaleidoscope_ranching:wool_color"), 14, "red again");
 });
 
 // --- Hay rack ------------------------------------------------------------------

@@ -315,6 +315,24 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
 }
 
+// --- 4a. Things the game rejects at load time ---------------------------------
+
+// ## Content-log errors seen in game: 1.20+ crafting recipes without unlock data,
+// ## and render controllers using query.color, which they cannot resolve.
+for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json"))) {
+  const data = readJson(path);
+  for (const type of ["minecraft:recipe_shaped", "minecraft:recipe_shapeless"]) {
+    if (data[type] && !(Array.isArray(data[type].unlock) && data[type].unlock.length)) {
+      fail(`${relative(root, path)}: crafting recipe needs "unlock" (1.20+ recipes require unlock data)`);
+    }
+  }
+}
+for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
+  if (/\bq(uery)?\.color\b/.test(readFileSync(path, "utf8"))) {
+    fail(`${relative(root, path)}: render controllers cannot use query.color; mirror it into an entity property`);
+  }
+}
+
 // --- 4b. Every item has somewhere to go --------------------------------------
 
 // ## A player who gets an item must be able to do something with it: eat or
