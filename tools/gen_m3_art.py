@@ -33,6 +33,7 @@ NS = "kaleidoscope_ranching"
 SOUNDS = {
     "butcher_rack": "wood", "nest_box": "wood", "incubator": "glass", "butter_churn": "wood",
     "cheese_press": "wood", "aging_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
+    "hay_rack": "wood",
 }
 
 
@@ -97,7 +98,7 @@ def main():
     write_json(FRAGMENT / "terrain_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.terrain", "texture_data": terrain})
     write_json(FRAGMENT / "blocks.json", {"format_version": "1.21.40", **{f"{NS}:{k}": {"sound": v} for k, v in SOUNDS.items()}})
 
-    board = Image.new("RGB", (220 * 4, 260 * 2), (232, 238, 226))
+    board = Image.new("RGB", (220 * 4, 260 * ((len(previews) + 3) // 4)), (232, 238, 226))
     draw = ImageDraw.Draw(board)
     for index, (block_id, image) in enumerate(previews):
         x, y = (index % 4) * 220, (index // 4) * 260

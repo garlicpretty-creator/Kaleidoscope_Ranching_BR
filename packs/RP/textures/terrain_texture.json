@@ -108,6 +108,9 @@
     },
     "kr_pickling_vat": {
       "textures": "textures/blocks/ranching/pickling_vat"
+    },
+    "kr_hay_rack": {
+      "textures": "textures/blocks/ranching/hay_rack"
     }
   }
 }

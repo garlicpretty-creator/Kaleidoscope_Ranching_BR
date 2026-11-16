@@ -1,0 +1,297 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.hay_rack",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "rack",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -6
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                6,
+                0,
+                -6
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -8,
+                0,
+                4
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                6,
+                0,
+                4
+              ],
+              "size": [
+                2,
+                16,
+                2
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -6,
+                4,
+                -5
+              ],
+              "size": [
+                12,
+                1,
+                10
+              ],
+              "uv": [
+                0,
+                31
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                6,
+                -6
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                10,
+                -6
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -6,
+                14,
+                -6
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -6,
+                6,
+                5
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -6,
+                10,
+                5
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ],
+              "mirror": true
+            },
+            {
+              "origin": [
+                -6,
+                14,
+                5
+              ],
+              "size": [
+                12,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                42
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "hay_1",
+          "pivot": [
+            0,
+            8,
+            0
+          ],
+          "parent": "rack",
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                5,
+                -5
+              ],
+              "size": [
+                12,
+                3,
+                10
+              ],
+              "uv": [
+                0,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hay_2",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "parent": "rack",
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                8,
+                -5
+              ],
+              "size": [
+                12,
+                3,
+                10
+              ],
+              "uv": [
+                0,
+                18
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "hay_3",
+          "pivot": [
+            0,
+            16,
+            0
+          ],
+          "parent": "rack",
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                11,
+                -5
+              ],
+              "size": [
+                12,
+                4,
+                10
+              ],
+              "uv": [
+                8,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

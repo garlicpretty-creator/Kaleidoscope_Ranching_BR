@@ -63,6 +63,9 @@ const STATIC = {
     [`${NAMESPACE}.message.station.wrong_item`]: "This station cannot use that.",
     [`${NAMESPACE}.message.station.missing`]: "You are missing some ingredients.",
     [`${NAMESPACE}.message.station.working`]: "Still working: about %s more minute(s).",
+    [`${NAMESPACE}.message.hay_rack.status`]: "Hay rack: %s/%s units of hay.",
+    [`${NAMESPACE}.message.hay_rack.only_grass`]: "The hay rack only takes hay, wheat, forage and alfalfa.",
+    [`${NAMESPACE}.message.hay_rack.full`]: "The hay rack is full.",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[Kaleidoscope Ranching]§r Kaleidoscope Cookery did not respond. Check that Cookery 1.6.6 or newer is active and loaded above Ranching.",
   },
   zh_TW: {
@@ -90,6 +93,9 @@ const STATIC = {
     [`${NAMESPACE}.message.station.wrong_item`]: "這個設備用不到這樣東西。",
     [`${NAMESPACE}.message.station.missing`]: "材料不夠。",
     [`${NAMESPACE}.message.station.working`]: "還在加工，大約還要 %s 分鐘。",
+    [`${NAMESPACE}.message.hay_rack.status`]: "乾草架：乾草 %s/%s 份。",
+    [`${NAMESPACE}.message.hay_rack.only_grass`]: "乾草架只能放乾草、小麥、飼草和苜蓿。",
+    [`${NAMESPACE}.message.hay_rack.full`]: "乾草架滿了。",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[森羅物語：樂牧]§r 沒有收到《森羅物語：廚房》的回應。請確認已啟用 1.6.6 以上的廚房，且載入順序在樂牧之上。",
   },
   zh_CN: {
@@ -117,6 +123,9 @@ const STATIC = {
     [`${NAMESPACE}.message.station.wrong_item`]: "这个设备用不到这样东西。",
     [`${NAMESPACE}.message.station.missing`]: "材料不够。",
     [`${NAMESPACE}.message.station.working`]: "还在加工，大约还要 %s 分钟。",
+    [`${NAMESPACE}.message.hay_rack.status`]: "干草架：干草 %s/%s 份。",
+    [`${NAMESPACE}.message.hay_rack.only_grass`]: "干草架只能放干草、小麦、饲草和苜蓿。",
+    [`${NAMESPACE}.message.hay_rack.full`]: "干草架满了。",
     [`${NAMESPACE}.message.cookery_missing`]: "§e[森罗物语：乐牧]§r 没有收到《森罗物语：厨房》的回应。请确认已启用 1.6.6 以上的厨房，且加载顺序在乐牧之上。",
   },
 };

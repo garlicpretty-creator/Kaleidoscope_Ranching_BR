@@ -962,6 +962,83 @@ test("dye recolours a sheep and is used up", () => {
   equal(player.inventory.count("minecraft:lime_dye"), 0, "dye used");
 });
 
+// --- Hay rack ------------------------------------------------------------------
+
+const HAY_RACK = COMPONENTS["kaleidoscope_ranching:hay_rack"];
+const { getBlockData: blockData } = await import("../../packs/BP/scripts/core/blockStore.js");
+const hayUnits = (rack) => blockData(rack, {}).units ?? 0;
+
+test("a hay rack takes only grass feed and holds four hay bales", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = place("hay_rack", at(0), { hay: 0 });
+  hold(player, "minecraft:wheat_seeds", 1);
+  use(HAY_RACK, rack, player);
+  assert(player.actionBar.at(-1).translate.endsWith("hay_rack.only_grass"), "seeds refused");
+  hold(player, "minecraft:hay_block", 1);
+  use(HAY_RACK, rack, player);
+  equal(hayUnits(rack), 9, "one bale is nine units");
+  equal(state(rack, "hay"), 1, "low hay shown");
+  hold(player, "minecraft:hay_block", 5);
+  player.isSneaking = true;
+  use(HAY_RACK, rack, player);
+  player.isSneaking = false;
+  equal(hayUnits(rack), 36, "filled to four bales");
+  equal(player.inventory.count("minecraft:hay_block"), 2, "the rest stays in hand");
+  equal(state(rack, "hay"), 3, "full hay shown");
+  use(HAY_RACK, rack, player);
+  assert(player.actionBar.at(-1).translate.endsWith("hay_rack.full"), "told it is full");
+});
+
+test("the hay rack feeds grass eaters once a day at tier 1, not chickens", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = place("hay_rack", at(0), { hay: 0 });
+  hold(player, "minecraft:wheat", 3);
+  player.isSneaking = true;
+  use(HAY_RACK, rack, player);
+  player.isSneaking = false;
+  const cow = ranch("cow", 1, "female");
+  const hen = ranch("chicken", 2, "female");
+  runBlockClock();
+  equal(care.feedTierToday(cow), 1, "cow fed at tier 1");
+  assert(!care.isMarkedToday(hen, "fed"), "hen not fed hay");
+  equal(hayUnits(rack), 2, "one unit eaten");
+  runBlockClock();
+  equal(hayUnits(rack), 2, "nothing more the same day");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(hayUnits(rack), 1, "eats again the next day");
+});
+
+test("a trough in reach feeds first; the hay rack keeps its hay", () => {
+  clearWorld();
+  const rack = place("hay_rack", at(0), { hay: 0 });
+  const player = __newPlayer(at(0));
+  hold(player, "minecraft:hay_block", 1);
+  use(HAY_RACK, rack, player);
+  place("trough", at(3), { fill: 5, kind: 5 });
+  const cow = ranch("cow", 1, "female");
+  runBlockClock();
+  equal(care.feedTierToday(cow), 3, "concentrate from the trough");
+  equal(hayUnits(rack), 9, "hay untouched");
+});
+
+test("breaking a hay rack gives the hay back once, as bales and wheat", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = place("hay_rack", at(0), { hay: 0 });
+  hold(player, "minecraft:hay_block", 1);
+  use(HAY_RACK, rack, player);
+  hold(player, "minecraft:wheat", 4);
+  player.isSneaking = true;
+  use(HAY_RACK, rack, player);
+  player.isSneaking = false;
+  breakBlock(HAY_RACK, rack);
+  equal(dropsOf("minecraft:hay_block").reduce((n, d) => n + d.item.amount, 0), 1, "one bale");
+  equal(dropsOf("minecraft:wheat").reduce((n, d) => n + d.item.amount, 0), 4, "four wheat");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);
