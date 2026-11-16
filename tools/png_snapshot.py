@@ -12,6 +12,7 @@ rewrite hundreds of files with nothing changed. `npm run generate` runs
 `restore` puts the remembered bytes back wherever the pixels are unchanged.
 """
 
+import hashlib
 import io
 import shutil
 import sys
@@ -22,7 +23,8 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 FOLDERS = [ROOT / "packs", ROOT / "art", ROOT / "docs" / "art"]
-SNAPSHOT = Path(tempfile.gettempdir()) / "kaleidoscope_ranching_png_snapshot"
+# One snapshot per checkout: git worktrees generating at the same time must not share one.
+SNAPSHOT = Path(tempfile.gettempdir()) / f"kaleidoscope_ranching_png_snapshot_{hashlib.sha1(str(ROOT).encode()).hexdigest()[:10]}"
 
 
 def pngs():
