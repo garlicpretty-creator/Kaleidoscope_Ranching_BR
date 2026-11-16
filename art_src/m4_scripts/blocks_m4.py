@@ -26,8 +26,10 @@ HAY_RACK = [
         ("trough", [-6, 3, -4], [12, 2, 8], [8, 0]),
         ("rail", [-8, 12, -7], [16, 1, 1], [0, 16]),
         ("rail", [-8, 12, 6], [16, 1, 1], [0, 16]),
-        ("siderail", [-8, 12, -6], [1, 1, 12], [34, 16]),
-        ("siderail", [7, 12, -6], [1, 1, 12], [34, 16]),
+        # side rails span only the gap between the legs: running them into the legs left their
+        # faces a hair inside the legs' faces, which flickered up close in game
+        ("siderail", [-8, 12, -4], [1, 1, 8], [34, 16]),
+        ("siderail", [7, 12, -4], [1, 1, 8], [34, 16]),
         *[("slat", [x, 5, -6], [1, 7, 1], [0, 18]) for x in (-5, -2, 1, 4)],
         *[("slat", [x, 5, 5], [1, 7, 1], [0, 18]) for x in (-5, -2, 1, 4)],
     ]),
