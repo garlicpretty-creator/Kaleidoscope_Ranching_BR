@@ -1,6 +1,6 @@
 """Buffalo and yak: adult rig (a_*), sexed horns/udder/skirt, and a separate calf rig (b_*)."""
 import sys
-from boxuv import RP, BLUSH, Painter, cute_eyes, geo, write_geo
+from boxuv import RP, Painter, plain_eyes, geo, write_geo
 
 
 def mirror(origin, size):
@@ -197,7 +197,7 @@ def buffalo_adult(p, sex):
     p.paint("mhorn2", horn_fn((128, 118, 102), (104, 94, 82)))
     p.paint("mhorn3", horn_fn(None, None, tip=(74, 66, 58)))
     p.paint("leg", leg_fn(hide, (176, 172, 168), (30, 28, 30)))
-    cute_eyes(p, "skull", 3, inset=1, rim=(158, 154, 158))
+    plain_eyes(p, "skull", 3)
 
 
 def buffalo_calf(p):
@@ -208,7 +208,7 @@ def buffalo_calf(p):
     p.paint("b_muzzle", muzzle_fn((214, 168, 158), (232, 196, 186), (120, 80, 76)))
     p.paint("b_ear", ear_fn(coat, (226, 170, 166)))
     p.paint("b_leg", leg_fn(coat, (206, 196, 186), (64, 56, 52)))
-    cute_eyes(p, "b_head", 2, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_head", 2)
 
 
 def yak_adult(p, sex):
@@ -238,7 +238,7 @@ def yak_adult(p, sex):
     p.paint("mhorn2", flat(mix(cream, tip, 0.2)))
     p.paint("mhorn3", flat(tip))
     p.paint("leg", leg_fn(hair, None, (24, 20, 18)))
-    cute_eyes(p, "skull", 3, inset=1, rim=(170, 144, 122))
+    plain_eyes(p, "skull", 3)
 
 
 def yak_calf(p):
@@ -251,7 +251,7 @@ def yak_calf(p):
     p.paint("b_muzzle", muzzle_fn((222, 184, 166), (236, 206, 190), (110, 76, 64)))
     p.paint("b_ear", ear_fn(coat, (226, 172, 160)))
     p.paint("b_leg", leg_fn(mix(coat, (0, 0, 0), 0.15), None, (52, 42, 36)))
-    cute_eyes(p, "b_head", 2, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_head", 2)
 
 
 def stubby(bones, dy=3):
@@ -270,7 +270,7 @@ def stubby(bones, dy=3):
     return out
 
 
-BUFFALO, YAK = stubby(BUFFALO), stubby(YAK)
+# Vanilla-length legs (12): stubby() is no longer applied.
 
 SPECIES = {"buffalo": (BUFFALO, buffalo_adult, buffalo_calf), "yak": (YAK, yak_adult, yak_calf)}
 

@@ -1,6 +1,6 @@
 """Goose (white Chinese goose): shaped body, two-part neck, bill knob (bigger on the gander),
 feathered white plumage with grey flight feathers, and a fluffy gosling rig."""
-from boxuv import RP, BLUSH, Painter, cute_eyes, geo, write_geo
+from boxuv import RP, Painter, plain_eyes, geo, write_geo
 
 SID, TW, TH = "goose", 64, 64
 
@@ -82,7 +82,7 @@ def adult(p, sex):
     knob = (220, 112, 36) if sex == "male" else (232, 132, 44)
     p.paint("m_knob", flat(knob))
     p.paint("fa_knob", flat(knob))
-    cute_eyes(p, "head", 1, blush=BLUSH if sex == "female" else None)
+    plain_eyes(p, "head", 1)
 
     def wing_fn(f, i, j, w, h, fi):
         if f in ("east", "west"):
@@ -111,7 +111,7 @@ def baby(p):
     p.paint("b_torso", body_fn)
     p.paint("b_neck", flat(down))
     p.paint("b_head", lambda f, i, j, w, h, fi: mix(down, back, 0.6) if f == "top" else down)
-    cute_eyes(p, "b_head", 1, blush=BLUSH)
+    plain_eyes(p, "b_head", 1)
     p.paint("b_bill", flat((72, 68, 62)))
     p.paint("b_wing_l", flat(mix(down, back, 0.5)))
     p.paint("b_wing_r", flat(mix(down, back, 0.5)))

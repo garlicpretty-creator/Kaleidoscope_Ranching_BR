@@ -95,30 +95,21 @@ class Painter:
         self.img.save(path)
 
 
-def cute_eyes(p, cube, row, inset=1, blush=None, size=2, rim=None):
-    """Big eyes on both side faces: dark pupil, a white catch-light in the top front corner,
-    optionally a pale rim (so eyes read on dark coats) and a blush pixel under the eye."""
-    dark, shine = (26, 22, 26), (250, 250, 250)
-    for f in ("east", "west"):
-        x0, y0, w, h = p.face(cube, f)
-        # the front of the head sits at the high-x end of the east face and the low-x end of the west face
-        cols = [x0 + w - 1 - inset - i for i in range(size)] if f == "east" else [x0 + inset + i for i in range(size)]
-        if rim:
-            lo, hi = min(cols) - 1, max(cols) + 1
-            for c in range(max(x0, lo), min(x0 + w - 1, hi) + 1):
-                for r in range(max(0, row - 1), min(h - 1, row + size) + 1):
-                    p.px(c, y0 + r, rim)
-        for c in cols:
-            for r in range(size):
-                p.px(c, y0 + row + r, dark)
-        p.px(cols[0], y0 + row, shine)
-        if blush and row + size < h:
-            p.px(cols[0], y0 + row + size, blush)
-            if size > 1:
-                p.px(cols[1], y0 + row + size, blush)
+def plain_eyes(p, cube, row, color=(26, 22, 26)):
+    """Vanilla-style eyes: small square eyes on the front face at the outer corners. Wide faces
+    get a white pixel outside a dark one; narrow faces (5 or less) a single dark pixel."""
+    x0, y0, w, h = p.face(cube, "north")
+    row = min(row, h - 1)
+    for left in (True, False):
+        def col(k):
+            return x0 + k if left else x0 + w - 1 - k
+        if w >= 6:
+            p.px(col(0), y0 + row, (238, 236, 232))
+            p.px(col(1), y0 + row, color)
+        else:
+            p.px(col(0), y0 + row, color)
 
 
-BLUSH = (242, 150, 150)
 
 
 def write_geo(sid, data):

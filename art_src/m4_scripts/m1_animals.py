@@ -1,5 +1,5 @@
-"""Hand-built M1 animals (cow, sheep, goat, pig, chicken, rabbit) in the style of the M4 ones:
-stubby legs, big eyes with a catch-light, blush on the young, and a separate baby rig.
+"""Hand-built M1 animals (cow, sheep, goat, pig, chicken, rabbit), shaped and proportioned like
+vanilla's (plain square eyes on the face, vanilla leg lengths), with a separate baby rig.
 
 Bone prefixes (render controller rules, see tools/art/animals.py and tools/gen_art.py):
   a_ adults   b_ babies   m_ adult males   fa_ adult females
@@ -16,7 +16,7 @@ import json
 import sys
 from pathlib import Path
 
-from boxuv import BLUSH, Painter, cute_eyes, geo
+from boxuv import Painter, geo, plain_eyes
 from bovine import ear_fn, flat, hide_fn, horn_fn, leg_fn, mix, muzzle_fn
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -76,18 +76,6 @@ def autouv(bones):
                 new.append((cname, o, s, seen[key], *c[3:]))
         out.append((name, parent, pivot, new))
     return out
-
-
-def dot_eyes(p, cube, row, inset=1, size=1, color=(26, 22, 26), blush=None):
-    """Small solid eyes (no catch-light) for faces too small for cute_eyes."""
-    for f in ("east", "west"):
-        x0, y0, w, h = p.face(cube, f)
-        cols = [x0 + w - 1 - inset - k for k in range(size)] if f == "east" else [x0 + inset + k for k in range(size)]
-        for c in cols:
-            for r in range(size):
-                p.px(c, y0 + row + r, color)
-        if blush and row + size < h:
-            p.px(cols[0], y0 + row + size, blush)
 
 
 def spots(base, spot, seed, cell=3, rate=3):
@@ -171,7 +159,7 @@ def cow_paint(p, sex):
     p.paint("horn", flat((236, 224, 196)))
     p.paint("horntip", flat((176, 160, 128)))
     p.paint("leg", lambda f, i, j, w, h, fi: (46, 36, 30) if j >= h - 1 or f == "bottom" else (white if j >= h - 4 else coat))
-    cute_eyes(p, "skull", 3, inset=1, rim=(224, 214, 204))
+    plain_eyes(p, "skull", 3)
     # calf: light tan with white socks and a pink nose
     calf = (176, 124, 86)
     p.paint("b_torso", spots(calf, white, "calf", cell=3, rate=4))
@@ -180,7 +168,7 @@ def cow_paint(p, sex):
     p.paint("b_muzzle", muzzle_fn((242, 196, 186), (246, 214, 206), (150, 96, 92)))
     p.paint("b_ear", ear_fn(calf, (240, 180, 172)))
     p.paint("b_leg", leg_fn(calf, white, (90, 70, 60)))
-    cute_eyes(p, "b_skull", 2, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_skull", 2)
 
 
 # --- Sheep -------------------------------------------------------------------------
@@ -224,7 +212,7 @@ def sheep_paint(p, sex, wool):
     p.paint("horn", horn_fn((210, 196, 168), (178, 162, 134)))
     p.paint("horncurl", horn_fn((194, 180, 150), (166, 150, 122)))
     p.paint("leg", leg_fn(face, None, (64, 52, 44)))
-    cute_eyes(p, "face", 2, inset=1, rim=None)
+    plain_eyes(p, "face", 2)
     lamb = (246, 234, 220)
     p.paint("b_skin", flat(lamb))
     p.paint("b_wool", fluff(mix(wool, (255, 255, 255), 0.2), "lamb"))
@@ -234,7 +222,7 @@ def sheep_paint(p, sex, wool):
     p.paint("b_nose", muzzle_fn((240, 196, 192), lamb, (170, 120, 118)))
     p.paint("b_ear", ear_fn(lamb, (240, 186, 182)))
     p.paint("b_leg", leg_fn(lamb, None, (110, 92, 80)))
-    cute_eyes(p, "b_face", 1, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_face", 1)
 
 
 # --- Goat --------------------------------------------------------------------------
@@ -280,7 +268,7 @@ def goat_paint(p, sex):
     p.paint("mhorntip", flat((112, 100, 82)))
     p.paint("beard", flat(shade))
     p.paint("leg", leg_fn(coat, None, (70, 60, 50)))
-    cute_eyes(p, "skull", 2, inset=1)
+    plain_eyes(p, "skull", 2)
     kid = (246, 240, 230)
     p.paint("b_torso", flat(kid))
     p.paint("b_tail", flat(kid))
@@ -289,7 +277,7 @@ def goat_paint(p, sex):
     p.paint("b_ear", ear_fn(kid, (242, 194, 186)))
     p.paint("b_bud", flat((200, 188, 164)))
     p.paint("b_leg", leg_fn(kid, None, (120, 104, 92)))
-    cute_eyes(p, "b_skull", 1, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_skull", 1)
 
 
 # --- Pig ---------------------------------------------------------------------------
@@ -336,7 +324,7 @@ def pig_paint(p, sex):
     p.paint("ear", ear_fn(skin, dk))
     p.paint("tusk", flat((244, 236, 216)))
     p.paint("leg", leg_fn(skin, None, dk))
-    cute_eyes(p, "skull", 2, inset=1, blush=BLUSH if sex == "female" else None)
+    plain_eyes(p, "skull", 2)
     pig = (250, 200, 196)
     p.paint("b_torso", flat(pig))
     p.paint("b_tail", flat(mix(pig, (150, 80, 80), 0.2)))
@@ -344,7 +332,7 @@ def pig_paint(p, sex):
     p.paint("b_snout", muzzle_fn((246, 168, 166), pig, (176, 96, 98)))
     p.paint("b_ear", ear_fn(pig, (236, 150, 150)))
     p.paint("b_leg", leg_fn(pig, None, mix(pig, (150, 80, 80), 0.3)))
-    cute_eyes(p, "b_skull", 2, inset=1, blush=BLUSH)
+    plain_eyes(p, "b_skull", 2)
 
 
 # --- Chicken -----------------------------------------------------------------------
@@ -397,18 +385,14 @@ def chicken_paint(p, sex):
     p.paint("ftail", feathers(pal["tail"], pal["edge"], "t"))
     p.paint("mtail", lambda f, i, j, w, h, fi: (56, 118, 100) if (i + 2 * j) % 4 == 0 else pal["tail"])
     p.paint("mtailtip", lambda f, i, j, w, h, fi: (56, 118, 100) if (i + j) % 3 == 0 else (24, 46, 44))
-    cute_eyes(p, "hhead", 1, inset=1, size=2)
+    plain_eyes(p, "hhead", 1)
     chick, wing = (250, 222, 100), (238, 200, 78)
     p.paint("b_torso", flat(chick))
     p.paint("b_head", flat(chick))
     p.paint("b_beak", flat((240, 150, 60)))
     p.paint("b_wing", flat(wing))
     p.paint("b_leg", flat((238, 156, 60)))
-    dot_eyes(p, "b_head", 1, inset=0)
-    # blush under the chick's eye
-    for f in ("east", "west"):
-        x0, y0, w, h = p.face("b_head", f)
-        p.px(x0 + (w - 1 if f == "east" else 0), y0 + 1, BLUSH)
+    plain_eyes(p, "b_head", 1)
 
 
 # --- Rabbit ------------------------------------------------------------------------
@@ -457,10 +441,10 @@ def rabbit_paint(p, coat):
     p.paint("b_tail", flat((246, 244, 240)))
     rim = (170, 40, 52) if variant == "white" else None
     if rim:
-        dot_eyes(p, "hhead", 2, inset=1, size=1, color=rim)
+        plain_eyes(p, "hhead", 2, color=rim)
     else:
-        cute_eyes(p, "hhead", 1, inset=1, size=2)
-    dot_eyes(p, "b_head", 1, inset=1, blush=BLUSH)
+        plain_eyes(p, "hhead", 1)
+    plain_eyes(p, "b_head", 1)
 
 
 # --- Species table -------------------------------------------------------------------
@@ -468,6 +452,32 @@ def rabbit_paint(p, coat):
 def variants_standard(paint):
     return {v: (lambda p, v=v: paint(p, v)) for v in ("female", "male", "baby")}
 
+
+def lift(bones, dy):
+    """Vanilla leg length: adult legs grow by dy and every other adult part rises to match.
+    Baby bones (b_ and anything under them) stay as they are."""
+    parents = {b[0]: b[1] for b in bones}
+
+    def baby(name):
+        while name:
+            if name.startswith("b_"):
+                return True
+            name = parents[name]
+        return False
+    out = []
+    for name, parent, pivot, cubes in bones:
+        if name == "body" or baby(name):
+            out.append((name, parent, pivot, cubes))
+        elif name.startswith("a_leg_"):
+            out.append((name, parent, [pivot[0], pivot[1] + dy, pivot[2]],
+                        [(n, o, [s[0], s[1] + dy, s[2]], *rest) for n, o, s, *rest in cubes]))
+        else:
+            out.append((name, parent, [pivot[0], pivot[1] + dy, pivot[2]],
+                        [(n, [o[0], o[1] + dy, o[2]], s, *rest) for n, o, s, *rest in cubes] if cubes else cubes))
+    return out
+
+
+COW, SHEEP, GOAT, PIG = lift(COW, 3), lift(SHEEP, 3), lift(GOAT, 2), lift(PIG, 1)
 
 SPECIES = {
     "cow": (COW, variants_standard(cow_paint), {"scale_male": 1.15, "scale_female": 1.0}),

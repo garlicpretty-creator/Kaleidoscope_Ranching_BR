@@ -3,7 +3,7 @@
 Bones keep the pack's conventions: a_* adult only, b_* baby only, m_* adult male only;
 head / wing / leg bone names match the walk animation written by client.py.
 """
-from boxuv import RP, BLUSH, Painter, cute_eyes, geo, write_geo
+from boxuv import RP, Painter, plain_eyes, geo, write_geo
 
 SID, TW, TH = "duck", 64, 64
 
@@ -124,7 +124,7 @@ def adult(p, sex):
         p.paint("bill_up", lambda f, i, j, w, h, fi: (40, 40, 40) if (f == "top" and j == 0) else (226, 206, 88))
         p.paint("bill_lo", flat((206, 184, 74)))
         wing = (146, 140, 132)
-    cute_eyes(p, "head", 1, blush=BLUSH if sex == "female" else None)
+    plain_eyes(p, "head", 1)
 
     def wing_fn(f, i, j, w, h, fi):
         if f in ("east", "west"):
@@ -169,7 +169,7 @@ def baby(p):
             return mix(down, back, 0.5)
         return down
     p.paint("b_head", head_fn)
-    cute_eyes(p, "b_head", 1, blush=BLUSH)
+    plain_eyes(p, "b_head", 1)
     p.paint("b_bill", flat((84, 76, 66)))
     p.paint("b_wing_l", flat((226, 196, 92)))
     p.paint("b_wing_r", flat((226, 196, 92)))
