@@ -121,10 +121,11 @@ function blockJson(id, def) {
     // Explicit name key, as for the items (gen_items.mjs).
     "minecraft:display_name": `tile.${S(id)}.name`,
     "minecraft:material_instances": {
-      "*": { texture: `kr_${id}`, render_method: "alpha_test" },
+      // Single-sided: plain alpha_test also draws back faces, which flickered against touching faces.
+      "*": { texture: `kr_${id}`, render_method: "alpha_test_single_sided" },
       // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).
       ...Object.fromEntries(
-        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test" }])
+        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test_single_sided" }])
       ),
     },
     "minecraft:collision_box": def.collision,

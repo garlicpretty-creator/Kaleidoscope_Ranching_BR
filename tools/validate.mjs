@@ -5,7 +5,7 @@
 //
 // Run with: node tools/validate.mjs
 
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -330,6 +330,40 @@ for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json")))
 for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
   if (/\bq(uery)?\.color\b/.test(readFileSync(path, "utf8"))) {
     fail(`${relative(root, path)}: render controllers cannot use query.color; mirror it into an entity property`);
+  }
+}
+
+// ## Block models: a square texture whose size matches the model (non-square ones drew
+// ## parts in the wrong colours or not at all), and single-sided rendering (plain
+// ## alpha_test also draws back faces, which flickered). Crossed-plane plants may use alpha_test.
+{
+  const pngSize = (path) => {
+    const b = readFileSync(path);
+    return [b.readUInt32BE(16), b.readUInt32BE(20)];
+  };
+  for (const path of walk(join(rp, "models", "blocks")).filter((p) => p.endsWith(".geo.json"))) {
+    const geo = readJson(path)["minecraft:geometry"][0];
+    const { texture_width: w, texture_height: h } = geo.description;
+    if (w !== h) fail(`${relative(root, path)}: texture ${w}x${h} is not square (run tools/square_block_textures.py)`);
+    const id = geo.description.identifier.split(".").pop();
+    const png = join(rp, "textures", "blocks", "ranching", `${id}.png`);
+    if (existsSync(png)) {
+      const [pw, ph] = pngSize(png);
+      if (pw !== ph || pw % w) fail(`${relative(root, png)}: ${pw}x${ph} does not match its model's ${w}x${h}`);
+    }
+  }
+  for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
+    const block = readJson(path)["minecraft:block"];
+    const all = [block.components, ...(block.permutations ?? []).map((p) => p.components)];
+    const geometry = block.components["minecraft:geometry"];
+    const crossed = (typeof geometry === "string" ? geometry : geometry?.identifier ?? "").endsWith(".cross");
+    for (const components of all) {
+      for (const [name, material] of Object.entries(components["minecraft:material_instances"] ?? {})) {
+        if (material.render_method === "alpha_test" && !crossed) {
+          fail(`${relative(root, path)}: material "${name}" uses alpha_test; use alpha_test_single_sided`);
+        }
+      }
+    }
   }
 }
 

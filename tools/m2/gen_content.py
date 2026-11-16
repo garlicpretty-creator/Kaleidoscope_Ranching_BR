@@ -170,10 +170,15 @@ GEOMETRY = {
 # --------------------------------------------------------------------------
 # Block definitions
 # --------------------------------------------------------------------------
+# Model blocks render single-sided: plain alpha_test draws back faces too, so the
+# faces inside a model and faces that touch fought each other and flickered.
+# (The alfalfa crop keeps alpha_test: its crossed planes are seen from both sides.)
+SOLID = "alpha_test_single_sided"
+
 def mats(default, **named):
-    m = {"*": {"texture": default, "render_method": "alpha_test"}}
+    m = {"*": {"texture": default, "render_method": SOLID}}
     for k, v in named.items():
-        m[k] = {"texture": v, "render_method": "alpha_test"}
+        m[k] = {"texture": v, "render_method": SOLID}
     return m
 
 def box(x, y, z, w, h, d):

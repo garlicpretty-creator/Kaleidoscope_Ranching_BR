@@ -37,7 +37,7 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_cheese_wheel",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

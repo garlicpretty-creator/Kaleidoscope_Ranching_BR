@@ -15,7 +15,7 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_auto_feeder",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:light_dampening": 0,

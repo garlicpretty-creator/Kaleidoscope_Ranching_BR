@@ -15,6 +15,7 @@ const STEPS = [
   ["py", "tools/art/rd_icons.py", "apply"],
   ["py", "tools/art/carcass_icons.py"],
   ["py", "tools/fix_zfight.py"],
+  ["py", "tools/square_block_textures.py"],
   ["py", "tools/gen_pbr.py"],
 ];
 

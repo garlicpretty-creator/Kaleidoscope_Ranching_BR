@@ -37,7 +37,7 @@
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_compost_bin",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:light_dampening": 0,
