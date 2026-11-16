@@ -20,6 +20,21 @@
           "type": "bool",
           "default": false,
           "client_sync": true
+        },
+        "kaleidoscope_ranching:gear_harness": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
+        },
+        "kaleidoscope_ranching:gear_plough": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
+        },
+        "kaleidoscope_ranching:gear_blanket": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
         }
       }
     },

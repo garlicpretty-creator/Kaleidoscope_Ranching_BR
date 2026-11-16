@@ -9,10 +9,12 @@
       "textures": {
         "female": "textures/entity/ranching/goat/female",
         "male": "textures/entity/ranching/goat/male",
-        "baby": "textures/entity/ranching/goat/baby"
+        "baby": "textures/entity/ranching/goat/baby",
+        "gear": "textures/entity/ranching/gear/goat"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.goat"
+        "default": "geometry.kaleidoscope_ranching.goat",
+        "gear": "geometry.kaleidoscope_ranching.goat.gear"
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.goat.walk",
@@ -32,7 +34,10 @@
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.goat"
+        "controller.render.kaleidoscope_ranching.goat",
+        {
+          "controller.render.kaleidoscope_ranching.goat.gear": "q.property('kaleidoscope_ranching:gear_blanket')"
+        }
       ],
       "spawn_egg": {
         "base_color": "#ECE6DA",

@@ -28,6 +28,8 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, dropItems, give } from "../core/inventory.js";
 import { BLANKET, wakeNear } from "./sleep.js";
 import { animalByType } from "../core/content.js";
+import { showGear, startGear } from "../core/gear.js";
+import { GEAR } from "../data/gear.js";
 
 /** The buffalo, or an animal another add-on registered with `harness: true`. */
 const takesHarness = (entity) => entity.typeId === BUFFALO || animalByType(entity.typeId)?.harness === true;
@@ -52,7 +54,7 @@ const RALLY = dp("rally");
 const PLOUGH_LIST = "kaleidoscope_ranching:ploughing_buffalo";
 
 const BUFFALO = rid("buffalo");
-const BLANKETED = ["cow", "sheep", "goat", "pig", "buffalo"].map(rid);
+const BLANKETED = GEAR.find((gear) => gear.id === "blanket").animals.map(rid);
 const TILLABLE = ["minecraft:grass_block", "minecraft:dirt", "minecraft:grass_path", "minecraft:dirt_path"];
 const GATE = rid("pen_gate");
 const GATE_TOP = rid("pen_gate_top");
@@ -88,6 +90,7 @@ export function harness(player, buffalo) {
   if (buffalo.getDynamicProperty(HARNESSED)) return tell(player, "harness.already");
   if (getAffection(buffalo) < HARNESS_HEARTS) return tell(player, "harness.shy", [`${HARNESS_HEARTS}`]);
   buffalo.setDynamicProperty(HARNESSED, true);
+  showGear(buffalo, "harness", true);
   consumeMainHand(player);
   buffalo.dimension.playSound("mob.horse.armor", buffalo.location);
   tell(player, "harness.on");
@@ -98,11 +101,13 @@ export function hitchPlough(player, buffalo) {
   const ids = ploughingIds();
   if (buffalo.getDynamicProperty(PLOUGHING)) {
     buffalo.setDynamicProperty(PLOUGHING, undefined);
+    showGear(buffalo, "plough", false);
     savePloughing(ids.filter((id) => id !== buffalo.id));
     give(player, rid("plough"));
     return tell(player, "plough.off");
   }
   buffalo.setDynamicProperty(PLOUGHING, true);
+  showGear(buffalo, "plough", true);
   savePloughing([...ids.filter((id) => id !== buffalo.id), buffalo.id]);
   consumeMainHand(player);
   tell(player, "plough.on");
@@ -111,6 +116,7 @@ export function hitchPlough(player, buffalo) {
 function unharness(player, buffalo) {
   if (buffalo.getDynamicProperty(PLOUGHING)) hitchPlough(player, buffalo);
   buffalo.setDynamicProperty(HARNESSED, undefined);
+  showGear(buffalo, "harness", false);
   give(player, rid("harness"));
   tell(player, "harness.off");
 }
@@ -155,6 +161,7 @@ function ploughAll() {
 export function putBlanket(player, animal) {
   if (animal.getDynamicProperty(BLANKET)) return tell(player, "blanket.already");
   animal.setDynamicProperty(BLANKET, true);
+  showGear(animal, "blanket", true);
   consumeMainHand(player);
   tell(player, "blanket.on");
 }
@@ -363,6 +370,7 @@ export function startWorkAnimals() {
   });
   registerEntityInteraction({ id: "m10:blanket", priority: 40, match: (c) => held("animal_blanket")(c) && BLANKETED.includes(c.entity.typeId), handle: ({ player, entity }) => putBlanket(player, entity) });
   registerEntityInteraction({ id: "m10:sheepdog", priority: 40, match: (c) => held("herding_horn")(c) && c.entity.typeId === "minecraft:wolf", handle: ({ player, entity }) => makeSheepdog(player, entity) });
+  startGear();
   system.runInterval(ploughAll, PLOUGH_INTERVAL);
   system.runInterval(herdAll, HERD_INTERVAL);
   system.runInterval(tendGates, GATE_INTERVAL);

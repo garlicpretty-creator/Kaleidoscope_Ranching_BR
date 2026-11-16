@@ -13,6 +13,7 @@
 
 import { ItemStack, system } from "@minecraft/server";
 import { isBaby, isRanchAnimal, sexOf } from "../core/animal.js";
+import { syncGear } from "../core/gear.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { mainHand } from "../core/inventory.js";
 import { rid, shortId } from "../core/ids.js";
@@ -97,6 +98,7 @@ export function release(dimension, location, data) {
       entity.setDynamicProperty(key, value);
     } catch {}
   }
+  syncGear(entity);
   adoptPregnancy(data.id, entity);
   try {
     updateRoster(entity);

@@ -349,7 +349,8 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
       const gearBones = new Map(geo.bones.map((bone) => [bone.name, bone]));
       for (const bone of geo.bones) {
         if (bone.name.startsWith("gear_")) {
-          if (!gearBones.has(bone.parent)) fail(`${where}: bone ${bone.name} hangs on missing bone "${bone.parent}"`);
+          // A gear bone with no parent stands on the ground by itself (the plough).
+          if (bone.parent && !gearBones.has(bone.parent)) fail(`${where}: bone ${bone.name} hangs on missing bone "${bone.parent}"`);
           continue;
         }
         const own = baseBones.get(bone.name);

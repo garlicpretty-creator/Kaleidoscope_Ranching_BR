@@ -12,6 +12,9 @@ const STEPS = [
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
   ["node", "tools/gen_sleep.mjs"],
+  // 1.1 美術: gear layered on the animals (fitted to the models as they are now), worn items.
+  ["py", "art_src/m4_scripts/gear.py"],
+  ["py", "art_src/m4_scripts/wearables.py"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
   ["node", "tools/gen_catalog.mjs"],

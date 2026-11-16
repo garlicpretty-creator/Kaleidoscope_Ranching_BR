@@ -1,0 +1,24 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.yak.gear": {
+      "geometry": "Geometry.gear",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.gear"
+      ],
+      "part_visibility": [
+        {
+          "*": true
+        },
+        {
+          "gear_pack_bag": "q.property('kaleidoscope_ranching:gear_pack_bag') && !q.is_baby"
+        }
+      ]
+    }
+  }
+}

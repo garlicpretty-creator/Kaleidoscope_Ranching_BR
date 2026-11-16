@@ -103,6 +103,8 @@ RULES = [
     (r"^items/.*/(forage|alfalfa\w*|mixed_feed|concentrate_feed|\w+_cake|carrot_chips|beet_sugar_cube)$", "plant"),
     (r"^items/", "food"),
     # Animals
+    (r"^entity/ranching/wearables/leather_apron$", "skin"),
+    (r"^entity/ranching/(wearables|gear)/", "cloth"),
     (r"^entity/ranching/(chicken|duck|goose)/", "feather"),
     (r"^entity/ranching/pig/", "skin"),
     (r"^entity/ranching/", "fur"),

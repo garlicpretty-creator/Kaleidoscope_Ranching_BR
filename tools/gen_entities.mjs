@@ -10,6 +10,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/animals.js")).href);
 
+const { gearOf, gearProperty } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/gear.js")).href);
+
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
 const WOOL_COLOR = `${NS}:wool_color`; // sheep only; see the set_color_N events
@@ -403,6 +405,8 @@ function buildEntity(animal, t) {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
           ...(t.wool ? { [WOOL_COLOR]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
           [SLEEPING]: { type: "bool", default: false, client_sync: true },
+          // Gear the animal wears, drawn by the resource pack (data/gear.js, core/gear.js).
+          ...Object.fromEntries(gearOf(animal.id).map((gear) => [gearProperty(gear.id), { type: "bool", default: false, client_sync: true }])),
         },
       },
       component_groups: groups,

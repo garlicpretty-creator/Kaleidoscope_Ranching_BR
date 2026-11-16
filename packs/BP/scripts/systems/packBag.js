@@ -21,6 +21,7 @@ import { ItemStack, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { isBaby } from "../core/animal.js";
 import { animalByType } from "../core/content.js";
+import { showGear } from "../core/gear.js";
 import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, give, giveStack, mainHand } from "../core/inventory.js";
@@ -59,6 +60,7 @@ export function putOnPackBag(player, animal) {
   }
   if (!bagOf(animal)) return tell(player, "cannot");
   animal.setDynamicProperty(PACKED, true);
+  showGear(animal, "pack_bag", true);
   consumeMainHand(player);
   animal.dimension.playSound("mob.horse.armor", animal.location);
   tell(player, "on");
@@ -109,6 +111,7 @@ export function takeOffPackBag(player, animal) {
     animal.triggerEvent(TAKE_OFF);
   } catch {}
   animal.setDynamicProperty(PACKED, undefined);
+  showGear(animal, "pack_bag", false);
   give(player, PACK_BAG);
   tell(player, "off");
   return true;

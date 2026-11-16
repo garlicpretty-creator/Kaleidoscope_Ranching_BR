@@ -54,10 +54,12 @@
         "baby_brown": "textures/entity/ranching/sheep/baby_brown",
         "baby_green": "textures/entity/ranching/sheep/baby_green",
         "baby_red": "textures/entity/ranching/sheep/baby_red",
-        "baby_black": "textures/entity/ranching/sheep/baby_black"
+        "baby_black": "textures/entity/ranching/sheep/baby_black",
+        "gear": "textures/entity/ranching/gear/sheep"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.sheep"
+        "default": "geometry.kaleidoscope_ranching.sheep",
+        "gear": "geometry.kaleidoscope_ranching.sheep.gear"
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.sheep.walk",
@@ -77,7 +79,10 @@
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.sheep"
+        "controller.render.kaleidoscope_ranching.sheep",
+        {
+          "controller.render.kaleidoscope_ranching.sheep.gear": "q.property('kaleidoscope_ranching:gear_blanket')"
+        }
       ],
       "spawn_egg": {
         "base_color": "#E9ECEC",
