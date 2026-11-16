@@ -939,6 +939,41 @@ for (const item of ITEMS) {
   }
 }
 
+// --- Guidebook chapter (data/guidebook.js) ----------------------------------------
+// Every animal, item and creative block is explained in Cookery's guidebook, since the
+// add-on shows no hint text on screen. A block may be skipped only with a reason, and
+// only if players cannot pick it from the creative inventory (it is a placed form).
+
+{
+  const { TRADITIONAL_HINTS } = await load("zh_cn.js");
+  const { guideEntries, GUIDE_SKIP } = await load("guidebook.js");
+  let entries = [];
+  try {
+    entries = guideEntries();
+  } catch (error) {
+    fail(`data/guidebook.js: ${error.message}`);
+  }
+  const listed = new Set(entries.map((entry) => entry.id));
+  for (const animal of ANIMALS) if (!listed.has(animal.id)) fail(`data/guidebook.js: no entry for the ${animal.id}`);
+  for (const item of ITEMS) if (!listed.has(item.id)) fail(`data/guidebook.js: no entry for item "${item.id}"`);
+  const creative = (id) => {
+    for (const name of [`r_${id}.json`, `${id}.json`]) {
+      const path = join(bp, "blocks", name);
+      if (existsSync(path)) return (readJson(path)["minecraft:block"].description.menu_category?.category ?? "none") !== "none";
+    }
+    return false;
+  };
+  for (const block of BLOCKS) {
+    if (listed.has(block.id)) continue;
+    if (!GUIDE_SKIP[block.id]) fail(`data/guidebook.js: block "${block.id}" needs an entry, or a reason in GUIDE_SKIP`);
+    else if (creative(block.id)) fail(`data/guidebook.js: "${block.id}" is in the creative inventory, so it needs an entry rather than GUIDE_SKIP`);
+  }
+  for (const entry of entries) {
+    const left = [...new Set(entry.lines.zh_CN.join("").split("").filter((ch) => TRADITIONAL_HINTS.includes(ch)))];
+    if (left.length) fail(`data/guidebook.js: zh_CN lines of "${entry.id}" still have Traditional characters: ${left.join("")}; add them to data/zh_cn.js`);
+  }
+}
+
 if (errors.length) {
   console.error(`validate: ${errors.length} problem(s)`);
   for (const message of errors) console.error("  - " + message);

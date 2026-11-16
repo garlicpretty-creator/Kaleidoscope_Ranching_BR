@@ -1718,6 +1718,200 @@ test("the guidebook chapter arrives in chunks under 2048 characters and parses b
   equal(system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:guidebook_begin").length, 0, "sent once per session");
 });
 
+// --- Guidebook chapter: coverage, text and Cookery's limits --------------------------
+// Limits mirror Cookery 1.6.6's scripts/api/guidebookExtensionRegistry.js (normalizeExtension).
+
+const { guidebookPayload, guidebookMessages } = await import("../../packs/BP/scripts/api/cookeryRecipes.js");
+const { ITEMS: GB_ITEMS } = await import("../../packs/BP/scripts/data/items.js");
+const { BLOCKS: GB_BLOCKS } = await import("../../packs/BP/scripts/data/blocks.js");
+const { ANIMALS: GB_ANIMALS } = await import("../../packs/BP/scripts/data/animals.js");
+const { CATALOG_GROUPS } = await import("../../packs/BP/scripts/data/catalog.js");
+const { GUIDE_SKIP } = await import("../../packs/BP/scripts/data/guidebook.js");
+const GB = guidebookPayload();
+const GB_LOCALES = ["en_US", "zh_TW", "zh_CN"];
+const GB_ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
+const GB_TOKEN = /^[a-z0-9_.-]+$/;
+const gbEntry = new Map(GB.entries.map((e) => [e.id, e]));
+const gbNs = (id) => `kaleidoscope_ranching:${id}`;
+const gbTop = (id) => GB.categories.find((c) => c.id === id)?.parent || id;
+
+test("guidebook: the chapter's categories are the animals, the creative groups and the dishes", () => {
+  const top = GB.categories.filter((c) => !c.parent).map((c) => c.id);
+  equal(top.join(","), ["animals", ...CATALOG_GROUPS.map((g) => g.id), "dishes"].join(","), "top-level categories in creative order");
+  assert(GB.categories.length <= 32, "Cookery keeps at most 32 categories");
+  const ids = new Set(GB.categories.map((c) => c.id));
+  equal(ids.size, GB.categories.length, "category ids are unique");
+  const has = (id) => GB.entries.some((e) => e.categories.includes(id)) || GB.categories.some((k) => k.parent === id && has(k.id));
+  for (const c of GB.categories) {
+    assert(GB_TOKEN.test(c.id), `${c.id}: a plain token`);
+    if (c.parent) assert(ids.has(c.parent) && !GB.categories.find((p) => p.id === c.parent).parent, `${c.id}: parent ${c.parent} is a top-level category`);
+    assert(has(c.id), `${c.id} is not empty`);
+    for (const locale of GB_LOCALES) assert(GB.text[locale][c.labelKey], `${locale} label for ${c.id}`);
+  }
+  // The page body Cookery shows for a category with sub-categories (showExtensionCategory).
+  for (const locale of GB_LOCALES) assert(GB.text[locale].food_groups_body, `${locale} body for a category with sub-categories`);
+});
+
+test("guidebook: every animal, item and creative block has an entry, or a reason it has none", () => {
+  for (const animal of GB_ANIMALS) assert(gbEntry.has(gbNs(animal.id)), `${animal.id} has an entry`);
+  for (const item of GB_ITEMS) assert(gbEntry.has(gbNs(item.id)), `${item.id} has an entry`);
+  for (const block of GB_BLOCKS) {
+    if (gbEntry.has(gbNs(block.id))) continue;
+    assert(typeof GUIDE_SKIP[block.id] === "string" && GUIDE_SKIP[block.id].length > 10, `${block.id}: an entry or a reason in GUIDE_SKIP`);
+  }
+  for (const id of Object.keys(GUIDE_SKIP)) {
+    assert(GB_BLOCKS.some((b) => b.id === id), `${id}: GUIDE_SKIP lists a block`);
+    assert(!gbEntry.has(gbNs(id)), `${id} is skipped and listed at once`);
+  }
+});
+
+test("guidebook: entries sit under the chapter of their creative group", () => {
+  const groupOf = new Map();
+  for (const group of CATALOG_GROUPS) for (const category of group.from) groupOf.set(category, group.id);
+  for (const item of GB_ITEMS) {
+    const want = ["dish", "prep"].includes(item.category) ? "dishes" : groupOf.get(item.category);
+    equal(gbTop(gbEntry.get(gbNs(item.id)).category), want, `${item.id}: chapter`);
+  }
+  for (const block of GB_BLOCKS) {
+    const entry = gbEntry.get(gbNs(block.id));
+    if (!entry || GB_ITEMS.some((i) => i.id === block.id)) continue;
+    equal(gbTop(entry.category), "facilities", `${block.id}: chapter`);
+    assert(entry.kinds.includes("block"), `${block.id}: shown as placeable`);
+  }
+  for (const animal of GB_ANIMALS) equal(gbEntry.get(gbNs(animal.id)).category, "animals", `${animal.id}: chapter`);
+});
+
+test("guidebook: every entry has one to four lines (animals up to seven) in English, Traditional and Simplified Chinese", () => {
+  for (const entry of GB.entries) {
+    const most = entry.category === "animals" ? 7 : 4; // Cookery shows at most 8
+    for (const locale of GB_LOCALES) {
+      const lines = entry.mechanicsByLocale[locale];
+      assert(Array.isArray(lines) && lines.length >= 1 && lines.length <= most, `${entry.id}: 1-${most} ${locale} lines`);
+      for (const line of lines) {
+        assert(typeof line === "string" && line.trim() && line.length <= 512, `${entry.id}: ${locale} line within 512 characters`);
+        assert(!/kaleidoscope_|minecraft:|undefined|NaN/.test(line), `${entry.id}: ${locale} line names things, not ids: ${line}`);
+      }
+    }
+    equal(JSON.stringify(entry.mechanics), JSON.stringify(entry.mechanicsByLocale.en_US), `${entry.id}: English is the fallback for other languages`);
+    equal(entry.mechanicsByLocale.zh_TW.length, entry.mechanicsByLocale.en_US.length, `${entry.id}: as many lines in both languages`);
+  }
+});
+
+test("guidebook: the payload stays inside what Cookery's registry accepts", () => {
+  assert(GB.entries.length <= 1024, "at most 1024 entries");
+  equal(new Set(GB.entries.map((e) => e.id)).size, GB.entries.length, "entry ids are unique");
+  for (const entry of GB.entries) {
+    assert(GB_ID.test(entry.id), `${entry.id}: namespaced`);
+    assert(entry.categories.length >= 1 && entry.categories.length <= 8 && entry.categories[0] === entry.category, `${entry.id}: 1-8 categories, its own first`);
+    for (const c of entry.categories) assert(GB.categories.some((k) => k.id === c), `${entry.id}: category ${c} exists`);
+    assert(/^[a-zA-Z0-9_./-]+$/.test(entry.icon), `${entry.id}: icon path`);
+    assert((entry.recipes ?? []).length <= 24, `${entry.id}: at most 24 recipes`);
+    for (const recipe of entry.recipes ?? []) {
+      assert(recipe.method.length <= 64 && recipe.ingredients.length >= 1 && recipe.ingredients.length <= 12, `${entry.id}: recipe shape`);
+      for (const id of recipe.ingredients) assert(GB_ID.test(id), `${entry.id}: ingredient ${id} namespaced`);
+    }
+    if (entry.stack !== undefined) assert(entry.stack >= 1 && entry.stack <= 99, `${entry.id}: stack`);
+    for (const kind of entry.kinds) assert(kind === "item" || kind === "block", `${entry.id}: kind ${kind}`);
+  }
+  for (const locale of GB_LOCALES) {
+    for (const entry of GB.entries) assert(GB.names[locale][entry.id], `${locale} name for ${entry.id}`);
+    // Cookery names its own and vanilla ingredients; Ranching's must come with the chapter.
+    for (const entry of GB.entries) for (const recipe of entry.recipes ?? []) for (const id of recipe.ingredients) {
+      if (id.startsWith("kaleidoscope_ranching:")) assert(GB.names[locale][id], `${locale} name for ingredient ${id}`);
+    }
+    for (const [key, value] of Object.entries(GB.text[locale])) {
+      assert(GB_TOKEN.test(key), `${locale} text key ${key}`);
+      assert(value.length <= 4096, `${locale}.${key} within 4096 characters`);
+    }
+    for (const value of Object.values(GB.names[locale])) assert(value.length <= 4096, "name length");
+  }
+  for (const key of [GB.titleKey, GB.introKey, GB.allKey, GB.selectKey, GB.backKey]) assert(GB.text.en_US[key], `text for ${key}`);
+});
+
+test("guidebook: icons point at textures that exist", () => {
+  const exists = (path) => {
+    try {
+      readFileSync(new URL(`../../packs/RP/${path}.png`, import.meta.url));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  for (const entry of GB.entries) assert(exists(entry.icon), `${entry.id}: ${entry.icon}.png`);
+  for (const category of GB.categories) assert(exists(category.icon), `${category.id}: ${category.icon}.png`);
+  assert(exists(GB.icon), "chapter icon");
+});
+
+test("guidebook: the chapter goes out in chunks Cookery reassembles", () => {
+  const messages = guidebookMessages(GB);
+  const begin = JSON.parse(messages[0][1]);
+  assert(begin.chunks >= 1 && begin.chunks <= 512, `1-512 chunks, got ${begin.chunks}`);
+  equal(begin.chunks, messages.length - 2, "chunk count");
+  assert(GB_TOKEN.test(begin.revision), "revision is a plain token");
+  assert(messages.every(([, message]) => message.length <= 2048), "every message within 2048 characters");
+  const json = messages.slice(1, -1).map(([, m]) => m.split("\n").slice(4).join("\n")).join("");
+  equal(json, JSON.stringify(GB), "chunks join back to the payload");
+});
+
+test("guidebook: the revision changes whenever the chapter does", () => {
+  const revision = (payload) => JSON.parse(guidebookMessages(payload)[0][1]).revision;
+  const changed = structuredClone(GB);
+  changed.entries[0].mechanicsByLocale.zh_TW = ["改過的一行"];
+  assert(revision(GB) !== revision(changed), "a changed line gives a new revision");
+  equal(revision(GB), revision(guidebookPayload()), "the same chapter keeps its revision");
+  assert(revision(GB) !== "m5r1", "not the 1.0 revision");
+});
+
+test("guidebook: rules the action bar used to explain are written in the entries", () => {
+  const says = (id, locale, ...words) => {
+    const text = (gbEntry.get(gbNs(id))?.mechanicsByLocale[locale] ?? []).join(" ");
+    for (const word of words) assert(text.includes(word), `${id} (${locale}) mentions "${word}": ${text}`);
+  };
+  says("milking_pail", "zh_TW", "成年母", "每天", "空玻璃瓶"); // milking.not_female / milked_today / need_bottle
+  says("milking_pail", "en_US", "adult female", "once a day", "empty glass bottle");
+  says("nursing_bottle", "zh_TW", "幼體", "3 次"); // nursing.need_milk / grew
+  says("hay_rack", "zh_TW", "只放乾草類", "36"); // hay_rack.only_grass / full
+  says("hay_rack", "en_US", "only");
+  says("harness", "zh_TW", "3 心", "成年水牛"); // harness.shy / harness.baby
+  says("plough", "zh_TW", "挽具"); // plough.need_harness
+  says("butcher_rack", "zh_TW", "菜刀", "劍", "斧", "4 件", "3 天"); // rack.need_blade / drying_full / drying_hung
+  says("butcher_rack", "en_US", "kitchen knife", "sword", "axe");
+  says("nest_box", "zh_TW", "4 顆"); // nest.full
+  says("incubator", "zh_TW", "熱源", "4 顆"); // incubator.cold / full
+  says("milking_rack", "zh_TW", "成年", "上方", "下方"); // milking_rack.tied / not_milkable / occupied
+  says("water_trough", "zh_TW", "水桶"); // wash.no_water
+  says("food_waste_bin", "zh_TW", "32"); // food_waste_bin.full
+  says("animal_crate", "zh_TW", "牽", "騎", "馱袋"); // crate.leashed / ridden / bag_not_empty
+  says("pack_bag", "zh_TW", "成年氂牛", "清空"); // pack_bag.baby / not_empty / full
+  says("hitching_post", "zh_TW", "牽"); // hitching_post.empty
+  says("cowbell", "zh_TW", "3 心"); // cowbell.nobody
+  says("herding_horn", "zh_TW", "拴畜樁", "馴服"); // horn.no_rally / sheepdog.not_yours / no_dog
+  says("vet_medicine", "zh_TW", "生病"); // medicine.not_sick
+  says("lasso", "zh_TW", "8 格"); // lasso.missed
+  says("butter_churn", "zh_TW", "手持", "材料"); // station.empty / missing / wrong_item
+  says("cow", "zh_TW", "一公一母", "照顧"); // breed.same_sex / not_cared
+  says("cow", "zh_TW", "休息"); // breed.resting
+  says("trough", "zh_TW", "一類"); // trough.other_kind
+  says("compost_bin", "zh_TW", "4", "小麥"); // compost.filling
+  // The candling lamp shows the embryos in the eggs, no text (its other branch).
+  says("egg_candler", "zh_TW", "胚胎");
+  says("egg_candler", "en_US", "embryo");
+  // Animals: what they like and what a keeper must know.
+  for (const animal of GB_ANIMALS) {
+    says(animal.id, "zh_TW", "最愛", "好感度", "睡覺");
+    says(animal.id, "en_US", "favourite treat", "Affection", "sleeps");
+  }
+});
+
+test("guidebook: dishes use Cookery's station names, so their recipes show translated and timed", () => {
+  for (const entry of GB.entries.filter((e) => gbTop(e.category) === "dishes")) {
+    for (const recipe of entry.recipes ?? []) assert(["Stockpot", "Wok", "Steamer", "Crafting Table"].includes(recipe.method), `${entry.id}: method ${recipe.method}`);
+  }
+  const stew = gbEntry.get(gbNs("cream_stew"));
+  assert(stew.mechanicsByLocale.zh_TW.join(" ").includes("生雞肉"), "the stew's other meats are named");
+  assert(gbEntry.get(gbNs("braised_brisket")).kinds.includes("block"), "a stew that can be set down shows as placeable");
+});
+
 test("whey from the cheese press fills a trough as mixed feed that pigs eat", () => {
   clearWorld();
   const player = __newPlayer(at(0));
