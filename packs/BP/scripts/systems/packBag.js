@@ -66,6 +66,15 @@ export function putOnPackBag(player, animal) {
   tell(player, "on");
 }
 
+/** Gives an animal let out of a crate (systems/crate.js) its bag's storage back. A crate only
+ *  takes an animal whose bag is empty, so there is nothing to put back in it. */
+export function resumePackBag(animal) {
+  if (!wearsPackBag(animal) || bagOf(animal)) return;
+  try {
+    animal.triggerEvent(PUT_ON);
+  } catch {}
+}
+
 /** Puts the player's whole main-hand stack into the bag; what does not fit stays in hand. */
 export function storeHeld(player, animal) {
   const slot = mainHand(player);

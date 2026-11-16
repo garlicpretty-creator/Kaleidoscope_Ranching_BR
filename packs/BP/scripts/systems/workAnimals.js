@@ -113,6 +113,14 @@ export function hitchPlough(player, buffalo) {
   tell(player, "plough.on");
 }
 
+/** An animal let out of a crate (systems/crate.js) is a new entity: put it back on the
+ *  ploughing list in place of the one that went into the crate. */
+export function resumePloughing(animal, oldId) {
+  const ids = ploughingIds().filter((id) => id !== oldId && id !== animal.id);
+  if (animal.getDynamicProperty(PLOUGHING) === true) ids.push(animal.id);
+  savePloughing(ids);
+}
+
 function unharness(player, buffalo) {
   if (buffalo.getDynamicProperty(PLOUGHING)) hitchPlough(player, buffalo);
   buffalo.setDynamicProperty(HARNESSED, undefined);

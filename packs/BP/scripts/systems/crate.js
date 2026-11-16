@@ -20,6 +20,8 @@ import { rid, shortId } from "../core/ids.js";
 import { ANIMAL_NAMES } from "../data/items.js";
 import { updateRoster } from "../ui/roster.js";
 import { adoptPregnancy } from "./breeding.js";
+import { bagContents, resumePackBag, wearsPackBag } from "./packBag.js";
+import { resumePloughing } from "./workAnimals.js";
 import { showActionBar } from "../core/actionBar.js";
 
 export const CRATE = rid("animal_crate");
@@ -42,6 +44,8 @@ const snapshotOf = (item) => {
 function busy(entity) {
   if (entity.getComponent("minecraft:leashable")?.isLeashed) return "leashed";
   if (entity.getComponent("minecraft:rideable")?.getRiders?.().length) return "ridden";
+  // The bag's things live in the animal's own inventory, which a crate cannot carry.
+  if (wearsPackBag(entity) && bagContents(entity).length) return "bag_not_empty";
   return null;
 }
 
@@ -98,6 +102,8 @@ export function release(dimension, location, data) {
       entity.setDynamicProperty(key, value);
     } catch {}
   }
+  resumePackBag(entity);
+  resumePloughing(entity, data.id);
   syncGear(entity);
   adoptPregnancy(data.id, entity);
   try {

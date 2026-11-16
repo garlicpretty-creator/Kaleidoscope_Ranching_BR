@@ -121,6 +121,7 @@ kaleidoscope_ranching.message.crate.leashed=先解开拴绳才能装笼。
 kaleidoscope_ranching.message.crate.ridden=有人正骑着它。
 kaleidoscope_ranching.message.crate.no_room=这里没有空间放出来。
 kaleidoscope_ranching.message.crate.missing=加入 %s 的附加包没有加载。
+kaleidoscope_ranching.message.crate.bag_not_empty=先把驮袋清空才能装笼。
 kaleidoscope_ranching.message.hitching_post.tied=把 %s 只动物拴在桩上。
 kaleidoscope_ranching.message.hitching_post.untied=从桩上牵回 %s 只动物。
 kaleidoscope_ranching.message.hitching_post.empty=牵着动物来点击，就能拴在桩上。

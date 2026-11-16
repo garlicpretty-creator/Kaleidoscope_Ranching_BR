@@ -9,6 +9,8 @@ const STEPS = [
   ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
   ["py", "tools/m2/gen_content.py"],
+  // 1.1 掛架風乾: the drying pieces on the hand-made rack, before gen_m3_art installs it.
+  ["py", "art_src/m4_scripts/rack_drying.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
   ["node", "tools/gen_sleep.mjs"],

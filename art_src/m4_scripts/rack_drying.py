@@ -9,9 +9,10 @@ the block cannot hold a kind per slot (see gen_blocks.mjs).
 
 The pieces hang in two rows, in front of and behind the gambrel, so they stay clear of it.
 
-Run after editing, then `npm run generate` installs the rack. Running it again changes
-nothing: the dry_ bones and their rows of the texture are replaced, the rest is left as is.
-    python art_src/m4_scripts/rack_drying.py
+A step of `npm run generate`, run before tools/gen_m3_art.py installs the rack, so the
+pieces come back whenever art_src/m4_scripts/butcher_rack.py rewrites art/blocks/butcher_rack.*.
+It adds the bones and paints their rows when they are missing or differ, and touches nothing
+when they are already in place. It stops if the rows it paints are taken by something else.
 """
 import json
 from pathlib import Path
@@ -90,8 +91,10 @@ def main():
     texture = Image.open(TEXTURE).convert("RGBA")
     if texture.crop((0, 0, tw, ROW)).getbbox() is None or texture.size != (tw, th):
         raise SystemExit("rack_drying: unexpected rack texture")
-    texture.paste(painter.img.crop((0, ROW, tw, th)), (0, ROW))
-    texture.save(TEXTURE)
+    ours = painter.img.crop((0, ROW, tw, used))
+    there = texture.crop((0, ROW, tw, used))
+    if there.getbbox() is not None and there.tobytes() != ours.tobytes():
+        raise SystemExit(f"rack_drying: rows {ROW}..{used} of the rack texture are taken by something else")
 
     def face_uvs(uv, size):
         out = {}
@@ -100,12 +103,17 @@ def main():
             out[name] = {"uv": [x, y + h], "uv_size": [w, -h]} if f == "bottom" else {"uv": [x, y], "uv_size": [w, h]}
         return out
 
-    geo["bones"] = [b for b in geo["bones"] if not b["name"].startswith("dry_")]
-    for name, parent, pivot, cubes in bones:
-        geo["bones"].append({"name": name, "parent": parent, "pivot": pivot,
-                             "cubes": [{"origin": o, "size": s, "uv": face_uvs(uv, s)} for _, o, s, uv in cubes]})
+    dry = [{"name": name, "parent": parent, "pivot": pivot,
+            "cubes": [{"origin": o, "size": s, "uv": face_uvs(uv, s)} for _, o, s, uv in cubes]}
+           for name, parent, pivot, cubes in bones]
+    if [b for b in geo["bones"] if b["name"].startswith("dry_")] == dry and there.tobytes() == ours.tobytes():
+        print("rack_drying: already in place")
+        return
+    texture.paste(ours, (0, ROW))
+    texture.save(TEXTURE)
+    geo["bones"] = [b for b in geo["bones"] if not b["name"].startswith("dry_")] + dry
     GEO.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf8", newline="\n")
-    print("rack_drying:", len(bones), "pieces")
+    print("rack_drying:", len(bones), "pieces added")
 
 
 if __name__ == "__main__":
