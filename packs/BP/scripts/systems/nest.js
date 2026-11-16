@@ -31,6 +31,7 @@ import { dp, rid } from "../core/ids.js";
 import { consumeMainHand, dropItems, give, mainHand, stacksOf } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const NEST_RADIUS = 8;
 export const MALE_RADIUS = 8;
@@ -61,7 +62,7 @@ const HEAT = new Set([
 
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
 }
 
 function center(block) {

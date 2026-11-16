@@ -10,13 +10,14 @@ import { ItemStack } from "@minecraft/server";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid } from "../core/ids.js";
 import { consumeMainHand, give, mainHand } from "../core/inventory.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const CAPACITY = 32;
 export const STATE_FILL = rid("fill");
 export const FOOD_WASTE = rid("food_waste");
 
 function tell(player, key, values = []) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.food_waste_bin.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.food_waste_bin.${key}`, with: values });
 }
 
 /** Whether an item can go in the bin: anything edible except the scraps themselves. */

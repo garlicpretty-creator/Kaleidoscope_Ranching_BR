@@ -12,12 +12,13 @@ import { system, world } from "@minecraft/server";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { isRanchAnimal } from "../core/animal.js";
 import { rid } from "../core/ids.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const KNOT = rid("hitch_knot");
 const GATHER_RADIUS = 12;
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.hitching_post.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.hitching_post.${key}`, with: values });
 }
 
 const knotSpot = (location) => ({ x: location.x + 0.5, y: location.y + 0.9, z: location.z + 0.5 });

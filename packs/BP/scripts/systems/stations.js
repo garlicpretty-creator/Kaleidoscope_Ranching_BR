@@ -16,6 +16,7 @@ import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js
 import { rid, shortId } from "../core/ids.js";
 import { countItems, dropItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { nowTick } from "../core/time.js";
+import { showActionBar } from "../core/actionBar.js";
 
 // ## The duration is stored with the running batch. A recipe another add-on
 // ## registered is unknown again after a world reload until that add-on
@@ -31,7 +32,7 @@ const tierOf = (typeId) => (typeId.endsWith("_superb") ? 2 : typeId.endsWith("_f
 const isTiered = (ids) => ids.some((id) => id.endsWith("_fine"));
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.station.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.station.${key}`, with: values });
 }
 
 function setBusy(block, busy) {

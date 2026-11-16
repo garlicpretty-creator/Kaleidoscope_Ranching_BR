@@ -10,6 +10,7 @@ import { rid } from "../core/ids.js";
 import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
+import { showActionBar } from "../core/actionBar.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
@@ -39,7 +40,7 @@ function lookOf(carcass) {
 }
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.rack.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.rack.${key}` });
 }
 
 export function isBlade(item) {

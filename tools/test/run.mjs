@@ -786,7 +786,7 @@ test("the cheese press takes three milk, works half a day, and yields by the low
   equal(press.permutation.getState("kaleidoscope_ranching:busy"), true, "working");
   equal(player.inventory.count("kaleidoscope_ranching:cow_milk_superb"), 0, "milk taken");
   use(STATION, press, player);
-  assert(player.actionBar.at(-1).translate.endsWith("station.working"), "still working");
+  assert(!player.actionBar.some((m) => m?.translate?.endsWith("station.working")), "no progress read-out (core/actionBar.js)");
   __skipTime(12000);
   use(STATION, press, player);
   equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 2, "superb milk doubles the cheese");

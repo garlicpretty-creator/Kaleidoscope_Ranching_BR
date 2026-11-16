@@ -18,6 +18,7 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { damageMainHand, give, takeItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
+import { showActionBar } from "../core/actionBar.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
@@ -35,7 +36,7 @@ const MILK_FOR_FEEDING = ITEMS.filter((item) => item.category === "milk")
   .map(rid);
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
 }
 
 function milkTiers(species) {

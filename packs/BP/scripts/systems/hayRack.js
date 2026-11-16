@@ -22,6 +22,7 @@ import { consumeMainHand, mainHand } from "../core/inventory.js";
 import { rid } from "../core/ids.js";
 import { today } from "../core/time.js";
 import { animalsNear, countBlocksNear } from "../utils/world_util.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const HAY_RACK = rid("hay_rack");
 /** Feed units a hay rack holds: four hay bales. */
@@ -31,7 +32,7 @@ const HAY_BALE = "minecraft:hay_block";
 const HAY_BALE_UNITS = 9;
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.hay_rack.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.hay_rack.${key}`, with: values });
 }
 
 const unitsOf = (block) => getBlockData(block, { units: 0 }).units ?? 0;
