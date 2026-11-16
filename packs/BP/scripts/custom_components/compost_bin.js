@@ -4,7 +4,7 @@
 import { CARE } from "../data/care_config.js";
 import { MANURE_ITEM } from "./manure.js";
 import {
-  getState, setStates, mainhand, consumeMainhand, give, absTime, blockGet, blockSet, blockClear, actionbar,
+  getState, setStates, mainhand, consumeMainhand, give, absTime, blockGet, blockSet, blockClear, actionbar, dropAt, center,
 } from "../utils/world_util.js";
 import { T } from "../ui/text.js";
 
@@ -52,7 +52,12 @@ export const compostBinComponent = {
   onPlayerInteract({ block, player }) {
     if (player) interact(block, player);
   },
-  onPlayerBreak({ block }) {
+  onPlayerBreak({ block, brokenBlockPermutation }) {
     blockClear(block, "start");
+    // Whatever was put in comes back out: the manure, or the fertilizer it became.
+    const stage = brokenBlockPermutation?.getState("kaleidoscope_ranching:stage") ?? FILLING;
+    const manure = brokenBlockPermutation?.getState("kaleidoscope_ranching:manure") ?? 0;
+    if (stage === FILLING) dropAt(block.dimension, center(block), MANURE_ITEM, manure);
+    else dropAt(block.dimension, center(block), stage === READY ? FERTILIZER : MANURE_ITEM, stage === READY ? CARE.COMPOST_OUTPUT : CARE.COMPOST_MANURE);
   },
 };

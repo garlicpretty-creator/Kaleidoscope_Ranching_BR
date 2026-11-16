@@ -10,10 +10,12 @@
 2. 樂牧會回 `kaleidoscope_ranching:api_ready`：
 
 ```json
-{ "api": 1, "version": "0.5.0", "capabilities": ["register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result"] }
+{ "api": 1, "version": "0.5.0", "capabilities": ["register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result", "query_animal", "care_events"] }
 ```
 
 樂牧在世界載入約 1 秒後也會主動送一次 `api_ready`，所以只監聽不 ping 也收得到。收到 `api_ready` 之後再送出註冊，送之前先確認 `capabilities` 裡有你要用的項目。
+
+`query_animal`（查詢動物）與 `care_events`（`mated`、`cared` 兩種事件）是 v1 後來加入的能力，較舊的樂牧沒有，使用前請先檢查。
 
 ## 規則
 
@@ -53,9 +55,9 @@
 | --- | --- | --- |
 | `id` | 是 | 實體識別碼 |
 | `reproduction` | 是 | `"gestation"`（懷孕生產）或 `"egg"`（生蛋孵化） |
-| `days` | 否 | 懷孕或孵化天數，預設 3 或 2 |
+| `days` | 否 | 懷孕或孵化天數（1–30），預設 3 或 2；在配種或放入受精蛋的當下決定 |
 | `breedItems` | 懷孕型必要 | 餵這些物品會進入發情 |
-| `carcass` | 否 | 死亡時掉落的屠體物品；沒有的話死亡不掉落 |
+| `carcass` | 否 | 死亡時掉落的屠體物品；沒有的話死亡不掉落任何東西 |
 | `largeCarcass` | 否 | `true` 時屠體會記住公母、公的多切一份；屠體物品必須 `max_stack_size: 1` |
 | `dailyProduct` | 否 | `via` 為 `"milking_pail"`（只限懷孕型）或 `"nest_box"`（只限生蛋型）；`items` 依序是普通、優良、極品三個物品 |
 | `fertilizedEgg` | 生蛋型必要 | 受精蛋物品，在巢箱或孵化器孵出這種動物 |
@@ -129,8 +131,49 @@
 | `hatched` | 蛋孵化（巢箱或孵化器） | `animal`、`entity`、`mother`（孵化器沒有） |
 | `harvested` | 擠奶、從巢箱取蛋、巢箱把蛋送進漏斗 | `product`（`milk` 或 `egg`）、`items`（`{物品: 數量}`）；擠奶另有 `animal`、`entity` |
 | `butchered` | 一具屠體切完 | `carcass` |
+| `mated` | 母畜受孕（需要 `care_events`） | `animal`、`mother`、`father` |
+| `cared` | 玩家照顧了動物（需要 `care_events`） | `animal`、`entity`、`player`（玩家的實體 id）、`kind` |
+
+`cared` 的 `kind` 是 `pet`（撫摸）、`brush`（毛刷）、`treat`（零食）、`ear_tag`（耳標）或 `nursing_bottle`（奶瓶）。撫摸與毛刷每隻動物每天只在第一次生效時送出。
+
+## query_animal（需要 `query_animal` 能力）
+
+查詢一隻樂牧動物目前的狀態，內建動物和註冊進來的動物都可以查。送出：
+
+```json
+{ "entity": "-4294967295", "ref": "my_pack:quest_12" }
+```
+
+`entity` 是實體 id（腳本的 `entity.id`）。`ref` 可省略，最長 64 字元，會原樣放回答覆裡，方便你對上是哪一次查詢。樂牧會回一則 `kaleidoscope_ranching:animal_info`：
+
+```json
+{
+  "entity": "-4294967295", "ref": "my_pack:quest_12", "found": true,
+  "animal": "kaleidoscope_ranching:cow", "sex": "female", "baby": false,
+  "hearts": 3,
+  "needs": { "fed": true, "water": true, "groom": false, "clean": true, "all": false },
+  "pregnant": true, "dueInDays": 2,
+  "earTag": 7, "name": "小花"
+}
+```
+
+- 找不到實體、實體所在區塊沒載入，或它不是樂牧的動物時，只會有 `entity`、`ref` 和 `"found": false`。
+- `hearts` 是 0–5 的好感度；`needs` 是今天四項需求是否已滿足（關閉清潔需求時 `clean` 一律為 `true`）。
+- `dueInDays` 只在懷孕時出現；`earTag`、`name` 只在有耳標、有名字時出現。
+- 答覆和 `api_result` 一樣是廣播，請用 `ref` 或 `entity` 認出自己的那一則。
+- 查詢會順便替那隻動物做一次每日結算，和玩家用記事本查看時相同。
 
 ## 標籤契約（不需要腳本）
 
 - 物品標籤 `kaleidoscope_ranching:milk`、`kaleidoscope_ranching:fertilized_egg`、`kaleidoscope_ranching:feed`、`kaleidoscope_ranching:brush`：讓別的附加包認得這是奶、受精蛋、飼料或毛刷。擠奶和孵化實際用到哪些物品，以 `register_animal` 註冊的內容為準。
 - 實體族群 `ranching_livestock`、`ranching_male`、`ranching_female`：可以用來篩選樂牧的動物，也是你的動物被樂牧認得的方式。
+
+## 伺服器設定指令
+
+這不是給附加包用的註冊介面，而是管理員可以在聊天欄或指令方塊下的指令：
+
+```
+/scriptevent kaleidoscope_ranching:config clean_need off
+```
+
+關閉（`off`）或開啟（`on`）「清潔」這項每日需求。管理員也可以在牧場記事本的名冊畫面裡切換。

@@ -17,6 +17,9 @@ export function onRanchEvent(listener) {
  *   "hatched"    a bird hatched             { animal, entity, mother? }
  *   "harvested"  milk or eggs were taken    { animal?, entity?, product, items: { itemId: count } }
  *   "butchered"  a carcass was fully cut    { carcass }
+ *   "mated"      a female became pregnant   { animal, mother, father }
+ *   "cared"      a player cared for it      { animal, entity, player, kind }
+ *                kind: "pet" | "brush" | "treat" | "ear_tag" | "nursing_bottle"
  */
 export function emitRanchEvent(type, data) {
   for (const listener of listeners) {

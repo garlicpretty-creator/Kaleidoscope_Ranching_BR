@@ -90,6 +90,8 @@ export class ItemStack {
     this.dynamic = new Map();
     const max = DURABLE.get(this.typeId);
     this.durability = max ? { damage: 0, maxDurability: max, getDamageChance: () => 100 } : undefined;
+    // Like the game: an amount above the stack size is clamped, not an error.
+    this.amount = Math.min(amount, this.maxAmount);
   }
   get maxAmount() {
     return MAX_STACK.get(this.typeId) ?? (this.durability ? 1 : 64);

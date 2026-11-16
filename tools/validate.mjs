@@ -342,6 +342,43 @@ if (exists(example)) {
   for (const id of new Set(used)) if (!defined.has(id)) fail(`examples/api-example uses ${id} but no item or entity file defines it`);
 }
 
+// --- Vibrant Visuals materials ---------------------------------------------
+
+{
+  // ## Texture sets only take effect when the manifest declares `pbr`, and a
+  // ## set whose colour layer is missing makes the game drop the texture.
+  const { materialFor, MATERIALS } = await import(pathToFileURL(join(root, "tools", "gen_pbr.mjs")).href);
+  const textureRoot = join(rp, "textures");
+  const textureFiles = walk(textureRoot);
+  const pngs = new Set(textureFiles.filter((path) => path.endsWith(".png")));
+  const sets = textureFiles.filter((path) => path.endsWith(".texture_set.json"));
+  const manifest = JSON.parse(readFileSync(join(rp, "manifest.json"), "utf8"));
+  if (!manifest.capabilities?.includes("pbr")) fail("RP manifest does not declare the pbr capability");
+  for (const path of sets) {
+    const where = relative(root, path);
+    const set = JSON.parse(readFileSync(path, "utf8"))["minecraft:texture_set"];
+    const png = path.replace(/\.texture_set\.json$/, ".png");
+    if (!pngs.has(png)) fail(`${where}: no colour texture next to it`);
+    if (set?.color !== png.split(/[\\/]/).at(-1).replace(/\.png$/, "")) fail(`${where}: color must name the texture beside it`);
+    const mer = set?.metalness_emissive_roughness;
+    if (!Array.isArray(mer) || mer.length !== 3 || mer.some((v) => !Number.isInteger(v) || v < 0 || v > 255)) {
+      fail(`${where}: metalness_emissive_roughness must be three integers 0–255`);
+    }
+  }
+  // The generated files must match tools/gen_pbr.mjs (run `npm run generate`).
+  for (const png of pngs) {
+    const key = relative(textureRoot, png).replace(/\\/g, "/").replace(/\.png$/, "");
+    const material = materialFor(key);
+    const path = png.replace(/\.png$/, ".texture_set.json");
+    const has = sets.includes(path);
+    if (Boolean(material) !== has) fail(`${relative(root, path)}: ${material ? "missing" : "not produced by tools/gen_pbr.mjs"}`);
+    else if (has) {
+      const mer = JSON.parse(readFileSync(path, "utf8"))["minecraft:texture_set"]?.metalness_emissive_roughness;
+      if (String(mer) !== String(MATERIALS[material])) fail(`${relative(root, path)}: out of date, run npm run generate`);
+    }
+  }
+}
+
 // --- Report ---------------------------------------------------------------
 
 // --- RetroDiffusion icon prompts (tools/art/rd_icons.py) -----------------------

@@ -12,6 +12,7 @@ import { showAnimal, showRoster } from "../ui/notebook.js";
 import { nextTagNumber, updateRoster, removeFromRoster } from "../ui/roster.js";
 import { T } from "../ui/text.js";
 import { registerEntityInteraction } from "../core/interact.js";
+import { notifyCared } from "../core/husbandry.js";
 
 const BRUSH = "kaleidoscope_ranching:brush";
 const NOTEBOOK = "kaleidoscope_ranching:ranch_notebook";
@@ -32,6 +33,7 @@ function hearts(e) {
 function pet(player, e) {
   if (mark(e, "groom")) {
     hearts(e);
+    notifyCared(e, player, "pet");
     actionbar(player, T("care.petted"));
   } else actionbar(player, T("care.already_groomed"));
 }
@@ -42,6 +44,7 @@ function brush(player, e) {
   e.dimension.playSound("mob.sheep.shear", e.location, { volume: 0.4, pitch: 1.6 });
   if (first) {
     hearts(e);
+    notifyCared(e, player, "brush");
     for (const [item, chance] of SPECIES[e.typeId].brushDrops ?? []) {
       if (Math.random() < chance) dropAt(e.dimension, e.location, item, 1);
     }
@@ -57,6 +60,7 @@ function treat(player, e, itemId) {
   addAffection(e, CARE.TREAT_GAIN);
   consumeMainhand(player, 1);
   hearts(e);
+  notifyCared(e, player, "treat");
   e.dimension.playSound("random.eat", e.location);
 }
 
@@ -71,6 +75,7 @@ function earTag(player, e) {
   ensureSettled(e);
   updateRoster(e);
   consumeMainhand(player, 1);
+  notifyCared(e, player, "ear_tag");
   actionbar(player, T("care.ear_tagged", [`${String(n).padStart(3, "0")}`]));
 }
 
@@ -117,7 +122,7 @@ export function registerCareInteractions() {
 
   // Hurt lowers affection (rate-limited).
   world.afterEvents.entityHurt.subscribe(({ hurtEntity: e }) => {
-    if (!SPECIES[e.typeId] || !e.isValid) return;
+    if (!e?.isValid || !SPECIES[e.typeId]) return;
     const now = system.currentTick;
     const last = e.getDynamicProperty("kr:hurt_t") ?? -Infinity;
     if (now - last < CARE.HURT_COOLDOWN_TICKS && now >= last) return;

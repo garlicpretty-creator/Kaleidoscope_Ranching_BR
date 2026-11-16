@@ -75,8 +75,10 @@ function canMateNow(entity, now) {
 }
 
 function conceive(mother, father, now) {
-  mother.setDynamicProperty(PREGNANT_DUE, now + GESTATION_DAYS * TICKS_PER_DAY);
-  mother.setDynamicProperty(PREGNANT_UNTIL_DAY, Math.floor((now + GESTATION_DAYS * TICKS_PER_DAY) / TICKS_PER_DAY));
+  // ## The species row decides the length, so a registered animal's `days` counts.
+  const due = now + (speciesOf(mother)?.days ?? GESTATION_DAYS) * TICKS_PER_DAY;
+  mother.setDynamicProperty(PREGNANT_DUE, due);
+  mother.setDynamicProperty(PREGNANT_UNTIL_DAY, Math.floor(due / TICKS_PER_DAY));
   mother.setDynamicProperty(MATE_AFFECTION, getAffection(father));
   for (const parent of [mother, father]) {
     parent.setDynamicProperty(LOVE_UNTIL, undefined);

@@ -50,7 +50,7 @@ export function animalByFertilizedEgg(itemId) {
 
 /** Animal row whose carcass is a given item (full id), or undefined. */
 export function animalByCarcass(itemId) {
-  return allAnimals().find((animal) => rid(animal.carcass) === itemId);
+  return allAnimals().find((animal) => animal.carcass && rid(animal.carcass) === itemId);
 }
 
 // --- butchering ------------------------------------------------------------------

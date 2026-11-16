@@ -955,6 +955,150 @@ test("M5: built-in and foreign-namespace registrations are refused; bad input ge
   equal(LIVE_FEEDS["kr_test:oats"].units, 3, "and updates it");
 });
 
+test("M5: a registered animal without a carcass dies quietly, and its own gestation days count", () => {
+  const result = call("register_animal", { id: "kr_test:llama", reproduction: "gestation", days: 5, breedItems: ["minecraft:wheat"] });
+  equal(result.ok, true, `registered (${result.error})`);
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const female = outsider("kr_test:llama", 1, "female");
+  const male = outsider("kr_test:llama", 2, "male");
+  careFor(female);
+  careFor(male);
+  hold(player, "minecraft:wheat", 2);
+  system.__scriptEvents.length = 0;
+  __interact(player, female);
+  __interact(player, male);
+  const due = female.getDynamicProperty(`${API}:pregnant_due`);
+  assert(due > 0, "pregnant");
+  equal(Math.round((due - world.getAbsoluteTime()) / DAY), 5, "five days, not the default three");
+  assert(sent("animal_event").some((e) => e.type === "mated" && e.mother === female.id && e.father === male.id), "mated broadcast");
+  male.kill();
+  equal(overworld.items.length, 0, "no carcass, no drop");
+  // The rack still recognises carcasses listed after the carcass-less animal.
+  const quail = outsider("kr_test:quail", 3, "female");
+  quail.kill();
+  const rack = rackAt();
+  player.inventory.setItem(player.selectedSlotIndex, overworld.items.pop().item);
+  use(RACK, rack, player);
+  equal(rack.permutation.getState(`${API}:carcass`), "none", "a carcass without cuts is not hung");
+  hold(player, "kr_example:alpaca_carcass");
+  use(RACK, rack, player);
+  equal(rack.permutation.getState(`${API}:carcass`), "sheep", "an alpaca carcass still hangs");
+});
+
+test("M5: a registered egg hatches after its own incubation days", () => {
+  const result = call("register_animal", {
+    id: "kr_test:emu", reproduction: "egg", days: 4, fertilizedEgg: "kr_test:fertilized_emu_egg",
+  });
+  equal(result.ok, true, `registered (${result.error})`);
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const incubator = __place(overworld, { x: 20, y: 64, z: 0 }, `${API}:incubator`, { [`${API}:eggs`]: 0, [`${API}:busy`]: false });
+  __place(overworld, { x: 20, y: 63, z: 0 }, "minecraft:campfire");
+  hold(player, "kr_test:fertilized_emu_egg");
+  use(INCUBATOR, incubator, player);
+  __skipTime(DAY * 3);
+  runBlockClock();
+  equal(overworld.getEntities({ type: "kr_test:emu" }).length, 0, "not yet after three days");
+  __skipTime(DAY + 10);
+  runBlockClock();
+  equal(overworld.getEntities({ type: "kr_test:emu" }).length, 1, "hatched after four");
+});
+
+const blockStore = await import("../../packs/BP/scripts/core/blockStore.js");
+test("M5: a running batch of a registered recipe keeps its duration when the recipe is unknown", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const jar = stationAt("fermenting_jar");
+  player.inventory.setItem(0, new ItemStack("kr_example:alpaca_milk", 1));
+  use(STATION, jar, player);
+  // After a world reload the block data survives but the registration does not.
+  blockStore.setBlockData(jar, { ...blockStore.getBlockData(jar), recipe: "kr_gone:recipe" });
+  use(STATION, jar, player);
+  equal(player.inventory.count("kr_example:alpaca_yogurt"), 0, "not handed out early");
+  __skipTime(DAY);
+  use(STATION, jar, player);
+  equal(player.inventory.count("kr_example:alpaca_yogurt"), 1, "collected when the time is up");
+});
+
+test("M5: query_animal answers with sex, hearts, needs and pregnancy", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  const bull = ranch("cow", 2, "male");
+  careFor(cow);
+  careFor(bull);
+  care.setAffection(cow, 60);
+  hold(player, "minecraft:wheat", 2);
+  __interact(player, cow);
+  __interact(player, bull);
+  system.sendScriptEvent(`${API}:query_animal`, JSON.stringify({ entity: cow.id, ref: "q1" }));
+  const info = sent("animal_info").at(-1);
+  equal(info.found, true, "found");
+  equal(info.ref, "q1", "ref echoed");
+  equal(info.animal, `${API}:cow`, "type");
+  equal(info.sex, "female", "sex");
+  equal(info.baby, false, "adult");
+  equal(info.hearts, 3, "hearts");
+  equal(info.needs.all, true, "needs met");
+  equal(info.pregnant, true, "pregnant");
+  equal(info.dueInDays, 3, "due in three days");
+  system.sendScriptEvent(`${API}:query_animal`, JSON.stringify({ entity: bull.id }));
+  equal(sent("animal_info").at(-1).pregnant, false, "the bull is not");
+  system.sendScriptEvent(`${API}:query_animal`, JSON.stringify({ entity: player.id }));
+  equal(sent("animal_info").at(-1).found, false, "a player is not a Ranching animal");
+  system.sendScriptEvent(`${API}:query_animal`, "not json");
+  assert(sent("animal_info").at(-1).error, "bad input gets a reason");
+});
+
+test("M5: petting, brushing and treats are broadcast as cared events", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  system.__scriptEvents.length = 0;
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  hold(player, `${NS}:alfalfa_cake`);
+  __interact(player, cow);
+  const cared = sent("animal_event").filter((e) => e.type === "cared" && e.entity === cow.id);
+  equal(cared.map((e) => e.kind).join(","), "brush,treat", "one brush (the second does nothing) and one treat");
+  equal(cared[0].player, player.id, "who did it");
+});
+
+test("M5: malformed registrations get a readable reason, never a script error", () => {
+  const bad = [
+    ["register_animal", { id: "kr_test:x", reproduction: "gestation", breedItems: ["minecraft:wheat"], dailyProduct: null }, "dailyProduct"],
+    ["register_animal", { id: "kr_test:x", reproduction: "gestation", breedItems: ["minecraft:wheat"], care: { brushDrops: ["minecraft:string"] } }, "brushDrops"],
+    ["register_butcher", { carcass: "kr_test:x_carcass", cuts: [null] }, "cuts[0]"],
+    ["register_recipe", { id: "kr_test:r", station: "butter_churn", inputs: [null], outputs: [{ item: "kr_test:o" }] }, "inputs[0]"],
+    ["register_recipe", { id: "kr_test:r", station: "butter_churn", inputs: [{ item: "kr_test:i" }], outputs: ["kr_test:o"] }, "outputs[0]"],
+  ];
+  for (const [event, payload, field] of bad) {
+    const r = call(event, payload);
+    equal(r.ok, false, `${field} refused`);
+    assert(r.error.includes(field) && !r.error.includes("TypeError"), `${field}: ${r.error}`);
+  }
+  system.sendScriptEvent(`${API}:query_animal`, "[]");
+  assert(sent("animal_info").at(-1).error, "query needs an object");
+});
+
+test("items beyond one stack are split, not lost", () => {
+  clearWorld();
+  __setMaxStack("kr_test:big_egg", 1);
+  const nest = nestAt();
+  blockStore.setBlockData(nest, { eggs: { "kr_test:big_egg": 5 }, hatching: [] });
+  breakBlock(NEST, nest);
+  equal(dropsOf("kr_test:big_egg").reduce((sum, drop) => sum + drop.item.amount, 0), 5, "all five eggs dropped");
+  // A compost bin gives back the manure put into it.
+  const bin = __place(overworld, { x: 30, y: 64, z: 0 }, `${NS}:compost_bin`, { [`${NS}:stage`]: 0, [`${NS}:manure`]: 3 });
+  const brokenBlockPermutation = bin.permutation;
+  bin.setType("minecraft:air");
+  compostBinComponent.onPlayerBreak({ block: bin, dimension: overworld, brokenBlockPermutation });
+  equal(dropsOf(`${NS}:manure_item`).reduce((sum, drop) => sum + drop.item.amount, 0), 3, "manure returned");
+});
+
 // --- M1: vanilla parity ---------------------------------------------------
 
 test("shearing drops wool of the sheep's colour and marks it sheared", () => {
