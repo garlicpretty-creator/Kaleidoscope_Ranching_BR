@@ -7,7 +7,8 @@ Outputs
   packs/RP/models/blocks/kaleidoscope_ranching.<block>.geo.json
   packs/RP/textures/blocks/ranching/<block>.png
   tools/fragments/m3/{item_texture.json, terrain_texture.json, blocks.json}
-  docs/art/m3_items.png, docs/art/m3_blocks_preview.png
+  docs/art/m3_items.png, docs/art/m3_procedural_blocks_preview.png
+  (docs/art/m3_blocks_preview.png shows the hand-made blocks and is not written here)
 
 Run with: python3 tools/gen_m3_art.py
 """
@@ -126,8 +127,8 @@ def main():
     write_json(FRAGMENT / "terrain_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.terrain", "texture_data": terrain})
     write_json(FRAGMENT / "blocks.json", {"format_version": "1.21.40", **{f"{NS}:{k}": {"sound": v} for k, v in SOUNDS.items()}})
 
-    # Hand-made blocks have their preview rendered in Blockbench, so the sheet is only written
-    # while some block is still procedural.
+    # Only procedurally drawn blocks are previewed here. The hand-made blocks have their own sheet
+    # (docs/art/m3_blocks_preview.png, rendered from their models), which this must not overwrite.
     if previews:
         board = Image.new("RGB", (220 * 4, 260 * ((len(previews) + 3) // 4)), (232, 238, 226))
         draw = ImageDraw.Draw(board)
@@ -135,7 +136,10 @@ def main():
             x, y = (index % 4) * 220, (index // 4) * 260
             board.paste(image, (x, y + 20))
             draw.text((x + 8, y + 4), block_id, fill=(60, 70, 56))
-        board.save(ROOT / "docs" / "art" / "m3_blocks_preview.png")
+        board.save(ROOT / "docs" / "art" / "m3_procedural_blocks_preview.png")
+    else:
+        # Every block is hand-made: a sheet left from an earlier procedural block would be stale.
+        (ROOT / "docs" / "art" / "m3_procedural_blocks_preview.png").unlink(missing_ok=True)
     print(f"gen_m3_art: {len(ids)} icons, {len(blocks)} blocks")
 
 
