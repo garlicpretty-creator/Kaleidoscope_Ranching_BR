@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_dried_yak_dung",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:dried_yak_dung.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:fuel": {
         "duration": 30

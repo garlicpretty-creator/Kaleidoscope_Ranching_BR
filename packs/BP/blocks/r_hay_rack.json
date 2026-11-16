@@ -32,10 +32,11 @@
           "hay_3": "q.block_state('kaleidoscope_ranching:hay') >= 3"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:hay_rack.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_hay_rack",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

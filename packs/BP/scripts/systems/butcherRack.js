@@ -1,15 +1,23 @@
 // M3: the butcher rack. A carcass is hung on the rack and cut one stroke at a
 // time with a kitchen knife (Cookery's tag), a sword or an axe. Each stroke
 // gives the next entry of data/butcher.js; the last one empties the rack.
+//
+// 1.1 掛架風乾: an empty rack also air-dries up to DRYING_SLOTS pieces
+// (data/processing.js DRYING). Each piece keeps its own start time; using the
+// rack takes down every piece that is done. A drying rack takes no carcass.
 
 import { ItemStack } from "@minecraft/server";
 import { DURABILITY_PER_STROKE, KNIFE_TAG, VANILLA_BLADE_TAGS } from "../data/butcher.js";
+import { DRYING, DRYING_SLOTS, DRYING_TICKS } from "../data/processing.js";
 import { animalByCarcass, butcherEntry } from "../core/content.js";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
-import { rid } from "../core/ids.js";
+import { rid, shortId } from "../core/ids.js";
+import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
+import { showActionBar } from "../core/actionBar.js";
+import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
@@ -38,8 +46,49 @@ function lookOf(carcass) {
   return animal?.largeCarcass === false ? "chicken" : "cow";
 }
 
-function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.rack.${key}` });
+function tell(player, key, values) {
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.rack.${key}`, with: values });
+}
+
+// --- 1.1 掛架風乾 ---------------------------------------------------------------
+
+const TICKS_PER_MINUTE = 1200;
+
+/** The dried result for a held item, or undefined if it cannot be dried. */
+export function dryingResult(typeId) {
+  if (!typeId?.startsWith("kaleidoscope_ranching:")) return undefined;
+  const out = DRYING[shortId(typeId)];
+  return out ? rid(out) : undefined;
+}
+
+function hangToDry(block, player, item, data) {
+  const pieces = data?.drying ?? [];
+  if (pieces.length >= DRYING_SLOTS) return tell(player, "drying_full", [String(DRYING_SLOTS)]);
+  pieces.push({ item: item.typeId, start: nowTick() });
+  consumeMainHand(player);
+  setBlockData(block, { drying: pieces });
+  block.dimension.playSound("block.itemframe.add_item", block.location);
+  tell(player, "drying_hung", [String(pieces.length), String(DRYING_SLOTS)]);
+}
+
+/** Takes down every finished piece; reports the time left on the rest. */
+function takeDown(block, player, data) {
+  const now = nowTick();
+  const left = [];
+  let taken = 0;
+  for (const piece of data.drying) {
+    if (now >= piece.start + DRYING_TICKS) {
+      const out = dryingResult(piece.item);
+      if (out) give(player, out, 1);
+      taken++;
+    } else left.push(piece);
+  }
+  if (left.length) setBlockData(block, { drying: left });
+  else clearBlockData(block.dimension, block.location);
+  if (taken) block.dimension.playSound("random.pop", block.location);
+  if (!left.length) return;
+  const soonest = Math.min(...left.map((piece) => piece.start + DRYING_TICKS - now));
+  tell(player, "drying_left", [String(left.length), String(Math.ceil(soonest / TICKS_PER_MINUTE))]);
 }
 
 export function isBlade(item) {
@@ -118,7 +167,8 @@ function hang(block, player, item) {
 function cut(block, player, data) {
   const cuts = cutsOf(data.carcass);
   for (const { typeId, amount } of rollCut(cuts[data.stroke], data)) give(player, typeId, amount);
-  damageMainHand(player, DURABILITY_PER_STROKE);
+  // 1.1 皮圍裙: a leather apron sometimes spares the blade.
+  if (!(wearing(player, "Chest", "leather_apron") && Math.random() < APRON_SAVE_CHANCE)) damageMainHand(player, DURABILITY_PER_STROKE);
   block.dimension.playSound("dig.cloth", block.location);
 
   const next = nextCut(cuts, data, data.stroke + 1);
@@ -138,6 +188,15 @@ function spill(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
   if (!data) return;
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
+  if (data.drying) {
+    // Finished pieces drop dried; the rest drop as they went up.
+    const now = nowTick();
+    for (const piece of data.drying) {
+      const done = now >= piece.start + DRYING_TICKS;
+      dropItems(dimension, done ? dryingResult(piece.item) ?? piece.item : piece.item, 1, at);
+    }
+    return;
+  }
   if (data.stroke === nextCut(cutsOf(data.carcass), data, 0)) {
     const carcass = new ItemStack(rid(data.carcass), 1);
     try {
@@ -164,8 +223,18 @@ export const butcherRackComponent = {
     if (!player) return;
     const item = mainHand(player)?.getItem();
     const data = getBlockData(block);
+    if (data?.drying) {
+      if (item && dryingResult(item.typeId)) {
+        // Take down whatever is done first, so a full rack makes room by itself.
+        if (data.drying.some((piece) => nowTick() >= piece.start + DRYING_TICKS)) return takeDown(block, player, data);
+        return hangToDry(block, player, item, data);
+      }
+      if (item && butcherEntry(item.typeId)) return tell(player, "drying_busy");
+      return takeDown(block, player, data);
+    }
     if (!data) {
       if (item && butcherEntry(item.typeId)) hang(block, player, item);
+      else if (item && dryingResult(item.typeId)) hangToDry(block, player, item, null);
       else tell(player, "empty");
       return;
     }

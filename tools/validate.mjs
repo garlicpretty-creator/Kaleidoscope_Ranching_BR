@@ -5,7 +5,7 @@
 //
 // Run with: node tools/validate.mjs
 
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -36,9 +36,9 @@ for (const path of jsonFiles) {
 
 // --- 2. Data tables -------------------------------------------------------
 
-const { ITEMS, tierIds } = await load("items.js");
+const { ITEMS } = await load("items.js");
 const { BLOCKS } = await load("blocks.js");
-const { ANIMALS, NEEDS, QUALITY_RULES, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load("animals.js");
+const { ANIMALS, NEEDS, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load("animals.js");
 const { FEEDS, KIND_TIER } = await load("feeds.js");
 const { SPECIES } = await load("species.js");
 const { PROCESSING_RECIPES, VANILLA_COOKING, WOK_MEATS } = await load("processing.js");
@@ -93,7 +93,7 @@ for (const animal of ANIMALS) {
 
   const product = animal.dailyProduct;
   if (product) {
-    const ids = product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item]);
+    const ids = [product.item];
     ids.forEach((id) => checkItem(id, `${where} dailyProduct`));
     if (!itemIds.has(product.via) && !blockIds.has(product.via)) fail(`${where}: dailyProduct.via "${product.via}" is not a declared tool or block`);
   }
@@ -140,7 +140,6 @@ for (const pair of WOK_MEATS) {
 
 if (NEEDS.length !== 4) fail("animals.js: expected four daily needs");
 if (FERTILIZED_CHANCE_BY_AFFECTION.length !== AFFECTION.max + 1) fail("animals.js: fertilized chance needs one entry per affection level");
-if (QUALITY_RULES.at(-1).tier !== "plain") fail("animals.js: the last quality rule must be the plain fallback");
 
 // Every declared item should be reachable from some table, so the registry
 // does not accumulate dead entries.
@@ -149,7 +148,7 @@ const note = (id) => typeof id === "string" && !id.includes(":") && referenced.a
 for (const animal of ANIMALS) {
   [animal.carcass, animal.treat, animal.groomProduct, animal.fertilizedEgg, animal.dailyProduct?.via, ...animal.breedItems, ...animal.temptItems].forEach(note);
   const product = animal.dailyProduct;
-  if (product) (product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item])).forEach(note);
+  if (product) note(product.item);
 }
 Object.values(BUTCHER_TABLE).forEach((entry) => entry.cuts.forEach((cut) => note(cut.item)));
 Object.keys(FEEDS).forEach((item) => note(local(item)));
@@ -157,9 +156,15 @@ Object.values(SPECIES).forEach((row) => [row.treat, ...(row.brushDrops ?? []).ma
 PROCESSING_RECIPES.forEach((recipe) => {
   recipe.inputs.forEach((input) => (input.anyOf ?? [input.item]).forEach(note));
   recipe.outputs.forEach((output) => note(output.item));
+  (recipe.aged?.outputs ?? []).forEach((output) => note(output.item)); // 1.1 熟成分級
 });
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
+{
+  // 1.1: butcher-rack air-drying and water-trough washing (input → output).
+  const { DRYING = {}, WASHING = {}, SMOKING = {} } = await load("processing.js");
+  for (const table of [DRYING, WASHING, SMOKING]) for (const [from, to] of Object.entries(table)) [from, to].forEach(note);
+}
 
 // M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla
 // item or a Cookery item; Ranching ones must be registered.
@@ -183,6 +188,18 @@ WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
     note(prep.id);
     prep.makes.flat().forEach((id) => checkIngredient(prep.id, id));
   }
+}
+
+// 1.1: every crafting and furnace recipe the generators wrote counts too, as a
+// source (its result) and a use (its ingredients).
+for (const file of readdirSync(join(root, "packs", "BP", "recipes"), { recursive: true }).filter((f) => String(f).endsWith(".json"))) {
+  const data = JSON.parse(readFileSync(join(root, "packs", "BP", "recipes", String(file)), "utf8"));
+  const recipe = Object.values(data).find((v) => v && typeof v === "object" && v.description);
+  if (!recipe) continue;
+  const ids = [
+    ...Object.values(recipe.key ?? {}), ...(recipe.ingredients ?? []), recipe.input, recipe.output, recipe.result,
+  ].map((entry) => (typeof entry === "string" ? entry : entry?.item));
+  ids.forEach((id) => typeof id === "string" && id.startsWith("kaleidoscope_ranching:") && note(local(id)));
 }
 
 // Items whose source or use is a crafting recipe or an interaction that is not
@@ -315,6 +332,85 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
 }
 
+// --- 4a. Things the game rejects at load time ---------------------------------
+
+// ## Content-log errors seen in game: 1.20+ crafting recipes without unlock data,
+// ## and render controllers using query.color, which they cannot resolve.
+for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json"))) {
+  const data = readJson(path);
+  for (const type of ["minecraft:recipe_shaped", "minecraft:recipe_shapeless"]) {
+    if (data[type] && !(Array.isArray(data[type].unlock) && data[type].unlock.length)) {
+      fail(`${relative(root, path)}: crafting recipe needs "unlock" (1.20+ recipes require unlock data)`);
+    }
+  }
+}
+for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
+  if (/\bq(uery)?\.color\b/.test(readFileSync(path, "utf8"))) {
+    fail(`${relative(root, path)}: render controllers cannot use query.color; mirror it into an entity property`);
+  }
+}
+
+// ## Block models: a square texture whose size matches the model (non-square ones drew
+// ## parts in the wrong colours or not at all), and single-sided rendering (plain
+// ## alpha_test also draws back faces, which flickered). Crossed-plane plants may use alpha_test.
+{
+  const pngSize = (path) => {
+    const b = readFileSync(path);
+    return [b.readUInt32BE(16), b.readUInt32BE(20)];
+  };
+  for (const path of walk(join(rp, "models", "blocks")).filter((p) => p.endsWith(".geo.json"))) {
+    const geo = readJson(path)["minecraft:geometry"][0];
+    const { texture_width: w, texture_height: h } = geo.description;
+    if (w !== h) fail(`${relative(root, path)}: texture ${w}x${h} is not square (run tools/square_block_textures.py)`);
+    const id = geo.description.identifier.split(".").pop();
+    const png = join(rp, "textures", "blocks", "ranching", `${id}.png`);
+    if (existsSync(png)) {
+      const [pw, ph] = pngSize(png);
+      if (pw !== ph || pw % w) fail(`${relative(root, png)}: ${pw}x${ph} does not match its model's ${w}x${h}`);
+    }
+  }
+  for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
+    const block = readJson(path)["minecraft:block"];
+    const all = [block.components, ...(block.permutations ?? []).map((p) => p.components)];
+    const geometry = block.components["minecraft:geometry"];
+    const crossed = (typeof geometry === "string" ? geometry : geometry?.identifier ?? "").endsWith(".cross");
+    for (const components of all) {
+      for (const [name, material] of Object.entries(components["minecraft:material_instances"] ?? {})) {
+        if (material.render_method === "alpha_test" && !crossed) {
+          fail(`${relative(root, path)}: material "${name}" uses alpha_test; use alpha_test_single_sided`);
+        }
+      }
+    }
+  }
+}
+
+// ## Action-bar text goes through core/actionBar.js, which hides hints and status
+// ## read-outs; a direct setActionBar would bypass that.
+for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && !p.endsWith(join("core", "actionBar.js")))) {
+  if (readFileSync(path, "utf8").includes("onScreenDisplay.setActionBar(")) {
+    fail(`${relative(root, path)}: use showActionBar from core/actionBar.js instead of setActionBar`);
+  }
+}
+
+// ## Every item and block names its language key (minecraft:display_name), and the
+// ## key exists in each language: without it, catalog-grouped items showed raw keys.
+{
+  const langs = Object.fromEntries(["en_US", "zh_TW", "zh_CN"].map((l) => [l, new Set(
+    readFileSync(join(rp, "texts", `${l}.lang`), "utf8").split("\n").map((line) => line.split("=")[0])
+  )]));
+  for (const [folder, key] of [["items", "minecraft:item"], ["blocks", "minecraft:block"]]) {
+    for (const path of walk(join(bp, folder)).filter((p) => p.endsWith(".json"))) {
+      const data = readJson(path)[key];
+      if (!data || data.description?.identifier?.split(":")[0] !== "kaleidoscope_ranching") continue;
+      if (data.description.menu_category?.category === "none") continue;
+      const name = data.components?.["minecraft:display_name"];
+      const langKey = typeof name === "string" ? name : name?.value;
+      if (!langKey) fail(`${relative(root, path)}: no minecraft:display_name`);
+      else for (const [l, keys] of Object.entries(langs)) if (!keys.has(langKey)) fail(`${relative(root, path)}: "${langKey}" missing from ${l}.lang`);
+    }
+  }
+}
+
 // --- 4b. Every item has somewhere to go --------------------------------------
 
 // ## A player who gets an item must be able to do something with it: eat or
@@ -333,6 +429,12 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   }
   for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach(take);
   for (const recipe of VANILLA_COOKING) take(recipe.input);
+  // 1.1: air-dried on the butcher rack, washed at the water trough.
+  {
+    const { DRYING, WASHING } = await load("processing.js");
+    Object.keys(DRYING ?? {}).forEach(take);
+    Object.keys(WASHING ?? {}).forEach(take);
+  }
   const walkSlots = (value) => {
     if (typeof value === "string") take(value);
     else if (Array.isArray(value)) value.forEach(walkSlots);
@@ -357,7 +459,9 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
     if (usable) take(data.description.identifier);
   }
   // Used by clicking an animal or a block (scripts), not by a recipe.
-  const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag"];
+  const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag",
+    // 1.1 (systems/workAnimals.js): used on a buffalo or another animal.
+    "harness", "plough", "animal_blanket"];
   // Registered with Cookery as wok oil (api/cookeryRecipes.js register_oil_container).
   take("lard");
   CLICKED.forEach(take);
@@ -455,7 +559,8 @@ const iconPrompts = readJson(join(root, "tools/art/icon_prompts.json")).items;
 for (const item of ITEMS) {
   const entry = iconPrompts[item.id];
   if (!entry) fail(`tools/art/icon_prompts.json: no entry for item "${item.id}"`);
-  else if (!entry.prompt && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
+  // `rendered`: drawn by that script instead (the carcasses, from the animal models).
+  else if (!entry.prompt && !entry.rendered && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
 }
 
 // --- Simplified Chinese names (data/zh_cn.js) ---------------------------------

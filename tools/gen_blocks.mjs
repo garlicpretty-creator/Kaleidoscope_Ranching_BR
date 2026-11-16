@@ -21,7 +21,14 @@ const CARCASSES = ANIMALS.map((animal) => animal.id);
 const FULL = { origin: [-8, 0, -8], size: [16, 16, 16] };
 const box = (x, y, z, w, h, d) => ({ origin: [x, y, z], size: [w, h, d] });
 
-const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack"];
+const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder", "ice_cream_churn"];
+// 1.1: stations that also run on the ranch clock with containers above and below (data/processing.js AUTO_STATIONS).
+const AUTO_STATIONS = ["cream_separator", "spinning_wheel", "weaving_loom", "silage_barrel"];
+// 1.1 毛毯: one block, dyed by state (systems/textiles.js); each colour has its own texture kr_rug_<colour>.
+const RUG_COLORS = [
+  "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+  "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+];
 
 const DEFS = {
   butcher_rack: {
@@ -35,6 +42,8 @@ const DEFS = {
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
       ])
     ),
+    // Each animal has its own texture (art/blocks/butcher_rack_<id>.png, see tools/art/split_rack_texture.py).
+    materials: CARCASSES,
     collision: FULL,
     selection: FULL,
     seconds: 1.5,
@@ -56,6 +65,50 @@ const DEFS = {
     seconds: 1,
     light: true,
   },
+  // 1.1 擠奶架 (systems/milkingRack.js): one animal tied to it, milked once a day.
+  milking_rack: {
+    component: "milking_rack",
+    states: {},
+    bones: {},
+    collision: box(-8, 0, -8, 16, 12, 16),
+    selection: box(-8, 0, -8, 16, 12, 16),
+    seconds: 1.5,
+  },
+  rug: {
+    component: "rug",
+    states: { [S("color")]: RUG_COLORS },
+    bones: {},
+    collision: box(-8, 0, -8, 16, 1, 16),
+    selection: box(-8, 0, -8, 16, 1, 16),
+    seconds: 0.2,
+    textureByState: { state: "color", values: RUG_COLORS, texture: (color) => `kr_rug_${color}` },
+  },
+  // 1.1 畜欄門 (systems/workAnimals.js): the lower half carries the gate, the upper half
+  // raises its collision to fence height; both open together.
+  pen_gate: {
+    component: "pen_gate",
+    states: { [S("open")]: [false, true] },
+    bones: { closed: `!${state("open")}`, open: state("open") },
+    collision: FULL,
+    selection: FULL,
+    seconds: 1,
+    openable: true,
+  },
+  pen_gate_top: {
+    component: "pen_gate_top",
+    states: { [S("open")]: [false, true] },
+    bones: { closed: `!${state("open")}`, open: state("open") },
+    collision: box(-8, 0, -8, 16, 8, 16),
+    selection: box(-8, 0, -8, 16, 4, 16),
+    seconds: 1,
+    hidden: true,
+    loot: "loot_tables/kaleidoscope_ranching/empty.json",
+    openable: true,
+  },
+  horn_decor: { states: {}, bones: {}, collision: box(-4, 0, -4, 8, 6, 8), selection: box(-4, 0, -4, 8, 6, 8), seconds: 0.5 },
+  // Decoration only: no script component.
+  down_pillow: { states: {}, bones: {}, collision: box(-6, 0, -4, 12, 4, 8), selection: box(-6, 0, -4, 12, 4, 8), seconds: 0.2 },
+  down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 2, 16), selection: box(-8, 0, -8, 16, 2, 16), seconds: 0.2 },
   hitching_post: {
     component: "hitching_post",
     states: {},
@@ -97,6 +150,19 @@ const DEFS = {
     mapColor: "#6f7a5a",
   },
   ...Object.fromEntries(
+    AUTO_STATIONS.map((id) => [
+      id,
+      {
+        component: "auto_station",
+        states: { [S("busy")]: [false, true] },
+        bones: { busy: state("busy") },
+        collision: FULL,
+        selection: FULL,
+        seconds: 1.5,
+      },
+    ])
+  ),
+  ...Object.fromEntries(
     STATIONS.map((id) => [
       id,
       {
@@ -116,7 +182,16 @@ const ROTATION = { north: 0, east: 270, south: 180, west: 90 };
 function blockJson(id, def) {
   const components = {
     "minecraft:geometry": { identifier: `geometry.${NS}.${id}`, bone_visibility: def.bones },
-    "minecraft:material_instances": { "*": { texture: `kr_${id}`, render_method: "alpha_test" } },
+    // Explicit name key, as for the items (gen_items.mjs).
+    "minecraft:display_name": `tile.${S(id)}.name`,
+    "minecraft:material_instances": {
+      // Single-sided: plain alpha_test also draws back faces, which flickered against touching faces.
+      "*": { texture: `kr_${id}`, render_method: "alpha_test_single_sided" },
+      // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).
+      ...Object.fromEntries(
+        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test_single_sided" }])
+      ),
+    },
     "minecraft:collision_box": def.collision,
     "minecraft:selection_box": def.selection,
     "minecraft:destructible_by_mining": { seconds_to_destroy: def.seconds },
@@ -124,7 +199,7 @@ function blockJson(id, def) {
     "minecraft:light_dampening": 0,
     "minecraft:map_color": def.mapColor ?? "#8a6a44",
     ...(def.loot ? { "minecraft:loot": def.loot } : {}),
-    [S(def.component)]: {},
+    ...(def.component ? { [S(def.component)]: {} } : {}),
   };
   return {
     format_version: "1.21.90",
@@ -144,6 +219,13 @@ function blockJson(id, def) {
           components: { "minecraft:transformation": { rotation: [0, degrees, 0] } },
         })),
         ...(def.light ? [{ condition: state("busy"), components: { "minecraft:light_emission": 7 } }] : []),
+        ...(def.openable ? [{ condition: state("open"), components: { "minecraft:collision_box": false } }] : []),
+        ...(def.textureByState
+          ? def.textureByState.values.map((value) => ({
+              condition: `${state(def.textureByState.state)} == '${value}'`,
+              components: { "minecraft:material_instances": { "*": { texture: def.textureByState.texture(value), render_method: "alpha_test_single_sided" } } },
+            }))
+          : []),
       ],
     },
   };

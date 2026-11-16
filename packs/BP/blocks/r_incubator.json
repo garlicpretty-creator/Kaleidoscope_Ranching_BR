@@ -39,10 +39,11 @@
           "busy": "q.block_state('kaleidoscope_ranching:busy')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:incubator.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_incubator",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

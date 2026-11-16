@@ -19,13 +19,14 @@ import { rid, shortId } from "../core/ids.js";
 import { ANIMAL_NAMES } from "../data/items.js";
 import { updateRoster } from "../ui/roster.js";
 import { adoptPregnancy } from "./breeding.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const CRATE = rid("animal_crate");
 const SNAPSHOT = "kaleidoscope_ranching:crate";
 const NAMES = new Map(ANIMAL_NAMES.map(([id, zh, en]) => [rid(id), `${zh} ${en}`]));
 
 function tell(player, key, values) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.crate.${key}`, with: values });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.crate.${key}`, with: values });
 }
 
 const snapshotOf = (item) => {

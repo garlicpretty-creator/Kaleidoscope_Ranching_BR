@@ -20,6 +20,14 @@
     "result": {
       "item": "kaleidoscope_ranching:ranch_notebook",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:wheat"
+      }
+    ]
   }
 }

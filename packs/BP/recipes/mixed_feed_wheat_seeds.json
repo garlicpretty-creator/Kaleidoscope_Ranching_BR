@@ -24,6 +24,17 @@
     "result": {
       "item": "kaleidoscope_ranching:mixed_feed",
       "count": 4
-    }
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:forage"
+      },
+      {
+        "item": "kaleidoscope_ranching:alfalfa"
+      },
+      {
+        "item": "minecraft:wheat_seeds"
+      }
+    ]
   }
 }

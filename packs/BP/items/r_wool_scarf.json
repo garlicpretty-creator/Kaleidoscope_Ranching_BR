@@ -1,0 +1,25 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:wool_scarf",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_wool_scarf",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:wool_scarf.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 1
+      },
+      "minecraft:durability": {
+        "max_durability": 80
+      }
+    }
+  }
+}

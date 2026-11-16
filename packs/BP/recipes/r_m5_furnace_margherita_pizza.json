@@ -1,0 +1,14 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_furnace_margherita_pizza"
+    },
+    "tags": [
+      "furnace",
+      "smoker"
+    ],
+    "input": "kaleidoscope_ranching:raw_pizza",
+    "output": "kaleidoscope_ranching:margherita_pizza"
+  }
+}

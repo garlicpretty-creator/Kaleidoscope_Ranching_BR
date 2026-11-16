@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_concentrate_feed",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:concentrate_feed.name"
+      },
       "minecraft:tags": {
         "tags": [
           "kaleidoscope_ranching:feed"

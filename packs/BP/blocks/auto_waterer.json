@@ -8,17 +8,18 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:auto_waterer.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.water_trough"
       },
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_auto_waterer",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         },
         "water": {
           "texture": "kr_water",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

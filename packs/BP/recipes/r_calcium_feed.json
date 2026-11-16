@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m9_calcium_feed"
+    },
+    "tags": [
+      "kaleidoscope_ranching_feed_mixer"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:concentrate_feed"
+      },
+      {
+        "item": "kaleidoscope_ranching:calcium_powder"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:calcium_feed",
+      "count": 2
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:calcium_powder"
+      }
+    ]
+  }
+}

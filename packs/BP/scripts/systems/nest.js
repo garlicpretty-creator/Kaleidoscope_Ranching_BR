@@ -4,7 +4,7 @@
 // - Adult females of laying species within NEST_RADIUS lay into the box, one
 //   egg per game day each, settled lazily (up to MAX_BACKLOG_DAYS at once).
 // - With a male of her species within MALE_RADIUS, a hen lays a fertilized egg
-//   with M2's affection-based chance; otherwise a plain/fine/superb egg.
+//   with M2's affection-based chance; otherwise its ordinary egg.
 // - A hopper under the box receives the eggs.
 // - Placing a fertilized egg in the box sets it to hatch after INCUBATION_DAYS,
 //   provided a hen of that species is nearby to brood it when it is due.
@@ -14,6 +14,12 @@
 // - Holds up to four fertilized eggs and hatches them without a hen, but only
 //   while a heat source touches it; without heat the countdown pauses.
 //
+// 1.1 孵化與飼料線
+// - Every egg that hatches leaves an eggshell: in the nest box it joins the
+//   stored eggs (collected by hand or by the hopper); the incubator keeps its
+//   shells until it is used or a hopper sits under it.
+// - The egg candler (照蛋燈) shows how long the eggs in either block still need.
+//
 // ## Both blocks keep their contents in the block store and are visited by the
 // ## ranch clock through a bounded registry, so eggs are laid, pushed into
 // ## hoppers and hatched without a player standing next to the box.
@@ -21,7 +27,6 @@
 import { ItemStack } from "@minecraft/server";
 import { INCUBATION_DAYS } from "../data/animals.js";
 import { allAnimals, animalByFertilizedEgg } from "../core/content.js";
-import { tierIds } from "../data/items.js";
 import { animalsNear, isAdultFemale, isBaby, sexOf } from "../core/animal.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { CLOCK_INTERVAL } from "../core/clock.js";
@@ -31,6 +36,7 @@ import { dp, rid } from "../core/ids.js";
 import { consumeMainHand, dropItems, give, mainHand, stacksOf } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
+import { showActionBar } from "../core/actionBar.js";
 
 export const NEST_RADIUS = 8;
 export const MALE_RADIUS = 8;
@@ -61,7 +67,7 @@ const HEAT = new Set([
 
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
 }
 
 function center(block) {
@@ -73,12 +79,6 @@ function setStates(block, states) {
   let permutation = block.permutation;
   for (const [name, value] of Object.entries(states)) permutation = permutation.withState(name, value);
   block.setPermutation(permutation);
-}
-
-function eggForQuality(species, quality) {
-  const product = species.dailyProduct;
-  const tiers = (product.tierItems ?? tierIds(product.item)).map(rid);
-  return tiers[{ plain: 0, fine: 1, superb: 2 }[quality] ?? 0];
 }
 
 function hatch(dimension, location, speciesId, mother) {
@@ -130,15 +130,17 @@ function lay(block, data) {
         (bird) => !isBaby(bird) && sexOf(bird) === "male"
       );
       for (let d = day - days + 1; d <= day; d++) {
-        const { produces, quality } = production(hen, d);
+        const { produces } = production(hen, d);
         if (!produces) continue;
-        const egg = hasMale && Math.random() < fertilizedChance(hen) ? rid(species.fertilizedEgg) : eggForQuality(species, quality);
+        const egg = rid(hasMale && Math.random() < fertilizedChance(hen) ? species.fertilizedEgg : species.dailyProduct.item);
         if (storedCount(data) < NEST_CAPACITY) data.eggs[egg] = (data.eggs[egg] ?? 0) + 1;
         else block.dimension.spawnItem(new ItemStack(egg, 1), at);
       }
     }
   }
 }
+
+export const EGGSHELL = rid("eggshell");
 
 function hatchInNest(block, data) {
   const now = nowTick();
@@ -147,7 +149,9 @@ function hatchInNest(block, data) {
     const hen = animalsNear(block.dimension, center(block), egg.species, BROOD_RADIUS).find(isAdultFemale);
     if (!hen) return true; // waits until a hen sits on it
     const location = { ...center(block), y: block.location.y + 1 };
-    return !hatch(block.dimension, location, egg.species, hen);
+    if (!hatch(block.dimension, location, egg.species, hen)) return true;
+    data.eggs[EGGSHELL] = (data.eggs[EGGSHELL] ?? 0) + 1;
+    return false;
   });
 }
 
@@ -236,6 +240,18 @@ function showIncubator(block, data, heated) {
   setStates(block, { [EGGS_STATE]: data.eggs.length, [BUSY_STATE]: heated && data.eggs.length > 0 });
 }
 
+/** Moves the incubator's eggshells into a hopper under it. */
+function pushShells(block, data) {
+  if (!data.shells) return;
+  const below = block.below();
+  if (below?.typeId !== "minecraft:hopper") return;
+  const container = below.getComponent("minecraft:inventory")?.container;
+  if (!container) return;
+  let left = 0;
+  for (const stack of stacksOf(EGGSHELL, data.shells)) left += container.addItem(stack)?.amount ?? 0;
+  data.shells = left || undefined;
+}
+
 export function settleIncubator(block, elapsed = 0) {
   const data = getBlockData(block, { eggs: [] });
   const heated = isHeated(block);
@@ -246,8 +262,13 @@ export function settleIncubator(block, elapsed = 0) {
   } else {
     const now = nowTick();
     const location = { ...center(block), y: block.location.y + 1 };
-    data.eggs = data.eggs.filter((egg) => egg.due > now || !hatch(block.dimension, location, egg.species, undefined));
+    data.eggs = data.eggs.filter((egg) => {
+      if (egg.due > now || !hatch(block.dimension, location, egg.species, undefined)) return true;
+      data.shells = (data.shells ?? 0) + 1;
+      return false;
+    });
   }
+  pushShells(block, data);
   setBlockData(block, data);
   showIncubator(block, data, heated);
   return data;
@@ -270,9 +291,11 @@ export const incubatorComponent = {
       consumeMainHand(player);
       if (!isHeated(block)) tell(player, "incubator.cold");
     } else {
-      if (!data.eggs.length) return tell(player, "incubator.empty");
+      if (!data.eggs.length && !data.shells) return tell(player, "incubator.empty");
       for (const egg of data.eggs) give(player, egg.egg, 1);
+      if (data.shells) give(player, EGGSHELL, data.shells);
       data.eggs = [];
+      data.shells = undefined;
     }
     setBlockData(block, data);
     showIncubator(block, data, isHeated(block));
@@ -284,6 +307,7 @@ export const incubatorComponent = {
     const data = takeBlockData(dim, block.location, null, brokenBlockPermutation?.type?.id);
     const { x, y, z } = block.location;
     for (const egg of data?.eggs ?? []) dim.spawnItem(new ItemStack(egg.egg, 1), { x: x + 0.5, y: y + 0.5, z: z + 0.5 });
+    if (data?.shells) dropItems(dim, EGGSHELL, data.shells, { x: x + 0.5, y: y + 0.5, z: z + 0.5 });
   },
 
   onBreak(event) {
@@ -300,3 +324,31 @@ export function startNests() {
   defineClockBlock(rid("incubator"), "incubators", (block) => settleIncubator(block, CLOCK_INTERVAL));
   startBlockClock();
 }
+
+// --- 1.1 照蛋燈 -----------------------------------------------------------------
+
+const TICKS_PER_MINUTE = 1200;
+
+/** What the candler reports for a nest box or incubator: { count, soonest (minutes), paused }, or null. */
+export function candle(block) {
+  let eggs;
+  let paused = false;
+  if (block.typeId === rid("nest_box")) eggs = settleNest(block).hatching;
+  else if (block.typeId === rid("incubator")) {
+    eggs = settleIncubator(block).eggs;
+    paused = !isHeated(block);
+  } else return null;
+  const now = nowTick();
+  const minutes = eggs.map((egg) => Math.max(0, Math.ceil((egg.due - now) / TICKS_PER_MINUTE)));
+  return { count: eggs.length, soonest: minutes.length ? Math.min(...minutes) : 0, paused };
+}
+
+export const candlerItemComponent = {
+  onUseOn({ source, block }) {
+    if (source?.typeId !== "minecraft:player") return;
+    const report = candle(block);
+    if (!report) return;
+    const key = !report.count ? "candler.none" : report.paused ? "candler.paused" : "candler.status";
+    showActionBar(source, { translate: `kaleidoscope_ranching.message.${key}`, with: [`${report.count}`, `${report.soonest}`] });
+  },
+};

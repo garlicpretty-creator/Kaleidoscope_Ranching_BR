@@ -97,7 +97,8 @@ function room(kind, key) {
  *   breedItems?: [itemId],                   gestation animals: fed to start breeding
  *   carcass?: "ns:alpaca_carcass",           dropped on death (own namespace)
  *   largeCarcass?: boolean,                  true: remembers sex; the item must not stack
- *   dailyProduct?: { via: "milking_pail" | "nest_box", items: [plain, fine, superb] },
+ *   dailyProduct?: { via: "milking_pail" | "nest_box", items: [itemId] },  (no quality grades; extra ids from
+ *                                            the old three-tier form are accepted and ignored)
  *   fertilizedEgg?: "ns:..._egg",            egg animals: hatches into this animal
  *   care?: { eats: ["grass"|"grain"|"veg"|"mixed"|"concentrate"], treat?: itemId, brushDrops?: [[itemId, chance]] }
  * }
@@ -123,9 +124,9 @@ export function registerAnimal(data) {
     if (!["milking_pail", "nest_box"].includes(via)) fail('dailyProduct.via must be "milking_pail" or "nest_box"');
     if (via === "nest_box" && reproduction !== "egg") fail("only egg animals use the nest box");
     if (via === "milking_pail" && reproduction !== "gestation") fail("only gestation animals are milked");
-    const tiers = list(items, "dailyProduct.items", 3).map((v, i) => itemId(v, `dailyProduct.items[${i}]`));
-    if (tiers.length !== 3) fail("dailyProduct.items needs three ids: plain, fine, superb");
-    row.dailyProduct = { item: tiers[0], tiered: true, tierItems: tiers, via };
+    const ids = list(items, "dailyProduct.items", 3).map((v, i) => itemId(v, `dailyProduct.items[${i}]`));
+    if (!ids.length) fail("dailyProduct.items needs the product's item id");
+    row.dailyProduct = { item: ids[0], via };
   }
   if (reproduction === "egg") {
     if (data.fertilizedEgg === undefined) fail("an egg animal needs fertilizedEgg");

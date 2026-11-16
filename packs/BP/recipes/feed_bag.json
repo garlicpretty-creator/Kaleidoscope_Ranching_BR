@@ -23,6 +23,14 @@
     "result": {
       "item": "kaleidoscope_ranching:feed_bag",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:leather"
+      },
+      {
+        "item": "minecraft:wheat"
+      }
+    ]
   }
 }

@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_weaving_loom"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "TTT",
+      "PSP",
+      "P P"
+    ],
+    "key": {
+      "T": {
+        "item": "minecraft:string"
+      },
+      "S": {
+        "item": "minecraft:stick"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:weaving_loom",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:weaving_loom"
+      }
+    ]
+  }
+}

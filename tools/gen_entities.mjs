@@ -12,6 +12,8 @@ const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data
 
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
+const WOOL_COLOR = `${NS}:wool_color`; // sheep only; see the set_color_N events
+const SLEEPING = `${NS}:sleeping`;
 const rid = (id) => (id.includes(":") ? id : `${NS}:${id}`);
 const g = (name) => `${NS}:${name}`;
 
@@ -180,6 +182,8 @@ function buildEntity(animal, t) {
       "minecraft:timer": { looping: false, time: 60, time_down_event: { event: g("uncalled"), target: "self" } },
     },
     [g("persistent")]: { "minecraft:persistent": {} },
+    // 1.1 動物作息 (systems/sleep.js): lying down for the night.
+    [g("sleeping")]: { "minecraft:movement": { value: 0 } },
     // 企劃書: 動物會主動走向飼槽與水槽. Present until the animal has eaten and
     // drunk today (care/state.js triggers `sated`), added back when the next
     // day is settled (`hungry`), so a fed herd does not crowd its troughs all day.
@@ -351,6 +355,8 @@ function buildEntity(animal, t) {
     [g("uncalled")]: { remove: { component_groups: [g("called")] } },
     [g("sated")]: { remove: { component_groups: [g("seeking")] } },
     [g("hungry")]: { add: { component_groups: [g("seeking")] } },
+    [g("fall_asleep")]: { add: { component_groups: [g("sleeping")] }, set_property: { [SLEEPING]: true } },
+    [g("wake_up")]: { remove: { component_groups: [g("sleeping")] }, set_property: { [SLEEPING]: false } },
     // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).
     [g("add_ear_tag")]: {
       sequence: [{ remove: { component_groups: [g("wild")] } }, { add: { component_groups: [g("persistent")] } }],
@@ -359,7 +365,10 @@ function buildEntity(animal, t) {
   if (t.wool) {
     const all = range(16).map((i) => g(`color_${i}`));
     for (const i of range(16)) {
-      events[g(`set_color_${i}`)] = { sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }] };
+      // The wool_color property mirrors minecraft:color for the render controller, which cannot read the colour itself.
+      events[g(`set_color_${i}`)] = {
+        sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }, { set_property: { [WOOL_COLOR]: i } }],
+      };
     }
     events[g("shear")] = { add: { component_groups: [g("sheared")] } };
     events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
@@ -386,6 +395,8 @@ function buildEntity(animal, t) {
         is_experimental: false,
         properties: {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
+          ...(t.wool ? { [WOOL_COLOR]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
+          [SLEEPING]: { type: "bool", default: false, client_sync: true },
         },
       },
       component_groups: groups,

@@ -20,6 +20,14 @@
     "result": {
       "item": "kaleidoscope_ranching:salt_lick",
       "count": 1
-    }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:clay_ball"
+      },
+      {
+        "item": "minecraft:bone_meal"
+      }
+    ]
   }
 }

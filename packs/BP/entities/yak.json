@@ -15,6 +15,11 @@
           ],
           "default": "female",
           "client_sync": true
+        },
+        "kaleidoscope_ranching:sleeping": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
         }
       }
     },
@@ -91,6 +96,11 @@
       },
       "kaleidoscope_ranching:persistent": {
         "minecraft:persistent": {}
+      },
+      "kaleidoscope_ranching:sleeping": {
+        "minecraft:movement": {
+          "value": 0
+        }
       },
       "kaleidoscope_ranching:seeking": {
         "minecraft:behavior.move_to_block": {
@@ -382,6 +392,26 @@
           "component_groups": [
             "kaleidoscope_ranching:seeking"
           ]
+        }
+      },
+      "kaleidoscope_ranching:fall_asleep": {
+        "add": {
+          "component_groups": [
+            "kaleidoscope_ranching:sleeping"
+          ]
+        },
+        "set_property": {
+          "kaleidoscope_ranching:sleeping": true
+        }
+      },
+      "kaleidoscope_ranching:wake_up": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:sleeping"
+          ]
+        },
+        "set_property": {
+          "kaleidoscope_ranching:sleeping": false
         }
       },
       "kaleidoscope_ranching:add_ear_tag": {

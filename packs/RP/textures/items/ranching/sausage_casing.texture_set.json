@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "sausage_casing",
+    "metalness_emissive_roughness_subsurface": "sausage_casing_mers",
+    "normal": "sausage_casing_normal"
+  }
+}

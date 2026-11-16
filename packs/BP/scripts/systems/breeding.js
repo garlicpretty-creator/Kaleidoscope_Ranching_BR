@@ -23,6 +23,7 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick } from "../core/time.js";
 import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
+import { showActionBar } from "../core/actionBar.js";
 
 const LOVE_UNTIL = dp("love_until");
 const COOLDOWN_UNTIL = dp("breed_cooldown_until");
@@ -54,7 +55,7 @@ function resting(entity, now) {
 }
 
 function tell(player, key) {
-  player.onScreenDisplay.setActionBar({ translate: `kaleidoscope_ranching.message.breed.${key}` });
+  showActionBar(player, { translate: `kaleidoscope_ranching.message.breed.${key}` });
 }
 
 function hearts(entity) {

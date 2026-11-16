@@ -4,11 +4,14 @@
     "description": {
       "identifier": "kaleidoscope_ranching:feed_bag",
       "menu_category": {
-        "category": "items"
+        "category": "equipment"
       }
     },
     "components": {
       "minecraft:icon": "kr_feed_bag",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:feed_bag.name"
+      },
       "minecraft:max_stack_size": 1,
       "kaleidoscope_ranching:feed_bag": {}
     }

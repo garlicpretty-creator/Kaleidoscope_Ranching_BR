@@ -165,6 +165,32 @@ def pile(c, color):
     c.fill({(x, y) for x in range(2, 14) for y in range(6, 14) if y >= 13 - min(x - 2, 13 - x) * 1.4}, color)
 
 
+def sausage(c, color, links=2):
+    """Plump links on a diagonal, tied between."""
+    centres = [(5, 11), (8, 8), (11, 5)][:links] if links < 3 else [(4.5, 11.5), (8, 8), (11.5, 4.5)]
+    for cx, cy in centres:
+        c.fill({(x, y) for x in range(16) for y in range(16) if abs((x + .5 - cx) + (y + .5 - cy)) <= 3.2 and abs((x + .5 - cx) - (y + .5 - cy)) <= 2.2}, color)
+    for cx, cy in centres[:-1]:
+        c.put(int(cx + 1.5), int(cy - 1.5), darken(color, 0.6))
+
+
+def coil(c, color):
+    """A loop of intestine or casing."""
+    ring = ellipse(8, 8.5, 5.5, 4.5) - ellipse(8, 8.5, 3, 2.2)
+    c.fill(ring, color)
+    for (x, y) in ring:
+        if (x + y) % 4 == 0:
+            c.put(x, y, darken(color, 0.86))
+
+
+def tripe(c, color):
+    shape = ellipse(8, 8.5, 5.5, 4.5)
+    c.fill(shape, color)
+    for (x, y) in shape:
+        if x % 2 == 0 and y % 2 == 0:
+            c.put(x, y, darken(color, 0.82))
+
+
 def sack(c, color, tie=(150, 110, 70)):
     c.fill(ellipse(8, 10, 5.5, 4.5), color)
     c.fill(rect(6, 3, 9, 5), color)
@@ -411,6 +437,112 @@ def draw(item_id):
         sack(c, (170, 130, 80))
     elif base == "pitchfork":
         fork(c)
+    # --- 1.1 肉類線與內臟線 ---
+    elif base in ("pork_mince", "beef_mince", "mutton_mince"):
+        pile(c, {"pork_mince": (232, 150, 140), "beef_mince": (196, 82, 76), "mutton_mince": (190, 96, 88)}[base])
+    elif base == "raw_sausage":
+        sausage(c, (226, 132, 120))
+    elif base == "cured_sausage":
+        sausage(c, (150, 50, 40), links=3)
+    elif base == "cured_pork_belly":
+        meat(c, (150, 70, 50), fat=(236, 210, 170))
+    elif base == "cured_duck_leg":
+        drumstick(c, (150, 80, 46))
+    elif base == "beef_jerky":
+        sheet(c, (110, 50, 34), (80, 36, 24))
+    elif base == "pork_liver":
+        blob(c, (120, 46, 40), 5.5, 3.8)
+    elif base == "goose_liver":
+        blob(c, (226, 188, 150), 5.5, 4)
+    elif base == "chicken_gizzard":
+        blob(c, (150, 70, 60), 4, 3.5)
+    elif base == "duck_blood":
+        block(c, (110, 30, 30))
+    elif base in ("pig_intestine", "cleaned_intestine"):
+        coil(c, (230, 170, 160) if base == "pig_intestine" else (240, 214, 200))
+    elif base == "sausage_casing":
+        coil(c, (244, 236, 220))
+    elif base in ("beef_tripe", "cleaned_tripe"):
+        tripe(c, (200, 180, 150) if base == "beef_tripe" else (236, 228, 210))
+    elif base == "foie_gras_pate":
+        jar(c, (220, 180, 140))
+    # --- 1.1 蛋奶線與起司線 ---
+    elif base == "skim_milk":
+        bottle(c, (232, 238, 244))
+    elif base.endswith("_ice_cream"):
+        cone = {"vanilla_ice_cream": (250, 244, 220), "berry_ice_cream": (236, 150, 180), "chocolate_ice_cream": (120, 76, 50)}[base]
+        c.fill(ellipse(8, 6, 4.5, 3.8), cone)
+        c.fill({(x, y) for x in range(4, 13) for y in range(8, 15) if abs(x + .5 - 8) <= (15 - y) * 0.6}, (214, 160, 90))
+    elif base == "custard":
+        jar(c, (250, 220, 120))
+    elif base == "truffle":
+        blob(c, (70, 52, 40), 4.5, 4)
+    elif base in ("goat_cheese", "mozzarella", "chhurpi", "ricotta", "milk_tofu"):
+        block(c, {"goat_cheese": (250, 250, 242), "mozzarella": (252, 250, 236), "chhurpi": (238, 228, 200),
+                  "ricotta": (252, 252, 246), "milk_tofu": (246, 240, 220)}[base])
+    elif base in ("aged_goat_cheese", "chhurpi_block"):
+        block(c, (236, 220, 170) if base == "aged_goat_cheese" else (220, 200, 160))
+    elif base == "vintage_cheese_wheel":
+        wheel(c, (226, 176, 70), (150, 100, 40))
+    elif base == "smoked_cheese_wheel":
+        wheel(c, (220, 170, 90), (120, 70, 30))
+    elif base == "vintage_cheese_slice":
+        wedge(c, (226, 180, 76))
+    elif base == "smoked_cheese_slice":
+        wedge(c, (206, 150, 80))
+    # --- 1.1 皮革線、絨毛線、布料線、孵化與飼料線 ---
+    elif base == "oiled_leather":
+        sheet(c, (130, 80, 46), (110, 66, 38))
+    elif base == "leather_apron":
+        c.fill(rect(5, 3, 10, 5), (130, 80, 46))
+        c.fill(rect(3, 6, 12, 14), (130, 80, 46))
+    elif base == "lasso":
+        c.fill(ellipse(8, 7, 5, 4) - ellipse(8, 7, 3.5, 2.6), (150, 100, 60))
+        c.fill(rect(7, 11, 8, 14), (150, 100, 60))
+    elif base in ("goat_cashmere", "rabbit_fur"):
+        fluff(c, (236, 228, 214) if base == "goat_cashmere" else (214, 200, 186))
+    elif base in ("yarn", "fine_yarn"):
+        c.fill(ellipse(8, 8.5, 5, 5), (232, 222, 206) if base == "yarn" else (246, 240, 232))
+        for x in range(4, 13, 2):
+            c.put(x, 8, (200, 188, 170))
+    elif base == "feather_duster":
+        fluff(c, (220, 220, 214))
+        c.fill(rect(7, 10, 8, 15), (130, 90, 50))
+    elif base in ("felt", "wool_cloth", "plush_cloth"):
+        sheet(c, {"felt": (200, 190, 176), "wool_cloth": (220, 210, 190), "plush_cloth": (246, 244, 238)}[base])
+    elif base == "wool_hat":
+        c.fill(ellipse(8, 9, 5.5, 4.5), (180, 60, 50))
+        c.fill(rect(2, 11, 13, 12), (240, 236, 226))
+    elif base == "wool_scarf":
+        c.fill(rect(3, 4, 12, 6), (60, 110, 170))
+        c.fill(rect(9, 6, 11, 14), (60, 110, 170))
+    elif base == "egg_candler":
+        c.fill(rect(6, 9, 9, 14), (150, 156, 164))
+        c.fill(ellipse(7.5, 6, 3, 3.5), (250, 220, 120))
+    elif base == "eggshell":
+        egg(c, (236, 224, 200), (250, 246, 236))
+    elif base == "calcium_powder":
+        pile(c, (244, 244, 238))
+    elif base == "calcium_feed":
+        sack(c, (220, 220, 200))
+    elif base == "silage":
+        bundle(c, (150, 160, 70))
+    # --- 1.1 役用與牧場管理 ---
+    elif base == "harness":
+        c.fill(ellipse(8, 8, 5.5, 5) - ellipse(8, 8, 3.5, 3), (120, 74, 42))
+        c.fill(rect(7, 2, 8, 4), (160, 164, 170))
+    elif base == "plough":
+        c.fill(rect(2, 4, 11, 5), (140, 100, 60))
+        c.fill({(x, y) for x in range(9, 15) for y in range(6, 14) if x - 9 >= (y - 6) * 0.4}, (160, 164, 170))
+    elif base == "animal_blanket":
+        sheet(c, (190, 60, 50), (240, 200, 80))
+    elif base == "leather_gloves":
+        c.fill(rect(4, 6, 10, 13), (130, 80, 46))
+        c.fill(rect(4, 2, 5, 6), (130, 80, 46))
+        c.fill(rect(7, 2, 8, 6), (130, 80, 46))
+        c.fill(rect(10, 4, 11, 7), (130, 80, 46))
+    elif base == "herding_horn":
+        horn(c, (220, 206, 176))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

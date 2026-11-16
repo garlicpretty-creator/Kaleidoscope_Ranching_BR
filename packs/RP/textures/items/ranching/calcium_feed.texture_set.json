@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "calcium_feed",
+    "metalness_emissive_roughness_subsurface": "calcium_feed_mers",
+    "normal": "calcium_feed_normal"
+  }
+}

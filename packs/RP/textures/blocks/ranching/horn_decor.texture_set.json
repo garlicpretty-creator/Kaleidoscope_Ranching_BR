@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "horn_decor",
+    "metalness_emissive_roughness_subsurface": "horn_decor_mers",
+    "normal": "horn_decor_normal"
+  }
+}

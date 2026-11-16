@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "hamburg_steak",
+    "metalness_emissive_roughness_subsurface": "hamburg_steak_mers",
+    "normal": "hamburg_steak_normal"
+  }
+}

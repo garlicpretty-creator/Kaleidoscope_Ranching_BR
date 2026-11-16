@@ -4,15 +4,22 @@
 import { spawnSync } from "node:child_process";
 
 const STEPS = [
+  ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
   ["py", "tools/m2/gen_content.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
+  ["node", "tools/gen_sleep.mjs"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
+  ["node", "tools/gen_catalog.mjs"],
   ["node", "tools/gen_shared.mjs"],
   ["py", "tools/art/rd_icons.py", "apply"],
+  ["py", "tools/art/carcass_icons.py"],
+  ["py", "tools/fix_zfight.py"],
+  ["py", "tools/square_block_textures.py"],
   ["py", "tools/gen_pbr.py"],
+  ["py", "tools/png_snapshot.py", "restore"],
 ];
 
 const CANDIDATES = process.platform === "win32"

@@ -1,6 +1,6 @@
 // Feed table. Each feed item gives `units` of a trough "kind".
 // Trough state `kaleidoscope_ranching:kind`: 0 empty, then the ids below.
-// Tier (乾草 1 / 混合 2 / 精飼料 3) is used by M3 for milk & egg quality.
+// Tier (乾草 1 / 混合 2 / 精飼料 3): which animals a feed suits. Milk and eggs have no quality grades.
 
 export const KIND = {
   EMPTY: 0,
@@ -9,6 +9,8 @@ export const KIND = {
   VEG: 3, // 蔬菜·廚餘 (pigs, rabbits)
   MIXED: 4, // 混合飼料 (everyone)
   CONCENTRATE: 5, // 精飼料 (everyone)
+  SILAGE: 6, // 1.1 青貯料 (ruminants only)
+  CALCIUM: 7, // 1.1 鈣質飼料 (poultry only)
 };
 
 export const KIND_TIER = {
@@ -17,6 +19,9 @@ export const KIND_TIER = {
   [KIND.VEG]: 1,
   [KIND.MIXED]: 2,
   [KIND.CONCENTRATE]: 3,
+  // 1.1: concentrate-grade feeds for one group only (企劃書 1.1 八、孵化與飼料線).
+  [KIND.SILAGE]: 3,
+  [KIND.CALCIUM]: 3,
 };
 
 /** itemId → { kind, units } */
@@ -39,11 +44,19 @@ export const FEEDS = {
   // 廚餘 (proposal: 豬吃廚餘): scraps from the food waste bin.
   "kaleidoscope_ranching:food_waste": { kind: KIND.VEG, units: 1 },
 
+  // 1.1 內臟線: offal nobody cooked is pig feed (企劃書: 沒用完的生內臟可以餵豬).
+  ...Object.fromEntries(
+    ["pork_liver", "pig_intestine", "chicken_gizzard", "duck_blood", "goose_liver", "beef_tripe", "cleaned_intestine", "cleaned_tripe"]
+      .map((id) => [`kaleidoscope_ranching:${id}`, { kind: KIND.VEG, units: 1 }])
+  ),
+
   "kaleidoscope_ranching:mixed_feed": { kind: KIND.MIXED, units: 1 },
   // 乳清餵豬 (proposal, by-products line): whey from the cheese press fills a
   // trough as mixed feed, so pigs and cattle drink it.
   "kaleidoscope_ranching:whey": { kind: KIND.MIXED, units: 2 },
   "kaleidoscope_ranching:concentrate_feed": { kind: KIND.CONCENTRATE, units: 1 },
+  "kaleidoscope_ranching:silage": { kind: KIND.SILAGE, units: 1 },
+  "kaleidoscope_ranching:calcium_feed": { kind: KIND.CALCIUM, units: 1 },
 };
 
 /** External feeds registered at runtime (M5 API will call this). */

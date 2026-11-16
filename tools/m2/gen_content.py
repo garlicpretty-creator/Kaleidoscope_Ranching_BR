@@ -84,6 +84,7 @@ UI = {
     "roster.last_seen": ("最後位置：%s, %s, %s", "最后位置：%s, %s, %s", "Last seen: %s, %s, %s"),
     "settings.title": ("牧場設定", "牧场设定", "Ranch Settings"),
     "settings.clean_need": ("啟用「清潔」需求（糞便）", "启用“清洁”需求（粪便）", "Enable the Clean need (manure)"),
+    "settings.sleep": ("動物作息（晚上睡覺）", "动物作息（晚上睡觉）", "Animal routine (sleep at night)"),
     "trough.status": ("飼槽：%s %s/%s", "饲槽：%s %s/%s", "Trough: %s %s/%s"),
     "trough.other_kind": ("飼槽裡還有別種飼料", "饲槽里还有别种饲料", "The trough holds a different feed"),
     "trough.full": ("飼槽已滿", "饲槽已满", "The trough is full"),
@@ -93,6 +94,9 @@ UI = {
     "kind.3": ("蔬菜飼料", "蔬菜饲料", "Vegetable feed"),
     "kind.4": ("混合飼料", "混合饲料", "Mixed feed"),
     "kind.5": ("精飼料", "精饲料", "Concentrate"),
+    # 1.1 孵化與飼料線
+    "kind.6": ("青貯料", "青贮料", "Silage"),
+    "kind.7": ("鈣質飼料", "钙质饲料", "Calcium feed"),
     "water.status": ("水槽：%s/%s", "水槽：%s/%s", "Water: %s/%s"),
     "waterer.ok": ("已接上水源", "已接上水源", "Connected to water"),
     "waterer.dry": ("需要緊鄰水源方塊", "需要紧邻水源方块", "Needs an adjacent water source"),
@@ -170,10 +174,15 @@ GEOMETRY = {
 # --------------------------------------------------------------------------
 # Block definitions
 # --------------------------------------------------------------------------
+# Model blocks render single-sided: plain alpha_test draws back faces too, so the
+# faces inside a model and faces that touch fought each other and flickered.
+# (The alfalfa crop keeps alpha_test: its crossed planes are seen from both sides.)
+SOLID = "alpha_test_single_sided"
+
 def mats(default, **named):
-    m = {"*": {"texture": default, "render_method": "alpha_test"}}
+    m = {"*": {"texture": default, "render_method": SOLID}}
     for k, v in named.items():
-        m[k] = {"texture": v, "render_method": "alpha_test"}
+        m[k] = {"texture": v, "render_method": SOLID}
     return m
 
 def box(x, y, z, w, h, d):
@@ -189,13 +198,14 @@ def state(name, lo, hi):
 def q(name):
     return f"q.block_state('{NS}:{name}')"
 
-FEED_TEX = {1: "kr_feed_grass", 2: "kr_feed_grain", 3: "kr_feed_veg", 4: "kr_feed_mixed", 5: "kr_feed_concentrate"}
+# 1.1: silage looks like mixed feed and calcium feed like grain until they get their own art.
+FEED_TEX = {1: "kr_feed_grass", 2: "kr_feed_grain", 3: "kr_feed_veg", 4: "kr_feed_mixed", 5: "kr_feed_concentrate", 6: "kr_feed_mixed", 7: "kr_feed_grain"}
 
 def block_defs():
     B = {}
     low = box(-8, 0, -8, 16, 8, 16)
     B["trough"] = dict(
-        states={**state("fill", 0, 15), **state("kind", 0, 5)},
+        states={**state("fill", 0, 15), **state("kind", 0, 7)},
         components={
             "minecraft:geometry": {"identifier": f"geometry.{NS}.trough",
                                    "bone_visibility": {"feed": f"{q('fill')} > 0"}},
@@ -350,6 +360,9 @@ def block_defs():
 # --------------------------------------------------------------------------
 # Item definitions
 # --------------------------------------------------------------------------
+TOOLS = {"brush", "ranch_notebook", "ear_tag", "feed_bag", "manure_fork"}
+
+
 def item_defs():
     feed_tag = {"minecraft:tags": {"tags": [f"{NS}:feed"]}}
     I = {
@@ -380,11 +393,20 @@ def item_defs():
 R = []
 def it(i):
     return {"tag": i[4:]} if i.startswith("tag:") else {"item": i}
+def unlock(ingredients):
+    """1.20+ recipes need unlock data: shown once the player holds any ingredient (tags cannot unlock)."""
+    items = []
+    for ingredient in ingredients:
+        if "item" in ingredient and {"item": ingredient["item"]} not in items:
+            items.append({"item": ingredient["item"]})
+    return items or [{"context": "AlwaysUnlocked"}]
+
 def shaped(name, pattern, key, result, count=1, tag="crafting_table"):
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shaped": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "pattern": pattern,
         "key": {k: it(v) for k, v in key.items()},
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock([it(v) for v in key.values()])}}))
 def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
     ing = []
     for x in ingredients:
@@ -392,7 +414,8 @@ def shapeless(name, ingredients, result, count=1, tag="crafting_table"):
         ing.append({**it(i if ":" in i else f"{NS}:{i}"), "count": n})
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shapeless": {
         "description": {"identifier": f"{NS}:{name}"}, "tags": [tag], "ingredients": ing,
-        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count}}}))
+        "result": {"item": result if ":" in result else f"{NS}:{result}", "count": count},
+        "unlock": unlock(ing)}}))
 
 def recipes():
     P, I = "tag:minecraft:planks", "minecraft:iron_ingot"
@@ -617,15 +640,20 @@ def main():
             desc["menu_category"] = {"category": "none"}
         if d.get("states"):
             desc["states"] = d["states"]
-        body = {"description": desc, "components": d["components"]}
+        comps = {"minecraft:display_name": f"tile.{NS}:{name}.name", **d["components"]}
+        body = {"description": desc, "components": comps}
         if d.get("permutations"):
             body["permutations"] = d["permutations"]
         write_json(BP / "blocks" / f"{name}.json", {"format_version": FMT, "minecraft:block": body})
 
     for name, comps in item_defs().items():
+        # Tools go in the Equipment tab, like the other Ranching tools.
+        category = "equipment" if name in TOOLS else "items"
         write_json(BP / "items" / f"{name}.json", {"format_version": FMT, "minecraft:item": {
-            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": "items"}},
-            "components": {"minecraft:icon": f"kr_{name}", **comps}}})
+            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": category}},
+            # The explicit key keeps the name working inside a creative catalog group (gen_catalog.mjs).
+            "components": {"minecraft:icon": f"kr_{name}",
+                           "minecraft:display_name": {"value": f"item.{NS}:{name}.name"}, **comps}}})
 
     recipes()
     for name, data in R:

@@ -16,6 +16,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:alfalfa_crop.name",
       "minecraft:geometry": "geometry.kaleidoscope_ranching.cross",
       "minecraft:material_instances": {
         "*": {

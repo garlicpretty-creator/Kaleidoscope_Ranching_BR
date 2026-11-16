@@ -80,7 +80,7 @@ export function countItems(player, typeIds) {
 
 /**
  * Removes `amount` items chosen from `typeIds`, in the order given (so callers
- * can list the lowest quality first). Returns the type ids actually removed,
+ * can list the preferred items first). Returns the type ids actually removed,
  * one entry per item, or null if the player does not have enough. In creative
  * nothing is removed but the would-be selection is still returned.
  */

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "leather_gloves",
+    "metalness_emissive_roughness_subsurface": "leather_gloves_mers",
+    "normal": "leather_gloves_normal"
+  }
+}

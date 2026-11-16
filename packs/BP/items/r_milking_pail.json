@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_milking_pail",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:milking_pail.name"
+      },
       "minecraft:max_stack_size": 1,
       "minecraft:durability": {
         "max_durability": 128

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "skim_milk",
+    "metalness_emissive_roughness_subsurface": "skim_milk_mers",
+    "normal": "skim_milk_normal"
+  }
+}

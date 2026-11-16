@@ -33,10 +33,11 @@
           "piece_4": "q.block_state('kaleidoscope_ranching:cut') <= 0"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:cheese_wheel.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_cheese_wheel",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

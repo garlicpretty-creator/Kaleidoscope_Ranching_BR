@@ -21,10 +21,11 @@
         "identifier": "geometry.kaleidoscope_ranching.hitching_post",
         "bone_visibility": {}
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:hitching_post.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_hitching_post",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

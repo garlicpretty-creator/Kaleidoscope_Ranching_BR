@@ -16,13 +16,19 @@
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.buffalo.walk",
-        "look_at_target": "animation.common.look_at_target"
+        "look_at_target": "animation.common.look_at_target",
+        "sleep": "animation.kaleidoscope_ranching.buffalo.sleep"
       },
       "scripts": {
         "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.15 : 1.0)",
         "animate": [
           "walk",
-          "look_at_target"
+          {
+            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "sleep": "q.property('kaleidoscope_ranching:sleeping')"
+          }
         ]
       },
       "render_controllers": [

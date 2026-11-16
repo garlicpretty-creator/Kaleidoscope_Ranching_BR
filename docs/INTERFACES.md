@@ -21,7 +21,7 @@ M1 和 M3 需要知道「這隻動物今天照顧得好不好」，但這是 M2 
 | --- | --- |
 | `getAffection` | `getHearts`（M2 以點數儲存，20 點 1 心） |
 | `canBreed` | `needsMetToday`：四項需求今天都滿足 |
-| `production` | 一律有產出；品質依 `data/animals.js` 的 `QUALITY_RULES`，用心數與當天飼料等級（今天用 `feedTierToday`，過去的日子用 `lastDayTier`） |
+| `production` | 一律有產出（產物不分品質） |
 | `onBorn` | `setAffection(baby, 繼承心數 × 20)` |
 
 契約本身的寫法（給日後其他實作參考）：
@@ -32,14 +32,14 @@ import { registerHusbandryProvider } from "./core/husbandry.js";
 registerHusbandryProvider({
   getAffection(entity) { /* 回傳 0..5 */ },
   canBreed(entity) { /* 今天四項需求都滿足了嗎 */ },
-  production(entity, day) { /* { produces: true/false, quality: "plain" | "fine" | "superb" } */ },
+  production(entity, day) { /* { produces: true/false } */ },
   onMated(mother, father) {},
   onBorn(baby, mother, inheritedAffection) { /* 把起始好感度寫進幼體 */ },
   onCared(entity, player, kind) { /* kind 例如 "nursing_bottle" */ },
 });
 ```
 
-每個函式都可以省略。M2 還沒接上之前的預設行為是：好感度 0、隨時可以繁殖、每天都有產出且品質為普通。所以 M1、M3 不必等 M2 完成就能測試。
+每個函式都可以省略。M2 還沒接上之前的預設行為是：好感度 0、隨時可以繁殖、每天都有產出。所以 M1、M3 不必等 M2 完成就能測試。
 
 各函式的呼叫時機：
 

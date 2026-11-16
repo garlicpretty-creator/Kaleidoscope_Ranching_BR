@@ -8,7 +8,10 @@
       }
     },
     "components": {
-      "minecraft:icon": "kr_beet_sugar_cube"
+      "minecraft:icon": "kr_beet_sugar_cube",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:beet_sugar_cube.name"
+      }
     }
   }
 }

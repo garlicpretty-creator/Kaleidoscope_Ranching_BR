@@ -16,11 +16,12 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:salt_lick.name",
       "minecraft:geometry": "geometry.kaleidoscope_ranching.salt_lick",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_salt_lick",
-          "render_method": "alpha_test"
+          "render_method": "alpha_test_single_sided"
         }
       },
       "minecraft:collision_box": {

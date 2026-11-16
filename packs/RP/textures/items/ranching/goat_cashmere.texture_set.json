@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "goat_cashmere",
+    "metalness_emissive_roughness_subsurface": "goat_cashmere_mers",
+    "normal": "goat_cashmere_normal"
+  }
+}

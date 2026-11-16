@@ -1,0 +1,35 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_pen_gate"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SNS",
+      "SPS"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:stick"
+      },
+      "N": {
+        "item": "minecraft:iron_nugget"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:pen_gate",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:pen_gate"
+      }
+    ]
+  }
+}

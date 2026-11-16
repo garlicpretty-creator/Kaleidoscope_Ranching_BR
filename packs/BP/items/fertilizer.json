@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_fertilizer",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:fertilizer.name"
+      },
       "kaleidoscope_ranching:fertilizer": {}
     }
   }

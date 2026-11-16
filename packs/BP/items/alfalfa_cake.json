@@ -8,7 +8,10 @@
       }
     },
     "components": {
-      "minecraft:icon": "kr_alfalfa_cake"
+      "minecraft:icon": "kr_alfalfa_cake",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:alfalfa_cake.name"
+      }
     }
   }
 }

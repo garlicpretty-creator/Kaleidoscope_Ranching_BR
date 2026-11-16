@@ -40,7 +40,42 @@ SOUNDS = {
     "hitching_post": "wood",
     "cheese_wheel": "cloth",
     "food_waste_bin": "wood",
+    "meat_grinder": "metal",
+    "milking_rack": "wood",
+    "cream_separator": "metal",
+    "ice_cream_churn": "wood",
+    "spinning_wheel": "wood",
+    "weaving_loom": "wood",
+    "silage_barrel": "wood",
+    "rug": "cloth",
+    "down_pillow": "cloth",
+    "down_quilt": "cloth",
+    "pen_gate": "wood",
+    "pen_gate_top": "wood",
+    "horn_decor": "bone",
 }
+
+
+# 1.1: blocks dyed by state get one tinted copy of their texture per colour
+# (block_<colour>.png, atlas key kr_<block>_<colour>; tools/gen_blocks.mjs textureByState).
+DYE = {
+    "white": (240, 240, 236), "orange": (232, 130, 40), "magenta": (190, 70, 180), "light_blue": (110, 170, 220),
+    "yellow": (240, 200, 50), "lime": (130, 200, 40), "pink": (236, 150, 170), "gray": (90, 96, 100),
+    "light_gray": (160, 160, 154), "cyan": (40, 140, 150), "purple": (120, 50, 170), "blue": (50, 60, 160),
+    "brown": (120, 80, 50), "green": (80, 110, 30), "red": (170, 40, 36), "black": (30, 30, 34),
+}
+DYED = {"rug": list(DYE)}
+
+
+def tint(image, color):
+    out = image.copy()
+    px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            if a:
+                px[x, y] = (r * color[0] // 255, g * color[1] // 255, b * color[2] // 255, a)
+    return out
 
 
 def registry_items():
@@ -64,6 +99,19 @@ def dish_looks():
     url = (ROOT / "packs/BP/scripts/data/dishes.js").as_uri()
     out = subprocess.run(["node", "-e", script, url], check=True, capture_output=True, text=True)
     return {k: (v[0], tuple(v[1])) for k, v in json.loads(out.stdout).items()}
+
+
+def handmade_materials(block_id):
+    """Material instance names a hand-made block model's faces use, beyond the default `*`."""
+    geo = HANDMADE / f"{block_id}.geo.json"
+    if not geo.exists():
+        return []
+    names = set()
+    for bone in json.loads(geo.read_text(encoding="utf8"))["minecraft:geometry"][0]["bones"]:
+        for cube in bone.get("cubes", []):
+            if isinstance(cube.get("uv"), dict):
+                names.update(face["material_instance"] for face in cube["uv"].values() if "material_instance" in face)
+    return sorted(names)
 
 
 def write_json(path, data):
@@ -102,7 +150,9 @@ def main():
     for geo in HANDMADE.glob("*.geo.json"):
         blocks.setdefault(geo.name.removesuffix(".geo.json"), None)
     blocks = dict(sorted(blocks.items()))
-    clean(block_dir, set(blocks))
+    extras = {block_id: handmade_materials(block_id) for block_id in blocks}
+    clean(block_dir, set(blocks) | {f"{b}_{m}" for b, ms in extras.items() for m in ms}
+          | {f"{b}_{c}" for b, colors in DYED.items() for c in colors})
     terrain = {}
     previews = []
     for block_id, build in blocks.items():
@@ -112,12 +162,20 @@ def main():
             # Hand-made (art_src/m4_scripts/*.py): install it as is.
             shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
             shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
+            # Faces with a material instance (the rack's carcasses) use <block>_<instance>.png.
+            for material in extras[block_id]:
+                name = f"{block_id}_{material}"
+                shutil.copyfile(HANDMADE / f"{name}.png", block_dir / f"{name}.png")
+                terrain[f"kr_{name}"] = {"textures": f"textures/blocks/ranching/{name}"}
             continue
         model = build()
         pack(model)
         write_json(RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json", geometry_json(model))
         texture = render_texture(model, block_art.paint)
         texture.save(block_dir / f"{block_id}.png")
+        for color in DYED.get(block_id, []):
+            tint(texture, DYE[color]).save(block_dir / f"{block_id}_{color}.png")
+            terrain[f"kr_{block_id}_{color}"] = {"textures": f"textures/blocks/ranching/{block_id}_{color}"}
         previews.append((block_id, render_view(model, block_art.paint, lambda cube: True, view="3/4", scale=7, size=(220, 240))))
 
     write_json(FRAGMENT / "item_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.items", "texture_data": item_atlas})

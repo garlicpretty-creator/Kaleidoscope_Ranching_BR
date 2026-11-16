@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_forage",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:forage.name"
+      },
       "minecraft:tags": {
         "tags": [
           "kaleidoscope_ranching:feed"

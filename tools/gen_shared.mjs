@@ -46,9 +46,41 @@ const STATIC = {
     [`${NAMESPACE}.message.breed.pregnant`]: "She is already expecting.",
     [`${NAMESPACE}.message.breed.resting`]: "This animal bred recently and needs to rest.",
     [`${NAMESPACE}.message.breed.not_cared`]: "This animal has not been cared for today and will not breed.",
-    [`${NAMESPACE}.message.rack.empty`]: "Hang a carcass on the rack first.",
+    [`${NAMESPACE}.message.rack.empty`]: "Hang a carcass on the rack, or something to air-dry.",
     [`${NAMESPACE}.message.rack.occupied`]: "A carcass is already hanging here.",
     [`${NAMESPACE}.message.rack.need_blade`]: "Cut it with a kitchen knife, a sword or an axe.",
+    [`${NAMESPACE}.message.harness.on`]: "Harnessed. Use a plough on it to hitch the plough.",
+    [`${NAMESPACE}.message.harness.off`]: "Harness taken off.",
+    [`${NAMESPACE}.message.harness.already`]: "This buffalo is already harnessed.",
+    [`${NAMESPACE}.message.harness.baby`]: "A calf cannot wear a harness.",
+    [`${NAMESPACE}.message.harness.shy`]: "The buffalo needs %s hearts before it takes a harness.",
+    [`${NAMESPACE}.message.plough.on`]: "Plough hitched. Lead the buffalo to till the ground.",
+    [`${NAMESPACE}.message.plough.off`]: "Plough unhitched.",
+    [`${NAMESPACE}.message.plough.need_harness`]: "Harness the buffalo first.",
+    [`${NAMESPACE}.message.blanket.on`]: "Blanket on: it will not feel the cold at night.",
+    [`${NAMESPACE}.message.blanket.already`]: "It already wears a blanket.",
+    [`${NAMESPACE}.message.sheepdog.made`]: "Your wolf is now a sheepdog. Blow the horn to send it herding.",
+    [`${NAMESPACE}.message.sheepdog.not_yours`]: "Only a wolf you have tamed can become your sheepdog.",
+    [`${NAMESPACE}.message.horn.rally_set`]: "This hitching post is now your rally point.",
+    [`${NAMESPACE}.message.horn.no_rally`]: "Use the horn on a hitching post first to set a rally point.",
+    [`${NAMESPACE}.message.horn.no_dog`]: "No sheepdog of yours is near.",
+    [`${NAMESPACE}.message.horn.herding`]: "Your sheepdogs are bringing the animals in.",
+    [`${NAMESPACE}.message.horn.done`]: "Herding done: %s animal(s) brought in.",
+    [`${NAMESPACE}.message.lasso.missed`]: "No animal in reach of the lasso.",
+    [`${NAMESPACE}.message.candler.none`]: "No eggs are hatching here.",
+    [`${NAMESPACE}.message.candler.status`]: "%s egg(s) hatching: the next in about %s minute(s).",
+    [`${NAMESPACE}.message.candler.paused`]: "%s egg(s), paused: the incubator needs heat (next in about %s minute(s) once warm).",
+    [`${NAMESPACE}.message.milking_rack.tied`]: "Tied to the milking rack. Put empty bottles in a container above; the milk goes to the one below.",
+    [`${NAMESPACE}.message.milking_rack.untied`]: "Untied from the milking rack.",
+    [`${NAMESPACE}.message.milking_rack.occupied`]: "An animal is already on this milking rack.",
+    [`${NAMESPACE}.message.milking_rack.not_milkable`]: "Only an adult cow, goat, buffalo or yak can go on the milking rack.",
+    [`${NAMESPACE}.message.milking_rack.empty`]: "Lead a milkable animal here to tie her to the rack.",
+    [`${NAMESPACE}.message.rack.drying_hung`]: "Hung up to dry (%s/%s). Take it down in 3 days.",
+    [`${NAMESPACE}.message.rack.drying_full`]: "The rack is full: it dries %s pieces at a time.",
+    [`${NAMESPACE}.message.rack.drying_left`]: "%s piece(s) still drying: the next is done in about %s minute(s).",
+    [`${NAMESPACE}.message.rack.drying_busy`]: "Take down what is drying before hanging a carcass.",
+    [`${NAMESPACE}.message.wash.done`]: "Washed. Water trough: %s/%s.",
+    [`${NAMESPACE}.message.wash.no_water`]: "The water trough is empty. Fill it with a water bucket first.",
     [`${NAMESPACE}.message.food_waste_bin.added`]: "Scraps in the bin: %s / %s",
     [`${NAMESPACE}.message.food_waste_bin.full`]: "The bin is full. Take the scraps out first.",
     [`${NAMESPACE}.message.food_waste_bin.empty`]: "Put leftover food in to make scraps for pigs and rabbits.",
@@ -88,9 +120,41 @@ const STATIC = {
     [`${NAMESPACE}.message.breed.pregnant`]: "牠已經懷孕了。",
     [`${NAMESPACE}.message.breed.resting`]: "牠剛繁殖過，需要休息一下。",
     [`${NAMESPACE}.message.breed.not_cared`]: "牠今天還沒被照顧好，不會繁殖。",
-    [`${NAMESPACE}.message.rack.empty`]: "先把屠體掛上掛架。",
+    [`${NAMESPACE}.message.rack.empty`]: "先把屠體掛上掛架，或掛上要風乾的肉。",
     [`${NAMESPACE}.message.rack.occupied`]: "掛架上已經有屠體了。",
     [`${NAMESPACE}.message.rack.need_blade`]: "請用菜刀、劍或斧分切。",
+    [`${NAMESPACE}.message.harness.on`]: "裝上挽具了。拿犁點牠就能接上犁。",
+    [`${NAMESPACE}.message.harness.off`]: "挽具卸下了。",
+    [`${NAMESPACE}.message.harness.already`]: "這頭水牛已經裝了挽具。",
+    [`${NAMESPACE}.message.harness.baby`]: "小牛不能裝挽具。",
+    [`${NAMESPACE}.message.harness.shy`]: "水牛要 %s 心以上才肯裝挽具。",
+    [`${NAMESPACE}.message.plough.on`]: "接上犁了。牽著水牛走就會耕地。",
+    [`${NAMESPACE}.message.plough.off`]: "犁卸下了。",
+    [`${NAMESPACE}.message.plough.need_harness`]: "先替水牛裝上挽具。",
+    [`${NAMESPACE}.message.blanket.on`]: "披上披毯了，晚上不會受寒。",
+    [`${NAMESPACE}.message.blanket.already`]: "牠已經披著披毯了。",
+    [`${NAMESPACE}.message.sheepdog.made`]: "你的狼成了牧羊犬。吹牧笛就會去趕畜。",
+    [`${NAMESPACE}.message.sheepdog.not_yours`]: "只有你馴服的狼才能成為你的牧羊犬。",
+    [`${NAMESPACE}.message.horn.rally_set`]: "這根拴畜樁現在是你的集合點。",
+    [`${NAMESPACE}.message.horn.no_rally`]: "先拿牧笛點拴畜樁設集合點。",
+    [`${NAMESPACE}.message.horn.no_dog`]: "附近沒有你的牧羊犬。",
+    [`${NAMESPACE}.message.horn.herding`]: "牧羊犬去把動物趕回來了。",
+    [`${NAMESPACE}.message.horn.done`]: "趕畜完成：趕回 %s 隻。",
+    [`${NAMESPACE}.message.lasso.missed`]: "套索範圍內沒有動物。",
+    [`${NAMESPACE}.message.candler.none`]: "這裡沒有正在孵的蛋。",
+    [`${NAMESPACE}.message.candler.status`]: "%s 顆蛋在孵，下一顆大約再 %s 分鐘。",
+    [`${NAMESPACE}.message.candler.paused`]: "%s 顆蛋暫停了：孵化器需要熱源（加熱後下一顆大約 %s 分鐘）。",
+    [`${NAMESPACE}.message.milking_rack.tied`]: "綁上擠奶架了。上方容器放空瓶，奶會送到下方的容器。",
+    [`${NAMESPACE}.message.milking_rack.untied`]: "從擠奶架解下來了。",
+    [`${NAMESPACE}.message.milking_rack.occupied`]: "這個擠奶架上已經有動物了。",
+    [`${NAMESPACE}.message.milking_rack.not_milkable`]: "只有成年的母牛、山羊、水牛、氂牛能上擠奶架。",
+    [`${NAMESPACE}.message.milking_rack.empty`]: "牽著可擠奶的動物來，才能綁上擠奶架。",
+    [`${NAMESPACE}.message.rack.drying_hung`]: "掛上風乾（%s/%s），3 天後取下。",
+    [`${NAMESPACE}.message.rack.drying_full`]: "掛架滿了，一次只能風乾 %s 件。",
+    [`${NAMESPACE}.message.rack.drying_left`]: "還有 %s 件在風乾，下一件大約再 %s 分鐘。",
+    [`${NAMESPACE}.message.rack.drying_busy`]: "先把風乾的東西取下，才能掛屠體。",
+    [`${NAMESPACE}.message.wash.done`]: "洗好了。水槽：%s/%s。",
+    [`${NAMESPACE}.message.wash.no_water`]: "水槽沒水了，先用水桶加水。",
     [`${NAMESPACE}.message.food_waste_bin.added`]: "桶裡的廚餘：%s / %s",
     [`${NAMESPACE}.message.food_waste_bin.full`]: "廚餘桶滿了，先把廚餘取出來。",
     [`${NAMESPACE}.message.food_waste_bin.empty`]: "把吃剩的食物丟進來，變成豬和兔子吃的廚餘。",
@@ -130,9 +194,41 @@ const STATIC = {
     [`${NAMESPACE}.message.breed.pregnant`]: "它已经怀孕了。",
     [`${NAMESPACE}.message.breed.resting`]: "它刚繁殖过，需要休息一下。",
     [`${NAMESPACE}.message.breed.not_cared`]: "它今天还没被照顾好，不会繁殖。",
-    [`${NAMESPACE}.message.rack.empty`]: "先把屠体挂上挂架。",
+    [`${NAMESPACE}.message.rack.empty`]: "先把屠体挂上挂架，或挂上要风干的肉。",
     [`${NAMESPACE}.message.rack.occupied`]: "挂架上已经有屠体了。",
     [`${NAMESPACE}.message.rack.need_blade`]: "请用菜刀、剑或斧分切。",
+    [`${NAMESPACE}.message.harness.on`]: "装上挽具了。拿犁点它就能接上犁。",
+    [`${NAMESPACE}.message.harness.off`]: "挽具卸下了。",
+    [`${NAMESPACE}.message.harness.already`]: "这头水牛已经装了挽具。",
+    [`${NAMESPACE}.message.harness.baby`]: "小牛不能装挽具。",
+    [`${NAMESPACE}.message.harness.shy`]: "水牛要 %s 心以上才肯装挽具。",
+    [`${NAMESPACE}.message.plough.on`]: "接上犁了。牵着水牛走就会耕地。",
+    [`${NAMESPACE}.message.plough.off`]: "犁卸下了。",
+    [`${NAMESPACE}.message.plough.need_harness`]: "先替水牛装上挽具。",
+    [`${NAMESPACE}.message.blanket.on`]: "披上披毯了，晚上不会受寒。",
+    [`${NAMESPACE}.message.blanket.already`]: "它已经披着披毯了。",
+    [`${NAMESPACE}.message.sheepdog.made`]: "你的狼成了牧羊犬。吹牧笛就会去赶畜。",
+    [`${NAMESPACE}.message.sheepdog.not_yours`]: "只有你驯服的狼才能成为你的牧羊犬。",
+    [`${NAMESPACE}.message.horn.rally_set`]: "这根拴畜桩现在是你的集合点。",
+    [`${NAMESPACE}.message.horn.no_rally`]: "先拿牧笛点拴畜桩设集合点。",
+    [`${NAMESPACE}.message.horn.no_dog`]: "附近没有你的牧羊犬。",
+    [`${NAMESPACE}.message.horn.herding`]: "牧羊犬去把动物赶回来了。",
+    [`${NAMESPACE}.message.horn.done`]: "赶畜完成：赶回 %s 只。",
+    [`${NAMESPACE}.message.lasso.missed`]: "套索范围内没有动物。",
+    [`${NAMESPACE}.message.candler.none`]: "这里没有正在孵的蛋。",
+    [`${NAMESPACE}.message.candler.status`]: "%s 颗蛋在孵，下一颗大约再 %s 分钟。",
+    [`${NAMESPACE}.message.candler.paused`]: "%s 颗蛋暂停了：孵化器需要热源（加热后下一颗大约 %s 分钟）。",
+    [`${NAMESPACE}.message.milking_rack.tied`]: "绑上挤奶架了。上方容器放空瓶，奶会送到下方的容器。",
+    [`${NAMESPACE}.message.milking_rack.untied`]: "从挤奶架解下来了。",
+    [`${NAMESPACE}.message.milking_rack.occupied`]: "这个挤奶架上已经有动物了。",
+    [`${NAMESPACE}.message.milking_rack.not_milkable`]: "只有成年的母牛、山羊、水牛、牦牛能上挤奶架。",
+    [`${NAMESPACE}.message.milking_rack.empty`]: "牵着可挤奶的动物来，才能绑上挤奶架。",
+    [`${NAMESPACE}.message.rack.drying_hung`]: "挂上风干（%s/%s），3 天后取下。",
+    [`${NAMESPACE}.message.rack.drying_full`]: "挂架满了，一次只能风干 %s 件。",
+    [`${NAMESPACE}.message.rack.drying_left`]: "还有 %s 件在风干，下一件大约再 %s 分钟。",
+    [`${NAMESPACE}.message.rack.drying_busy`]: "先把风干的东西取下，才能挂屠体。",
+    [`${NAMESPACE}.message.wash.done`]: "洗好了。水槽：%s/%s。",
+    [`${NAMESPACE}.message.wash.no_water`]: "水槽没水了，先用水桶加水。",
     [`${NAMESPACE}.message.food_waste_bin.added`]: "桶里的厨余：%s / %s",
     [`${NAMESPACE}.message.food_waste_bin.full`]: "厨余桶满了，先把厨余取出来。",
     [`${NAMESPACE}.message.food_waste_bin.empty`]: "把吃剩的食物丢进来，变成猪和兔子吃的厨余。",
@@ -192,6 +288,47 @@ function parseLang(text) {
     });
 }
 
+// --- Tooltip lines under item and block names --------------------------------
+
+// ## Like Cookery: under every Ranching item or block name, the add-on's name in
+// ## blue, and for food or drink that places a block, "placeable food/drink" in purple. Bedrock
+// ## shows the name's \n as a new line in the tooltip.
+const TOOLTIP = {
+  mod: { en_US: "Kaleidoscope Ranching", zh_TW: "森羅物語樂牧", zh_CN: "森罗物语乐牧" },
+  food: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
+  drink: { en_US: "Placeable drink", zh_TW: "可放置的飲品", zh_CN: "可放置的饮品" },
+};
+
+// Registry categories that are food even when not eaten as they are (the cheese wheel is cut first).
+const FOOD_CATEGORIES = new Set(["dairy", "dish", "prep", "meat", "cut", "mince", "cured", "offal", "egg", "preserved"]);
+const CATEGORY = new Map(ITEMS.map((item) => [`${NAMESPACE}:${item.id}`, item.category]));
+
+/** {item id: "food" | "drink"} for food and drink that place a block (minecraft:block_placer). Nothing else is labelled. */
+function placeableItems() {
+  const out = {};
+  const dir = join(root, "packs", "BP", "items");
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const item = JSON.parse(readFileSync(join(dir, file), "utf8"))["minecraft:item"];
+    const components = item?.components ?? {};
+    if (!components["minecraft:block_placer"]) continue;
+    const id = item.description.identifier;
+    const category = CATEGORY.get(id);
+    if (components["minecraft:use_animation"] === "drink" || category === "milk") out[id] = "drink";
+    else if (components["minecraft:food"] || FOOD_CATEGORIES.has(category)) out[id] = "food";
+  }
+  return out;
+}
+const PLACEABLE = placeableItems();
+
+function withTooltip(key, value, language) {
+  const match = /^(item|tile)\.(kaleidoscope_ranching:[a-z0-9_]+)\.name$/.exec(key);
+  if (!match) return value;
+  let text = `${value}\\n§9§o${TOOLTIP.mod[language]}§r`;
+  const placeable = match[1] === "item" && PLACEABLE[match[2]];
+  if (placeable) text += `\\n§d${TOOLTIP[placeable][language]}§r`;
+  return text;
+}
+
 for (const language of LANGUAGES) {
   const sections = [["registries", registryEntries(language)]];
   for (const name of fragments) {
@@ -205,7 +342,7 @@ for (const language of LANGUAGES) {
     for (const [key, value] of entries) {
       if (seen.has(key)) errors.push(`${language}: "${key}" defined by both ${seen.get(key)} and ${source}`);
       seen.set(key, source);
-      lines.push(`${key}=${value}`);
+      lines.push(`${key}=${withTooltip(key, value, language)}`);
     }
     lines.push("");
   }
