@@ -42,6 +42,15 @@ const QUIET = new Set(
     "message.rack.drying_hung",
     "message.rack.drying_left",
     "message.wash.done",
+    "message.harness.on",
+    "message.harness.off",
+    "message.plough.on",
+    "message.plough.off",
+    "message.blanket.on",
+    "message.horn.rally_set",
+    "message.horn.herding",
+    "message.horn.done",
+    "message.sheepdog.made",
     // (The candling lamp's read-out stays: showing hatching progress is what the tool is for.)
   ].map((key) => `${NS}.${key}`)
 );

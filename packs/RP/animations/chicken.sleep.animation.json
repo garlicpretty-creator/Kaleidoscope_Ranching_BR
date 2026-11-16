@@ -1,0 +1,66 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.chicken.sleep": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "position": [
+            0,
+            "q.is_baby ? -1 : -4",
+            0
+          ]
+        },
+        "a_leg_left": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "a_leg_right": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_left": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_right": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "head": {
+          "rotation": [
+            18,
+            0,
+            0
+          ]
+        },
+        "a_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        },
+        "b_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        }
+      }
+    }
+  }
+}

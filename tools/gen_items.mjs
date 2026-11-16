@@ -74,6 +74,11 @@ const OVERRIDES = {
   lasso: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:lasso": {}, "minecraft:durability": { max_durability: 64 }, "minecraft:cooldown": { category: "kr_lasso", duration: 1 } } },
   feather_duster: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:feather_duster": {}, "minecraft:durability": { max_durability: 64 } } },
   egg_candler: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:egg_candler": {} } },
+  harness: { stack: 1 },
+  plough: { stack: 1 },
+  animal_blanket: { stack: 16 },
+  leather_gloves: { stack: 1, components: { "minecraft:wearable": { slot: "slot.weapon.offhand", protection: 0 }, "minecraft:allow_off_hand": { value: true }, "minecraft:durability": { max_durability: 100 } } },
+  herding_horn: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:herding_horn": {}, "minecraft:cooldown": { category: "kr_herding_horn", duration: 3 } } },
   // Item custom components (systems/m4.js); they need item format 1.21.90.
   cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
   animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
@@ -231,6 +236,16 @@ const RECIPES = [
   shapeless("felt", [{ item: rid("yarn"), count: 4 }], "felt", 2),
   shapeless("string_from_yarn", [{ item: rid("yarn") }], "minecraft:string"),
   shapeless("calcium_powder", [{ item: rid("eggshell"), count: 4 }], "calcium_powder"),
+  // 1.1 役用與牧場管理
+  shaped("harness", ["LIL", " L "], { L: { item: rid("oiled_leather") }, I: { item: "minecraft:iron_ingot" } }, "harness"),
+  shaped("plough", ["PPP", "I I"], { P: planks, I: { item: "minecraft:iron_ingot" } }, "plough"),
+  shaped("animal_blanket", ["CCC"], { C: { item: rid("plush_cloth") } }, "animal_blanket"),
+  shaped("pen_gate", ["SNS", "SPS"], { S: { item: "minecraft:stick" }, N: { item: "minecraft:iron_nugget" }, P: planks }, "pen_gate"),
+  shaped("horn_decor_cattle", ["H", "P"], { H: { item: rid("cattle_horn") }, P: planks }, "horn_decor"),
+  shaped("horn_decor_goat", ["H", "P"], { H: { item: rid("billy_goat_horn") }, P: planks }, "horn_decor"),
+  shapeless("leather_gloves", [{ item: rid("oiled_leather"), count: 2 }], "leather_gloves"),
+  shapeless("herding_horn_cattle", [{ item: rid("cattle_horn") }, { item: "minecraft:string" }], "herding_horn"),
+  shapeless("herding_horn_goat", [{ item: rid("billy_goat_horn") }, { item: "minecraft:string" }], "herding_horn"),
 
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),

@@ -25,6 +25,7 @@ CLOTH = (244, 242, 236)
 YARN = (236, 228, 214)
 DOWN = (250, 250, 246)
 SILAGE = (150, 160, 70)
+HORN = (220, 206, 176)
 
 
 def light(t, base):
@@ -63,6 +64,8 @@ def paint(t):
         return light(t, DOWN)
     if p == "silage":
         return light(t, SILAGE if hash01("g", t.point) > 0.3 else shade(SILAGE, 0.85))
+    if p == "horn":
+        return light(t, HORN)
     if p == "hide":
         # Cured hide: tan with a few darker blotches.
         return light(t, HIDE if hash01("h", t.point) > 0.2 else shade(HIDE, 0.85))
@@ -216,6 +219,46 @@ def down_quilt():
     return Model("geometry.kaleidoscope_ranching.down_quilt", bones, cubes, 64, 64)
 
 
+def pen_gate():
+    # A plank gate between two posts; `open` swings it aside.
+    bones = [Bone("posts", None, (0, 0, 0)), Bone("closed", "posts", (0, 0, 0)), Bone("open", "posts", (-7, 0, 0))]
+    cubes = [
+        Cube("posts", "dark_wood", (-8, 0, -1), (2, 16, 2), name="post"),
+        Cube("posts", "dark_wood", (6, 0, -1), (2, 16, 2), mirror_of="post"),
+        Cube("closed", "wood", (-6, 3, 0), (12, 2, 1), name="rail"),
+        Cube("closed", "wood", (-6, 9, 0), (12, 2, 1), mirror_of="rail"),
+        Cube("closed", "wood", (-1, 3, 0), (2, 8, 1)),
+        Cube("open", "wood", (-7, 3, 0), (1, 2, 12), name="open_rail"),
+        Cube("open", "wood", (-7, 9, 0), (1, 2, 12), mirror_of="open_rail"),
+    ]
+    return Model("geometry.kaleidoscope_ranching.pen_gate", bones, cubes, 64, 64)
+
+
+def pen_gate_top():
+    # The upper half: post caps and a top rail, so the gate stands as tall as a fence.
+    bones = [Bone("posts", None, (0, 0, 0)), Bone("closed", "posts", (0, 0, 0)), Bone("open", "posts", (-7, 0, 0))]
+    cubes = [
+        Cube("posts", "dark_wood", (-8, 0, -1), (2, 6, 2), name="cap"),
+        Cube("posts", "dark_wood", (6, 0, -1), (2, 6, 2), mirror_of="cap"),
+        Cube("closed", "wood", (-6, 2, 0), (12, 2, 1)),
+        Cube("open", "wood", (-7, 2, 0), (1, 2, 12)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.pen_gate_top", bones, cubes, 64, 64)
+
+
+def horn_decor():
+    # A pair of horns on a small wooden plaque.
+    bones = [Bone("plaque", None, (0, 0, 0))]
+    cubes = [
+        Cube("plaque", "dark_wood", (-3, 0, -3), (6, 2, 6)),
+        Cube("plaque", "horn", (-4, 2, -1), (2, 3, 2), name="horn"),
+        Cube("plaque", "horn", (2, 2, -1), (2, 3, 2), mirror_of="horn"),
+        Cube("plaque", "horn", (-5, 4, -1), (1, 2, 1), name="tip"),
+        Cube("plaque", "horn", (4, 4, -1), (1, 2, 1), mirror_of="tip"),
+    ]
+    return Model("geometry.kaleidoscope_ranching.horn_decor", bones, cubes, 64, 64)
+
+
 ALL = {
     "tanning_rack": tanning_rack,
     "meat_grinder": meat_grinder,
@@ -228,4 +271,7 @@ ALL = {
     "rug": rug,
     "down_pillow": down_pillow,
     "down_quilt": down_quilt,
+    "pen_gate": pen_gate,
+    "pen_gate_top": pen_gate_top,
+    "horn_decor": horn_decor,
 }

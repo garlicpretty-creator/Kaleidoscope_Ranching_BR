@@ -459,7 +459,9 @@ for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && 
     if (usable) take(data.description.identifier);
   }
   // Used by clicking an animal or a block (scripts), not by a recipe.
-  const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag"];
+  const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag",
+    // 1.1 (systems/workAnimals.js): used on a buffalo or another animal.
+    "harness", "plough", "animal_blanket"];
   // Registered with Cookery as wok oil (api/cookeryRecipes.js register_oil_container).
   take("lard");
   CLICKED.forEach(take);

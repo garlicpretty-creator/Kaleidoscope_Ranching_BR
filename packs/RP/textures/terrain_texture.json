@@ -163,6 +163,9 @@
     "kr_hitching_post": {
       "textures": "textures/blocks/ranching/hitching_post"
     },
+    "kr_horn_decor": {
+      "textures": "textures/blocks/ranching/horn_decor"
+    },
     "kr_ice_cream_churn": {
       "textures": "textures/blocks/ranching/ice_cream_churn"
     },
@@ -177,6 +180,12 @@
     },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
+    },
+    "kr_pen_gate": {
+      "textures": "textures/blocks/ranching/pen_gate"
+    },
+    "kr_pen_gate_top": {
+      "textures": "textures/blocks/ranching/pen_gate_top"
     },
     "kr_pickling_vat": {
       "textures": "textures/blocks/ranching/pickling_vat"

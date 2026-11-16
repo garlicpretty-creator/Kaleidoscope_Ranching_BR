@@ -40,7 +40,9 @@
               "kaleidoscope_ranching:silage_barrel",
               "kaleidoscope_ranching:rug",
               "kaleidoscope_ranching:down_pillow",
-              "kaleidoscope_ranching:down_quilt"
+              "kaleidoscope_ranching:down_quilt",
+              "kaleidoscope_ranching:pen_gate",
+              "kaleidoscope_ranching:horn_decor"
             ]
           },
           {
@@ -248,6 +250,11 @@
               "kaleidoscope_ranching:wool_hat",
               "kaleidoscope_ranching:wool_scarf",
               "kaleidoscope_ranching:egg_candler",
+              "kaleidoscope_ranching:harness",
+              "kaleidoscope_ranching:plough",
+              "kaleidoscope_ranching:animal_blanket",
+              "kaleidoscope_ranching:leather_gloves",
+              "kaleidoscope_ranching:herding_horn",
               "kaleidoscope_ranching:milking_pail",
               "kaleidoscope_ranching:nursing_bottle",
               "kaleidoscope_ranching:cowbell",

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "herding_horn",
+    "metalness_emissive_roughness_subsurface": "herding_horn_mers",
+    "normal": "herding_horn_normal"
+  }
+}

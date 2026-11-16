@@ -1,0 +1,94 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.goat.sleep": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "position": [
+            0,
+            "q.is_baby ? -8 : -11",
+            0
+          ]
+        },
+        "a_leg_fl": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "a_leg_fr": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "a_leg_bl": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "a_leg_br": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_fl": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_fr": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_bl": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_br": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "head": {
+          "rotation": [
+            18,
+            0,
+            0
+          ]
+        },
+        "a_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        },
+        "b_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        }
+      }
+    }
+  }
+}

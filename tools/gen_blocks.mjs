@@ -83,6 +83,29 @@ const DEFS = {
     seconds: 0.2,
     textureByState: { state: "color", values: RUG_COLORS, texture: (color) => `kr_rug_${color}` },
   },
+  // 1.1 畜欄門 (systems/workAnimals.js): the lower half carries the gate, the upper half
+  // raises its collision to fence height; both open together.
+  pen_gate: {
+    component: "pen_gate",
+    states: { [S("open")]: [false, true] },
+    bones: { closed: `!${state("open")}`, open: state("open") },
+    collision: FULL,
+    selection: FULL,
+    seconds: 1,
+    openable: true,
+  },
+  pen_gate_top: {
+    component: "pen_gate_top",
+    states: { [S("open")]: [false, true] },
+    bones: { closed: `!${state("open")}`, open: state("open") },
+    collision: box(-8, 0, -8, 16, 8, 16),
+    selection: box(-8, 0, -8, 16, 4, 16),
+    seconds: 1,
+    hidden: true,
+    loot: "loot_tables/kaleidoscope_ranching/empty.json",
+    openable: true,
+  },
+  horn_decor: { states: {}, bones: {}, collision: box(-4, 0, -4, 8, 6, 8), selection: box(-4, 0, -4, 8, 6, 8), seconds: 0.5 },
   // Decoration only: no script component.
   down_pillow: { states: {}, bones: {}, collision: box(-6, 0, -4, 12, 4, 8), selection: box(-6, 0, -4, 12, 4, 8), seconds: 0.2 },
   down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 2, 16), selection: box(-8, 0, -8, 16, 2, 16), seconds: 0.2 },
@@ -196,6 +219,7 @@ function blockJson(id, def) {
           components: { "minecraft:transformation": { rotation: [0, degrees, 0] } },
         })),
         ...(def.light ? [{ condition: state("busy"), components: { "minecraft:light_emission": 7 } }] : []),
+        ...(def.openable ? [{ condition: state("open"), components: { "minecraft:collision_box": false } }] : []),
         ...(def.textureByState
           ? def.textureByState.values.map((value) => ({
               condition: `${state(def.textureByState.state)} == '${value}'`,

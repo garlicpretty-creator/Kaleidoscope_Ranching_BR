@@ -19,6 +19,8 @@ import { damageMainHand, give, takeItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { showActionBar } from "../core/actionBar.js";
+import { isAsleep, wakeUp } from "./sleep.js";
+import { wearing } from "./textiles.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
@@ -47,6 +49,9 @@ function milk(player, animal) {
   if (!takeItems(player, ["minecraft:glass_bottle"], 1)) return tell(player, "milking.need_bottle");
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
+  // 1.1 動物作息: milking a sleeping animal wakes her, unless the player wears
+  // leather gloves (皮手套) in the off hand. (Milk has no quality grades.)
+  if (isAsleep(animal) && !wearing(player, "Offhand", "leather_gloves")) wakeUp(animal, "milked");
   const bottle = rid(species.dailyProduct.item);
   give(player, bottle);
   emitRanchEvent("harvested", { animal: animal.typeId, entity: animal.id, product: "milk", items: { [bottle]: 1 } });
