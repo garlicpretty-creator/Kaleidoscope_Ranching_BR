@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "placed_cream_cocoa",
+    "metalness_emissive_roughness_subsurface": "placed_cream_cocoa_mers",
+    "normal": "placed_cream_cocoa_normal"
+  }
+}

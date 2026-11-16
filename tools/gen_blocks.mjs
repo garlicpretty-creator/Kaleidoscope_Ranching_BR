@@ -40,10 +40,17 @@ const PLACED_SHAPES = {
   pot: both(-6, 0, -6, 12, 9, 12),
   claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
+  // Placed drinks (art_src/m4_scripts/placed_drink.py): a cup or crock, a glass mug with its handle, a bottle, a tea bowl.
+  cup: both(-3, 0, -3, 6, 11, 6),
+  glass: both(-3, 0, -3, 8, 9, 6),
+  bottle: both(-3, 0, -3, 6, 14, 6),
+  bowl: both(-4, 0, -4, 8, 7, 8),
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
   placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
+  placed_milk_wine: "#c8a068", placed_yak_milk_wine: "#705038", placed_cream_cocoa: "#683c26", placed_yogurt_berry_drink: "#e27896",
+  placed_yogurt: "#849cb6", placed_milk_tea: "#8c402c", placed_milk_skin_tea: "#f4f4ee",
 };
 
 const DEFS = {
@@ -158,10 +165,11 @@ const DEFS = {
       food.block,
       {
         component: food.cut ? "cheese_wheel" : "placed_food",
-        states: { [S("cut")]: Array.from({ length: food.portions }, (_, n) => n) },
-        bones: Object.fromEntries(
+        // A drink (one portion) is drunk in one go, so it has no `cut` state and always shows piece_1.
+        states: food.portions > 1 ? { [S("cut")]: Array.from({ length: food.portions }, (_, n) => n) } : {},
+        bones: food.portions > 1 ? Object.fromEntries(
           Array.from({ length: food.portions }, (_, n) => [`piece_${n + 1}`, `${state("cut")} <= ${food.portions - 1 - n}`])
-        ),
+        ) : {},
         ...PLACED_SHAPES[food.shape],
         mapColor: PLACED_COLORS[food.block],
         seconds: 0.5,
