@@ -74,7 +74,8 @@ def write_json(path, data):
 def clean(directory, keep):
     directory.mkdir(parents=True, exist_ok=True)
     for stale in directory.glob("*.png"):
-        if stale.stem not in keep:
+        # Light maps (<id>_mers / <id>_normal) belong to gen_pbr.py, which cleans its own.
+        if stale.stem not in keep and not stale.stem.endswith(("_mers", "_normal")):
             stale.unlink()
 
 
@@ -98,8 +99,9 @@ def main():
     block_dir = RP / "textures" / "blocks" / "ranching"
     # Hand-made blocks with no procedural version (the placed cheese wheel) install the same way.
     blocks = dict(block_art.ALL)
-    for geo in sorted(HANDMADE.glob("*.geo.json")):
+    for geo in HANDMADE.glob("*.geo.json"):
         blocks.setdefault(geo.name.removesuffix(".geo.json"), None)
+    blocks = dict(sorted(blocks.items()))
     clean(block_dir, set(blocks))
     terrain = {}
     previews = []
@@ -107,7 +109,7 @@ def main():
         terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
         handmade = HANDMADE / f"{block_id}.geo.json"
         if handmade.exists():
-            # Hand-made (art_src/m4_scripts/blocks_m3.py, blocks_m4.py, butcher_rack.py): install it as is.
+            # Hand-made (art_src/m4_scripts/*.py): install it as is.
             shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
             shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
             continue
@@ -116,12 +118,7 @@ def main():
         write_json(RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json", geometry_json(model))
         texture = render_texture(model, block_art.paint)
         texture.save(block_dir / f"{block_id}.png")
-        # Preview with every optional bone shown except the extra carcasses.
-        def visible(cube, block_id=block_id):
-            if block_id == "butcher_rack":
-                return cube.bone in ("frame", "carcass_cow")
-            return True
-        previews.append((block_id, render_view(model, block_art.paint, visible, view="3/4", scale=7, size=(220, 240))))
+        previews.append((block_id, render_view(model, block_art.paint, lambda cube: True, view="3/4", scale=7, size=(220, 240))))
 
     write_json(FRAGMENT / "item_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.items", "texture_data": item_atlas})
     write_json(FRAGMENT / "terrain_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.terrain", "texture_data": terrain})
