@@ -115,8 +115,20 @@
     "kr_hitching_post": {
       "textures": "textures/blocks/ranching/hitching_post"
     },
-    "kr_aged_cheese_wheel": {
-      "textures": "textures/blocks/ranching/aged_cheese_wheel"
+    "kr_auto_feeder": {
+      "textures": "textures/blocks/ranching/auto_feeder"
+    },
+    "kr_chaff_cutter": {
+      "textures": "textures/blocks/ranching/chaff_cutter"
+    },
+    "kr_cheese_wheel": {
+      "textures": "textures/blocks/ranching/cheese_wheel"
+    },
+    "kr_compost_bin": {
+      "textures": "textures/blocks/ranching/compost_bin"
+    },
+    "kr_feed_mixer": {
+      "textures": "textures/blocks/ranching/feed_mixer"
     }
   }
 }

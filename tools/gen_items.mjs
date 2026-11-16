@@ -36,12 +36,8 @@ const OVERRIDES = {
   yogurt: { stack: 16, ...food(4, 0.6) },
   fresh_cheese: food(3, 0.6),
   cheese_slice: food(2, 0.6),
-  // Places the aged cheese wheel block (same id; the item replaces the block's own item).
-  aged_cheese_wheel: {
-    stack: 16,
-    format: "1.21.90",
-    components: { "minecraft:block_placer": { block: rid("aged_cheese_wheel"), replace_block_item: true } },
-  },
+  // Places the cuttable wheel block (gen_blocks.mjs, systems/cheeseWheel.js).
+  aged_cheese_wheel: { stack: 16, components: { "minecraft:block_placer": { block: "kaleidoscope_ranching:cheese_wheel" } } },
   ghee: { stack: 16 },
   whey: { stack: 16, ...food(1, 0.2, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   salted_duck_egg: food(4, 0.6),

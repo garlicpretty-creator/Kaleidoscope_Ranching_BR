@@ -54,7 +54,7 @@
 | --- | --- |
 | `tools/gen_art.py` | M1 六種動物的模型、貼圖、動畫、渲染控制器、預覽圖（`tools/art/animals.py`、`model.py`） |
 | `tools/m2/gen_content.py` | M2 的方塊、物品、配方、模型、貼圖，與 `fragments/m2` |
-| `tools/gen_m3_art.py` | 物品圖示（`tools/art/icons.py`）、M3 方塊模型與貼圖（`tools/art/blocks.py`），與 `fragments/m3` |
+| `tools/gen_m3_art.py` | 物品圖示（`tools/art/icons.py`）、M3 方塊模型與貼圖（`tools/art/blocks.py`），與 `fragments/m3`。`art/blocks/` 裡有手做模型的方塊（由 `art_src/m4_scripts/blocks_m2.py`、`blocks_m3.py`、`blocks_m4.py`、`butcher_rack.py`、`cheese_wheel.py` 產生）直接安裝手做版；M2 的自動餵食器、鍘草機、飼料攪拌桶、堆肥槽有手做模型時，`gen_content.py` 也改用它 |
 | `tools/gen_entities.mjs` | 動物的行為包實體檔 |
 | `tools/gen_items.mjs` | 物品檔與合成、熔爐配方 |
 | `tools/gen_blocks.mjs` | M3 方塊的方塊檔 |

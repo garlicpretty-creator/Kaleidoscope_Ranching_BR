@@ -8,7 +8,6 @@ kaleidoscope_ranching.message.breed.not_cared=牠今天還沒被照顧好，不�
 kaleidoscope_ranching.message.rack.empty=先把屠體掛上掛架。
 kaleidoscope_ranching.message.rack.occupied=掛架上已經有屠體了。
 kaleidoscope_ranching.message.rack.need_blade=請用菜刀、劍或斧分切。
-kaleidoscope_ranching.message.cheese_wheel.needs_blade=請用菜刀、劍或斧切開乳酪輪。
 kaleidoscope_ranching.message.milking.not_female=只有成年母畜能擠奶。
 kaleidoscope_ranching.message.milking.milked_today=今天已經擠過奶了。
 kaleidoscope_ranching.message.milking.no_milk=今天沒有奶。
@@ -168,9 +167,9 @@ tile.kaleidoscope_ranching:hitching_post.name=拴畜樁
 tile.kaleidoscope_ranching:butcher_rack.name=屠宰掛架
 tile.kaleidoscope_ranching:butter_churn.name=攪乳桶
 tile.kaleidoscope_ranching:cheese_press.name=乳酪壓模
-tile.kaleidoscope_ranching:aged_cheese_wheel.name=熟成乳酪輪
 tile.kaleidoscope_ranching:aging_rack.name=熟成架
 tile.kaleidoscope_ranching:fermenting_jar.name=發酵罐
+tile.kaleidoscope_ranching:cheese_wheel.name=熟成乳酪輪
 tile.kaleidoscope_ranching:pickling_vat.name=醃製缸
 
 ## m2

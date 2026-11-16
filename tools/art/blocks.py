@@ -261,6 +261,4 @@ ALL = {
     "pickling_vat": pickling_vat,
     "hay_rack": hay_rack,
     "hitching_post": hitching_post,
-    # Hand-made in Blockbench only (art/blocks/aged_cheese_wheel.geo.json); no procedural model.
-    "aged_cheese_wheel": None,
 }

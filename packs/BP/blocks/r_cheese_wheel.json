@@ -2,9 +2,9 @@
   "format_version": "1.21.90",
   "minecraft:block": {
     "description": {
-      "identifier": "kaleidoscope_ranching:aged_cheese_wheel",
+      "identifier": "kaleidoscope_ranching:cheese_wheel",
       "menu_category": {
-        "category": "items"
+        "category": "none"
       },
       "traits": {
         "minecraft:placement_direction": {
@@ -15,7 +15,7 @@
         }
       },
       "states": {
-        "kaleidoscope_ranching:slices": [
+        "kaleidoscope_ranching:cut": [
           0,
           1,
           2,
@@ -25,17 +25,17 @@
     },
     "components": {
       "minecraft:geometry": {
-        "identifier": "geometry.kaleidoscope_ranching.aged_cheese_wheel",
+        "identifier": "geometry.kaleidoscope_ranching.cheese_wheel",
         "bone_visibility": {
-          "piece_1": "q.block_state('kaleidoscope_ranching:slices') < 1",
-          "piece_2": "q.block_state('kaleidoscope_ranching:slices') < 2",
-          "piece_3": "q.block_state('kaleidoscope_ranching:slices') < 3",
-          "piece_4": "q.block_state('kaleidoscope_ranching:slices') < 4"
+          "piece_1": "q.block_state('kaleidoscope_ranching:cut') <= 3",
+          "piece_2": "q.block_state('kaleidoscope_ranching:cut') <= 2",
+          "piece_3": "q.block_state('kaleidoscope_ranching:cut') <= 1",
+          "piece_4": "q.block_state('kaleidoscope_ranching:cut') <= 0"
         }
       },
       "minecraft:material_instances": {
         "*": {
-          "texture": "kr_aged_cheese_wheel",
+          "texture": "kr_cheese_wheel",
           "render_method": "alpha_test"
         }
       },
@@ -70,7 +70,8 @@
         "explosion_resistance": 3
       },
       "minecraft:light_dampening": 0,
-      "minecraft:map_color": "#8a6a44",
+      "minecraft:map_color": "#e2b45a",
+      "minecraft:loot": "loot_tables/kaleidoscope_ranching/empty.json",
       "kaleidoscope_ranching:cheese_wheel": {}
     },
     "permutations": [
@@ -120,30 +121,6 @@
               0
             ]
           }
-        }
-      },
-      {
-        "condition": "q.block_state('kaleidoscope_ranching:slices') == 0",
-        "components": {
-          "minecraft:loot": "loot_tables/blocks/cheese_wheel_whole.json"
-        }
-      },
-      {
-        "condition": "q.block_state('kaleidoscope_ranching:slices') == 1",
-        "components": {
-          "minecraft:loot": "loot_tables/blocks/cheese_wheel_3.json"
-        }
-      },
-      {
-        "condition": "q.block_state('kaleidoscope_ranching:slices') == 2",
-        "components": {
-          "minecraft:loot": "loot_tables/blocks/cheese_wheel_2.json"
-        }
-      },
-      {
-        "condition": "q.block_state('kaleidoscope_ranching:slices') == 3",
-        "components": {
-          "minecraft:loot": "loot_tables/blocks/cheese_wheel_1.json"
         }
       }
     ]

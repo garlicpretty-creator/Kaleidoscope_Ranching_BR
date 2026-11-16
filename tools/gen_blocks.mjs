@@ -72,17 +72,18 @@ const DEFS = {
     selection: box(-8, 0, -6, 16, 16, 12),
     seconds: 1,
   },
-  // Four wedges (bones piece_1..piece_4); each cut hides the next one.
-  aged_cheese_wheel: {
+  // Placed by the aged_cheese_wheel item (block_placer in gen_items.mjs) and cut like a cake;
+  // systems/cheeseWheel.js drops the wheel or the slices left, so the block itself drops nothing.
+  cheese_wheel: {
     component: "cheese_wheel",
-    states: { [S("slices")]: [0, 1, 2, 3] },
-    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`piece_${n}`, `${state("slices")} < ${n}`])),
+    states: { [S("cut")]: [0, 1, 2, 3] },
+    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`piece_${n}`, `${state("cut")} <= ${4 - n}`])),
     collision: box(-6, 0, -6, 12, 5, 12),
     selection: box(-6, 0, -6, 12, 5, 12),
     seconds: 0.5,
-    // Broken whole: the wheel back; broken after cutting: the wedges left.
-    loot: { 0: "cheese_wheel_whole", 1: "cheese_wheel_3", 2: "cheese_wheel_2", 3: "cheese_wheel_1" },
-    lootState: "slices",
+    hidden: true,
+    loot: "loot_tables/kaleidoscope_ranching/empty.json",
+    mapColor: "#e2b45a",
   },
   ...Object.fromEntries(
     STATIONS.map((id) => [
@@ -110,7 +111,8 @@ function blockJson(id, def) {
     "minecraft:destructible_by_mining": { seconds_to_destroy: def.seconds },
     "minecraft:destructible_by_explosion": { explosion_resistance: 3 },
     "minecraft:light_dampening": 0,
-    "minecraft:map_color": "#8a6a44",
+    "minecraft:map_color": def.mapColor ?? "#8a6a44",
+    ...(def.loot ? { "minecraft:loot": def.loot } : {}),
     [S(def.component)]: {},
   };
   return {
@@ -118,7 +120,7 @@ function blockJson(id, def) {
     "minecraft:block": {
       description: {
         identifier: S(id),
-        menu_category: { category: "items" },
+        menu_category: { category: def.hidden ? "none" : "items" },
         traits: {
           "minecraft:placement_direction": { enabled_states: ["minecraft:cardinal_direction"], y_rotation_offset: 180 },
         },
@@ -131,10 +133,6 @@ function blockJson(id, def) {
           components: { "minecraft:transformation": { rotation: [0, degrees, 0] } },
         })),
         ...(def.light ? [{ condition: state("busy"), components: { "minecraft:light_emission": 7 } }] : []),
-        ...Object.entries(def.loot ?? {}).map(([value, table]) => ({
-          condition: `${state(def.lootState)} == ${value}`,
-          components: { "minecraft:loot": `loot_tables/blocks/${table}.json` },
-        })),
       ],
     },
   };
@@ -147,18 +145,5 @@ for (const name of readdirSync(dir)) if (name.startsWith("r_")) rmSync(join(dir,
 for (const [id, def] of Object.entries(DEFS)) {
   if (!registered.has(id)) throw new Error(`${id} is not in blocks.js`);
   writeFileSync(join(dir, `r_${id}.json`), JSON.stringify(blockJson(id, def), null, 2) + "\n");
-}
-// Loot tables for blocks whose drop depends on a state (the cheese wheel).
-const LOOT = {
-  cheese_wheel_whole: ["aged_cheese_wheel", 1],
-  cheese_wheel_3: ["cheese_slice", 3],
-  cheese_wheel_2: ["cheese_slice", 2],
-  cheese_wheel_1: ["cheese_slice", 1],
-};
-const lootDir = join(root, "packs/BP/loot_tables/blocks");
-mkdirSync(lootDir, { recursive: true });
-for (const [name, [item, count]] of Object.entries(LOOT)) {
-  const entry = { type: "item", name: S(item), weight: 1, ...(count > 1 ? { functions: [{ function: "set_count", count }] } : {}) };
-  writeFileSync(join(lootDir, `${name}.json`), JSON.stringify({ pools: [{ rolls: 1, entries: [entry] }] }, null, 2) + "\n");
 }
 console.log(`gen_blocks: wrote ${Object.keys(DEFS).length} blocks`);
