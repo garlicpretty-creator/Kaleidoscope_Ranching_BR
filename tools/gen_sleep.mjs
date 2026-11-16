@@ -9,7 +9,8 @@
 // own bones (adult and baby rigs each):
 // - lie   cow, buffalo, yak, sheep, goat: drop onto the belly, front legs folded
 //         back under the chest and hind legs forward under the belly, head
-//         lowered and turned a little to the side.
+//         lowered (as far as its muzzle, beard and horns clear the ground) and
+//         turned a little to the side; the udder is flattened under the body.
 // - side  pig: rolled onto its side, legs stretched out. The body bone's pivot
 //         is moved to the torso's middle so the roll keeps the pig in place.
 // - roost chicken, duck, goose: settled on the ground with the legs hidden,
@@ -84,15 +85,65 @@ const pick = (adult, baby) => (adult === baby ? round(adult) : `q.is_baby ? ${ro
 const sideOf = (name) => (/(_fl|_bl|_left)$/.test(name) ? 1 : -1);
 const front = (name) => /_f[lr]$/.test(name);
 
+/** Every bone hanging from `name`, itself included. */
+function subtree(bones, name) {
+  const out = bones.filter((b) => b.name === name);
+  for (const child of bones.filter((b) => b.parent === name)) out.push(...subtree(bones, child.name));
+  return out;
+}
+
+/**
+ * The steepest pitch up to `want` (degrees, nose down) at which nothing on the head, turned `yaw`
+ * to either side, dips under the ground once the body has dropped by `drop`: a long muzzle, a
+ * beard or a pair of horns reaches further down than the skull does. Bedrock turns Z, then Y,
+ * then X, so the pitch comes last.
+ */
+function headPitch(bones, name, drop, want, yaw) {
+  const head = bones.find((b) => b.name === name);
+  if (!head) return want;
+  const [, py, pz] = head.pivot;
+  const [sin, cos] = [Math.sin((yaw * Math.PI) / 180), Math.cos((yaw * Math.PI) / 180)];
+  const corners = subtree(bones, name)
+    .filter((b) => !b.name.startsWith("lids_"))
+    .flatMap((b) => b.cubes ?? [])
+    .flatMap(({ origin: [x, y, z], size: [w, h, d] }) => [x, x + w].flatMap((cx) => [y, y + h].flatMap((cy) => [z, z + d].map((cz) => [cx - head.pivot[0], cy - py, cz - pz]))));
+  for (let pitch = want; pitch > 0; pitch -= 2) {
+    const [ps, pc] = [Math.sin((pitch * Math.PI) / 180), Math.cos((pitch * Math.PI) / 180)];
+    const lowest = Math.min(...corners.flatMap(([x, y, z]) => [1, -1].map((turn) => py + y * pc + (z * cos + turn * x * sin) * ps)));
+    if (lowest - drop >= 0.25) return pitch;
+  }
+  return 0;
+}
+
 function lie(bones, A, B, anim) {
   // Belly on the ground: the folded legs (legThick thick) lie flat under it.
-  anim.body = { position: [0, pick(-(A.legLen - A.legThick / 2), -(B.legLen - B.legThick / 2)), 0] };
+  const drop = { a: A.legLen - A.legThick / 2, b: B.legLen - B.legThick / 2 };
+  anim.body = { position: [0, pick(-drop.a, -drop.b), 0] };
   for (const R of [A, B]) {
-    for (const leg of R.legs) anim[leg.name] = { rotation: [front(leg.name) ? 90 : -90, 0, 8 * sideOf(leg.name)] };
+    for (const leg of R.legs) {
+      anim[leg.name] = { rotation: [front(leg.name) ? 90 : -90, 0, 8 * sideOf(leg.name)] };
+      // Anything worn round a leg and thicker than it (a sheep's wool cuffs) is pressed
+      // nearly flush, or it would sink into the ground under the folded leg.
+      for (const cuff of bones.filter((b) => b.parent === leg.name && !b.name.startsWith("lids_"))) {
+        const thick = Math.max(...(cuff.cubes ?? []).map((c) => Math.min(c.size[0], c.size[2])), 0);
+        if (thick > R.legThick) anim[cuff.name] = { scale: [round((R.legThick + 0.4) / thick), 1, round((R.legThick + 0.4) / thick)] };
+      }
+    }
   }
-  anim[headBone(bones, "a")] = { rotation: [32, 18, 0] };
+  // Whatever hangs below the belly (an udder, a yak's hair skirt) would be pushed into the
+  // ground: lying on it flattens it against the body instead.
+  const limbs = new Set([...A.legs, ...B.legs, headBone(bones, "a"), headBone(bones, "b")].flatMap((b) => subtree(bones, b?.name ?? b)).map((b) => b.name));
+  const isBaby = (b) => !!b && (b.name.startsWith("b_") || isBaby(bones.find((p) => p.name === b.parent)));
+  for (const bone of bones) {
+    if (limbs.has(bone.name) || bone.name.startsWith("lids_") || !bone.cubes?.length) continue;
+    const down = isBaby(bone) ? drop.b : drop.a;
+    const lowest = Math.min(...bone.cubes.map((c) => c.origin[1]));
+    const top = bone.pivot[1];
+    if (lowest < down + 0.2 && top > down + 0.2) anim[bone.name] = { scale: [1, round((top - down - 0.2) / (top - lowest)), 1] };
+  }
+  anim[headBone(bones, "a")] = { rotation: [headPitch(bones, headBone(bones, "a"), drop.a, 32, 18), 18, 0] };
   const baby = headBone(bones, "b");
-  if (baby) anim[baby] = { rotation: [28, 18, 0] };
+  if (baby) anim[baby] = { rotation: [headPitch(bones, baby, drop.b, 28, 18), 18, 0] };
   for (const tail of ["a_tail", "b_tail"]) if (bones.some((b) => b.name === tail)) anim[tail] = { rotation: [-20, 0, 25] };
 }
 

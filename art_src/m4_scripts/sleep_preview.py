@@ -76,7 +76,7 @@ def visible(name, bones, baby, asleep, rules, male=False, sheared=False):
     return True
 
 
-def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=TILE, scale=SCALE, model_scale=1.0):
+def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=TILE, scale=SCALE, model_scale=1.0, ground=0.72):
     """One tile. The defaults draw the female (or first) skin; `texture` names another skin,
     `model_scale` is the entity's own scale (males are larger)."""
     TILE, SCALE = tile, scale * model_scale
@@ -141,13 +141,13 @@ def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=T
                 i, j, rgba = i[ok], j[ok], rgba[ok]
                 if not len(i):
                     continue
-                pts = np.stack(face_point(cube, face, (i + 0.5) / (nw * ss), (j + 0.5) / (nh * ss)), axis=1)
+                pts = np.stack(np.broadcast_arrays(*face_point(cube, face, (i + 0.5) / (nw * ss), (j + 0.5) / (nh * ss))), axis=1)
                 w = f(pts)
                 x, y, z = w[:, 0], w[:, 1], w[:, 2]
                 x2, z2 = x * cy - z * sy, x * sy + z * cy
-                y2, z3 = y * cp - z2 * sp, y * sp + z2 * cp
+                y2, z3 = y * cp + z2 * sp, -y * sp + z2 * cp  # camera above the ground, looking down
                 sxp = (TILE / 2 + x2 * SCALE).astype(int)
-                syp = (TILE * 0.72 - y2 * SCALE).astype(int)
+                syp = (TILE * ground - y2 * SCALE).astype(int)
                 ok = (sxp >= 0) & (sxp < TILE) & (syp >= 0) & (syp < TILE)
                 idx, d, rgba = (syp * TILE + sxp)[ok], -z3[ok], rgba[ok]
                 np.maximum.at(depth, idx, d)
@@ -155,7 +155,7 @@ def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=T
                 flat[idx[win]] = (rgba[win, :3] * SHADE[face]).astype(np.uint8)
     img = Image.fromarray(color)
     d = ImageDraw.Draw(img)
-    gy = int(TILE * 0.72)
+    gy = int(TILE * ground)
     d.line([(0, gy), (TILE, gy)], fill=(120, 140, 110))
     return img
 
