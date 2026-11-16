@@ -5,6 +5,7 @@
 ## 文件
 
 - [企劃書（正式版）](docs/PROPOSAL.zh-TW.md)
+- [專案架構](docs/ARCHITECTURE.md)：接手前先讀
 - [腳本架構](packs/BP/scripts/ARCHITECTURE.md)
 - [里程碑之間的介面](docs/INTERFACES.md)
 - [M2 照顧核心交接說明](docs/M2_交接.md)
