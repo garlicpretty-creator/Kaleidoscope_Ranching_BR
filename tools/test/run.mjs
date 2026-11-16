@@ -1577,6 +1577,32 @@ test("Fishing Voyage: Ranching pings it, and its fish offal and bones become pou
   assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
 });
 
+// --- Roosters crow at dawn ----------------------------------------------------
+
+const { crowAtDawn } = await import("../../packs/BP/scripts/systems/rooster.js");
+
+test("roosters near a player crow once at dawn; hens and chicks do not", () => {
+  clearWorld();
+  __newPlayer(at(0));
+  const rooster = ranch("chicken", 3, "male");
+  ranch("chicken", 4, "female");
+  const chick = ranch("chicken", 5, "male");
+  chick.triggerEvent(`${NS}:become_baby`);
+  ranch("chicken", 200, "male"); // too far from any player
+  toTimeOfDay(12000);
+  equal(crowAtDawn(), 0, "no crowing at noon");
+  toTimeOfDay(23100);
+  overworld.sounds.length = 0;
+  equal(crowAtDawn(), 1, "one adult rooster in earshot");
+  __advance(260);
+  const calls = overworld.sounds.filter((s) => s.id === "mob.chicken.say");
+  equal(calls.length, 3, "a three-note crow");
+  assert(calls.every((s) => Math.abs(s.location.x - rooster.location.x) < 1), "from the rooster");
+  equal(crowAtDawn(), 0, "only once per morning");
+  toTimeOfDay(23100);
+  equal(crowAtDawn(), 1, "and again the next dawn");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

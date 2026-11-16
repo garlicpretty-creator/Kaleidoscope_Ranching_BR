@@ -9,6 +9,7 @@ import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
 import { startConversion } from "./systems/conversion.js";
 import { startVanillaParity } from "./systems/vanillaParity.js";
+import { startRoosters } from "./systems/rooster.js";
 import "./care_init.js";
 import { connectCareCore } from "./systems/careBridge.js";
 import { startM3 } from "./systems/m3.js";
@@ -27,6 +28,7 @@ connectToFishing();
 startConversion();
 startBreeding(ANIMALS);
 startVanillaParity();
+startRoosters();
 
 // M2: care core (registers its own components and events on import)
 connectCareCore();
