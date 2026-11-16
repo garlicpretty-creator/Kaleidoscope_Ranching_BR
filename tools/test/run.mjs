@@ -2294,7 +2294,8 @@ const lamp = (block) => block.permutation.getState("kaleidoscope_ranching:busy")
 const incubatorAt = (x = 0, z = 0) =>
   __place(overworld, { x, y: 64, z }, "kaleidoscope_ranching:incubator", { "kaleidoscope_ranching:eggs": 0, "kaleidoscope_ranching:busy": false });
 const sameLook = (actual, expected, message) => equal(JSON.stringify(actual), JSON.stringify(expected), message);
-const { CANDLE_GLOW_TICKS } = await import("../../packs/BP/scripts/systems/nest.js");
+const nestModule = await import("../../packs/BP/scripts/systems/nest.js");
+const { CANDLE_GLOW_TICKS } = nestModule;
 
 test("1.1: each egg in the nest box shows its own progress: plain, small cracks, big cracks", () => {
   clearWorld();
@@ -2408,6 +2409,177 @@ test("1.1: eggs already incubating in a saved world show their stage once the wo
   runBlockClock();
   sameLook(eggLook(incubator), [3, 2, 1, false], "one about to hatch, one past half way, one just laid");
   equal(lamp(incubator), true, "warm: lamp on");
+});
+
+test("1.1: using the candler on a nest box or incubator lights the eggs and never takes them out", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  // ## Bedrock may fire the block's interact as well as the candler's onUseOn: both run here.
+  const candleBoth = (component, block) => {
+    hold(player, "kaleidoscope_ranching:egg_candler", 1);
+    use(component, block, player);
+    CANDLER.onUseOn({ source: player, block });
+  };
+  const incubator = incubatorAt();
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 2);
+  use(INCUBATOR, incubator, player);
+  use(INCUBATOR, incubator, player);
+  candleBoth(INCUBATOR, incubator);
+  sameLook(eggLook(incubator), [2, 0, 0, true], "both eggs stay, and glow");
+  equal(blockStore.getBlockData(incubator).eggs.length, 2, "still brooding two");
+  equal(player.inventory.count("kaleidoscope_ranching:fertilized_chicken_egg"), 0, "none handed back");
+
+  const nest = nestAt(4);
+  NEST.onPlace({ block: nest, dimension: overworld });
+  blockStore.setBlockData(nest, { eggs: { "minecraft:egg": 2 }, hatching: [] });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(NEST, nest, player);
+  candleBoth(NEST, nest);
+  sameLook(eggLook(nest), [3, 0, 0, 1], "stored and brooded eggs stay; the brooded one glows");
+  equal(player.inventory.count("minecraft:egg"), 0, "stored eggs not collected");
+  noText(player, "nothing said");
+});
+
+test("1.1: a glow ends with the last brooded egg and does not light the next one", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const incubator = incubatorAt();
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(INCUBATOR, incubator, player);
+  hold(player, "kaleidoscope_ranching:egg_candler", 1);
+  CANDLER.onUseOn({ source: player, block: incubator });
+  hold(player, "minecraft:stick", 1);
+  use(INCUBATOR, incubator, player); // takes the egg out
+  equal(blockStore.getBlockData(incubator).candled, undefined, "no glow kept without eggs");
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(INCUBATOR, incubator, player);
+  equal(eggLook(incubator)[3], false, "a new egg does not glow");
+});
+
+test("1.1: a settled nest box or incubator is not redrawn when it already looks right", () => {
+  clearWorld();
+  const { settleNest, settleIncubator } = nestModule;
+  const nest = nestAt();
+  const incubator = incubatorAt(3);
+  settleNest(nest);
+  settleIncubator(incubator);
+  const proto = Object.getPrototypeOf(nest);
+  const original = proto.setPermutation;
+  let calls = 0;
+  proto.setPermutation = function (permutation) {
+    calls++;
+    return original.call(this, permutation);
+  };
+  try {
+    settleNest(nest);
+    settleIncubator(incubator);
+  } finally {
+    proto.setPermutation = original;
+  }
+  equal(calls, 0, "no setPermutation when nothing changed");
+});
+
+// ## The generated block files' Molang, evaluated for every state combination: each egg slot shows
+// ## exactly the look its states mean, and the light matches the lamp and the glow.
+/** A small Molang evaluator: q.block_state('x'), numbers, true/false, == != < <= > >=, !, &&, ||, (). */
+function eggMolang(text) {
+  const tokens = String(text).match(/q(?:uery)?\.block_state\('[^']*'\)|\d+(?:\.\d+)?|true|false|&&|\|\||[=!<>]=|[()!<>]|\S/g);
+  let at = 0;
+  const peek = () => tokens[at];
+  const take = (want) => {
+    const token = tokens[at++];
+    if (want && token !== want) throw new Error(`Molang "${text}": expected ${want}, got ${token}`);
+    return token;
+  };
+  const OPS = { "==": (a, b) => a == b, "!=": (a, b) => a != b, "<": (a, b) => a < b, "<=": (a, b) => a <= b, ">": (a, b) => a > b, ">=": (a, b) => a >= b };
+  const value = () => {
+    const token = take();
+    if (token === "(") {
+      const inner = or();
+      take(")");
+      return inner;
+    }
+    if (token === "!") {
+      const inner = value();
+      return (s) => !inner(s);
+    }
+    if (token === "true" || token === "false") return () => token === "true";
+    if (/^\d/.test(token)) return () => Number(token);
+    const state = token?.match(/block_state\('([^']*)'\)/)?.[1];
+    if (!state) throw new Error(`Molang "${text}": unexpected ${token}`);
+    return (s) => s[state];
+  };
+  const compare = () => {
+    const left = value();
+    if (!(peek() in OPS)) return left;
+    const op = OPS[take()];
+    const right = value();
+    return (s) => op(left(s), right(s));
+  };
+  const and = () => {
+    let left = compare();
+    while (peek() === "&&") {
+      take();
+      const a = left, b = compare();
+      left = (s) => !!a(s) && !!b(s);
+    }
+    return left;
+  };
+  function or() {
+    let left = and();
+    while (peek() === "||") {
+      take();
+      const a = left, b = and();
+      left = (s) => !!a(s) || !!b(s);
+    }
+    return left;
+  }
+  const expression = or();
+  if (at !== tokens.length) throw new Error(`Molang "${text}": left over ${tokens.slice(at).join(" ")}`);
+  return (s) => !!expression(s);
+}
+function stateCombos(states) {
+  return Object.entries(states).reduce(
+    (all, [name, values]) => all.flatMap((combo) => values.map((value) => ({ ...combo, [name]: value }))),
+    [{}]
+  );
+}
+const eggBlockFile = (id) => JSON.parse(readFileSync(new URL(`../../packs/BP/blocks/r_${id}.json`, import.meta.url), "utf8"))["minecraft:block"];
+
+test("1.1: the generated egg bones show one look per egg, the one its states mean, and the right light", () => {
+  for (const id of ["nest_box", "incubator"]) {
+    const block = eggBlockFile(id);
+    const rules = Object.fromEntries(Object.entries(block.components["minecraft:geometry"].bone_visibility).map(([bone, rule]) => [bone, eggMolang(rule)]));
+    const lights = block.permutations
+      .filter((p) => p.components["minecraft:light_emission"] !== undefined)
+      .map((p) => [eggMolang(p.condition), p.components["minecraft:light_emission"]]);
+    const all = stateCombos(block.description.states);
+    equal(all.length, id === "nest_box" ? 625 : 500, `${id} state combinations`);
+    for (const s of all) {
+      const eggs = s[`${NS}:eggs`], cracks = s[`${NS}:cracks`], ready = s[`${NS}:ready`], candled = s[`${NS}:candled`];
+      const valid = ready <= cracks && cracks <= eggs && (typeof candled === "boolean" || candled <= eggs);
+      const where = `${id} ${JSON.stringify(s)}`;
+      for (let n = 1; n <= 4; n++) {
+        const lit = typeof candled === "boolean" ? candled && eggs >= n : candled >= n;
+        const looks = ["", "_crack", "_hatch", "_lit"].filter((suffix) => rules[`egg_${n}${suffix}`](s));
+        const embryos = [0, 1, 2].filter((stage) => rules[`egg_${n}_embryo_${stage}`](s));
+        const stage = ready >= n ? 2 : cracks >= n ? 1 : 0;
+        if (n <= eggs) {
+          const want = lit ? "_lit" : ["", "_crack", "_hatch"][stage];
+          equal(JSON.stringify(looks), JSON.stringify([want]), `${where} slot ${n} look`);
+          equal(JSON.stringify(embryos), JSON.stringify(lit ? [stage] : []), `${where} slot ${n} embryo`);
+        } else if (valid) {
+          equal(looks.length + embryos.length, 0, `${where} slot ${n} is empty`);
+        }
+      }
+      let light = 0;
+      for (const [when, level] of lights) if (when(s)) light = level;
+      const glowing = typeof candled === "boolean" ? candled : candled > 0;
+      equal(light, glowing ? 10 : s[`${NS}:busy`] ? 7 : 0, `${where} light`);
+    }
+  }
 });
 
 test("M9: the lasso leads a ranch animal; the duster clears a patch of cobweb; dye colours a rug", () => {

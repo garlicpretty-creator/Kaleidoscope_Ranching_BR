@@ -87,10 +87,17 @@ function center(block) {
   return { x: x + 0.5, y: y + 0.5, z: z + 0.5 };
 }
 
+/** Sets the block's states; leaves the block alone when it already shows them. */
 function setStates(block, states) {
-  let permutation = block.permutation;
-  for (const [name, value] of Object.entries(states)) permutation = permutation.withState(name, value);
-  block.setPermutation(permutation);
+  const current = block.permutation;
+  let permutation = current;
+  let changed = false;
+  for (const [name, value] of Object.entries(states)) {
+    if (current.getState(name) === value) continue;
+    permutation = permutation.withState(name, value);
+    changed = true;
+  }
+  if (changed) block.setPermutation(permutation);
 }
 
 function hatch(dimension, location, speciesId, mother) {
@@ -157,8 +164,9 @@ function isGlowing(data, now) {
   return age >= 0 && age < CANDLE_GLOW_TICKS;
 }
 
-function forgetStaleGlow(data, now) {
-  if (data.candled !== undefined && !isGlowing(data, now)) delete data.candled;
+/** Drops a glow that is over, or that has no brooded egg left to light (a new egg must not glow). */
+function forgetStaleGlow(data, brooded, now) {
+  if (data.candled !== undefined && (!brooded.length || !isGlowing(data, now))) delete data.candled;
 }
 
 /** States showing the brooded eggs, most advanced first, followed by `plain` more eggs. */
@@ -263,7 +271,7 @@ export function settleNest(block) {
   lay(block, data);
   hatchInNest(block, data);
   pushToHopper(block, data);
-  forgetStaleGlow(data, nowTick());
+  forgetStaleGlow(data, data.hatching, nowTick());
   setBlockData(block, data);
   showNest(block, data);
   return data;
@@ -284,6 +292,8 @@ export const nestBoxComponent = {
   onPlayerInteract({ block, player }) {
     if (!player) return;
     trackBlock(block);
+    // ## Bedrock may fire this as well as the candler's onUseOn: the candler only lights the eggs.
+    if (holdsCandler(player)) return void candle(block);
     const data = settleNest(block);
     const item = mainHand(player)?.getItem();
     const species = item && speciesForEgg(item.typeId);
@@ -358,7 +368,7 @@ export function settleIncubator(block, elapsed = 0) {
     });
   }
   pushShells(block, data);
-  forgetStaleGlow(data, nowTick());
+  forgetStaleGlow(data, data.eggs, nowTick());
   setBlockData(block, data);
   showIncubator(block, data, heated);
   return data;
@@ -372,6 +382,7 @@ export const incubatorComponent = {
   onPlayerInteract({ block, player }) {
     if (!player) return;
     trackBlock(block);
+    if (holdsCandler(player)) return void candle(block); // as in the nest box
     const data = settleIncubator(block);
     const item = mainHand(player)?.getItem();
     const species = item && speciesForEgg(item.typeId);
@@ -386,6 +397,7 @@ export const incubatorComponent = {
       if (data.shells) give(player, EGGSHELL, data.shells);
       data.eggs = [];
       data.shells = undefined;
+      forgetStaleGlow(data, data.eggs, nowTick());
     }
     setBlockData(block, data);
     showIncubator(block, data, isHeated(block));
@@ -419,6 +431,8 @@ export function startNests() {
 
 // ## The candler shows nothing on screen: it lights the brooded eggs for
 // ## CANDLE_GLOW_TICKS (see "How the eggs look").
+
+const holdsCandler = (player) => mainHand(player)?.getItem()?.typeId === rid("egg_candler");
 
 /** For a nest box or incubator: how to settle it, redraw it and find its brooded eggs. */
 function eggBlock(block) {
