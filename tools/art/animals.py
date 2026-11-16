@@ -87,7 +87,7 @@ STANDARD_INDEX = f"q.is_baby ? 2 : ({SEX_IS_MALE})"
 
 
 def quad_walk(fl, fr, bl, br, amplitude=70):
-    swing = f"math.cos(q.modified_distance_moved * 38.17) * {amplitude}"
+    swing = f"math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * {amplitude}"
     return {fl: swing, br: swing, fr: f"-{swing}", bl: f"-{swing}"}
 
 
@@ -456,7 +456,7 @@ def chicken():
             return light(t, color)
         return paint
 
-    swing = "math.cos(q.modified_distance_moved * 38.17) * 80"
+    swing = "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 80"
     flap = "q.is_on_ground ? 0 : math.sin(q.life_time * 1600) * 40"
     return Species(
         "chicken", model, painter, textures, STANDARD_INDEX, ["female", "male", "baby"], STANDARD_PREVIEW,
@@ -530,7 +530,7 @@ def rabbit():
         ("buck", "brown", {"sex": "male", "baby": False}),
         ("kit", "brown", {"sex": "female", "baby": True}),
     ]
-    hop = "math.cos(q.modified_distance_moved * 30) * 40"
+    hop = "math.cos(q.modified_distance_moved * 30) * q.modified_move_speed * 40"
     return Species(
         "rabbit", model, painter, textures, "math.clamp(q.variant, 0, 5)", [name for name, _ in RABBIT_COATS], preview,
         {"leg_fl": f"-{hop}", "leg_fr": f"-{hop}", "leg_bl": hop, "leg_br": hop}, ("#806042", "#C4AA8C"),

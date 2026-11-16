@@ -6,28 +6,28 @@
       "bones": {
         "a_leg_left": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 70",
             0,
             0
           ]
         },
         "b_leg_left": {
           "rotation": [
-            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 70",
             0,
             0
           ]
         },
         "a_leg_right": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 70",
             0,
             0
           ]
         },
         "b_leg_right": {
           "rotation": [
-            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 70",
             0,
             0
           ]

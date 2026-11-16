@@ -439,7 +439,22 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
         for (const limb of LIMBS[animal.id] ?? []) {
           for (const age of ["a", "b"]) if (!anim?.bones?.[`${age}_${limb}`]) fail(`${where}: walk animation does not move "${age}_${limb}"`);
         }
+        // A swing that follows the distance walked keeps the last angle when the animal stops,
+        // so it has to fade with the speed: otherwise a standing animal stands with its legs
+        // spread, and asleep the swing adds to the folded legs and pushes them through the back.
+        for (const [bone, channels] of Object.entries(anim?.bones ?? {})) {
+          for (const molang of channels.rotation ?? []) {
+            if (typeof molang === "string" && molang.includes("modified_distance_moved") && !molang.includes("modified_move_speed")) {
+              fail(`${where}: walk swing on "${bone}" does not scale with q.modified_move_speed`);
+            }
+          }
+        }
       }
+    }
+    // The walk animation must not play under the sleep pose (tools/gen_sleep.mjs).
+    const walkEntry = (description.scripts?.animate ?? []).find((entry) => (typeof entry === "string" ? entry : Object.keys(entry)[0]) === "walk");
+    if (description.animations?.sleep && (typeof walkEntry === "string" || !String(Object.values(walkEntry ?? {})[0] ?? "").includes("sleeping"))) {
+      fail(`${where}: walk animation still plays while asleep`);
     }
     for (const rcId of description.render_controllers ?? []) {
       const rc = renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]);
@@ -524,6 +539,11 @@ for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json")))
   for (const type of ["minecraft:recipe_shaped", "minecraft:recipe_shapeless"]) {
     if (data[type] && !(Array.isArray(data[type].unlock) && data[type].unlock.length)) {
       fail(`${relative(root, path)}: crafting recipe needs "unlock" (1.20+ recipes require unlock data)`);
+    }
+    // Game 1.26 rejects { "context": "AlwaysUnlocked" } as an invalid unlock ingredient and drops
+    // the whole recipe; unlock by an item instead.
+    for (const entry of data[type]?.unlock ?? []) {
+      if (!entry.item) fail(`${relative(root, path)}: unlock entry ${JSON.stringify(entry)} is not an item; the game drops the recipe`);
     }
   }
 }

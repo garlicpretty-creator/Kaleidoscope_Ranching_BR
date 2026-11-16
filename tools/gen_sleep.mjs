@@ -2,7 +2,7 @@
 //
 // For each client entity (tools/gen_art.py writes the M1 animals, the M4 ones
 // are hand made) this writes animation.kaleidoscope_ranching.<id>.sleep,
-// played while the synced `sleeping` property is true, stops look_at_target
+// played while the synced `sleeping` property is true, stops walk and look_at_target
 // while asleep, and adds closed eyelids shown only while asleep.
 //
 // Poses, as the proposal describes them, posed per species from the model's
@@ -314,8 +314,10 @@ for (const { id } of ANIMALS) {
   description.animations.sleep = `animation.${NS}.${id}.sleep`;
   const animate = (description.scripts.animate ?? []).filter((entry) => {
     const key = typeof entry === "string" ? entry : Object.keys(entry)[0];
-    return key !== "sleep" && key !== "look_at_target";
+    return key !== "sleep" && key !== "look_at_target" && key !== "walk";
   });
+  // The walk swing would add to the folded legs of the sleep pose.
+  if (description.animations.walk) animate.unshift({ walk: `!${ASLEEP}` });
   if (description.animations.look_at_target) animate.push({ look_at_target: `!${ASLEEP}` });
   animate.push({ sleep: ASLEEP });
   description.scripts.animate = animate;
