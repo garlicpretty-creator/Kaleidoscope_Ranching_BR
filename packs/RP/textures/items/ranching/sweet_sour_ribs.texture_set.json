@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "sweet_sour_ribs",
+    "metalness_emissive_roughness_subsurface": "sweet_sour_ribs_mers",
+    "normal": "sweet_sour_ribs_normal"
+  }
+}

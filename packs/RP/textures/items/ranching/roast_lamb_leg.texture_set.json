@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "roast_lamb_leg",
+    "metalness_emissive_roughness_subsurface": "roast_lamb_leg_mers",
+    "normal": "roast_lamb_leg_normal"
+  }
+}

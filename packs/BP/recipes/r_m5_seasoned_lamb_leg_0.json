@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_seasoned_lamb_leg_0"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:lamb_leg"
+      },
+      {
+        "item": "kaleidoscope_cookery:red_chili"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:seasoned_lamb_leg",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:seasoned_lamb_leg"
+      }
+    ]
+  }
+}
