@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "placed_cheese_gratin",
+    "metalness_emissive_roughness_subsurface": "placed_cheese_gratin_mers",
+    "normal": "placed_cheese_gratin_normal"
+  }
+}

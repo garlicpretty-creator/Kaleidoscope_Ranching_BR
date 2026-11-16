@@ -704,6 +704,31 @@ test("a placed fondue hands the bowl back with the last dip, or when broken once
   equal(dropsOf("kaleidoscope_ranching:cheese_fondue").length, 0, "but not the dish");
 });
 
+const { PLACED_FOODS } = await import("../../packs/BP/scripts/data/placedFoods.js");
+const { DISHES: DISH_ROWS } = await import("../../packs/BP/scripts/data/dishes.js");
+
+test("every shared dish is eaten in four portions worth at least the dish, and hands its bowl back", () => {
+  const shared = PLACED_FOODS.filter((food) => food.eat && food.gives);
+  assert(shared.length >= 9, "the fondue, six stews and two gratins");
+  for (const [n, food] of shared.entries()) {
+    clearWorld();
+    overworld.items = [];
+    const player = __newPlayer(at(0));
+    player.hunger = 0;
+    const block = `kaleidoscope_ranching:${food.block}`;
+    const placed = __place(overworld, { x: 50 + n * 2, y: 64, z: 0 }, block, { "kaleidoscope_ranching:cut": 0 });
+    for (let k = 0; k < food.portions; k++) use(PLACED, placed, player);
+    equal(placed.permutation.type.id, "minecraft:air", `${food.block} is gone after the last portion`);
+    equal(player.hunger, food.portions * food.eat, `${food.block} feeds portions x eat`);
+    equal(player.inventory.count(food.gives), 1, `${food.block} hands back its bowl`);
+    const dish = DISH_ROWS.find((d) => d.id === food.item);
+    assert(dish && food.portions * food.eat >= dish.food[0], `${food.item}: sharing is worth at least eating it from the hand`);
+    equal(dish.carrier, food.gives, `${food.item}: the bowl handed back is the dish's own carrier`);
+    const item = JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${food.item}.json`, import.meta.url), "utf8"))["minecraft:item"].components;
+    equal(item["minecraft:block_placer"]?.block, block, `${food.item} places ${food.block}`);
+  }
+});
+
 test("the placeable foods carry a block placer and keep their own food value", () => {
   const item = (id) => JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${id}.json`, import.meta.url), "utf8"))["minecraft:item"].components;
   for (const [id, block] of [["aged_cheese_wheel", "cheese_wheel"], ["vintage_cheese_wheel", "vintage_cheese_wheel"], ["smoked_cheese_wheel", "smoked_cheese_wheel"], ["margherita_pizza", "placed_pizza"], ["cheese_fondue", "placed_fondue"]]) {

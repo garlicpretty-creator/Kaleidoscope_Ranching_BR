@@ -1,12 +1,14 @@
 """Dishes that can be put down and eaten a portion at a time (data/placedFoods.js rows with
-`eat`): the Margherita pizza on its board and the cheese fondue pot.
+`eat`): the Margherita pizza on its board, the cheese fondue and the big stews in a shared pot,
+and the two gratins in a baking dish.
 
 Both follow the cheese wheel's convention: bones piece_1..piece_4, and the block hides one per
 portion eaten, piece_4 first (tools/gen_blocks.mjs, packs/BP/scripts/systems/placedFood.js).
-The pizza's pieces are its four quarters; the fondue's are four levels of cheese in the pot.
+The pizza's and the gratins' pieces are their four quarters; a pot's are four levels of food.
+Every pot shares one shape and every gratin another: POTS and DISHES give each its colours.
 
 Run with: python art_src/m4_scripts/placed_food.py
-(then python art_src/m4_scripts/bbmodel.py placed_pizza placed_fondue)
+(then python art_src/m4_scripts/bbmodel.py with the block ids to refresh the Blockbench files)
 """
 import json
 import math
@@ -115,6 +117,80 @@ def burner(f, i, j, w, h, fi):
     return POT_DK
 
 
+IRON_POT = (POT, POT_DK, POT_LT)
+CLAY_POT = ((150, 92, 62), (112, 64, 42), (186, 126, 90))
+POTATO, CARROT, GREENS, CHILI = (228, 202, 132), (228, 132, 52), (88, 150, 70), (204, 52, 40)
+
+# block id -> (pot colours, liquid, liquid dark, [chunk colours])
+POTS = {
+    "placed_old_duck_soup": (IRON_POT, (214, 186, 120), (188, 156, 92), [(150, 100, 70), (206, 214, 146), (236, 220, 170)]),
+    "placed_braised_brisket": (IRON_POT, (124, 62, 38), (96, 44, 28), [(84, 40, 28), CARROT, POTATO]),
+    "placed_yak_stew": (IRON_POT, (116, 60, 46), (88, 42, 34), [(78, 40, 32), (156, 44, 66), POTATO]),
+    "placed_goose_stew": (IRON_POT, (164, 104, 56), (132, 78, 40), [(204, 160, 110), CHILI, POTATO]),
+    "placed_lion_head_meatballs": (IRON_POT, (156, 84, 46), (124, 60, 34), [(112, 64, 46), (112, 64, 46), GREENS]),
+    "placed_claypot_rice": (CLAY_POT, (242, 234, 212), (222, 210, 182), [(156, 52, 46), (120, 40, 36), GREENS]),
+}
+
+# block id -> (crust, crust dark, inside, fleck)
+DISHES = {
+    "placed_cheese_gratin": ((236, 178, 84), (196, 124, 52), (250, 232, 170), (150, 86, 40)),
+    "placed_truffle_gratin": ((228, 170, 88), (184, 118, 54), (248, 228, 176), (58, 44, 40)),
+}
+CERAMIC, CERAMIC_DK = (236, 232, 224), (196, 190, 182)
+
+GRATIN = [
+    ("dish", None, [0, 0, 0], [
+        ("base", [-6, 0, -4], [12, 1, 8]),
+        ("side_fb", [-6, 1, -4], [12, 3, 1]),
+        ("side_fb", [-6, 1, 3], [12, 3, 1]),
+        ("side_s", [-6, 1, -3], [1, 3, 6]),
+        ("side_s", [5, 1, -3], [1, 3, 6]),
+        ("ear", [-7, 3, -1], [1, 1, 2]),
+        ("ear", [6, 3, -1], [1, 1, 2]),
+    ]),
+    *[(f"piece_{n}", "dish", [0, 1, 0], [(f"q{n}", [0 if sx > 0 else -5, 1, 0 if sz > 0 else -3], [5, 2, 3])])
+      for n, sx, sz in QUARTERS],
+]
+
+
+def stew(liquid, liquid_dk, chunks):
+    """A level of stew seen from above: liquid with 2x2 chunks of the dish's ingredients."""
+    def fn(f, i, j, w, h, fi):
+        if f != "top":
+            return liquid_dk
+        cell = (i // 2) * 5 + (j // 2) * 3
+        if cell % 4 == 1 and 0 < i < w - 1 and 0 < j < h - 1:
+            return chunks[(cell // 4) % len(chunks)]
+        return liquid_dk if (i * 7 + j * 13) % 9 == 0 else liquid
+    return fn
+
+
+def vessel(base, dark, light):
+    def fn(f, i, j, w, h, fi):
+        if f == "top":
+            return light
+        if f == "bottom":
+            return dark
+        if j == 0:
+            return light
+        return dark if (i * 7 + j * 3) % 11 == 0 or j == h - 1 else base
+    return fn
+
+
+def gratin_piece(colours, sx, sz):
+    crust, crust_dk, inside, fleck = colours
+    inner = {"west" if sx > 0 else "east", "north" if sz > 0 else "south"}
+
+    def fn(f, i, j, w, h, fi):
+        if f == "top":
+            r = (i * 7 + j * 11 + sx + sz * 2) % 13
+            return fleck if r == 0 else crust_dk if r < 4 else crust
+        if f in inner:
+            return crust if j == 0 else inside
+        return crust_dk
+    return fn
+
+
 def build(bid, raw, paint):
     bones, tw, th = autouv(raw)
     th = tw = max(tw, th)
@@ -142,9 +218,26 @@ def fondue_paints(bones):
             "handle": wood(WOOD_DK), **{f"cheese_{n}": cheese for n in (1, 2, 3, 4)}}
 
 
+def pot_paints(colours, liquid, liquid_dk, chunks):
+    walls = vessel(*colours)
+    return lambda bones: {"foot": solid(colours[1]), "burner": burner, "floor": walls, "wall_fb": walls, "wall_s": walls,
+                          "handle": wood(WOOD_DK), **{f"cheese_{n}": stew(liquid, liquid_dk, chunks) for n in (1, 2, 3, 4)}}
+
+
+def gratin_paints(colours):
+    signs = {n: (sx, sz) for n, sx, sz in QUARTERS}
+    ceramic = vessel(CERAMIC, CERAMIC_DK, (250, 248, 244))
+    return lambda bones: {"base": ceramic, "side_fb": ceramic, "side_s": ceramic, "ear": ceramic,
+                          **{f"q{n}": gratin_piece(colours, *signs[n]) for n in signs}}
+
+
 def main():
     build("placed_pizza", PIZZA, pizza_paints)
     build("placed_fondue", FONDUE, fondue_paints)
+    for bid, row in POTS.items():
+        build(bid, FONDUE, pot_paints(*row))
+    for bid, colours in DISHES.items():
+        build(bid, GRATIN, gratin_paints(colours))
 
 
 if __name__ == "__main__":

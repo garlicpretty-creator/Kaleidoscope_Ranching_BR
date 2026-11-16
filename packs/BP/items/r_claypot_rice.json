@@ -25,6 +25,9 @@
         "use_duration": 1.6,
         "movement_modifier": 0.33
       },
+      "minecraft:block_placer": {
+        "block": "kaleidoscope_ranching:placed_claypot_rice"
+      },
       "minecraft:tags": {
         "tags": [
           "minecraft:is_food"
