@@ -804,6 +804,21 @@ test("a placed drink is drunk even with a full hunger bar, with no text on scree
   }
 });
 
+test("using the spot of a drink already drunk gives nothing more", () => {
+  for (const [n, food] of DRINKS.entries()) {
+    clearWorld();
+    const player = __newPlayer(at(0));
+    player.hunger = 0;
+    const placed = __place(overworld, { x: 70 + n * 2, y: 64, z: 8 }, `kaleidoscope_ranching:${food.block}`);
+    use(PLACED, placed, player);
+    use(PLACED, placed, player);
+    equal(player.hunger, food.eat, `${food.item}: fed once`);
+    if (food.gives) equal(player.inventory.count(food.gives), 1, `${food.item}: one container`);
+    equal(overworld.items.length, 0, `${food.item}: nothing dropped`);
+    equal(placed.permutation.type.id, "minecraft:air", `${food.item}: still gone`);
+  }
+});
+
 test("a placed drink is only drunk by a player", () => {
   clearWorld();
   const food = DRINKS[0];

@@ -604,6 +604,15 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
         if (!bones.find((b) => b.name === `piece_${n}`)?.cubes?.length) fail(`placed food ${food.block}: bone piece_${n} is missing or empty`);
       }
       const cubes = bones.flatMap((b) => b.cubes ?? []);
+      // The selection box is as tall as the model (tools/gen_blocks.mjs PLACED_SHAPES), half a pixel either way.
+      const blockPath = join(bp, "blocks", `r_${food.block}.json`);
+      if (!existsSync(blockPath)) fail(`placed food ${food.block}: no block file`);
+      else {
+        const selection = readJson(blockPath)["minecraft:block"].components["minecraft:selection_box"];
+        const top = Math.max(...cubes.map((c) => c.origin[1] + c.size[1]));
+        const boxTop = selection.origin[1] + selection.size[1];
+        if (Math.abs(boxTop - top) > 0.5) fail(`placed food ${food.block}: selection box top ${boxTop}, model top ${top}`);
+      }
       for (const { origin: [x, y, z], size: [w, h, d] } of cubes) {
         if (x < -8 || z < -8 || y < 0 || x + w > 8 || z + d > 8 || y + h > 16) fail(`placed food ${food.block}: cube at ${[x, y, z]} size ${[w, h, d]} leaves the block's cell`);
       }

@@ -121,9 +121,9 @@ RULES = [(re.compile(p), m) for p, m in RULES]
 METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$)")
 GLASS_TEXTURES = re.compile(r"^blocks/ranching/incubator$")
 PLACED_FOOD = re.compile(r"^blocks/ranching/placed_")
-# Placed drinks in glass: every pixel stays glass (the pale, cool ones are not iron), and the drink
-# behind it, or its glossy top, is as smooth.
-PLACED_GLASS = re.compile(r"^blocks/ranching/placed_(cream_cocoa|yogurt_berry_drink)$")
+# Placed drinks: every pixel keeps the texture's base material. There is no iron on them, so pale,
+# cool pixels (glass, porcelain, the silver bands) never turn metal; a drink in glass is as smooth.
+PLACED_DRINK = re.compile(r"^blocks/ranching/placed_((yak_)?milk_wine|cream_cocoa|yogurt_berry_drink|yogurt|milk_tea|milk_skin_tea)$")
 EYE = (26, 22, 26)  # boxuv.plain_eyes
 EYE_WHITE = (238, 236, 232)
 
@@ -199,7 +199,7 @@ def classify(key, base, rgb, neighbours):
     if GLASS_TEXTURES.search(key):
         if 175 < rgb[2] and rgb[2] >= rgb[0] + 10 and s < 0.25:
             return "glass"
-    if PLACED_GLASS.search(key):
+    if PLACED_DRINK.search(key):
         return base
     if PLACED_FOOD.search(key) and s < 0.3 and v > 0.3 and rgb[0] >= rgb[2] - 3:
         # pale, warm food (radish, rice, egg white) and white ceramic; iron and steel are cool greys

@@ -40,11 +40,16 @@ const PLACED_SHAPES = {
   pot: both(-6, 0, -6, 12, 9, 12),
   claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
-  // Placed drinks (art_src/m4_scripts/placed_drink.py): a cup or crock, a glass mug with its handle, a bottle, a tea bowl.
-  cup: both(-3, 0, -3, 6, 11, 6),
-  glass: both(-3, 0, -3, 8, 9, 6),
+  // The fondue's forks stand over the rim of its pot.
+  fondue: both(-6, 0, -6, 12, 11, 12),
+  // Placed drinks (art_src/m4_scripts/placed_drink.py), each as tall as its model (tools/validate.mjs checks).
+  goblet: both(-3, 0, -3, 6, 9, 6),
+  beaker: both(-3, 0, -3, 6, 11, 6),
+  crock: both(-3, 0, -3, 6, 8, 6),
+  mug: both(-3, 0, -3, 8, 9, 6),
   bottle: both(-3, 0, -3, 6, 14, 6),
-  bowl: both(-4, 0, -4, 8, 7, 8),
+  tea_bowl: both(-4, 0, -4, 8, 5, 8),
+  saucer_bowl: both(-4, 0, -4, 8, 7, 8),
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",

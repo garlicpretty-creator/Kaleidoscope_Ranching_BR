@@ -11,8 +11,9 @@
 //           per portion (the saturation effect gives twice that as saturation)
 // gives:    handed back with the last portion (the dish's bowl)
 // drink:    drunk rather than eaten (the item's drink animation): the drinking sound
-// shape:    which boxes the block uses: wheel, pizza, pot, claypot, dish, and the drinks' cup, glass,
-//           bottle, bowl; every dish and drink has its own model
+// shape:    which boxes the block uses (tools/gen_blocks.mjs PLACED_SHAPES): wheel, pizza, pot, fondue,
+//           claypot, dish, and the drinks' goblet, beaker, crock, mug, bottle, tea_bowl, saucer_bowl;
+//           every dish and drink has its own model
 //           (tools/gen_blocks.mjs; art_src/m4_scripts/placed_food.py)
 //
 // Plain data: no @minecraft imports (scripts/ARCHITECTURE.md).
@@ -33,7 +34,7 @@ export const PLACED_FOODS = [
   // 12 hunger as an item; four slices of 3.
   { item: "margherita_pizza", block: "placed_pizza", shape: "pizza", portions: PORTIONS, eat: 3 },
   // 11 hunger as an item; four dips of 3, so sharing the pot is worth one point more.
-  { item: "cheese_fondue", block: "placed_fondue", shape: "pot", portions: PORTIONS, eat: 3, gives: "minecraft:bowl" },
+  { item: "cheese_fondue", block: "placed_fondue", shape: "fondue", portions: PORTIONS, eat: 3, gives: "minecraft:bowl" },
   // The big stews (10 to 12 hunger as an item), each in its own pot; the rice in a wide clay pot.
   shared("old_duck_soup", "pot"),
   shared("braised_brisket", "pot"),
@@ -46,12 +47,12 @@ export const PLACED_FOODS = [
   shared("truffle_gratin", "dish"),
   // Drinks put down in their cup, glass or bottle: one serving, drunk in one go for the item's own
   // hunger, and the item's container comes back (tools/test/run.mjs checks both against the item).
-  drink("milk_wine", "cup", 3, { gives: "kaleidoscope_ranching:horn_cup" }),
-  drink("yak_milk_wine", "cup", 4, { gives: "kaleidoscope_ranching:horn_cup" }),
-  drink("cream_cocoa", "glass", 4, { gives: "minecraft:glass_bottle" }),
+  drink("milk_wine", "goblet", 3, { gives: "kaleidoscope_ranching:horn_cup" }),
+  drink("yak_milk_wine", "beaker", 4, { gives: "kaleidoscope_ranching:horn_cup" }),
+  drink("cream_cocoa", "mug", 4, { gives: "minecraft:glass_bottle" }),
   drink("yogurt_berry_drink", "bottle", 4, { gives: "minecraft:glass_bottle" }),
-  drink("milk_tea", "bowl", 4, { gives: "minecraft:glass_bottle" }),
-  drink("milk_skin_tea", "bowl", 5, { gives: "minecraft:glass_bottle" }),
+  drink("milk_tea", "tea_bowl", 4, { gives: "minecraft:glass_bottle" }),
+  drink("milk_skin_tea", "saucer_bowl", 5, { gives: "minecraft:glass_bottle" }),
   // Yogurt is eaten with a spoon from its crock, as from the hand.
-  drink("yogurt", "cup", 4, { drink: false }),
+  drink("yogurt", "crock", 4, { drink: false }),
 ];
