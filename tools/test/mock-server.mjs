@@ -324,12 +324,18 @@ export class Player extends Entity {
     this.onScreenDisplay = { setActionBar: (message) => this.actionBar.push(message) };
     this.isSneaking = false;
     this.worn = {};
+    this.hunger = 10; // of 20
+  }
+  // Only the saturation effect is modelled: level n restores n hunger points.
+  addEffect(id, _ticks, options = {}) {
+    if (id === "saturation") this.hunger = Math.min(20, this.hunger + (options.amplifier ?? 0) + 1);
   }
   getEntitiesFromViewDirection() {
     return [];
   }
   getComponent(id) {
     if (id === "minecraft:inventory") return { container: this.inventory };
+    if (id === "minecraft:player.hunger") return { currentValue: this.hunger, effectiveMax: 20 };
     if (id === "minecraft:equippable") {
       return {
         // Armour and the off hand are their own slots; anything else is the selected hotbar slot.

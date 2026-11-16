@@ -11,6 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", name)).href);
 const { ANIMALS } = await load("animals.js");
 const { BLOCKS } = await load("blocks.js");
+const { PLACED_FOODS } = await load("placedFoods.js");
 
 const NS = "kaleidoscope_ranching";
 const S = (name) => `${NS}:${name}`;
@@ -29,6 +30,15 @@ const RUG_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
   "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
 ];
+
+const WHEEL_SHAPE = { collision: box(-6, 0, -6, 12, 5, 12), selection: box(-6, 0, -6, 12, 5, 12) };
+const PLACED_SHAPES = {
+  cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#e2b45a" },
+  vintage_cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#c98a3c" },
+  smoked_cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#8a5a32" },
+  placed_pizza: { collision: box(-8, 0, -8, 16, 3, 16), selection: box(-8, 0, -8, 16, 3, 16), mapColor: "#d86a3c" },
+  placed_fondue: { collision: box(-6, 0, -6, 12, 9, 12), selection: box(-6, 0, -6, 12, 9, 12), mapColor: "#3c3c44" },
+};
 
 const DEFS = {
   butcher_rack: {
@@ -125,19 +135,25 @@ const DEFS = {
     selection: box(-8, 0, -6, 16, 16, 12),
     seconds: 1,
   },
-  // Placed by the aged_cheese_wheel item (block_placer in gen_items.mjs) and cut like a cake;
-  // systems/cheeseWheel.js drops the wheel or the slices left, so the block itself drops nothing.
-  cheese_wheel: {
-    component: "cheese_wheel",
-    states: { [S("cut")]: [0, 1, 2, 3] },
-    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`piece_${n}`, `${state("cut")} <= ${4 - n}`])),
-    collision: box(-6, 0, -6, 12, 5, 12),
-    selection: box(-6, 0, -6, 12, 5, 12),
-    seconds: 0.5,
-    hidden: true,
-    loot: "loot_tables/kaleidoscope_ranching/empty.json",
-    mapColor: "#e2b45a",
-  },
+  // Placed food (data/placedFoods.js): the item's block_placer puts the block down. Wheels are cut
+  // like a cake (systems/cheeseWheel.js), dishes are eaten a portion at a time (systems/placedFood.js);
+  // the scripts drop what is left, so the blocks themselves drop nothing.
+  ...Object.fromEntries(
+    PLACED_FOODS.map((food) => [
+      food.block,
+      {
+        component: food.cut ? "cheese_wheel" : "placed_food",
+        states: { [S("cut")]: Array.from({ length: food.portions }, (_, n) => n) },
+        bones: Object.fromEntries(
+          Array.from({ length: food.portions }, (_, n) => [`piece_${n + 1}`, `${state("cut")} <= ${food.portions - 1 - n}`])
+        ),
+        ...PLACED_SHAPES[food.block],
+        seconds: 0.5,
+        hidden: true,
+        loot: "loot_tables/kaleidoscope_ranching/empty.json",
+      },
+    ])
+  ),
   // Food goes in, 廚餘 comes out (systems/foodWasteBin.js); `fill` shows the level, the
   // contents live in block data and drop when it breaks.
   food_waste_bin: {

@@ -4,8 +4,8 @@ A rounded wheel made of four quarter pieces, piece_1..piece_4, so the block can 
 piece per slice cut (piece_4 first). Faces that point into the wheel are painted as cut
 paste, so every partly eaten state shows a clean cheese interior.
 
-Writes art/blocks/cheese_wheel.{geo.json,png} for the kaleidoscope_ranching:cheese_wheel block
-(tools/gen_blocks.mjs, packs/BP/scripts/systems/cheeseWheel.js).
+Writes art/blocks/<id>.{geo.json,png} for the three wheel blocks (aged, vintage, smoked): the
+same model in three colourings (tools/gen_blocks.mjs, packs/BP/scripts/systems/cheeseWheel.js).
 """
 import json
 from pathlib import Path
@@ -15,8 +15,14 @@ ROOT = Path(__file__).resolve().parents[2]
 NS = "kaleidoscope_ranching"
 H = 5  # wheel height in pixels
 
-RIND, RIND_DK, RIND_LT = (198, 140, 58), (150, 98, 40), (222, 170, 84)
-PASTE, PASTE_DK, HOLE = (248, 218, 126), (230, 194, 100), (204, 162, 72)
+# block id -> rind, rind dark, rind light, paste, paste dark, hole
+WHEELS = {
+    "cheese_wheel": ((198, 140, 58), (150, 98, 40), (222, 170, 84), (248, 218, 126), (230, 194, 100), (204, 162, 72)),
+    # vintage: a darker, drier rind and a deep amber paste with crystals
+    "vintage_cheese_wheel": ((168, 104, 44), (118, 70, 30), (196, 134, 66), (236, 186, 92), (212, 158, 70), (250, 232, 180)),
+    # smoked: a brown smoke-stained rind over an ordinary paste
+    "smoked_cheese_wheel": ((122, 78, 44), (82, 50, 28), (154, 104, 62), (240, 206, 128), (220, 182, 104), (190, 148, 80)),
+}
 
 
 def quarter(n, sx, sz, uv_a, uv_b):
@@ -48,7 +54,8 @@ def mix(a, b, t):
     return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
 
 
-def paint():
+def paint(bid):
+    RIND, RIND_DK, RIND_LT, PASTE, PASTE_DK, HOLE = WHEELS[bid]
     p = Painter(64, 64, BONES, "aged_cheese_wheel")
     for n, sx, sz in QUARTERS:
         cut = inner_faces(sx, sz)
@@ -73,7 +80,7 @@ def paint():
     return p
 
 
-def geo():
+def geo(bid):
     bones = []
     for name, parent, pivot, cubes in BONES:
         b = {"name": name, "pivot": pivot}
@@ -83,7 +90,7 @@ def geo():
             b["cubes"] = [{"origin": o, "size": s, "uv": uv} for _, o, s, uv in cubes]
         bones.append(b)
     return {"format_version": "1.12.0", "minecraft:geometry": [{
-        "description": {"identifier": f"geometry.{NS}.cheese_wheel", "texture_width": 64, "texture_height": 64,
+        "description": {"identifier": f"geometry.{NS}.{bid}", "texture_width": 64, "texture_height": 64,
                         "visible_bounds_width": 1.5, "visible_bounds_height": 1.0, "visible_bounds_offset": [0, 0.25, 0]},
         "bones": bones}]}
 
@@ -91,9 +98,10 @@ def geo():
 def main():
     out = ROOT / "art" / "blocks"
     out.mkdir(parents=True, exist_ok=True)
-    (out / "cheese_wheel.geo.json").write_text(json.dumps(geo(), indent=2) + "\n", encoding="utf8")
-    paint().save(out / "cheese_wheel.png")
-    print("cheese_wheel: ok")
+    for bid in WHEELS:
+        (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid), indent=2) + "\n", encoding="utf8")
+        paint(bid).save(out / f"{bid}.png")
+        print(f"{bid}: ok")
 
 
 if __name__ == "__main__":
