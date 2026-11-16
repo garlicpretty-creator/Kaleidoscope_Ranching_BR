@@ -8,6 +8,8 @@
 // - maleOnly:  the stroke is skipped for a female carcass.
 // - chance:    probability the stroke yields anything (default 1).
 // - ifUnshorn: only when the sheep still had its wool.
+// - skin:      hide, wool, hair or feathers. The rack shows the animal as it
+//              was until every skin stroke is done, then the skinned carcass.
 //
 // Every carcass yields vanilla raw meat where a vanilla meat exists, so
 // Cookery's existing recipes keep working. Identifiers without a namespace
@@ -25,7 +27,7 @@ export const DURABILITY_PER_STROKE = 1;
 export const BUTCHER_TABLE = {
   cow_carcass: {
     cuts: [
-      { item: "raw_hide", count: [1, 2] },
+      { item: "raw_hide", count: [1, 2], skin: true },
       { item: "minecraft:beef", count: [2, 3], maleBonus: 1 },
       { item: "beef_sirloin", count: [1, 2], maleBonus: 1 },
       { item: "beef_brisket", count: [1, 2] },
@@ -37,7 +39,7 @@ export const BUTCHER_TABLE = {
   },
   buffalo_carcass: {
     cuts: [
-      { item: "raw_hide", count: [1, 2] },
+      { item: "raw_hide", count: [1, 2], skin: true },
       { item: "buffalo_meat", count: [3, 4], maleBonus: 1 },
       { item: "beef_brisket", count: [1, 2] },
       { item: "beef_shank", count: [1, 2] },
@@ -47,8 +49,8 @@ export const BUTCHER_TABLE = {
   },
   yak_carcass: {
     cuts: [
-      { item: "yak_hair", count: [2, 3] },
-      { item: "raw_hide", count: [1, 2] },
+      { item: "yak_hair", count: [2, 3], skin: true },
+      { item: "raw_hide", count: [1, 2], skin: true },
       { item: "yak_meat", count: [3, 4], maleBonus: 1 },
       { item: "beef_brisket", count: [1, 2] },
       { item: "beef_shank", count: [1, 2] },
@@ -57,7 +59,7 @@ export const BUTCHER_TABLE = {
   },
   pig_carcass: {
     cuts: [
-      { item: "pig_skin", count: [1, 2] },
+      { item: "pig_skin", count: [1, 2], skin: true },
       { item: "minecraft:porkchop", count: [2, 3], maleBonus: 1 },
       { item: "pork_belly", count: [1, 2], maleBonus: 1 },
       { item: "pork_ribs", count: [1, 2] },
@@ -68,8 +70,8 @@ export const BUTCHER_TABLE = {
   },
   sheep_carcass: {
     cuts: [
-      { item: "minecraft:white_wool", count: [1, 1], ifUnshorn: true, note: "uses the sheep's own wool colour" },
-      { item: "sheep_skin", count: [1, 1] },
+      { item: "minecraft:white_wool", count: [1, 1], ifUnshorn: true, note: "uses the sheep's own wool colour", skin: true },
+      { item: "sheep_skin", count: [1, 1], skin: true },
       { item: "minecraft:mutton", count: [1, 2], maleBonus: 1 },
       { item: "lamb_chop", count: [1, 2] },
       { item: "lamb_leg", count: [1, 2] },
@@ -79,7 +81,7 @@ export const BUTCHER_TABLE = {
   },
   goat_carcass: {
     cuts: [
-      { item: "sheep_skin", count: [1, 1] },
+      { item: "sheep_skin", count: [1, 1], skin: true },
       { item: "minecraft:mutton", count: [1, 2], maleBonus: 1 },
       { item: "lamb_chop", count: [1, 2] },
       { item: "lamb_leg", count: [1, 2] },
@@ -89,7 +91,7 @@ export const BUTCHER_TABLE = {
   },
   chicken_carcass: {
     cuts: [
-      { item: "minecraft:feather", count: [1, 3] },
+      { item: "minecraft:feather", count: [1, 3], skin: true },
       { item: "minecraft:chicken", count: [1, 1] },
       { item: "chicken_leg", count: [2, 2] },
       { item: "chicken_wing", count: [2, 2] },
@@ -98,23 +100,23 @@ export const BUTCHER_TABLE = {
   },
   duck_carcass: {
     cuts: [
-      { item: "down", count: [1, 2] },
-      { item: "minecraft:feather", count: [1, 2] },
+      { item: "down", count: [1, 2], skin: true },
+      { item: "minecraft:feather", count: [1, 2], skin: true },
       { item: "duck_meat", count: [1, 2] },
       { item: "duck_leg", count: [2, 2] },
     ],
   },
   goose_carcass: {
     cuts: [
-      { item: "down", count: [2, 3] },
-      { item: "minecraft:feather", count: [1, 2] },
+      { item: "down", count: [2, 3], skin: true },
+      { item: "minecraft:feather", count: [1, 2], skin: true },
       { item: "goose_meat", count: [2, 2] },
       { item: "goose_leg", count: [2, 2] },
     ],
   },
   rabbit_carcass: {
     cuts: [
-      { item: "minecraft:rabbit_hide", count: [1, 1] },
+      { item: "minecraft:rabbit_hide", count: [1, 1], skin: true },
       { item: "minecraft:rabbit", count: [1, 1] },
       { item: "rabbit_leg", count: [2, 2] },
       { item: "minecraft:rabbit_foot", count: [1, 1], chance: 0.1 },

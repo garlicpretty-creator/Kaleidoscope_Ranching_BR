@@ -2,3 +2,6 @@ dist/
 node_modules/
 __pycache__/
 .DS_Store
+
+# RetroDiffusion candidates: working files; only the picks in art/icons/ are kept
+art/icons/candidates/

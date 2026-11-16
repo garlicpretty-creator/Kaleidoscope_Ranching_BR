@@ -429,7 +429,7 @@ const NEST = COMPONENTS["kaleidoscope_ranching:nest_box"];
 const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
 const STATION = COMPONENTS["kaleidoscope_ranching:station"];
 const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:butcher_rack", {
-  "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:cut": false,
+  "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:skinned": false, "kaleidoscope_ranching:cut": false,
 });
 /** Breaks a block the way the game does: both hooks fire, the block is air by then. */
 function breakBlock(component, block) {
@@ -508,12 +508,29 @@ test("the rack shows the partly cut carcass after half the strokes", () => {
   const rack = rackAt();
   player.inventory.setItem(0, carcassFrom("pig", "female"));
   use(RACK, rack, player);
-  equal(rack.permutation.getState("kaleidoscope_ranching:cut"), false, "whole at first");
-  for (let i = 0; i < 4; i++) {
-    hold(player, "minecraft:iron_sword");
-    use(RACK, rack, player);
-  }
-  equal(rack.permutation.getState("kaleidoscope_ranching:cut"), true, "partly cut after 4 of 7");
+  const stage = () => [rack.permutation.getState("kaleidoscope_ranching:skinned"), rack.permutation.getState("kaleidoscope_ranching:cut")];
+  const stroke = () => { hold(player, "minecraft:iron_sword"); use(RACK, rack, player); };
+  equal(stage().join(), "false,false", "whole, skin on, at first");
+  stroke();
+  equal(stage().join(), "true,false", "skinned after the pig skin comes off");
+  for (let i = 0; i < 3; i++) stroke();
+  equal(stage().join(), "true,true", "partly cut after 4 of 7");
+});
+
+test("feathered birds stay feathered until the down and feathers are both taken", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("goose", "female"));
+  use(RACK, rack, player);
+  const skinned = () => rack.permutation.getState("kaleidoscope_ranching:skinned");
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player);
+  equal(skinned(), false, "down off, feathers still on");
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player);
+  equal(skinned(), true, "plucked");
+  equal(rack.permutation.getState("kaleidoscope_ranching:cut"), false, "not yet cut");
 });
 
 test("an unshorn sheep gives wool of its colour; a sheared one does not", () => {

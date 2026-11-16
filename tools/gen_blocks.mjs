@@ -26,10 +26,12 @@ const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar"
 const DEFS = {
   butcher_rack: {
     component: "butcher_rack",
-    states: { [S("carcass")]: ["none", ...CARCASSES], [S("cut")]: [false, true] },
+    // carcass_X: the animal as it was, skinned_X: hide off, cut_X: partly cut
+    states: { [S("carcass")]: ["none", ...CARCASSES], [S("skinned")]: [false, true], [S("cut")]: [false, true] },
     bones: Object.fromEntries(
       CARCASSES.flatMap((id) => [
-        [`carcass_${id}`, `${state("carcass")} == '${id}' && !${state("cut")}`],
+        [`carcass_${id}`, `${state("carcass")} == '${id}' && !${state("skinned")}`],
+        [`skinned_${id}`, `${state("carcass")} == '${id}' && ${state("skinned")} && !${state("cut")}`],
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
       ])
     ),

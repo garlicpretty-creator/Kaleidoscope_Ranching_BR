@@ -13,6 +13,7 @@ Run with: python3 tools/gen_m3_art.py
 """
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -28,6 +29,7 @@ from model import geometry_json, pack, render_texture, render_view  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 RP = ROOT / "packs" / "RP"
 FRAGMENT = ROOT / "tools" / "fragments" / "m3"
+HANDMADE = ROOT / "art" / "blocks"  # blocks with a hand-made model replace the procedural one
 NS = "kaleidoscope_ranching"
 
 SOUNDS = {
@@ -95,12 +97,18 @@ def main():
     terrain = {}
     previews = []
     for block_id, build in block_art.ALL.items():
+        terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
+        handmade = HANDMADE / f"{block_id}.geo.json"
+        if handmade.exists():
+            # Hand-made in Blockbench (art_src/m4_scripts/blocks_m4.py): install it as is.
+            shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
+            shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
+            continue
         model = build()
         pack(model)
         write_json(RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json", geometry_json(model))
         texture = render_texture(model, block_art.paint)
         texture.save(block_dir / f"{block_id}.png")
-        terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
         # Preview with every optional bone shown except the extra carcasses.
         def visible(cube, block_id=block_id):
             if block_id == "butcher_rack":

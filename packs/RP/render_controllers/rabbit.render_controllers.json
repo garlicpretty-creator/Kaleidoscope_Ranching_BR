@@ -28,7 +28,52 @@
           "*": true
         },
         {
+          "a_torso": "!q.is_baby"
+        },
+        {
+          "a_tail": "!q.is_baby"
+        },
+        {
+          "a_head": "!q.is_baby"
+        },
+        {
           "m_cheeks": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "a_ears": "!q.is_baby"
+        },
+        {
+          "a_leg_fl": "!q.is_baby"
+        },
+        {
+          "a_leg_fr": "!q.is_baby"
+        },
+        {
+          "a_leg_bl": "!q.is_baby"
+        },
+        {
+          "a_leg_br": "!q.is_baby"
+        },
+        {
+          "b_torso": "q.is_baby"
+        },
+        {
+          "b_tail": "q.is_baby"
+        },
+        {
+          "b_head": "q.is_baby"
+        },
+        {
+          "b_leg_fl": "q.is_baby"
+        },
+        {
+          "b_leg_fr": "q.is_baby"
+        },
+        {
+          "b_leg_bl": "q.is_baby"
+        },
+        {
+          "b_leg_br": "q.is_baby"
         }
       ]
     }
