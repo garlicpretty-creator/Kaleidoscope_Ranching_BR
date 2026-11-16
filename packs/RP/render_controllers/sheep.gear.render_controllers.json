@@ -16,10 +16,16 @@
           "*": true
         },
         {
-          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby"
+          "gear_blanket_sheared": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && q.is_sheared"
         },
         {
-          "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby"
+          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && !q.is_sheared"
+        },
+        {
+          "gear_blanket_baby_sheared": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby && q.is_sheared"
+        },
+        {
+          "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby && !q.is_sheared"
         }
       ]
     }

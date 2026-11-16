@@ -55,7 +55,9 @@ def gear_table():
 class Body:
     """The boxes that make up an animal's trunk, adult or young: (x0, y0, z0, x1, y1, z1)."""
 
-    def __init__(self, bones, baby):
+    def __init__(self, bones, baby, bare=False, saddle=False):
+        """`bare`: leave out wool (bones named wool*), as on a sheared sheep. `saddle`: count
+        the saddle as part of the trunk, so cloth goes over it."""
         by_name = {b["name"]: b for b in bones}
 
         def chain(name):
@@ -68,7 +70,11 @@ class Body:
         main = []
         for bone in bones:
             names = list(chain(bone["name"]))
-            if any(NOT_BODY.search(n) for n in names):
+            if saddle and "saddle" in names:
+                pass
+            elif any(NOT_BODY.search(n) for n in names):
+                continue
+            if bare and any(n.startswith("wool") for n in names):
                 continue
             young = any(n.startswith("b_") for n in names)
             if young != baby:
@@ -122,10 +128,15 @@ def drape(body, name, y_from, z, inflate):
 # --- The four kinds ---------------------------------------------------------------
 
 
-def blanket(body):
-    """A cloth over the back, from behind the shoulders to the rump, hanging over the flanks."""
+def blanket(body, whole=False):
+    """A cloth over the back, from behind the shoulders to the rump, hanging over the flanks.
+    `whole`: one piece over everything there (the pig's saddle and its side straps), so
+    nothing pokes through it."""
     height = body.y1 - body.y0
-    return drape(body, "blanket", body.y0 + round(height * 0.4), (body.z0 + 3, body.z1 - 1), OFF_CLOTH)
+    y_from, z = body.y0 + round(height * 0.4), (body.z0 + 3, body.z1 - 1)
+    if whole:
+        return [cube("blanket_hem", body.around((y_from, 1e9), z), OFF_CLOTH)]
+    return drape(body, "blanket", y_from, z, OFF_CLOTH)
 
 
 def trace_height(body):
@@ -308,6 +319,16 @@ PAINT = {
     "bag": bag, "strap": leather, "roll": roll,
 }
 
+# What each piece is made of, for the Vibrant Visuals materials (tools/gen_pbr.py reads the
+# face rectangles from tools/fragments/gear/<animal>.materials.json). Iron and brass fittings
+# painted on leather (buckles, trace ends) are told apart there by colour.
+MATERIAL = {
+    "blanket_hem": "cloth", "blanket_top": "cloth", "pad_hem": "cloth", "pad_top": "cloth", "roll": "cloth",
+    "collar": "skin", "girth": "skin", "trace": "skin", "bag": "skin", "strap": "skin",
+    "yoke": "wood", "swingletree": "wood", "beam": "wood", "upright": "wood", "handle": "wood", "grip": "wood",
+    "chain": "metal", "share": "metal", "share_tip": "metal", "mouldboard": "metal",
+}
+
 BUILD = {"blanket": blanket, "harness": harness, "plough": plough, "pack_bag": pack_bag}
 
 
@@ -330,6 +351,22 @@ def build(animal, kinds, bones):
                 groups.append((name, None, [0, 0, body.z1 + PLOUGH_REACH], plough(body), f"{prop(kind)} && {age}"))
                 groups.append((f"{name}_chains", body.torso_bone, by_name[body.torso_bone]["pivot"], plough_chains(body),
                                f"{prop(kind)} && {age} && !q.property('{NS}:sleeping')"))
+            elif kind == "blanket":
+                # Variants for what else the animal has on its back: the main controller hides
+                # the wool when sheared and shows the saddle when saddled; the blanket follows.
+                pivot = by_name[body.torso_bone]["pivot"]
+                woolly = any(b["name"].startswith("wool") for b in bones)
+                saddled = not baby and "saddle" in by_name
+                plain = [f"{prop(kind)} && {age}"]
+                if woolly:
+                    plain.append("!q.is_sheared")
+                    groups.append((f"{name}_sheared", body.torso_bone, pivot, blanket(Body(bones, baby, bare=True)),
+                                   f"{prop(kind)} && {age} && q.is_sheared"))
+                if saddled:
+                    plain.append("!q.is_saddled")
+                    groups.append((f"{name}_saddled", body.torso_bone, pivot, blanket(Body(bones, baby, saddle=True), whole=True),
+                                   f"{prop(kind)} && {age} && q.is_saddled"))
+                groups.append((name, body.torso_bone, pivot, blanket(body), " && ".join(plain)))
             else:
                 groups.append((name, body.torso_bone, by_name[body.torso_bone]["pivot"], BUILD[kind](body), f"{prop(kind)} && {age}"))
 
@@ -376,6 +413,12 @@ def main():
                             "visible_bounds_width": 5, "visible_bounds_height": 3, "visible_bounds_offset": [0, 1, 0]},
             "bones": bones}]})
         painter.save(RP / "textures" / "entity" / "ranching" / "gear" / f"{animal}.png")
+        rects = {}
+        for name, cubes in sorted(painter.cubes.items()):
+            for faces in cubes:
+                rects.setdefault(MATERIAL[name], []).extend(list(r) for _, r in sorted(faces.items()))
+        dump(ROOT / "tools" / "fragments" / "gear" / f"{animal}.materials.json",
+             {"texture": f"entity/ranching/gear/{animal}", "size": [size, size], "materials": rects})
         controller = f"controller.render.{NS}.{animal}.gear"
         dump(RP / "render_controllers" / f"{animal}.gear.render_controllers.json", {"format_version": "1.8.0", "render_controllers": {
             controller: {"geometry": "Geometry.gear", "materials": [{"*": "Material.default"}], "textures": ["Texture.gear"],

@@ -42,6 +42,34 @@
           ]
         },
         {
+          "name": "gear_blanket_saddled",
+          "parent": "a_torso",
+          "pivot": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                9,
+                -5
+              ],
+              "size": [
+                12,
+                6,
+                12
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "inflate": 0.45
+            }
+          ]
+        },
+        {
           "name": "gear_blanket",
           "parent": "a_torso",
           "pivot": [
@@ -63,7 +91,7 @@
               ],
               "uv": [
                 0,
-                0
+                19
               ],
               "inflate": 0.45
             }
@@ -91,7 +119,7 @@
               ],
               "uv": [
                 0,
-                18
+                37
               ],
               "inflate": 0.45
             }

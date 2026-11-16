@@ -104,7 +104,7 @@ RULES = [
     (r"^items/", "food"),
     # Animals
     (r"^entity/ranching/wearables/leather_apron$", "skin"),
-    (r"^entity/ranching/(wearables|gear)/", "cloth"),
+    (r"^entity/ranching/(wearables|gear)/", "cloth"),  # gear: per piece, see gear_materials
     (r"^entity/ranching/(chicken|duck|goose)/", "feather"),
     (r"^entity/ranching/pig/", "skin"),
     (r"^entity/ranching/", "fur"),
@@ -153,6 +153,30 @@ def glow_mask(key, size):
     return mask
 
 
+# Animal gear (art_src/m4_scripts/gear.py): the material of every face rectangle, written
+# beside the other generator fragments.
+GEAR_FRAGMENTS = ROOT / "tools" / "fragments" / "gear"
+
+
+def gear_materials(key):
+    """{(x, y): material} for a gear texture, or {} for any other texture."""
+    path = GEAR_FRAGMENTS / f"{key.rsplit('/', 1)[-1]}.materials.json"
+    if not key.startswith("entity/ranching/gear/") or not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf8"))
+    out = {}
+    for material, rects in data["materials"].items():
+        for x0, y0, w, h in rects:
+            out.update(((x, y), material) for x in range(x0, x0 + w) for y in range(y0, y0 + h))
+    return out
+
+
+def fitting(rgb):
+    """Iron (neutral grey) or brass (strong yellow) painted on leather: buckles, trace ends."""
+    h, s, v = hsv(rgb)
+    return (s < 0.12 and v > 0.3) or (38 <= h < 60 and s > 0.5 and v > 0.6)
+
+
 def classify(key, base, rgb, neighbours):
     h, s, v = hsv(rgb)
     if key.startswith("entity/"):
@@ -196,6 +220,7 @@ def build(path, key, base):
 
     lum = [[luminance(px[x, y][:3]) for x in range(w)] for y in range(h)]
     glowing = glow_mask(key, (w, h))
+    pieces = gear_materials(key)
 
     def height(x, y, fallback):
         p = at(x, y)
@@ -212,7 +237,14 @@ def build(path, key, base):
             if p[3] < 16:
                 continue
             around = [q[:3] for q in (at(x - 1, y), at(x + 1, y), at(x, y - 1), at(x, y + 1)) if q and q[3] >= 16]
-            material = "glow" if (x, y) in glowing else classify(key, base, p[:3], around)
+            if (x, y) in glowing:
+                material = "glow"
+            elif (x, y) in pieces:
+                material = pieces[(x, y)]
+                if material == "skin" and fitting(p[:3]):
+                    material = "metal"
+            else:
+                material = classify(key, base, p[:3], around)
             m, e, r, sss, strength = MATERIALS[material]
             c = lum[y][x]
             mean = sum(luminance(q) for q in around) / len(around) if around else c

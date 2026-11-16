@@ -16,7 +16,10 @@
           "*": true
         },
         {
-          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby"
+          "gear_blanket_saddled": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && q.is_saddled"
+        },
+        {
+          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && !q.is_saddled"
         },
         {
           "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby"
