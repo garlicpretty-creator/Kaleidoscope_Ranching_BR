@@ -1510,6 +1510,34 @@ test("the aged cheese wheel is placed as a block and cut into four slices with a
   equal(wheel.typeId, "minecraft:air", "the last cut finishes the wheel");
 });
 
+// --- Optional integration: Fishing Voyage ------------------------------------
+
+const { pingFishing } = await import("../../packs/BP/scripts/api/fishing.js");
+
+test("Fishing Voyage: Ranching pings it, and its fish offal and bones become poultry feed only once it answers", () => {
+  equal(LIVE_FEEDS["kaleidoscope_fishing:fish_offal"], undefined, "without Fishing, no Fishing items are feed");
+  system.__scriptEvents.length = 0;
+  pingFishing();
+  assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_fishing:api_ping" && e.message === "kaleidoscope_ranching"), "Ranching pings Fishing with its namespace");
+  system.sendScriptEvent("kaleidoscope_fishing:api_ready", "not json");
+  equal(LIVE_FEEDS["kaleidoscope_fishing:fish_offal"], undefined, "a broken answer is ignored");
+  system.sendScriptEvent("kaleidoscope_fishing:api_ready", JSON.stringify({ api: 1, source: "kaleidoscope_fishing", version: "1.4.0", capabilities: ["bait", "catch"] }));
+  equal(LIVE_FEEDS["kaleidoscope_fishing:fish_offal"]?.units, 2, "fish offal is feed");
+  equal(LIVE_FEEDS["kaleidoscope_fishing:fish_bones"]?.units, 1, "fish bones are feed");
+
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_fishing:fish_offal", 2);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(state(trough, "fill"), 2, "one offal fills two units");
+  const cow = ranch("cow", 1, "female");
+  const hen = ranch("chicken", 2, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(hen, "fed"), "the hen ate it");
+  assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);
