@@ -29,4 +29,18 @@ export const BLOCKS = [
   ["fermenting_jar", "發酵罐", "Fermenting Jar", "processing"],
   ["cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],
+  // 1.1 肉類線: cranked, one mince per use (data/processing.js).
+  ["meat_grinder", "絞肉機", "Meat Grinder", "processing"],
+  // 1.1 蛋奶線
+  ["milking_rack", "擠奶架", "Milking Rack", "husbandry"],
+  ["cream_separator", "奶油分離器", "Cream Separator", "processing"],
+  ["ice_cream_churn", "冰淇淋桶", "Ice Cream Churn", "processing"],
+  // 1.1 絨毛線、布料線、孵化與飼料線
+  ["spinning_wheel", "紡車", "Spinning Wheel", "processing"],
+  ["weaving_loom", "織布機", "Weaving Loom", "processing"],
+  ["silage_barrel", "青貯桶", "Silage Barrel", "husbandry"],
+  // Decoration: a rug dyed in 16 colours (systems/textiles.js), a down pillow and a quilt.
+  ["rug", "毛毯", "Rug", "decoration"],
+  ["down_pillow", "羽絨枕", "Down Pillow", "decoration"],
+  ["down_quilt", "羽絨被", "Down Quilt", "decoration"],
 ].map(([id, zh, en, group, owner = "ranching"]) => ({ id, zh, en, group, owner }));

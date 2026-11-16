@@ -5,8 +5,8 @@
 import { KIND } from "./feeds.js";
 import { TEST_WITH_VANILLA } from "./care_config.js";
 
-const RUMINANT = [KIND.GRASS, KIND.MIXED, KIND.CONCENTRATE];
-const POULTRY = [KIND.GRAIN, KIND.MIXED, KIND.CONCENTRATE];
+const RUMINANT = [KIND.GRASS, KIND.MIXED, KIND.CONCENTRATE, KIND.SILAGE];
+const POULTRY = [KIND.GRAIN, KIND.MIXED, KIND.CONCENTRATE, KIND.CALCIUM];
 
 export const SPECIES = {
   "kaleidoscope_ranching:cow": {
@@ -25,7 +25,8 @@ export const SPECIES = {
     key: "goat",
     eats: RUMINANT,
     treat: "kaleidoscope_ranching:alfalfa_cake",
-    brushDrops: [["minecraft:string", 0.08]],
+    // 1.1 絨毛線: brushing a goat combs out cashmere.
+    brushDrops: [["minecraft:string", 0.08], ["kaleidoscope_ranching:goat_cashmere", 0.3]],
   },
   "kaleidoscope_ranching:pig": {
     key: "pig",
@@ -43,7 +44,8 @@ export const SPECIES = {
     key: "rabbit",
     eats: [KIND.GRASS, KIND.VEG, KIND.MIXED, KIND.CONCENTRATE],
     treat: "kaleidoscope_ranching:carrot_chips",
-    brushDrops: [["minecraft:rabbit_hide", 0.03]],
+    // 1.1 絨毛線: rabbit fur for the spinning wheel.
+    brushDrops: [["minecraft:rabbit_hide", 0.03], ["kaleidoscope_ranching:rabbit_fur", 0.3]],
   },
   // M4 animals — rows ready so they work the day M4 lands.
   "kaleidoscope_ranching:duck": {

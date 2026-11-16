@@ -1,0 +1,34 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_raw_truffle_gratin_0"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:truffle"
+      },
+      {
+        "item": "kaleidoscope_ranching:cheese_slice"
+      },
+      {
+        "item": "minecraft:potato"
+      },
+      {
+        "item": "minecraft:bowl"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:raw_truffle_gratin",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:raw_truffle_gratin"
+      }
+    ]
+  }
+}

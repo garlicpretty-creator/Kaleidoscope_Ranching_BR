@@ -95,6 +95,91 @@ const CUTS = [
   ["rabbit_leg", "兔腿", "Rabbit Leg", "cut"],
 ];
 
+// 1.1 肉類線 (企劃書 1.1 一、肉類線): the meat grinder's mince and sausages, and
+// what the butcher rack air-dries (data/processing.js DRYING).
+const MEAT_LINE = [
+  ["pork_mince", "豬絞肉", "Ground Pork", "mince"],
+  ["beef_mince", "牛絞肉", "Ground Beef", "mince"],
+  ["mutton_mince", "羊絞肉", "Ground Mutton", "mince"],
+  ["raw_sausage", "生香腸", "Raw Sausage", "mince"],
+  ["cured_sausage", "臘腸", "Cured Sausage", "cured"],
+  ["cured_pork_belly", "臘肉", "Cured Pork Belly", "cured"],
+  ["cured_duck_leg", "臘鴨腿", "Cured Duck Leg", "cured"],
+  ["beef_jerky", "牛肉乾", "Beef Jerky", "cured"],
+];
+
+// 1.1 內臟線 (企劃書 1.1 二、內臟線): offal from the butcher rack's offal stroke
+// (data/butcher.js), washed at the water trough (data/processing.js WASHING).
+const OFFAL_LINE = [
+  ["pork_liver", "豬肝", "Pork Liver", "offal"],
+  ["pig_intestine", "豬腸", "Pig Intestine", "offal"],
+  ["chicken_gizzard", "雞胗", "Chicken Gizzard", "offal"],
+  ["duck_blood", "鴨血", "Duck Blood", "offal"],
+  ["goose_liver", "鵝肝", "Goose Liver", "offal"],
+  ["beef_tripe", "牛肚", "Beef Tripe", "offal"],
+  ["cleaned_intestine", "洗淨的大腸", "Cleaned Intestine", "offal"],
+  ["cleaned_tripe", "洗淨的牛肚", "Cleaned Tripe", "offal"],
+  ["sausage_casing", "腸衣", "Sausage Casing", "byproduct"],
+  ["foie_gras_pate", "鵝肝醬", "Goose Liver Pâté", "dairy"],
+];
+
+// 1.1 蛋奶線 (企劃書 1.1 三、蛋奶線).
+const DAIRY_LINE = [
+  ["skim_milk", "脫脂奶", "Skim Milk", "dairy"],
+  ["vanilla_ice_cream", "香草冰淇淋", "Vanilla Ice Cream", "dairy"],
+  ["berry_ice_cream", "莓果冰淇淋", "Berry Ice Cream", "dairy"],
+  ["chocolate_ice_cream", "可可冰淇淋", "Chocolate Ice Cream", "dairy"],
+  ["custard", "卡士達醬", "Custard", "dairy"],
+  // Rooted up by well-loved pigs in forests (systems/truffle.js).
+  ["truffle", "松露", "Truffle", "byproduct"],
+];
+
+// 1.1 起司線 (企劃書 1.1 四、起司線): a cheese per milk, aged and smoked wheels, whey and skim-milk curds.
+const CHEESE_LINE = [
+  ["goat_cheese", "山羊乳酪", "Goat Cheese", "dairy"],
+  ["aged_goat_cheese", "熟成山羊乳酪", "Aged Goat Cheese", "dairy"],
+  ["mozzarella", "莫札瑞拉", "Mozzarella", "dairy"],
+  ["chhurpi", "曲拉", "Chhurpi", "dairy"],
+  ["chhurpi_block", "曲拉塊", "Dried Chhurpi", "dairy"],
+  ["vintage_cheese_wheel", "陳年乳酪輪", "Vintage Cheese Wheel", "dairy"],
+  ["vintage_cheese_slice", "陳年乳酪片", "Vintage Cheese Slice", "dairy"],
+  ["smoked_cheese_wheel", "煙燻乳酪輪", "Smoked Cheese Wheel", "dairy"],
+  ["smoked_cheese_slice", "煙燻乳酪片", "Smoked Cheese Slice", "dairy"],
+  ["ricotta", "瑞可塔", "Ricotta", "dairy"],
+  ["milk_tofu", "奶豆腐", "Milk Tofu", "dairy"],
+];
+
+// 1.1 皮革線、絨毛線、布料線 (企劃書 1.1 五～七). The harness, pack bag, gloves
+// and animal blanket belong to M10 (they work with the plough, the yak's
+// storage, sleeping and the cold rule).
+const LEATHER_LINE = [
+  ["oiled_leather", "油鞣皮革", "Oiled Leather", "material"],
+  ["leather_apron", "皮圍裙", "Leather Apron", "tool"],
+  ["lasso", "套索", "Lasso", "tool"],
+];
+const FLUFF_LINE = [
+  ["goat_cashmere", "山羊絨", "Goat Cashmere", "byproduct"],
+  ["rabbit_fur", "兔毛", "Rabbit Fur", "byproduct"],
+  ["yarn", "毛線", "Yarn", "material"],
+  ["fine_yarn", "絨線", "Fine Yarn", "material"],
+  ["feather_duster", "羽毛撣", "Feather Duster", "tool"],
+];
+const CLOTH_LINE = [
+  ["felt", "毛氈", "Felt", "material"],
+  ["wool_cloth", "毛呢布", "Wool Cloth", "material"],
+  ["plush_cloth", "絨布", "Plush Cloth", "material"],
+  ["wool_hat", "毛帽", "Wool Hat", "tool"],
+  ["wool_scarf", "圍巾", "Wool Scarf", "tool"],
+];
+// 1.1 孵化與飼料線 (企劃書 1.1 八).
+const HATCH_FEED_LINE = [
+  ["egg_candler", "照蛋燈", "Egg Candler", "tool"],
+  ["eggshell", "蛋殼", "Eggshell", "byproduct"],
+  ["calcium_powder", "鈣粉", "Calcium Powder", "byproduct"],
+  ["calcium_feed", "鈣質飼料", "Calcium Feed", "feed"],
+  ["silage", "青貯料", "Silage", "feed"],
+];
+
 const BYPRODUCTS = [
   ["large_bone", "大骨", "Large Bone", "byproduct"],
   ["chicken_frame", "雞骨架", "Chicken Frame", "byproduct"],
@@ -151,6 +236,14 @@ export const ITEMS = [
   ...CARCASSES,
   ...MEAT,
   ...CUTS,
+  ...MEAT_LINE,
+  ...OFFAL_LINE,
+  ...DAIRY_LINE,
+  ...CHEESE_LINE,
+  ...LEATHER_LINE,
+  ...FLUFF_LINE,
+  ...CLOTH_LINE,
+  ...HATCH_FEED_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,

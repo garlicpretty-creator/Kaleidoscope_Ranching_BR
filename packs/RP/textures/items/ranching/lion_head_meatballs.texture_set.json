@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "lion_head_meatballs",
+    "metalness_emissive_roughness_subsurface": "lion_head_meatballs_mers",
+    "normal": "lion_head_meatballs_normal"
+  }
+}

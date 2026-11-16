@@ -4,14 +4,18 @@ import { system } from "@minecraft/server";
 import { butcherRackComponent } from "./butcherRack.js";
 import { startCarcassDrops } from "./carcass.js";
 import { startMilking } from "./milking.js";
-import { incubatorComponent, nestBoxComponent, startNests } from "./nest.js";
-import { stationComponent } from "./stations.js";
+import { candlerItemComponent, incubatorComponent, nestBoxComponent, startNests } from "./nest.js";
+import { autoStationComponent, startAutoStations, stationComponent } from "./stations.js";
+import { milkingRackComponent, startMilkingRacks } from "./milkingRack.js";
+import { startTruffles } from "./truffle.js";
+import { startMoulting } from "./moult.js";
+import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./textiles.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
 import { cheeseWheelComponent } from "./cheeseWheel.js";
 import { foodWasteBinComponent } from "./foodWasteBin.js";
 
 export function startM3() {
-  system.beforeEvents.startup.subscribe(({ blockComponentRegistry }) => {
+  system.beforeEvents.startup.subscribe(({ blockComponentRegistry, itemComponentRegistry }) => {
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:butcher_rack", butcherRackComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:nest_box", nestBoxComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:incubator", incubatorComponent);
@@ -19,9 +23,20 @@ export function startM3() {
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:hay_rack", hayRackComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:cheese_wheel", cheeseWheelComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:food_waste_bin", foodWasteBinComponent);
+    // 1.1
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:auto_station", autoStationComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:milking_rack", milkingRackComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:rug", rugComponent);
+    itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:lasso", lassoItemComponent);
+    itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:feather_duster", featherDusterItemComponent);
+    itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:egg_candler", candlerItemComponent);
   });
   startCarcassDrops();
   startMilking();
   startNests();
   startHayRacks();
+  startAutoStations();
+  startMilkingRacks();
+  startTruffles();
+  startMoulting();
 }

@@ -45,6 +45,35 @@ const OVERRIDES = {
   lard: { stack: 1 },
   // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
   dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
+  // 1.1 肉類線與內臟線
+  beef_jerky: food(4, 0.6, { always: true }),
+  foie_gras_pate: { stack: 16, ...food(4, 0.8) },
+  sausage_casing: {},
+  // 1.1 蛋奶線與起司線
+  skim_milk: { stack: 16, ...food(2, 0.3, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
+  vanilla_ice_cream: { stack: 16, ...food(4, 0.4, { always: true }) },
+  berry_ice_cream: { stack: 16, ...food(5, 0.5, { always: true }) },
+  chocolate_ice_cream: { stack: 16, ...food(5, 0.5, { always: true }) },
+  custard: { stack: 16 },
+  truffle: { stack: 16 },
+  goat_cheese: food(3, 0.6),
+  aged_goat_cheese: food(4, 0.7),
+  mozzarella: food(3, 0.6),
+  chhurpi: food(2, 0.5),
+  chhurpi_block: food(3, 0.7),
+  vintage_cheese_wheel: { stack: 16 },
+  vintage_cheese_slice: food(3, 0.8),
+  smoked_cheese_wheel: { stack: 16 },
+  smoked_cheese_slice: food(3, 0.7),
+  ricotta: food(2, 0.5),
+  milk_tofu: food(3, 0.5),
+  // 1.1 皮革線、絨毛線、布料線、孵化與飼料線
+  leather_apron: { stack: 1, components: { "minecraft:wearable": { slot: "slot.armor.chest", protection: 2 }, "minecraft:durability": { max_durability: 120 } } },
+  wool_hat: { stack: 1, components: { "minecraft:wearable": { slot: "slot.armor.head", protection: 1 }, "minecraft:durability": { max_durability: 80 } } },
+  wool_scarf: { stack: 1, components: { "minecraft:wearable": { slot: "slot.armor.chest", protection: 1 }, "minecraft:durability": { max_durability: 80 } } },
+  lasso: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:lasso": {}, "minecraft:durability": { max_durability: 64 }, "minecraft:cooldown": { category: "kr_lasso", duration: 1 } } },
+  feather_duster: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:feather_duster": {}, "minecraft:durability": { max_durability: 64 } } },
+  egg_candler: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:egg_candler": {} } },
   // Item custom components (systems/m4.js); they need item format 1.21.90.
   cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
   animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
@@ -92,6 +121,20 @@ function componentsFor(item) {
     case "cut":
       Object.assign(c, food(2, 0.3));
       tags.push("minecraft:is_meat");
+      break;
+    // 1.1: grinder mince and raw sausage (raw meat), cured meats, offal.
+    case "mince":
+      Object.assign(c, food(2, 0.3));
+      tags.push("minecraft:is_meat");
+      if (item.id.endsWith("_mince")) tags.push(`${NAMESPACE}:mince`);
+      break;
+    case "cured":
+      Object.assign(c, food(5, 0.6));
+      tags.push("minecraft:is_meat");
+      break;
+    case "offal":
+      Object.assign(c, food(2, 0.2));
+      tags.push("minecraft:is_meat", `${NAMESPACE}:offal`);
       break;
   }
   const override = OVERRIDES[item.id] ?? {};
@@ -163,6 +206,31 @@ const RECIPES = [
   shapeless("nursing_bottle", [{ item: "minecraft:glass_bottle" }, { item: "minecraft:slime_ball" }], "nursing_bottle"),
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),
   shaped("tanning_rack", ["S S", "TTT", "P P"], { S: { item: "minecraft:stick" }, T: { item: "minecraft:string" }, P: planks }, "tanning_rack"),
+  // 1.1 肉類線與內臟線
+  shaped("meat_grinder", ["III", "SIS", "PPP"], { I: { item: "minecraft:iron_ingot" }, S: { item: "minecraft:stick" }, P: planks }, "meat_grinder"),
+  shapeless("sausage_casing", [{ item: rid("cleaned_intestine") }], "sausage_casing", 2),
+  // 1.1 蛋奶線與起司線
+  shaped("milking_rack", ["F F", "PBP", "P P"], { F: { item: "minecraft:oak_fence" }, P: planks, B: { item: "minecraft:bucket" } }, "milking_rack"),
+  shaped("cream_separator", ["III", " B ", "IPI"], { I: { item: "minecraft:iron_ingot" }, B: { item: "minecraft:bucket" }, P: planks }, "cream_separator"),
+  shaped("ice_cream_churn", [" S ", "PIP", "PPP"], { S: { item: "minecraft:stick" }, I: { item: "minecraft:ice" }, P: planks }, "ice_cream_churn"),
+  shapeless("vintage_cheese_slices", [{ item: rid("vintage_cheese_wheel") }], "vintage_cheese_slice", 5),
+  shapeless("smoked_cheese_slices", [{ item: rid("smoked_cheese_wheel") }], "smoked_cheese_slice", 4),
+  // 1.1 皮革線、絨毛線、布料線、孵化與飼料線
+  shaped("spinning_wheel", ["SSS", "PTP", "P P"], { S: { item: "minecraft:stick" }, T: { item: "minecraft:string" }, P: planks }, "spinning_wheel"),
+  shaped("weaving_loom", ["TTT", "PSP", "P P"], { T: { item: "minecraft:string" }, S: { item: "minecraft:stick" }, P: planks }, "weaving_loom"),
+  shaped("silage_barrel", ["NNN", " B "], { N: { item: "minecraft:iron_nugget" }, B: { item: "minecraft:barrel" } }, "silage_barrel"),
+  shaped("rug", ["CC"], { C: { item: rid("plush_cloth") } }, "rug", 2),
+  shaped("leather_apron", ["L L", "LLL", " L "], { L: { item: rid("oiled_leather") } }, "leather_apron"),
+  shaped("wool_hat", ["CCC", "C C"], { C: { item: rid("wool_cloth") } }, "wool_hat"),
+  shaped("wool_scarf", ["CCC"], { C: { item: rid("wool_cloth") } }, "wool_scarf"),
+  shaped("egg_candler", ["G", "T", "I"], { G: { item: "minecraft:glass" }, T: { item: "minecraft:torch" }, I: { item: "minecraft:iron_ingot" } }, "egg_candler"),
+  shapeless("down_pillow", [{ item: rid("down"), count: 3 }, { item: rid("felt") }], "down_pillow"),
+  shapeless("down_quilt", [{ item: rid("down"), count: 4 }, { item: rid("plush_cloth"), count: 2 }], "down_quilt"),
+  shapeless("lasso", [{ item: rid("oiled_leather"), count: 2 }, { item: "minecraft:string" }], "lasso"),
+  shapeless("feather_duster", [{ item: "minecraft:feather", count: 3 }, { item: "minecraft:stick" }], "feather_duster"),
+  shapeless("felt", [{ item: rid("yarn"), count: 4 }], "felt", 2),
+  shapeless("string_from_yarn", [{ item: rid("yarn") }], "minecraft:string"),
+  shapeless("calcium_powder", [{ item: rid("eggshell"), count: 4 }], "calcium_powder"),
 
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),
@@ -181,6 +249,21 @@ const RECIPES = [
   shapeless("wool_from_down", [{ item: rid("down"), count: 4 }], "minecraft:white_wool"),
   shapeless("wool_from_yak_hair", [{ item: rid("yak_hair"), count: 4 }], "minecraft:brown_wool"),
 ];
+
+// 1.1 鈣質飼料 is mixed in M2's feed mixer (a crafting table with its own tag).
+RECIPES.push([
+  "calcium_feed",
+  {
+    format_version: "1.20.10",
+    "minecraft:recipe_shapeless": {
+      description: { identifier: rid("m9_calcium_feed") },
+      tags: [`${NAMESPACE}_feed_mixer`],
+      ingredients: [{ item: rid("concentrate_feed") }, { item: rid("calcium_powder") }],
+      result: { item: rid("calcium_feed"), count: 2 },
+      unlock: [{ item: rid("calcium_powder") }],
+    },
+  },
+]);
 
 // --- M5 dish recipes made outside Cookery ---------------------------------------
 

@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_wool_scarf"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CCC"
+    ],
+    "key": {
+      "C": {
+        "item": "kaleidoscope_ranching:wool_cloth"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:wool_scarf",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:wool_scarf"
+      }
+    ]
+  }
+}

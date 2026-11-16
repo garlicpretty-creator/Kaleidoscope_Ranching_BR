@@ -155,6 +155,165 @@
     "kr_rabbit_leg": {
       "textures": "textures/items/ranching/rabbit_leg"
     },
+    "kr_pork_mince": {
+      "textures": "textures/items/ranching/pork_mince"
+    },
+    "kr_beef_mince": {
+      "textures": "textures/items/ranching/beef_mince"
+    },
+    "kr_mutton_mince": {
+      "textures": "textures/items/ranching/mutton_mince"
+    },
+    "kr_raw_sausage": {
+      "textures": "textures/items/ranching/raw_sausage"
+    },
+    "kr_cured_sausage": {
+      "textures": "textures/items/ranching/cured_sausage"
+    },
+    "kr_cured_pork_belly": {
+      "textures": "textures/items/ranching/cured_pork_belly"
+    },
+    "kr_cured_duck_leg": {
+      "textures": "textures/items/ranching/cured_duck_leg"
+    },
+    "kr_beef_jerky": {
+      "textures": "textures/items/ranching/beef_jerky"
+    },
+    "kr_pork_liver": {
+      "textures": "textures/items/ranching/pork_liver"
+    },
+    "kr_pig_intestine": {
+      "textures": "textures/items/ranching/pig_intestine"
+    },
+    "kr_chicken_gizzard": {
+      "textures": "textures/items/ranching/chicken_gizzard"
+    },
+    "kr_duck_blood": {
+      "textures": "textures/items/ranching/duck_blood"
+    },
+    "kr_goose_liver": {
+      "textures": "textures/items/ranching/goose_liver"
+    },
+    "kr_beef_tripe": {
+      "textures": "textures/items/ranching/beef_tripe"
+    },
+    "kr_cleaned_intestine": {
+      "textures": "textures/items/ranching/cleaned_intestine"
+    },
+    "kr_cleaned_tripe": {
+      "textures": "textures/items/ranching/cleaned_tripe"
+    },
+    "kr_sausage_casing": {
+      "textures": "textures/items/ranching/sausage_casing"
+    },
+    "kr_foie_gras_pate": {
+      "textures": "textures/items/ranching/foie_gras_pate"
+    },
+    "kr_skim_milk": {
+      "textures": "textures/items/ranching/skim_milk"
+    },
+    "kr_vanilla_ice_cream": {
+      "textures": "textures/items/ranching/vanilla_ice_cream"
+    },
+    "kr_berry_ice_cream": {
+      "textures": "textures/items/ranching/berry_ice_cream"
+    },
+    "kr_chocolate_ice_cream": {
+      "textures": "textures/items/ranching/chocolate_ice_cream"
+    },
+    "kr_custard": {
+      "textures": "textures/items/ranching/custard"
+    },
+    "kr_truffle": {
+      "textures": "textures/items/ranching/truffle"
+    },
+    "kr_goat_cheese": {
+      "textures": "textures/items/ranching/goat_cheese"
+    },
+    "kr_aged_goat_cheese": {
+      "textures": "textures/items/ranching/aged_goat_cheese"
+    },
+    "kr_mozzarella": {
+      "textures": "textures/items/ranching/mozzarella"
+    },
+    "kr_chhurpi": {
+      "textures": "textures/items/ranching/chhurpi"
+    },
+    "kr_chhurpi_block": {
+      "textures": "textures/items/ranching/chhurpi_block"
+    },
+    "kr_vintage_cheese_wheel": {
+      "textures": "textures/items/ranching/vintage_cheese_wheel"
+    },
+    "kr_vintage_cheese_slice": {
+      "textures": "textures/items/ranching/vintage_cheese_slice"
+    },
+    "kr_smoked_cheese_wheel": {
+      "textures": "textures/items/ranching/smoked_cheese_wheel"
+    },
+    "kr_smoked_cheese_slice": {
+      "textures": "textures/items/ranching/smoked_cheese_slice"
+    },
+    "kr_ricotta": {
+      "textures": "textures/items/ranching/ricotta"
+    },
+    "kr_milk_tofu": {
+      "textures": "textures/items/ranching/milk_tofu"
+    },
+    "kr_oiled_leather": {
+      "textures": "textures/items/ranching/oiled_leather"
+    },
+    "kr_leather_apron": {
+      "textures": "textures/items/ranching/leather_apron"
+    },
+    "kr_lasso": {
+      "textures": "textures/items/ranching/lasso"
+    },
+    "kr_goat_cashmere": {
+      "textures": "textures/items/ranching/goat_cashmere"
+    },
+    "kr_rabbit_fur": {
+      "textures": "textures/items/ranching/rabbit_fur"
+    },
+    "kr_yarn": {
+      "textures": "textures/items/ranching/yarn"
+    },
+    "kr_fine_yarn": {
+      "textures": "textures/items/ranching/fine_yarn"
+    },
+    "kr_feather_duster": {
+      "textures": "textures/items/ranching/feather_duster"
+    },
+    "kr_felt": {
+      "textures": "textures/items/ranching/felt"
+    },
+    "kr_wool_cloth": {
+      "textures": "textures/items/ranching/wool_cloth"
+    },
+    "kr_plush_cloth": {
+      "textures": "textures/items/ranching/plush_cloth"
+    },
+    "kr_wool_hat": {
+      "textures": "textures/items/ranching/wool_hat"
+    },
+    "kr_wool_scarf": {
+      "textures": "textures/items/ranching/wool_scarf"
+    },
+    "kr_egg_candler": {
+      "textures": "textures/items/ranching/egg_candler"
+    },
+    "kr_eggshell": {
+      "textures": "textures/items/ranching/eggshell"
+    },
+    "kr_calcium_powder": {
+      "textures": "textures/items/ranching/calcium_powder"
+    },
+    "kr_calcium_feed": {
+      "textures": "textures/items/ranching/calcium_feed"
+    },
+    "kr_silage": {
+      "textures": "textures/items/ranching/silage"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },
@@ -269,11 +428,107 @@
     "kr_berry_yogurt": {
       "textures": "textures/items/ranching/berry_yogurt"
     },
+    "kr_claypot_rice": {
+      "textures": "textures/items/ranching/claypot_rice"
+    },
+    "kr_cured_pork_peppers": {
+      "textures": "textures/items/ranching/cured_pork_peppers"
+    },
+    "kr_pan_fried_sausage": {
+      "textures": "textures/items/ranching/pan_fried_sausage"
+    },
+    "kr_cured_duck_leg_rice": {
+      "textures": "textures/items/ranching/cured_duck_leg_rice"
+    },
+    "kr_lion_head_meatballs": {
+      "textures": "textures/items/ranching/lion_head_meatballs"
+    },
+    "kr_hamburg_steak": {
+      "textures": "textures/items/ranching/hamburg_steak"
+    },
+    "kr_lamb_meatball_soup": {
+      "textures": "textures/items/ranching/lamb_meatball_soup"
+    },
+    "kr_pork_liver_soup": {
+      "textures": "textures/items/ranching/pork_liver_soup"
+    },
+    "kr_sesame_oil_pork_liver": {
+      "textures": "textures/items/ranching/sesame_oil_pork_liver"
+    },
+    "kr_braised_intestine": {
+      "textures": "textures/items/ranching/braised_intestine"
+    },
+    "kr_duck_blood_noodle_soup": {
+      "textures": "textures/items/ranching/duck_blood_noodle_soup"
+    },
+    "kr_spicy_tripe": {
+      "textures": "textures/items/ranching/spicy_tripe"
+    },
+    "kr_braised_gizzard": {
+      "textures": "textures/items/ranching/braised_gizzard"
+    },
+    "kr_pate_toast": {
+      "textures": "textures/items/ranching/pate_toast"
+    },
+    "kr_condensed_milk": {
+      "textures": "textures/items/ranching/condensed_milk"
+    },
+    "kr_milk_skin": {
+      "textures": "textures/items/ranching/milk_skin"
+    },
+    "kr_condensed_milk_toast": {
+      "textures": "textures/items/ranching/condensed_milk_toast"
+    },
+    "kr_milk_skin_tea": {
+      "textures": "textures/items/ranching/milk_skin_tea"
+    },
+    "kr_double_skin_milk": {
+      "textures": "textures/items/ranching/double_skin_milk"
+    },
+    "kr_egg_pudding": {
+      "textures": "textures/items/ranching/egg_pudding"
+    },
+    "kr_egg_tart": {
+      "textures": "textures/items/ranching/egg_tart"
+    },
+    "kr_truffle_eggs": {
+      "textures": "textures/items/ranching/truffle_eggs"
+    },
+    "kr_cheese_fondue": {
+      "textures": "textures/items/ranching/cheese_fondue"
+    },
+    "kr_margherita_pizza": {
+      "textures": "textures/items/ranching/margherita_pizza"
+    },
+    "kr_ricotta_pancakes": {
+      "textures": "textures/items/ranching/ricotta_pancakes"
+    },
+    "kr_smoked_cheese_sandwich": {
+      "textures": "textures/items/ranching/smoked_cheese_sandwich"
+    },
+    "kr_goat_cheese_salad": {
+      "textures": "textures/items/ranching/goat_cheese_salad"
+    },
+    "kr_truffle_gratin": {
+      "textures": "textures/items/ranching/truffle_gratin"
+    },
+    "kr_chhurpi_butter_tea": {
+      "textures": "textures/items/ranching/chhurpi_butter_tea"
+    },
     "kr_egg_custard": {
       "textures": "textures/items/ranching/egg_custard"
     },
     "kr_raw_cheese_gratin": {
       "textures": "textures/items/ranching/raw_cheese_gratin"
+    },
+    "kr_raw_egg_tart": {
+      "textures": "textures/items/ranching/raw_egg_tart"
+    },
+    "kr_raw_pizza": {
+      "textures": "textures/items/ranching/raw_pizza"
+    },
+    "kr_raw_truffle_gratin": {
+      "textures": "textures/items/ranching/raw_truffle_gratin"
     }
   }
 }

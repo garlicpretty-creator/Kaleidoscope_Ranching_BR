@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "truffle_gratin",
+    "metalness_emissive_roughness_subsurface": "truffle_gratin_mers",
+    "normal": "truffle_gratin_normal"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_down_pillow"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:down",
+        "count": 3
+      },
+      {
+        "item": "kaleidoscope_ranching:felt"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:down_pillow",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:down_pillow"
+      }
+    ]
+  }
+}

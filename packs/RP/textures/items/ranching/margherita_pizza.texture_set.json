@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "margherita_pizza",
+    "metalness_emissive_roughness_subsurface": "margherita_pizza_mers",
+    "normal": "margherita_pizza_normal"
+  }
+}

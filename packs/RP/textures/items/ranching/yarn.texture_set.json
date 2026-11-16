@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "yarn",
+    "metalness_emissive_roughness_subsurface": "yarn_mers",
+    "normal": "yarn_normal"
+  }
+}

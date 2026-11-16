@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_raw_pizza_0"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_cookery:raw_dough"
+      },
+      {
+        "item": "kaleidoscope_cookery:tomato"
+      },
+      {
+        "item": "kaleidoscope_ranching:mozzarella"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:raw_pizza",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:raw_pizza"
+      }
+    ]
+  }
+}

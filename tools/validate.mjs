@@ -156,9 +156,15 @@ Object.values(SPECIES).forEach((row) => [row.treat, ...(row.brushDrops ?? []).ma
 PROCESSING_RECIPES.forEach((recipe) => {
   recipe.inputs.forEach((input) => (input.anyOf ?? [input.item]).forEach(note));
   recipe.outputs.forEach((output) => note(output.item));
+  (recipe.aged?.outputs ?? []).forEach((output) => note(output.item)); // 1.1 熟成分級
 });
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
+{
+  // 1.1: butcher-rack air-drying and water-trough washing (input → output).
+  const { DRYING = {}, WASHING = {}, SMOKING = {} } = await load("processing.js");
+  for (const table of [DRYING, WASHING, SMOKING]) for (const [from, to] of Object.entries(table)) [from, to].forEach(note);
+}
 
 // M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla
 // item or a Cookery item; Ranching ones must be registered.
@@ -182,6 +188,18 @@ WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
     note(prep.id);
     prep.makes.flat().forEach((id) => checkIngredient(prep.id, id));
   }
+}
+
+// 1.1: every crafting and furnace recipe the generators wrote counts too, as a
+// source (its result) and a use (its ingredients).
+for (const file of readdirSync(join(root, "packs", "BP", "recipes"), { recursive: true }).filter((f) => String(f).endsWith(".json"))) {
+  const data = JSON.parse(readFileSync(join(root, "packs", "BP", "recipes", String(file)), "utf8"));
+  const recipe = Object.values(data).find((v) => v && typeof v === "object" && v.description);
+  if (!recipe) continue;
+  const ids = [
+    ...Object.values(recipe.key ?? {}), ...(recipe.ingredients ?? []), recipe.input, recipe.output, recipe.result,
+  ].map((entry) => (typeof entry === "string" ? entry : entry?.item));
+  ids.forEach((id) => typeof id === "string" && id.startsWith("kaleidoscope_ranching:") && note(local(id)));
 }
 
 // Items whose source or use is a crafting recipe or an interaction that is not
@@ -366,6 +384,14 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
   }
 }
 
+// ## Action-bar text goes through core/actionBar.js, which hides hints and status
+// ## read-outs; a direct setActionBar would bypass that.
+for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && !p.endsWith(join("core", "actionBar.js")))) {
+  if (readFileSync(path, "utf8").includes("onScreenDisplay.setActionBar(")) {
+    fail(`${relative(root, path)}: use showActionBar from core/actionBar.js instead of setActionBar`);
+  }
+}
+
 // ## Every item and block names its language key (minecraft:display_name), and the
 // ## key exists in each language: without it, catalog-grouped items showed raw keys.
 {
@@ -403,6 +429,12 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
   }
   for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach(take);
   for (const recipe of VANILLA_COOKING) take(recipe.input);
+  // 1.1: air-dried on the butcher rack, washed at the water trough.
+  {
+    const { DRYING, WASHING } = await load("processing.js");
+    Object.keys(DRYING ?? {}).forEach(take);
+    Object.keys(WASHING ?? {}).forEach(take);
+  }
   const walkSlots = (value) => {
     if (typeof value === "string") take(value);
     else if (Array.isArray(value)) value.forEach(walkSlots);

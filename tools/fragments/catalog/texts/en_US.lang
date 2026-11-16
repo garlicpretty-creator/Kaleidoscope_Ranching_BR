@@ -14,5 +14,7 @@ kaleidoscope_ranching:itemGroup.name.ranching_carcasses=Carcasses
 itemGroup.name.ranching_carcasses=Carcasses
 kaleidoscope_ranching:itemGroup.name.ranching_meat=Meat
 itemGroup.name.ranching_meat=Meat
+kaleidoscope_ranching:itemGroup.name.ranching_materials=Cloth and Leather
+itemGroup.name.ranching_materials=Cloth and Leather
 kaleidoscope_ranching:itemGroup.name.ranching_byproducts=By-products
 itemGroup.name.ranching_byproducts=By-products

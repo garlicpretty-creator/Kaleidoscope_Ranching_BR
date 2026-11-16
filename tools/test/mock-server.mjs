@@ -37,7 +37,7 @@ class Signal {
 
 // --- Enums ----------------------------------------------------------------
 
-export const EquipmentSlot = { Mainhand: "Mainhand", Offhand: "Offhand" };
+export const EquipmentSlot = { Mainhand: "Mainhand", Offhand: "Offhand", Head: "Head", Chest: "Chest", Legs: "Legs", Feet: "Feet" };
 export const GameMode = { Survival: "Survival", Creative: "Creative", Adventure: "Adventure", Spectator: "Spectator" };
 export const Direction = { Up: "Up", Down: "Down", North: "North", South: "South", East: "East", West: "West" };
 export const PlayerPermissionLevel = { Visitor: 0, Member: 1, Operator: 2, Custom: 3 };
@@ -306,6 +306,7 @@ export class Player extends Entity {
     this.sounds = [];
     this.onScreenDisplay = { setActionBar: (message) => this.actionBar.push(message) };
     this.isSneaking = false;
+    this.worn = {};
   }
   getEntitiesFromViewDirection() {
     return [];
@@ -314,8 +315,9 @@ export class Player extends Entity {
     if (id === "minecraft:inventory") return { container: this.inventory };
     if (id === "minecraft:equippable") {
       return {
-        getEquipment: () => this.inventory.getItem(this.selectedSlotIndex),
-        setEquipment: (_slot, item) => this.inventory.setItem(this.selectedSlotIndex, item),
+        // Armour and the off hand are their own slots; anything else is the selected hotbar slot.
+        getEquipment: (slot) => (this.worn[slot] !== undefined || ["Head", "Chest", "Legs", "Feet", "Offhand"].includes(slot) ? this.worn[slot]?.clone() : this.inventory.getItem(this.selectedSlotIndex)),
+        setEquipment: (slot, item) => (["Head", "Chest", "Legs", "Feet", "Offhand"].includes(slot) ? (this.worn[slot] = item?.clone()) : this.inventory.setItem(this.selectedSlotIndex, item)),
         getEquipmentSlot: () => ({
           getItem: () => this.inventory.getItem(this.selectedSlotIndex),
           setItem: (item) => this.inventory.setItem(this.selectedSlotIndex, item),

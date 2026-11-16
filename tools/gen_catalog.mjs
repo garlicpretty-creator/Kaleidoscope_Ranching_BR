@@ -28,14 +28,15 @@ const GROUPS = [
   { id: "eggs", from: ["egg", "fertilized_egg", "preserved"], icon: "duck_egg", zh: "蛋", en: "Eggs" },
   { id: "dairy", from: ["dairy"], icon: "butter", zh: "乳製品", en: "Dairy" },
   { id: "carcasses", from: ["carcass"], icon: "cow_carcass", zh: "屠體", en: "Carcasses" },
-  { id: "meat", from: ["meat", "cut"], icon: "beef_brisket", zh: "肉品", en: "Meat" },
+  { id: "meat", from: ["meat", "cut", "mince", "cured", "offal"], icon: "beef_brisket", zh: "肉品", en: "Meat" },
+  { id: "materials", from: ["material"], icon: "wool_cloth", zh: "布料與皮革", en: "Cloth and Leather" },
   { id: "byproducts", from: ["byproduct"], icon: "large_bone", zh: "副產物", en: "By-products" },
 ];
 
 // Simplified names for the zh_CN tab headers.
 const ZH_CN = {
   牧場設施: "牧场设施", 牧場工具: "牧场工具", 飼料與零食: "饲料与零食", 乳品: "乳品", 蛋: "蛋",
-  乳製品: "乳制品", 屠體: "屠体", 肉品: "肉品", 副產物: "副产物",
+  乳製品: "乳制品", 屠體: "屠体", 肉品: "肉品", 副產物: "副产物", 布料與皮革: "布料与皮革",
 };
 
 /** {identifier: creative category} read from the generated item and block files. */

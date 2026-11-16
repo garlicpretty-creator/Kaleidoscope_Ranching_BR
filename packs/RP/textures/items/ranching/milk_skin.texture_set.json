@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "milk_skin",
+    "metalness_emissive_roughness_subsurface": "milk_skin_mers",
+    "normal": "milk_skin_normal"
+  }
+}

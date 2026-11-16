@@ -139,6 +139,15 @@
     "kr_compost_bin": {
       "textures": "textures/blocks/ranching/compost_bin"
     },
+    "kr_cream_separator": {
+      "textures": "textures/blocks/ranching/cream_separator"
+    },
+    "kr_down_pillow": {
+      "textures": "textures/blocks/ranching/down_pillow"
+    },
+    "kr_down_quilt": {
+      "textures": "textures/blocks/ranching/down_quilt"
+    },
     "kr_feed_mixer": {
       "textures": "textures/blocks/ranching/feed_mixer"
     },
@@ -154,8 +163,17 @@
     "kr_hitching_post": {
       "textures": "textures/blocks/ranching/hitching_post"
     },
+    "kr_ice_cream_churn": {
+      "textures": "textures/blocks/ranching/ice_cream_churn"
+    },
     "kr_incubator": {
       "textures": "textures/blocks/ranching/incubator"
+    },
+    "kr_meat_grinder": {
+      "textures": "textures/blocks/ranching/meat_grinder"
+    },
+    "kr_milking_rack": {
+      "textures": "textures/blocks/ranching/milking_rack"
     },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
@@ -163,8 +181,68 @@
     "kr_pickling_vat": {
       "textures": "textures/blocks/ranching/pickling_vat"
     },
+    "kr_rug": {
+      "textures": "textures/blocks/ranching/rug"
+    },
+    "kr_rug_white": {
+      "textures": "textures/blocks/ranching/rug_white"
+    },
+    "kr_rug_orange": {
+      "textures": "textures/blocks/ranching/rug_orange"
+    },
+    "kr_rug_magenta": {
+      "textures": "textures/blocks/ranching/rug_magenta"
+    },
+    "kr_rug_light_blue": {
+      "textures": "textures/blocks/ranching/rug_light_blue"
+    },
+    "kr_rug_yellow": {
+      "textures": "textures/blocks/ranching/rug_yellow"
+    },
+    "kr_rug_lime": {
+      "textures": "textures/blocks/ranching/rug_lime"
+    },
+    "kr_rug_pink": {
+      "textures": "textures/blocks/ranching/rug_pink"
+    },
+    "kr_rug_gray": {
+      "textures": "textures/blocks/ranching/rug_gray"
+    },
+    "kr_rug_light_gray": {
+      "textures": "textures/blocks/ranching/rug_light_gray"
+    },
+    "kr_rug_cyan": {
+      "textures": "textures/blocks/ranching/rug_cyan"
+    },
+    "kr_rug_purple": {
+      "textures": "textures/blocks/ranching/rug_purple"
+    },
+    "kr_rug_blue": {
+      "textures": "textures/blocks/ranching/rug_blue"
+    },
+    "kr_rug_brown": {
+      "textures": "textures/blocks/ranching/rug_brown"
+    },
+    "kr_rug_green": {
+      "textures": "textures/blocks/ranching/rug_green"
+    },
+    "kr_rug_red": {
+      "textures": "textures/blocks/ranching/rug_red"
+    },
+    "kr_rug_black": {
+      "textures": "textures/blocks/ranching/rug_black"
+    },
+    "kr_silage_barrel": {
+      "textures": "textures/blocks/ranching/silage_barrel"
+    },
+    "kr_spinning_wheel": {
+      "textures": "textures/blocks/ranching/spinning_wheel"
+    },
     "kr_tanning_rack": {
       "textures": "textures/blocks/ranching/tanning_rack"
+    },
+    "kr_weaving_loom": {
+      "textures": "textures/blocks/ranching/weaving_loom"
     }
   }
 }

@@ -422,6 +422,8 @@ test("M2: one click with a brush is handled once, by M2 only", () => {
 
 // --- M3: carcasses and the butcher rack -----------------------------------
 
+const butcherData = await import("../../packs/BP/scripts/data/butcher.js");
+const await_species = await import("../../packs/BP/scripts/data/species.js");
 const RACK = COMPONENTS["kaleidoscope_ranching:butcher_rack"];
 const NEST = COMPONENTS["kaleidoscope_ranching:nest_box"];
 const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
@@ -511,8 +513,12 @@ test("the rack shows the partly cut carcass after half the strokes", () => {
   equal(stage().join(), "false,false", "whole, skin on, at first");
   stroke();
   equal(stage().join(), "true,false", "skinned after the pig skin comes off");
-  for (let i = 0; i < 3; i++) stroke();
-  equal(stage().join(), "true,true", "partly cut after 4 of 7");
+  // Half the strokes, rounded up (1.1 adds the offal strokes to the pig's cuts).
+  const half = Math.ceil(butcherData.BUTCHER_TABLE.pig_carcass.cuts.length / 2);
+  for (let i = 1; i < half - 1; i++) stroke();
+  equal(stage().join(), "true,false", "still whole one stroke before half");
+  stroke();
+  equal(stage().join(), "true,true", `partly cut after ${half} strokes`);
 });
 
 test("feathered birds stay feathered until the down and feathers are both taken", () => {
@@ -1677,6 +1683,454 @@ test("scraps are vegetable feed: pigs eat them from a trough, cows do not", () =
   runBlockClock();
   assert(care.isMarkedToday(pig, "fed"), "the pig ate");
   assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
+});
+
+// --- 1.1 M7: meat line and offal line -------------------------------------------
+
+test("M7: a pig is cut for liver and intestine right after its skin", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("pig", "female"));
+  use(RACK, rack, player);
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player); // skin
+  equal(rack.permutation.getState("kaleidoscope_ranching:skinned"), true, "skinned after the skin stroke");
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:pork_liver"), 1, "liver is the next stroke");
+  cutAll(player, rack);
+  assert(player.inventory.count("kaleidoscope_ranching:pig_intestine") >= 1, "and the intestine");
+});
+
+test("M7: each animal gives its offal; sheep, goats and rabbits give none", () => {
+  const { BUTCHER_TABLE } = butcherData;
+  const offalOf = (carcass) => BUTCHER_TABLE[carcass].cuts.filter((cut) => cut.offal).map((cut) => cut.item);
+  equal(offalOf("chicken_carcass").join(), "chicken_gizzard", "chicken");
+  equal(offalOf("duck_carcass").join(), "duck_blood", "duck");
+  equal(offalOf("goose_carcass").join(), "goose_liver", "goose");
+  for (const c of ["cow_carcass", "buffalo_carcass", "yak_carcass"]) equal(offalOf(c).join(), "beef_tripe", c);
+  for (const c of ["sheep_carcass", "goat_carcass", "rabbit_carcass"]) equal(offalOf(c).length, 0, c);
+});
+
+test("M7: intestine and tripe are washed at the water trough for one level of water", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const water = place("water_trough", at(0), { water: 1 });
+  hold(player, "kaleidoscope_ranching:pig_intestine", 2);
+  waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "one washed");
+  equal(player.inventory.count("kaleidoscope_ranching:pig_intestine"), 1, "one left");
+  equal(state(water, "water"), 0, "used one level");
+  waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "no water, no wash");
+  assert(player.actionBar.at(-1).translate.endsWith("wash.no_water"), "says it is dry");
+});
+
+test("M7: the meat grinder gives one mince per use and makes sausages from mince and casing", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const grinder = stationAt("meat_grinder");
+  hold(player, "minecraft:porkchop", 2);
+  use(STATION, grinder, player);
+  equal(player.inventory.count("kaleidoscope_ranching:pork_mince"), 1, "one mince at once");
+  equal(player.inventory.count("minecraft:porkchop"), 1, "one chop used");
+  equal(grinder.permutation.getState("kaleidoscope_ranching:busy"), false, "never busy");
+  player.inventory.setItem(8, new ItemStack("kaleidoscope_ranching:beef_mince", 1));
+  player.inventory.setItem(7, new ItemStack("kaleidoscope_ranching:sausage_casing", 1));
+  player.selectedSlotIndex = 7;
+  use(STATION, grinder, player);
+  equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 2, "two sausages");
+  equal(player.inventory.count("kaleidoscope_ranching:sausage_casing"), 0, "casing used");
+  equal(player.inventory.count("kaleidoscope_ranching:pork_mince") + player.inventory.count("kaleidoscope_ranching:beef_mince"), 0, "any two minces");
+});
+
+test("M7: an empty butcher rack air-dries up to four pieces for three days", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  hold(player, "kaleidoscope_ranching:raw_sausage", 5);
+  for (let i = 0; i < 5; i++) use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 1, "only four hang");
+  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_full"), "says it is full");
+  player.inventory.setItem(8, carcassFrom("chicken", "female"));
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_busy"), "no carcass while drying");
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "none", "carcass not hung");
+  __skipTime(24000 * 2);
+  player.selectedSlotIndex = 6;
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_sausage"), 0, "not done after two days");
+  __skipTime(24000);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_sausage"), 4, "four cured sausages");
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "chicken", "empty again: a carcass hangs");
+});
+
+test("M7: breaking a drying rack drops dried pieces dried and the rest raw", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  __skipTime(24000 * 2);
+  hold(player, "kaleidoscope_ranching:beef_shank", 1);
+  use(RACK, rack, player);
+  __skipTime(24000);
+  breakBlock(RACK, rack);
+  equal(dropsOf("kaleidoscope_ranching:cured_pork_belly").length, 1, "dried belly");
+  equal(dropsOf("kaleidoscope_ranching:beef_shank").length, 1, "raw shank back");
+  equal(dropsOf("kaleidoscope_ranching:beef_jerky").length, 0, "not jerky yet");
+});
+
+test("M7: goose liver and butter churn into pâté; raw offal is pig feed", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:goose_liver", 1));
+  player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:butter", 1));
+  use(STATION, churn, player);
+  __skipTime(600);
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:foie_gras_pate"), 1, "pâté");
+  const trough = place("trough", at(0, 3), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_ranching:pork_liver", 1);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(state(trough, "fill"), 1, "offal fills the trough");
+});
+
+// --- 1.1 M8: egg & dairy line and cheese line ------------------------------------
+
+const MILKING_RACK = COMPONENTS["kaleidoscope_ranching:milking_rack"];
+const AUTO_STATION = COMPONENTS["kaleidoscope_ranching:auto_station"];
+const { tickAutoStation } = await import("../../packs/BP/scripts/systems/stations.js");
+const { tickMilkingRack } = await import("../../packs/BP/scripts/systems/milkingRack.js");
+const { rootForTruffle } = await import("../../packs/BP/scripts/systems/truffle.js");
+const hopperAt = (location) => __place(overworld, location, "minecraft:hopper");
+const hopperItems = (hopper) => hopper.getComponent("minecraft:inventory").container;
+
+test("M8: the cheese press makes a cheese per milk", () => {
+  for (const [milk, cheese] of [["goat_milk", "goat_cheese"], ["buffalo_milk", "mozzarella"], ["yak_milk", "chhurpi"], ["cow_milk", "fresh_cheese"]]) {
+    clearWorld();
+    const player = __newPlayer(at(0));
+    const press = stationAt("cheese_press");
+    hold(player, `kaleidoscope_ranching:${milk}`, 3);
+    use(STATION, press, player);
+    __skipTime(12000);
+    use(STATION, press, player);
+    equal(player.inventory.count(`kaleidoscope_ranching:${cheese}`), 1, `${milk} → ${cheese}`);
+  }
+});
+
+test("M8: whey presses into ricotta, skim milk into milk tofu", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const press = stationAt("cheese_press");
+  hold(player, "kaleidoscope_ranching:whey", 3);
+  use(STATION, press, player);
+  __skipTime(6000);
+  use(STATION, press, player);
+  equal(player.inventory.count("kaleidoscope_ranching:ricotta"), 1, "ricotta");
+  hold(player, "kaleidoscope_ranching:skim_milk", 3);
+  use(STATION, press, player);
+  __skipTime(12000);
+  use(STATION, press, player);
+  equal(player.inventory.count("kaleidoscope_ranching:milk_tofu"), 2, "milk tofu");
+});
+
+test("M8: a wheel left seven days is vintage; over a lit campfire it comes out smoked", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("aging_rack");
+  hold(player, "kaleidoscope_ranching:fresh_cheese", 4);
+  use(STATION, rack, player);
+  __skipTime(24000 * 7);
+  use(STATION, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:vintage_cheese_wheel"), 1, "vintage after 7 days");
+  equal(player.inventory.count("kaleidoscope_ranching:aged_cheese_wheel"), 0, "not the 3-day wheel");
+  hold(player, "kaleidoscope_ranching:fresh_cheese", 4);
+  use(STATION, rack, player);
+  __skipTime(24000 * 3);
+  use(STATION, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:aged_cheese_wheel"), 1, "3 days: the 1.0 wheel");
+  __place(overworld, { x: 0, y: 63, z: 0 }, "minecraft:campfire");
+  hold(player, "kaleidoscope_ranching:fresh_cheese", 4);
+  use(STATION, rack, player);
+  __skipTime(24000 * 3);
+  use(STATION, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:smoked_cheese_wheel"), 1, "smoked over the fire");
+});
+
+test("M8: the cream separator takes milk from above and puts cream and skim milk below", () => {
+  clearWorld();
+  const separator = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:cream_separator", { "kaleidoscope_ranching:busy": false });
+  const above = hopperAt({ x: 0, y: 65, z: 0 });
+  const below = hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("kaleidoscope_ranching:goat_milk", 2));
+  tickAutoStation(separator);
+  equal(separator.permutation.getState("kaleidoscope_ranching:busy"), true, "started on its own");
+  equal(hopperItems(above).count("kaleidoscope_ranching:goat_milk"), 1, "one bottle taken");
+  __skipTime(12000);
+  tickAutoStation(separator);
+  equal(hopperItems(below).count("kaleidoscope_ranching:cream"), 1, "cream");
+  equal(hopperItems(below).count("kaleidoscope_ranching:skim_milk"), 1, "and the skim milk");
+  equal(separator.permutation.getState("kaleidoscope_ranching:busy"), true, "and took the next bottle");
+  const player = __newPlayer(at(3));
+  hold(player, "kaleidoscope_ranching:cow_milk", 1);
+  breakBlock(AUTO_STATION, separator);
+  equal(dropsOf("kaleidoscope_ranching:goat_milk").length, 1, "breaking it mid-batch gives the milk back");
+});
+
+test("M8: the ice cream churn is instant and uses the flavour you carry", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("ice_cream_churn");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:cream", 2));
+  player.inventory.setItem(1, new ItemStack("minecraft:sugar", 2));
+  player.inventory.setItem(2, new ItemStack("minecraft:ice", 2));
+  player.inventory.setItem(3, new ItemStack("minecraft:sweet_berries", 1));
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:berry_ice_cream"), 2, "berries carried: berry");
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:vanilla_ice_cream"), 2, "no berries left: vanilla");
+});
+
+test("M8: custard needs eggs in hand; milk in hand still makes butter", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:cow_milk", 3));
+  player.inventory.setItem(1, new ItemStack("minecraft:egg", 2));
+  player.inventory.setItem(2, new ItemStack("minecraft:sugar", 1));
+  use(STATION, churn, player);
+  __skipTime(600);
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:butter"), 1, "butter");
+  equal(player.inventory.count("minecraft:egg"), 2, "eggs untouched");
+  player.selectedSlotIndex = 1;
+  use(STATION, churn, player);
+  __skipTime(300);
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:custard"), 2, "custard");
+});
+
+test("M8: the milking rack milks its cow once a day into the container below", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = place("milking_rack", at(0), {});
+  const above = hopperAt({ x: 0, y: 65, z: 0 });
+  const below = hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("minecraft:glass_bottle", 3));
+  const bull = ranch("cow", 2, "male");
+  bull.getComponent("minecraft:leashable").leashTo(player);
+  MILKING_RACK.onPlayerInteract({ block: rack, player });
+  __advance(1);
+  assert(player.actionBar.at(-1).translate.endsWith("milking_rack.not_milkable"), "no bulls");
+  bull.getComponent("minecraft:leashable").unleash();
+  const cow = ranch("cow", 2, "female");
+  cow.getComponent("minecraft:leashable").leashTo(player);
+  MILKING_RACK.onPlayerInteract({ block: rack, player });
+  __advance(1);
+  assert(!player.actionBar.some((m) => m?.translate?.endsWith("milking_rack.tied")), "tying shows no hint (core/actionBar.js)");
+  tickMilkingRack(rack);
+  equal(hopperItems(below).count("kaleidoscope_ranching:cow_milk"), 1, "one bottle of milk below");
+  equal(hopperItems(above).count("minecraft:glass_bottle"), 2, "one empty bottle used");
+  tickMilkingRack(rack);
+  equal(hopperItems(below).count("kaleidoscope_ranching:cow_milk"), 1, "once a day");
+  __skipTime(24000);
+  tickMilkingRack(rack);
+  equal(hopperItems(below).count("kaleidoscope_ranching:cow_milk"), 2, "again the next day");
+  MILKING_RACK.onPlayerInteract({ block: rack, player });
+  __advance(1);
+  equal(cow.getComponent("minecraft:leashable").leashHolder, player, "handed back");
+});
+
+test("M8: a full-hearted pig in a forest roots up truffles; others do not", () => {
+  clearWorld();
+  __place(overworld, { x: 1, y: 63, z: 0 }, "minecraft:podzol");
+  __place(overworld, { x: 3, y: 64, z: 0 }, "minecraft:oak_log");
+  const pig = ranch("pig", 1, "female");
+  care.setAffection(pig, 100);
+  assert(rootForTruffle(pig, 0), "found one");
+  equal(dropsOf("kaleidoscope_ranching:truffle").length, 1, "truffle on the ground");
+  assert(!rootForTruffle(pig, 0), "once a day");
+  const shy = ranch("pig", 1, "male", 0);
+  care.setAffection(shy, 60);
+  assert(!rootForTruffle(shy, 0), "not without full hearts");
+});
+
+test("M8: the nursing bottle uses skim milk before whole milk", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const calf = ranch("cow", 1, "female");
+  calf.triggerEvent("kaleidoscope_ranching:become_baby");
+  player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:cow_milk", 1));
+  player.inventory.setItem(2, new ItemStack("kaleidoscope_ranching:skim_milk", 1));
+  hold(player, "kaleidoscope_ranching:nursing_bottle");
+  __interact(player, calf);
+  __advance(1);
+  equal(player.inventory.count("kaleidoscope_ranching:skim_milk"), 0, "skim milk used");
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 1, "whole milk kept");
+});
+
+// --- 1.1 M9: leather, fluff, cloth, hatching and feed -------------------------------
+
+const textiles = await import("../../packs/BP/scripts/systems/textiles.js");
+const { tryMoult } = await import("../../packs/BP/scripts/systems/moult.js");
+const { candle } = await import("../../packs/BP/scripts/systems/nest.js");
+const RUG = COMPONENTS["kaleidoscope_ranching:rug"];
+
+test("M9: the tanning rack takes four rabbit hides, and oils leather with tallow", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  hold(player, "minecraft:rabbit_hide", 4);
+  use(STATION, rack, player);
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 1, "leather from rabbit hide");
+  player.inventory.setItem(5, new ItemStack("kaleidoscope_ranching:beef_tallow", 1));
+  use(STATION, rack, player); // holding the leather in slot 0
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:oiled_leather"), 1, "oiled leather");
+  equal(player.inventory.count("kaleidoscope_ranching:beef_tallow"), 0, "tallow used");
+});
+
+test("M9: the spinning wheel and the loom run from the container above into the one below", () => {
+  clearWorld();
+  const wheel = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:spinning_wheel", { "kaleidoscope_ranching:busy": false });
+  const above = hopperAt({ x: 0, y: 65, z: 0 });
+  const below = hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("minecraft:red_wool", 1));
+  hopperItems(above).addItem(new ItemStack("kaleidoscope_ranching:goat_cashmere", 2));
+  tickAutoStation(wheel);
+  __skipTime(12000);
+  tickAutoStation(wheel);
+  __skipTime(12000);
+  tickAutoStation(wheel);
+  equal(hopperItems(below).count("kaleidoscope_ranching:yarn"), 2, "wool → 2 yarn");
+  equal(hopperItems(below).count("kaleidoscope_ranching:fine_yarn"), 2, "cashmere → 2 fine yarn");
+  const loom = stationAt("weaving_loom", 5);
+  const player = __newPlayer(at(5));
+  hold(player, "kaleidoscope_ranching:fine_yarn", 2);
+  use(AUTO_STATION, loom, player);
+  __skipTime(12000);
+  use(AUTO_STATION, loom, player);
+  equal(player.inventory.count("kaleidoscope_ranching:plush_cloth"), 1, "the loom also works by hand");
+});
+
+test("M9: silage is concentrate for ruminants only; calcium feed for poultry only", () => {
+  clearWorld();
+  const barrel = __place(overworld, { x: 0, y: 64, z: 5 }, "kaleidoscope_ranching:silage_barrel", { "kaleidoscope_ranching:busy": false });
+  hopperItems(hopperAt({ x: 0, y: 65, z: 5 })).addItem(new ItemStack("kaleidoscope_ranching:forage", 4));
+  const out = hopperAt({ x: 0, y: 63, z: 5 });
+  tickAutoStation(barrel);
+  __skipTime(24000 * 3);
+  tickAutoStation(barrel);
+  equal(hopperItems(out).count("kaleidoscope_ranching:silage"), 4, "four silage after three days");
+  const player = __newPlayer(at(0, -3));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_ranching:silage", 1);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  const cow = ranch("cow", 1, "female");
+  const hen = ranch("chicken", 2, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(cow, "fed"), "the cow ate silage");
+  assert(!care.isMarkedToday(hen, "fed"), "the hen did not");
+  clearWorld();
+  const trough2 = place("trough", at(0), { fill: 0, kind: 0 });
+  const p2 = __newPlayer(at(0, -3));
+  hold(p2, "kaleidoscope_ranching:calcium_feed", 1);
+  troughComponent.onPlayerInteract({ block: trough2, player: p2, dimension: overworld });
+  const hen2 = ranch("chicken", 1, "female");
+  const cow2 = ranch("cow", 2, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(hen2, "fed"), "the hen ate calcium feed");
+  assert(!care.isMarkedToday(cow2, "fed"), "the cow did not");
+});
+
+test("M9: well-kept ducks shed down once a day; goats and rabbits brush out fine fleece", () => {
+  clearWorld();
+  const duck = ranch("duck", 1, "female");
+  care.setAffection(duck, 80);
+  assert(tryMoult(duck, 0), "shed");
+  equal(dropsOf("kaleidoscope_ranching:down").length, 1, "down on the ground");
+  assert(!tryMoult(duck, 0), "once a day");
+  const shy = ranch("goose", 2, "female");
+  care.setAffection(shy, 40);
+  assert(!tryMoult(shy, 0), "not below four hearts");
+  const { SPECIES } = await_species;
+  assert(SPECIES["kaleidoscope_ranching:goat"].brushDrops.some(([id]) => id === "kaleidoscope_ranching:goat_cashmere"), "goat cashmere");
+  assert(SPECIES["kaleidoscope_ranching:rabbit"].brushDrops.some(([id]) => id === "kaleidoscope_ranching:rabbit_fur"), "rabbit fur");
+});
+
+test("M9: a hatched egg leaves an eggshell; the candler tells how long the rest need", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  NEST.onPlace({ block: nest, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 2);
+  use(NEST, nest, player);
+  __skipTime(DAY);
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(NEST, nest, player);
+  const report = candle(nest);
+  equal(report.count, 2, "two eggs hatching");
+  assert(report.soonest > 0 && report.soonest <= 20, "the first is about a day away");
+  ranch("chicken", 1, "female");
+  __skipTime(DAY);
+  __advance(700);
+  hold(player, "minecraft:stick", 1);
+  use(NEST, nest, player);
+  equal(player.inventory.count("kaleidoscope_ranching:eggshell"), 1, "one shell from the hatched egg");
+  const incubator = __place(overworld, { x: 4, y: 64, z: 0 }, "kaleidoscope_ranching:incubator", { "kaleidoscope_ranching:eggs": 0, "kaleidoscope_ranching:busy": false });
+  hold(player, "kaleidoscope_ranching:fertilized_duck_egg", 1);
+  use(INCUBATOR, incubator, player);
+  assert(candle(incubator).paused, "cold incubator: paused");
+});
+
+test("M9: the lasso leads a ranch animal; the duster clears a patch of cobweb; dye colours a rug", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 5, "female");
+  hold(player, "kaleidoscope_ranching:lasso", 1);
+  assert(textiles.lassoAnimal(player, cow), "lassoed");
+  equal(cow.getComponent("minecraft:leashable").leashHolder, player, "on the player's lead");
+  for (const [x, z] of [[0, 3], [1, 3], [-1, 4], [5, 5]]) __place(overworld, { x, y: 64, z }, "minecraft:web");
+  hold(player, "kaleidoscope_ranching:feather_duster", 1);
+  equal(textiles.dust(player, overworld.getBlock({ x: 0, y: 64, z: 3 })), 3, "the 3 × 3 patch, not the far one");
+  equal(overworld.getBlock({ x: 5, y: 64, z: 5 }).typeId, "minecraft:web", "far web stays");
+  const rug = __place(overworld, { x: 0, y: 64, z: 8 }, "kaleidoscope_ranching:rug", { "kaleidoscope_ranching:color": "white" });
+  hold(player, "minecraft:red_dye", 2);
+  RUG.onPlayerInteract({ block: rug, player });
+  equal(rug.permutation.getState("kaleidoscope_ranching:color"), "red", "dyed red");
+  equal(player.inventory.count("minecraft:red_dye"), 1, "one dye used");
+});
+
+test("M9: a leather apron sometimes spares the blade", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("cow", "female"));
+  use(RACK, rack, player);
+  player.getComponent("minecraft:equippable").setEquipment("Chest", new ItemStack("kaleidoscope_ranching:leather_apron", 1));
+  const random = Math.random;
+  Math.random = () => 0; // every roll saves
+  try {
+    hold(player, "minecraft:iron_sword");
+    use(RACK, rack, player);
+  } finally {
+    Math.random = random;
+  }
+  const wear = () => player.inventory.getItem(player.selectedSlotIndex).getComponent("minecraft:durability").damage;
+  equal(wear(), 0, "no wear with the apron");
+  player.getComponent("minecraft:equippable").setEquipment("Chest", undefined);
+  use(RACK, rack, player);
+  equal(wear(), 1, "without it the stroke costs durability");
 });
 
 // --- Report ---------------------------------------------------------------

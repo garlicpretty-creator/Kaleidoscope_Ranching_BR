@@ -1,0 +1,30 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_down_quilt"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:down",
+        "count": 4
+      },
+      {
+        "item": "kaleidoscope_ranching:plush_cloth",
+        "count": 2
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:down_quilt",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:down_quilt"
+      }
+    ]
+  }
+}

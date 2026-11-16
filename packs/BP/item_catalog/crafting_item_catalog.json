@@ -30,7 +30,17 @@
               "kaleidoscope_ranching:aging_rack",
               "kaleidoscope_ranching:tanning_rack",
               "kaleidoscope_ranching:fermenting_jar",
-              "kaleidoscope_ranching:pickling_vat"
+              "kaleidoscope_ranching:pickling_vat",
+              "kaleidoscope_ranching:meat_grinder",
+              "kaleidoscope_ranching:milking_rack",
+              "kaleidoscope_ranching:cream_separator",
+              "kaleidoscope_ranching:ice_cream_churn",
+              "kaleidoscope_ranching:spinning_wheel",
+              "kaleidoscope_ranching:weaving_loom",
+              "kaleidoscope_ranching:silage_barrel",
+              "kaleidoscope_ranching:rug",
+              "kaleidoscope_ranching:down_pillow",
+              "kaleidoscope_ranching:down_quilt"
             ]
           },
           {
@@ -39,6 +49,8 @@
               "name": "kaleidoscope_ranching:itemGroup.name.ranching_feed"
             },
             "items": [
+              "kaleidoscope_ranching:calcium_feed",
+              "kaleidoscope_ranching:silage",
               "kaleidoscope_ranching:alfalfa",
               "kaleidoscope_ranching:alfalfa_seeds",
               "kaleidoscope_ranching:forage",
@@ -89,7 +101,24 @@
               "kaleidoscope_ranching:yogurt",
               "kaleidoscope_ranching:fresh_cheese",
               "kaleidoscope_ranching:aged_cheese_wheel",
-              "kaleidoscope_ranching:cheese_slice"
+              "kaleidoscope_ranching:cheese_slice",
+              "kaleidoscope_ranching:foie_gras_pate",
+              "kaleidoscope_ranching:skim_milk",
+              "kaleidoscope_ranching:vanilla_ice_cream",
+              "kaleidoscope_ranching:berry_ice_cream",
+              "kaleidoscope_ranching:chocolate_ice_cream",
+              "kaleidoscope_ranching:custard",
+              "kaleidoscope_ranching:goat_cheese",
+              "kaleidoscope_ranching:aged_goat_cheese",
+              "kaleidoscope_ranching:mozzarella",
+              "kaleidoscope_ranching:chhurpi",
+              "kaleidoscope_ranching:chhurpi_block",
+              "kaleidoscope_ranching:vintage_cheese_wheel",
+              "kaleidoscope_ranching:vintage_cheese_slice",
+              "kaleidoscope_ranching:smoked_cheese_wheel",
+              "kaleidoscope_ranching:smoked_cheese_slice",
+              "kaleidoscope_ranching:ricotta",
+              "kaleidoscope_ranching:milk_tofu"
             ]
           },
           {
@@ -136,7 +165,37 @@
               "kaleidoscope_ranching:chicken_wing",
               "kaleidoscope_ranching:duck_leg",
               "kaleidoscope_ranching:goose_leg",
-              "kaleidoscope_ranching:rabbit_leg"
+              "kaleidoscope_ranching:rabbit_leg",
+              "kaleidoscope_ranching:pork_mince",
+              "kaleidoscope_ranching:beef_mince",
+              "kaleidoscope_ranching:mutton_mince",
+              "kaleidoscope_ranching:raw_sausage",
+              "kaleidoscope_ranching:cured_sausage",
+              "kaleidoscope_ranching:cured_pork_belly",
+              "kaleidoscope_ranching:cured_duck_leg",
+              "kaleidoscope_ranching:beef_jerky",
+              "kaleidoscope_ranching:pork_liver",
+              "kaleidoscope_ranching:pig_intestine",
+              "kaleidoscope_ranching:chicken_gizzard",
+              "kaleidoscope_ranching:duck_blood",
+              "kaleidoscope_ranching:goose_liver",
+              "kaleidoscope_ranching:beef_tripe",
+              "kaleidoscope_ranching:cleaned_intestine",
+              "kaleidoscope_ranching:cleaned_tripe"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:wool_cloth",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_materials"
+            },
+            "items": [
+              "kaleidoscope_ranching:oiled_leather",
+              "kaleidoscope_ranching:yarn",
+              "kaleidoscope_ranching:fine_yarn",
+              "kaleidoscope_ranching:felt",
+              "kaleidoscope_ranching:wool_cloth",
+              "kaleidoscope_ranching:plush_cloth"
             ]
           },
           {
@@ -147,6 +206,12 @@
             "items": [
               "kaleidoscope_ranching:whey",
               "kaleidoscope_ranching:food_waste",
+              "kaleidoscope_ranching:sausage_casing",
+              "kaleidoscope_ranching:truffle",
+              "kaleidoscope_ranching:goat_cashmere",
+              "kaleidoscope_ranching:rabbit_fur",
+              "kaleidoscope_ranching:eggshell",
+              "kaleidoscope_ranching:calcium_powder",
               "kaleidoscope_ranching:large_bone",
               "kaleidoscope_ranching:chicken_frame",
               "kaleidoscope_ranching:raw_hide",
@@ -177,6 +242,12 @@
               "name": "kaleidoscope_ranching:itemGroup.name.ranching_tools"
             },
             "items": [
+              "kaleidoscope_ranching:leather_apron",
+              "kaleidoscope_ranching:lasso",
+              "kaleidoscope_ranching:feather_duster",
+              "kaleidoscope_ranching:wool_hat",
+              "kaleidoscope_ranching:wool_scarf",
+              "kaleidoscope_ranching:egg_candler",
               "kaleidoscope_ranching:milking_pail",
               "kaleidoscope_ranching:nursing_bottle",
               "kaleidoscope_ranching:cowbell",

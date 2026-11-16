@@ -22,13 +22,19 @@ import { showActionBar } from "../core/actionBar.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
-const LAST_MILKED_DAY = dp("last_milked_day");
+export const LAST_MILKED_DAY = dp("last_milked_day");
 const NURSING_FEEDS = dp("nursing_feeds");
 
-const MILK_FOR_FEEDING = ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id));
+// 1.1: skim milk from the cream separator feeds babies too, before whole milk.
+const MILK_FOR_FEEDING = [rid("skim_milk"), ...ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id))];
 
 function tell(player, key) {
   showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
+}
+
+/** The milk an animal gives (one item: products have no quality grades). */
+export function milkOf(species) {
+  return rid(species.dailyProduct.item);
 }
 
 function milk(player, animal) {

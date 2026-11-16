@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "beef_mince",
+    "metalness_emissive_roughness_subsurface": "beef_mince_mers",
+    "normal": "beef_mince_normal"
+  }
+}

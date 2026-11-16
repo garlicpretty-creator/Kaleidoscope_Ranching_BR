@@ -16,7 +16,7 @@
 import { system } from "@minecraft/server";
 import { cookeryHas, onCookeryReady } from "./cookery.js";
 import { ANIMALS } from "../data/animals.js";
-import { DAIRY_PRODUCTS, DISHES, DISH_PREPS } from "../data/dishes.js";
+import { DAIRY_PRODUCTS, DISHES, DISH_PREPS, MEAT_PRODUCTS } from "../data/dishes.js";
 import { ITEMS, NAMESPACE } from "../data/items.js";
 import { BLOCKS } from "../data/blocks.js";
 import { WOK_MEATS } from "../data/processing.js";
@@ -143,8 +143,8 @@ const METHOD = {
 METHOD.zh_CN = Object.fromEntries(Object.entries(METHOD.zh_TW).map(([key, value]) => [key, toSimplified(value)]));
 
 const BUTCHER_STEPS = {
-  en_US: ["Hold the carcass and use it on a Butcher Rack to hang it.", "Use a kitchen knife, sword or axe on the hanging carcass, once per cut.", "Each cut puts one kind of meat or by-product in your inventory and costs durability."],
-  zh_TW: ["手拿屠體點屠宰掛架，把屠體掛上。", "用廚房菜刀、劍或斧點掛著的屠體，一次切一刀。", "每一刀把一類部位肉或副產物放進背包，並消耗工具耐久。"],
+  en_US: ["Hold the carcass and use it on a Butcher Rack to hang it.", "Use a kitchen knife, sword or axe on the hanging carcass, once per cut.", "Each cut puts one kind of meat or by-product in your inventory and costs durability.", "An empty rack air-dries up to 4 raw sausages, pork bellies, duck legs or beef shanks; take them down after 3 days."],
+  zh_TW: ["手拿屠體點屠宰掛架，把屠體掛上。", "用廚房菜刀、劍或斧點掛著的屠體，一次切一刀。", "每一刀把一類部位肉或副產物放進背包，並消耗工具耐久。", "空的掛架可以風乾最多 4 件生香腸、五花肉、鴨腿或牛腱，3 天後取下。"],
 };
 BUTCHER_STEPS.zh_CN = BUTCHER_STEPS.zh_TW.map(toSimplified);
 
@@ -168,6 +168,7 @@ export function guidebookPayload() {
   for (const id of DAIRY_PRODUCTS) entries.push({ id: rid(id), category: "dairy", kinds: ["item"], icon: icon(id) });
   entries.push({ id: rid("butcher_rack"), category: "butchery", kinds: ["block"], icon: icon("cow_carcass"), mechanicsByLocale: BUTCHER_STEPS });
   for (const animal of ANIMALS) entries.push({ id: rid(animal.carcass), category: "butchery", kinds: ["item"], icon: icon(animal.carcass) });
+  for (const id of MEAT_PRODUCTS) entries.push({ id: rid(id), category: "butchery", kinds: ["item"], icon: icon(id) });
 
   const names = {};
   for (const locale of ["en_US", "zh_TW", "zh_CN"]) {

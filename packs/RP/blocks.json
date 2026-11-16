@@ -68,5 +68,35 @@
   },
   "kaleidoscope_ranching:food_waste_bin": {
     "sound": "wood"
+  },
+  "kaleidoscope_ranching:meat_grinder": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:milking_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:cream_separator": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:ice_cream_churn": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:spinning_wheel": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:weaving_loom": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:silage_barrel": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:rug": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:down_pillow": {
+    "sound": "cloth"
+  },
+  "kaleidoscope_ranching:down_quilt": {
+    "sound": "cloth"
   }
 }
