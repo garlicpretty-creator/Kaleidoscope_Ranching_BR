@@ -285,7 +285,9 @@ const RECIPES = [
   shapeless("egg_from_goose_egg", [{ item: rid("goose_egg") }], "minecraft:egg", 2),
   // Restores the vanilla goat horn, which Ranching's goats no longer drop by ramming.
   shapeless("goat_horn", [{ item: rid("billy_goat_horn") }], "minecraft:goat_horn"),
-  shapeless("bone_meal_from_cattle_horn", [{ item: rid("cattle_horn") }], "minecraft:bone_meal", 3),
+  // Two horns, not one: one horn alone is the horn cup, and two crafting-table recipes with the same
+  // ingredients make the game log "Adding duplicate crafting_table recipe".
+  shapeless("bone_meal_from_cattle_horn", [{ item: rid("cattle_horn") }, { item: rid("cattle_horn") }], "minecraft:bone_meal", 6),
   shapeless("bone_meal_from_chicken_frame", [{ item: rid("chicken_frame") }], "minecraft:bone_meal", 2),
   // Tallow candles (企劃書 1.2 牛脂、羊脂製品：蠟燭), in their simplest form.
   shapeless("candle_from_beef_tallow", [{ item: rid("beef_tallow") }, { item: "minecraft:string" }], "minecraft:candle"),

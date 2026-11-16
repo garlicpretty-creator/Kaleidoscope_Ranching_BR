@@ -10,11 +10,14 @@
     "ingredients": [
       {
         "item": "kaleidoscope_ranching:cattle_horn"
+      },
+      {
+        "item": "kaleidoscope_ranching:cattle_horn"
       }
     ],
     "result": {
       "item": "minecraft:bone_meal",
-      "count": 3
+      "count": 6
     },
     "unlock": [
       {
