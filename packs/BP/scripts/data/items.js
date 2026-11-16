@@ -183,6 +183,16 @@ const CLOTH_LINE = [
   ["wool_hat", "毛帽", "Wool Hat", "tool"],
   ["wool_scarf", "圍巾", "Wool Scarf", "tool"],
 ];
+// 1.1 役用與牧場管理 (企劃書 1.1 九): systems/workAnimals.js. The gloves and the
+// blanket come from the leather and cloth lines; they act on sleep and the cold.
+const WORK_LINE = [
+  ["harness", "挽具", "Harness", "tool"],
+  ["plough", "犁", "Plough", "tool"],
+  ["animal_blanket", "動物披毯", "Animal Blanket", "tool"],
+  ["leather_gloves", "皮手套", "Leather Gloves", "tool"],
+  ["herding_horn", "牧笛", "Herding Horn", "tool"],
+];
+
 // 1.1 孵化與飼料線 (企劃書 1.1 八).
 const HATCH_FEED_LINE = [
   ["egg_candler", "照蛋燈", "Egg Candler", "tool"],
@@ -256,6 +266,7 @@ export const ITEMS = [
   ...FLUFF_LINE,
   ...CLOTH_LINE,
   ...HATCH_FEED_LINE,
+  ...WORK_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,

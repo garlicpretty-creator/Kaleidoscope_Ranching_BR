@@ -9,6 +9,8 @@ import { autoStationComponent, startAutoStations, stationComponent } from "./sta
 import { milkingRackComponent, startMilkingRacks } from "./milkingRack.js";
 import { startTruffles } from "./truffle.js";
 import { startMoulting } from "./moult.js";
+import { startSleep } from "./sleep.js";
+import { hornItemComponent, penGateComponent, penGateTopComponent, startWorkAnimals } from "./workAnimals.js";
 import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./textiles.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
 import { cheeseWheelComponent } from "./cheeseWheel.js";
@@ -30,6 +32,9 @@ export function startM3() {
     itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:lasso", lassoItemComponent);
     itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:feather_duster", featherDusterItemComponent);
     itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:egg_candler", candlerItemComponent);
+    itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:herding_horn", hornItemComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:pen_gate", penGateComponent);
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:pen_gate_top", penGateTopComponent);
   });
   startCarcassDrops();
   startMilking();
@@ -39,4 +44,6 @@ export function startM3() {
   startMilkingRacks();
   startTruffles();
   startMoulting();
+  startSleep();
+  startWorkAnimals();
 }

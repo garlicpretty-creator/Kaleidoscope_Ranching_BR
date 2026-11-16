@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_horn_decor_goat"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "H",
+      "P"
+    ],
+    "key": {
+      "H": {
+        "item": "kaleidoscope_ranching:billy_goat_horn"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:horn_decor",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:horn_decor"
+      }
+    ]
+  }
+}

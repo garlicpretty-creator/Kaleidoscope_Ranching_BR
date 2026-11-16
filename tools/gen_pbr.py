@@ -77,6 +77,7 @@ RULES = [
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
     (r"^blocks/ranching/cheese_wheel$", "fat"),
     (r"^blocks/ranching/(rug|down_pillow|down_quilt)", "feather"),
+    (r"^blocks/ranching/horn_decor$", "bone"),
     (r"^blocks/ranching/", "wood"),
     # Items
     (r"^items/.*/(milking_pail|cowbell|manure_fork|ear_tag)$", "metal"),
@@ -85,7 +86,9 @@ RULES = [
     (r"^items/.*/(large_bone|cattle_horn|billy_goat_horn|chicken_frame)$", "bone"),
     (r"^items/.*/(\w*egg(_fine|_superb)?|fertilized_\w+)$", "shell"),
     (r"^items/.*/(down|yak_hair|pig_bristle|raw_hide|sheep_skin|rabbit_hide|brush|goat_cashmere|rabbit_fur|\w*yarn|felt|\w+_cloth|wool_\w+|feather_duster)$", "fur"),
-    (r"^items/.*/(oiled_leather|leather_apron|lasso)$", "skin"),
+    (r"^items/.*/(oiled_leather|leather_apron|lasso|harness|leather_gloves)$", "skin"),
+    (r"^items/.*/herding_horn$", "bone"),
+    (r"^items/.*/animal_blanket$", "fur"),
     (r"^items/.*/(eggshell|calcium_\w+)$", "shell"),
     (r"^items/.*/egg_candler$", "metal"),
     (r"^items/.*/pig_skin$", "skin"),

@@ -53,6 +53,7 @@ kaleidoscope_ranching.ui.roster.empty=No tagged animals yet.
 kaleidoscope_ranching.ui.roster.last_seen=Last seen: %s, %s, %s
 kaleidoscope_ranching.ui.settings.title=Ranch Settings
 kaleidoscope_ranching.ui.settings.clean_need=Enable the Clean need (manure)
+kaleidoscope_ranching.ui.settings.sleep=Animal routine (sleep at night)
 kaleidoscope_ranching.ui.trough.status=Trough: %s %s/%s
 kaleidoscope_ranching.ui.trough.other_kind=The trough holds a different feed
 kaleidoscope_ranching.ui.trough.full=The trough is full

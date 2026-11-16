@@ -8,6 +8,7 @@
 import { system } from "@minecraft/server";
 import { getAffection } from "../core/husbandry.js";
 import { isRanchAnimal } from "../core/animal.js";
+import { wakeNear } from "./sleep.js";
 
 export const CALL_RADIUS = 32;
 /** Hearts (0-5) an animal needs before it answers the bell. */
@@ -18,6 +19,7 @@ function tell(player, key, values) {
 }
 
 export function ring(player) {
+  wakeNear(player.dimension, player.location, CALL_RADIUS, "cowbell");
   const animals = player.dimension
     .getEntities({ location: player.location, maxDistance: CALL_RADIUS })
     .filter((entity) => isRanchAnimal(entity) && getAffection(entity) >= BOND_HEARTS);

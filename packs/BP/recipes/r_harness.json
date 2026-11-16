@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_harness"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "LIL",
+      " L "
+    ],
+    "key": {
+      "L": {
+        "item": "kaleidoscope_ranching:oiled_leather"
+      },
+      "I": {
+        "item": "minecraft:iron_ingot"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:harness",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:harness"
+      }
+    ]
+  }
+}

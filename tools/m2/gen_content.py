@@ -84,6 +84,7 @@ UI = {
     "roster.last_seen": ("最後位置：%s, %s, %s", "最后位置：%s, %s, %s", "Last seen: %s, %s, %s"),
     "settings.title": ("牧場設定", "牧场设定", "Ranch Settings"),
     "settings.clean_need": ("啟用「清潔」需求（糞便）", "启用“清洁”需求（粪便）", "Enable the Clean need (manure)"),
+    "settings.sleep": ("動物作息（晚上睡覺）", "动物作息（晚上睡觉）", "Animal routine (sleep at night)"),
     "trough.status": ("飼槽：%s %s/%s", "饲槽：%s %s/%s", "Trough: %s %s/%s"),
     "trough.other_kind": ("飼槽裡還有別種飼料", "饲槽里还有别种饲料", "The trough holds a different feed"),
     "trough.full": ("飼槽已滿", "饲槽已满", "The trough is full"),

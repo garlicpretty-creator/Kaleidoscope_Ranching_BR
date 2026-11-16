@@ -1,0 +1,26 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_leather_gloves"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:oiled_leather",
+        "count": 2
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:leather_gloves",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:leather_gloves"
+      }
+    ]
+  }
+}

@@ -8,6 +8,7 @@ const STEPS = [
   ["py", "tools/m2/gen_content.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
+  ["node", "tools/gen_sleep.mjs"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
   ["node", "tools/gen_shared.mjs"],

@@ -50,6 +50,9 @@ SOUNDS = {
     "rug": "cloth",
     "down_pillow": "cloth",
     "down_quilt": "cloth",
+    "pen_gate": "wood",
+    "pen_gate_top": "wood",
+    "horn_decor": "bone",
 }
 
 
