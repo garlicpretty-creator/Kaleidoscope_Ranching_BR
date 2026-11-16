@@ -222,11 +222,26 @@ def texture_files():
         yield path, path.relative_to(TEXTURES).with_suffix("").as_posix()
 
 
+def save_png(image, path, previous):
+    """Save, but keep the previous file's bytes when the pixels are unchanged, so rerunning the
+    generator on another machine (another PNG encoder) does not rewrite hundreds of files."""
+    old = previous.get(path)
+    if old is not None:
+        import io
+        with Image.open(io.BytesIO(old)) as prev:
+            if prev.mode == image.mode and prev.size == image.size and prev.tobytes() == image.tobytes():
+                path.write_bytes(old)
+                return
+    image.save(path)
+
+
 def main():
     for stale in TEXTURES.rglob("*.texture_set.json"):
         stale.unlink()
+    previous = {}
     for stale in TEXTURES.rglob("*.png"):
         if stale.stem.endswith(SUFFIXES):
+            previous[stale] = stale.read_bytes()
             stale.unlink()
     written, counts = 0, {}
     for path, key in texture_files():
@@ -235,8 +250,8 @@ def main():
             continue
         mers, normal = build(path, key, base)
         name = path.stem
-        mers.save(path.with_name(f"{name}_mers.png"))
-        normal.save(path.with_name(f"{name}_normal.png"))
+        save_png(mers, path.with_name(f"{name}_mers.png"), previous)
+        save_png(normal, path.with_name(f"{name}_normal.png"), previous)
         texture_set = {
             "format_version": "1.21.30",
             "minecraft:texture_set": {
