@@ -3,7 +3,8 @@ texture from a three-quarter view, one tile per block (and per bone set, e.g. `b
 
 Only axis-aligned box-UV cubes are drawn, which is all these block models use.
 
-Run with: python art_src/m4_scripts/preview.py out.png id[+bone+bone] ...
+Run with: python art_src/m4_scripts/preview.py out.png id[+bone+-bone] ...
+(+bone shows a bone that is hidden by default, +-bone hides one, e.g. an eaten portion)
 """
 import json
 import math
@@ -43,6 +44,7 @@ def render(block, shown=()):
     if "open" in shown:
         hidden.add("closed")
     hidden -= set(shown)
+    hidden |= {s[1:] for s in shown if s.startswith("-")}  # "-piece_4" hides a bone
     color = np.zeros((TILE, TILE, 3), np.uint8)
     color[:] = (214, 224, 208)
     depth = np.full((TILE, TILE), -1e9)

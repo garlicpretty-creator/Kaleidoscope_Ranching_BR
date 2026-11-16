@@ -37,6 +37,7 @@ const PLACED_SHAPES = {
   wheel: both(-6, 0, -6, 12, 5, 12),
   pizza: both(-8, 0, -8, 16, 3, 16),
   pot: both(-6, 0, -6, 12, 9, 12),
+  claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
 };
 const PLACED_COLORS = {
