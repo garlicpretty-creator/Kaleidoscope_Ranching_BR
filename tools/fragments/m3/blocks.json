@@ -18,6 +18,9 @@
   "kaleidoscope_ranching:aging_rack": {
     "sound": "wood"
   },
+  "kaleidoscope_ranching:tanning_rack": {
+    "sound": "wood"
+  },
   "kaleidoscope_ranching:fermenting_jar": {
     "sound": "glass"
   },

@@ -168,6 +168,7 @@ tile.kaleidoscope_ranching:butcher_rack.name=屠宰掛架
 tile.kaleidoscope_ranching:butter_churn.name=攪乳桶
 tile.kaleidoscope_ranching:cheese_press.name=乳酪壓模
 tile.kaleidoscope_ranching:aging_rack.name=熟成架
+tile.kaleidoscope_ranching:tanning_rack.name=鞣皮架
 tile.kaleidoscope_ranching:fermenting_jar.name=發酵罐
 tile.kaleidoscope_ranching:cheese_wheel.name=熟成乳酪輪
 tile.kaleidoscope_ranching:pickling_vat.name=醃製缸

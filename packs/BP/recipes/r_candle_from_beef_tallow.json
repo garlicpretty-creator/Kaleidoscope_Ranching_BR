@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_candle_from_beef_tallow"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:beef_tallow"
+      },
+      {
+        "item": "minecraft:string"
+      }
+    ],
+    "result": {
+      "item": "minecraft:candle",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:beef_tallow"
+      }
+    ]
+  }
+}

@@ -810,6 +810,26 @@ test("mixed quality uses the lowest tier, and plain milk is spent before better 
   equal(player.inventory.count("kaleidoscope_ranching:goat_milk_fine"), 1, "fine milk kept");
 });
 
+test("the tanning rack turns hides into leather in a day; sheepskin also gives wool", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:raw_hide", 1));
+  use(STATION, rack, player);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 0, "not cured yet");
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 1, "leather from a cow's hide");
+  player.inventory.setItem(8, new ItemStack("kaleidoscope_ranching:sheep_skin", 1));
+  player.selectedSlotIndex = 8;
+  use(STATION, rack, player);
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 2, "leather from sheepskin");
+  equal(player.inventory.count("minecraft:white_wool"), 1, "and its fleece");
+});
+
 test("a block replaced without its break hook ignores the old block's data", () => {
   clearWorld();
   const player = __newPlayer(at(0));
