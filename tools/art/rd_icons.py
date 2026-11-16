@@ -308,20 +308,6 @@ def committed_png(path):
     return result.stdout
 
 
-def write_bytes(path, data):
-    """Writes a file, waiting out the moment on Windows when a scanner still holds a PNG that an
-    earlier generator has just written (open() fails with EINVAL or a permission error)."""
-    for attempt in range(40):
-        try:
-            with open(path, "wb") as f:
-                f.write(data)
-            return
-        except OSError:
-            if attempt == 39:
-                raise
-            time.sleep(0.05 * (attempt + 1))
-
-
 def write_icon(icon, path):
     """Saves `icon`, reusing the committed bytes when the pixels are unchanged.
 
@@ -338,13 +324,10 @@ def write_icon(icon, path):
     if committed:
         with Image.open(io.BytesIO(committed)) as old:
             if old.size == icon.size and old.convert("RGBA").tobytes() == icon.convert("RGBA").tobytes():
-                write_bytes(path, committed)
+                with open(path, "wb") as f:
+                    f.write(committed)
                 return False
-    import io as _io
-
-    data = _io.BytesIO()
-    icon.save(data, "PNG")
-    write_bytes(path, data.getvalue())
+    icon.save(path)
     return True
 
 
