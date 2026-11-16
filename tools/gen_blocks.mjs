@@ -98,8 +98,9 @@ function stageInSlot(look, n) {
 
 // 1.1 蛋的進度: the nest box's and incubator's eggs (systems/nest.js "How the eggs look",
 // art_src/m4_scripts/blocks_m3.py). Slot n shows one of: egg_n (plain), egg_n_crack (small
-// cracks), egg_n_hatch (big cracks, the cap lifting); or, while candled, egg_n_lit (a glowing,
-// see-through shell, material instance `candled`) with egg_n_embryo_<stage> inside.
+// cracks), egg_n_hatch (big cracks, the cap lifting); or, while candled, egg_n_lit_<stage>: the egg
+// glowing with the chick's shadow painted on it, small, medium or large (material instance `candled`,
+// drawn alpha_test_single_sided like the rest: Bedrock wants one render method per block).
 const EGG_SLOTS = 4;
 const SLOT_COUNTS = Array.from({ length: EGG_SLOTS + 1 }, (_, n) => n);
 const EGG_STATES = { [S("eggs")]: SLOT_COUNTS, [S("cracks")]: SLOT_COUNTS, [S("ready")]: SLOT_COUNTS };
@@ -118,8 +119,7 @@ function eggBones(lit) {
         [`egg_${n}`, `${state("eggs")} >= ${n} && ${stage[0]} && !(${on})`],
         [`egg_${n}_crack`, `${stage[1]} && !(${on})`],
         [`egg_${n}_hatch`, `${stage[2]} && !(${on})`],
-        [`egg_${n}_lit`, on],
-        ...stage.map((when, s) => [`egg_${n}_embryo_${s}`, `${on} && ${when}`]),
+        ...stage.map((when, s) => [`egg_${n}_lit_${s}`, `${on} && ${when}`]),
       ];
     })
   );
@@ -168,7 +168,6 @@ const DEFS = {
     seconds: 1,
     glow: `${state("candled")} > 0`,
     materials: ["candled"],
-    renderMethods: { candled: "blend" },
   },
   incubator: {
     component: "incubator",
@@ -180,7 +179,6 @@ const DEFS = {
     light: true,
     glow: state("candled"),
     materials: ["candled"],
-    renderMethods: { candled: "blend" },
   },
   // 1.1 擠奶架 (systems/milkingRack.js): one animal tied to it, milked once a day.
   milking_rack: {
@@ -290,7 +288,7 @@ function blockJson(id, def) {
       "*": { texture: `kr_${id}`, render_method: "alpha_test_single_sided" },
       // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).
       ...Object.fromEntries(
-        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: def.renderMethods?.[m] ?? "alpha_test_single_sided" }])
+        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test_single_sided" }])
       ),
     },
     "minecraft:collision_box": def.collision,
