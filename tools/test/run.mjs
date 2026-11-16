@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 // Behaviour tests for Ranching's scripts, run against the mock API.
 // Run with: node --import ./tools/test/register.mjs tools/test/run.mjs
 
@@ -2481,7 +2481,77 @@ test("M11: with the Tavern, the extension goes out and its grapes become feed", 
   equal(begin?.source, "kaleidoscope_ranching", "extension sent");
   assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_tavern:extension_commit"), "and committed");
   assert(LIVE_FEEDS["kaleidoscope_tavern:grape"], "grapes are feed");
-  equal(tavernApi.TAVERN_EXTENSION.recipes.length, 2, "two shaker drinks");
+  equal(tavernApi.TAVERN_EXTENSION.recipes.filter((r) => r.kind === "shaker").length, 2, "two shaker drinks");
+});
+
+test("1.1: milk wine goes to the Tavern as two milk fluids and two barrel recipes carried in a horn cup", () => {
+  const ext = tavernApi.TAVERN_EXTENSION;
+  const ids = new Set(
+    readdirSync("packs/BP/items").map((f) => JSON.parse(readFileSync(`packs/BP/items/${f}`, "utf8"))["minecraft:item"].description.identifier)
+  );
+  const exists = (id) => id.startsWith("minecraft:") || ids.has(id);
+  equal(ext.fluids.length, 2, "two fluids");
+  for (const fluid of ext.fluids) {
+    assert(fluid.id.startsWith("kaleidoscope_ranching:") && fluid.filled.startsWith("kaleidoscope_ranching:"), `${fluid.id}: own namespace`);
+    equal(fluid.empty, "minecraft:bucket", `${fluid.id}: empties into a bucket`);
+    assert(exists(fluid.filled), `${fluid.filled} exists`);
+    assert(fluid.visuals.barrel.startsWith("kaleidoscope_ranching:"), "own visual");
+  }
+  const barrels = ext.recipes.filter((r) => r.kind === "barrel");
+  equal(barrels.length, 2, "two barrel recipes");
+  const fluids = new Set(ext.fluids.map((f) => f.id));
+  for (const recipe of barrels) {
+    assert(fluids.has(recipe.fluid), `${recipe.id}: its fluid is sent`);
+    assert(recipe.ingredients.length <= 4, "four slots at most");
+    for (const id of [recipe.carrier, recipe.output.item, ...recipe.ingredients.flat()]) assert(exists(id), `${id} exists`);
+    equal(recipe.carrier, "kaleidoscope_ranching:horn_cup", "horn cup carries it");
+  }
+  const wine = JSON.parse(readFileSync("packs/BP/items/r_milk_wine.json", "utf8"))["minecraft:item"].components["minecraft:food"];
+  equal(wine.using_converts_to, "kaleidoscope_ranching:horn_cup", "the cup comes back");
+  const visual = JSON.parse(readFileSync("packs/BP/entities/milk_barrel_visual.json", "utf8"))["minecraft:entity"].description;
+  assert(visual.properties["kt_art:amount"], "the Tavern's level property");
+  equal(ext.pages.flatMap((p) => p.recipeIds ?? []).filter((id) => id.includes("barrel/")).length, 2, "a guide page for the wines");
+});
+
+const packBag = await import("../../packs/BP/scripts/systems/packBag.js");
+test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const calf = ranch("yak", 4, "female");
+  calf.triggerEvent("kaleidoscope_ranching:become_baby");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, calf);
+  __advance(1);
+  assert(player.actionBar.at(-1).translate.endsWith("pack_bag.baby"), "not on a calf");
+  const yak = ranch("yak", 0, "female");
+  __interact(player, yak);
+  __advance(1);
+  assert(packBag.wearsPackBag(yak), "bag on");
+  equal(packBag.bagOf(yak).size, 15, "15 slots");
+  equal(player.inventory.count("kaleidoscope_ranching:pack_bag"), 0, "bag used");
+  hold(player, "minecraft:wheat", 20);
+  player.isSneaking = true;
+  __interact(player, yak);
+  __advance(1);
+  player.isSneaking = false;
+  equal(player.inventory.count("minecraft:wheat"), 0, "stored, not fed");
+  equal(packBag.bagContents(yak).length, 1, "one stack in the bag");
+  assert(!packBag.takeOffPackBag(player, yak), "not while full");
+  assert(player.actionBar.at(-1).translate.endsWith("pack_bag.not_empty"), "says so");
+  assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "taken out");
+  equal(player.inventory.count("minecraft:wheat"), 20, "all 20 back");
+  assert(packBag.takeOffPackBag(player, yak), "off when empty");
+  equal(player.inventory.count("kaleidoscope_ranching:pack_bag"), 1, "bag back");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, yak);
+  __advance(1);
+  yak.kill();
+  assert(overworld.items.some((d) => d.item.typeId === "kaleidoscope_ranching:pack_bag"), "bag dropped");
+  const cow = ranch("cow", 6, "female");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, cow);
+  __advance(1);
+  assert(!packBag.wearsPackBag(cow), "only yaks");
 });
 
 // --- Report ---------------------------------------------------------------

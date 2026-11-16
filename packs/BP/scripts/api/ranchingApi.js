@@ -34,6 +34,7 @@ import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
 import { isSick, registerRemedy as addRemedy } from "../systems/disease.js";
 import { BLANKET, isAsleep, SLEEP_POSES } from "../systems/sleep.js";
 import { HARNESSED } from "../systems/workAnimals.js";
+import { PACKED } from "../systems/packBag.js";
 
 export const API_VERSION = 1;
 export const PACK_VERSION = "0.5.0";
@@ -113,6 +114,9 @@ function room(kind, key) {
  *                                            kaleidoscope_ranching:fall_asleep / wake_up events)
  *   moult?: [itemId, chance]                 a well-kept adult drops this once a day with chance
  *   harness?: boolean                        takes the harness and the plough, like the buffalo
+ *   packBag?: boolean                        carries the pack bag, like the yak (the entity gives itself a
+ *                                            minecraft:inventory, always or from the event
+ *                                            kaleidoscope_ranching:put_on_pack_bag)
  *   coldHardy?: boolean                      no cold nights, like the yak
  *   forage?: { item, chance?, minHearts? }   digs this up in forests, like the pig's truffle
  * }
@@ -166,6 +170,7 @@ export function registerAnimal(data) {
     row.moult = [itemId(item, "moult[0]"), chance];
   }
   if (data.harness !== undefined) row.harness = Boolean(data.harness);
+  if (data.packBag !== undefined) row.packBag = Boolean(data.packBag);
   if (data.coldHardy !== undefined) row.coldHardy = Boolean(data.coldHardy);
   if (data.forage !== undefined) {
     const forage = object(data.forage, "forage");
@@ -294,6 +299,7 @@ export function queryAnimal(data) {
     sick: isSick(entity),
     blanket: entity.getDynamicProperty(BLANKET) === true,
     harness: entity.getDynamicProperty(HARNESSED) === true,
+    packBag: entity.getDynamicProperty(PACKED) === true,
   });
   if (pregnant) info.dueInDays = due - day;
   const tag = entity.getDynamicProperty("kr:ear_tag");

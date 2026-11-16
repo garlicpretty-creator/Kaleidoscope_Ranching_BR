@@ -552,6 +552,18 @@ def draw(item_id):
         bottle(c, (150, 100, 70))
     elif base == "yogurt_berry_drink":
         bottle(c, (232, 150, 180))
+    # --- 1.1 馱袋與奶酒 ---
+    elif base == "pack_bag":
+        sack(c, (130, 80, 46), (190, 160, 90))
+    elif base in ("fresh_milk_bucket", "yak_milk_bucket"):
+        c.fill({(x, y) for x in range(3, 13) for y in range(6, 14) if x - 3 >= (y - 6) // 4 and 12 - x >= (y - 6) // 4}, (168, 172, 178))
+        c.fill(rect(4, 6, 11, 7), (250, 248, 240) if base == "fresh_milk_bucket" else (244, 226, 170))
+        c.fill({(x, 3) for x in range(5, 11)} | {(4, 4), (11, 4), (4, 5), (11, 5)}, (120, 124, 130))
+    elif base in ("horn_cup", "milk_wine", "yak_milk_wine"):
+        c.fill({(x, y) for x in range(5, 12) for y in range(4, 13) if abs(x - 8) <= 3 - (y - 4) // 3}, (220, 206, 176))
+        c.fill(rect(7, 12, 9, 13), (90, 70, 50))
+        if base != "horn_cup":
+            c.fill(rect(5, 4, 11, 5), (248, 244, 226) if base == "milk_wine" else (240, 216, 150))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

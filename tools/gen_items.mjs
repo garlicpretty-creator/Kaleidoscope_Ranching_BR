@@ -82,6 +82,13 @@ const OVERRIDES = {
   // Tavern shaker drinks (api/tavern.js); drinking gives the bottle back.
   cream_cocoa: { stack: 16, ...food(4, 0.6, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   yogurt_berry_drink: { stack: 16, ...food(4, 0.6, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
+  // Milk wine (api/tavern.js): the buckets are Tavern fluids, the cup is the carrier.
+  fresh_milk_bucket: { stack: 1 },
+  yak_milk_bucket: { stack: 1 },
+  horn_cup: { stack: 16 },
+  milk_wine: { stack: 16, ...food(3, 0.5, { drink: true, converts: rid("horn_cup"), always: true }) },
+  yak_milk_wine: { stack: 16, ...food(4, 0.6, { drink: true, converts: rid("horn_cup"), always: true }) },
+  pack_bag: { stack: 1 },
   harness: { stack: 1 },
   plough: { stack: 1 },
   animal_blanket: { stack: 16 },
@@ -253,6 +260,14 @@ const RECIPES = [
   shaped("pen_gate", ["SNS", "SPS"], { S: { item: "minecraft:stick" }, N: { item: "minecraft:iron_nugget" }, P: planks }, "pen_gate"),
   shaped("horn_decor_cattle", ["H", "P"], { H: { item: rid("cattle_horn") }, P: planks }, "horn_decor"),
   shaped("horn_decor_goat", ["H", "P"], { H: { item: rid("billy_goat_horn") }, P: planks }, "horn_decor"),
+  shaped("pack_bag", ["FLF", "L L", "LLL"], { F: { item: rid("felt") }, L: { item: rid("oiled_leather") } }, "pack_bag"),
+  shapeless("horn_cup", [{ item: rid("cattle_horn") }], "horn_cup"),
+  // Milk for the Tavern's barrel: a vanilla milk bucket, or three bottles into a bucket.
+  shapeless("fresh_milk_bucket", [{ item: "minecraft:milk_bucket" }], "fresh_milk_bucket"),
+  ...["cow_milk", "goat_milk", "buffalo_milk"].map((milk) =>
+    shapeless(`fresh_milk_bucket_${milk}`, [{ item: "minecraft:bucket" }, { item: rid(milk), count: 3 }], "fresh_milk_bucket")
+  ),
+  shapeless("yak_milk_bucket", [{ item: "minecraft:bucket" }, { item: rid("yak_milk"), count: 3 }], "yak_milk_bucket"),
   shapeless("leather_gloves", [{ item: rid("oiled_leather"), count: 2 }], "leather_gloves"),
   shapeless("herding_horn_cattle", [{ item: rid("cattle_horn") }, { item: "minecraft:string" }], "herding_horn"),
   shapeless("herding_horn_goat", [{ item: rid("billy_goat_horn") }, { item: "minecraft:string" }], "herding_horn"),

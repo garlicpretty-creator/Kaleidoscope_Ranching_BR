@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "yak_milk_wine",
+    "metalness_emissive_roughness_subsurface": "yak_milk_wine_mers",
+    "normal": "yak_milk_wine_normal"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:milk_barrel_visual",
+      "materials": {
+        "default": "entity_alphablend"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/milk_surface"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.milk_surface"
+      },
+      "animations": {
+        "level": "animation.kaleidoscope_ranching.milk_level"
+      },
+      "scripts": {
+        "animate": [
+          "level"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.hitch_knot"
+      ]
+    }
+  }
+}

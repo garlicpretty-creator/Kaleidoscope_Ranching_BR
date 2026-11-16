@@ -191,7 +191,7 @@
 | `feed_1_1` | `register_feed` 與 `care.eats` 多了 `"ruminant"`（只有反芻動物吃，像青貯料）與 `"calcium"`（只有家禽吃，吃了的母禽隔天有 30% 機率多下一顆蛋） |
 | `remedy` | 新事件 `kaleidoscope_ranching:register_remedy`，`{ "item": "你的命名空間:物品" }`：拿它點生病的動物就會痊癒，用掉一個 |
 | `events_1_1` | `animal_event` 多了 `fell_asleep`、`woke`（附 `reason`）、`slept_well`、`fell_ill`（附 `cause`：`thirst` 或 `dirt`）、`cured`、`moulted`、`foraged`、`herded`（附 `player`） |
-| `query_1_1` | `animal_info` 多了 `sleeping`、`sick`、`blanket`、`harness`（都是布林值） |
+| `query_1_1` | `animal_info` 多了 `sleeping`、`sick`、`blanket`、`harness`、`packBag`（都是布林值） |
 | `tag_contract` | 見上方「標籤契約」 |
 
 `register_animal` 的 1.1 欄位：
@@ -201,6 +201,7 @@
 | `sleep` | `"lie"`、`"side"`、`"roost"`、`"curl"` 之一。你的動物要定義 `kaleidoscope_ranching:fall_asleep` 與 `kaleidoscope_ranching:wake_up` 兩個事件（設定一個同步屬性並讓牠停下），樂牧在夜裡觸發它們；沒有這兩個事件的動物不睡覺 |
 | `moult` | `[物品, 機率]`：好感 4 心以上的成年動物，每天以這個機率掉一個 |
 | `harness` | `true`：可以裝挽具、拉犁，像水牛 |
+| `packBag` | `true`：可以背馱袋，像氂牛。實體要自己有 `minecraft:inventory`（常駐，或由 `kaleidoscope_ranching:put_on_pack_bag` 事件加入） |
 | `coldHardy` | `true`：不怕冷，像氂牛 |
 | `forage` | `{ "item": ..., "chance": 0.25, "minHearts": 5 }`：好感夠的成年動物，在森林的草地或灰化土上每天有機率拱出這個物品，像豬拱松露 |
 

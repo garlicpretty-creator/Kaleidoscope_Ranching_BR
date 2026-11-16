@@ -208,6 +208,11 @@
     "soap": { "prompt": "bar of pale cream tallow soap" },
     "cream_cocoa": { "prompt": "glass of brown cocoa drink topped with whipped cream" },
     "yogurt_berry_drink": { "prompt": "glass of pink berry yogurt drink" },
-    "pack_bag": { "prompt": "pair of brown leather saddlebags with brass buckles joined by a strap" }
+    "pack_bag": { "prompt": "pair of brown leather saddlebags with brass buckles joined by a strap" },
+    "horn_cup": { "prompt": "drinking cup carved from a curved pale cattle horn with a dark tip, empty" },
+    "fresh_milk_bucket": { "prompt": "iron bucket filled to the brim with white fresh milk" },
+    "yak_milk_bucket": { "prompt": "iron bucket filled with rich creamy yellowish yak milk" },
+    "milk_wine": { "prompt": "curved cattle horn cup filled with cloudy pale milk wine" },
+    "yak_milk_wine": { "prompt": "curved cattle horn cup filled with cloudy golden cream yak milk wine" }
   }
 }

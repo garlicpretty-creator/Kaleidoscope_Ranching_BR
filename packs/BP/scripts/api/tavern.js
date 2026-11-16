@@ -9,8 +9,13 @@
 //   the Tavern; only the Tavern makes them.
 // - Once the Tavern answers, its four grapes become vegetable feed (pigs, rabbits).
 //
-// ## Milk wine in the barrel needs Ranching's milk as a Tavern fluid with its own
-// ## bucket item; it waits for that bucket (and its art) and is not sent yet.
+// - Milk wine: Ranching's two milk buckets are Tavern fluids (custom_fluids),
+//   drawn in an open barrel by Ranching's own visual entity. Fermented in the
+//   Tavern's barrel with yogurt as the starter, the wine is drawn off into a
+//   horn cup (the recipe's carrier); drinking it gives the cup back.
+//
+// ## The wine is one item whatever the Tavern's six ageing levels say: Ranching
+// ## products have no quality grades (the player's call).
 
 import { system } from "@minecraft/server";
 import { registerTavernExtension } from "./tavern_sdk/tavern-extension-client.js";
@@ -28,6 +33,22 @@ export const TAVERN_EXTENSION = {
   source: "kaleidoscope_ranching",
   version: PACK_VERSION,
   title: text("森羅物語：樂牧", "森罗物语：乐牧", "Kaleidoscope Ranching"),
+  fluids: [
+    {
+      id: R("fresh_milk"),
+      filled: R("fresh_milk_bucket"),
+      empty: "minecraft:bucket",
+      title: text("鮮奶", "鲜奶", "Fresh Milk"),
+      visuals: { barrel: R("milk_barrel_visual") },
+    },
+    {
+      id: R("yak_milk"),
+      filled: R("yak_milk_bucket"),
+      empty: "minecraft:bucket",
+      title: text("氂牛奶", "牦牛奶", "Yak Milk"),
+      visuals: { barrel: R("milk_barrel_visual") },
+    },
+  ],
   shakerInputs: [
     { item: R("cream"), color: 0xf8f2e4 },
     { item: R("yogurt"), color: 0xf6f2ea },
@@ -36,6 +57,24 @@ export const TAVERN_EXTENSION = {
     { item: R("vanilla_ice_cream"), color: 0xfaf4dc },
   ],
   recipes: [
+    {
+      id: R("barrel/milk_wine"),
+      kind: "barrel",
+      fluid: R("fresh_milk"),
+      ingredients: [[R("yogurt")], ["minecraft:sugar", "minecraft:honey_bottle"]],
+      carrier: R("horn_cup"),
+      output: { item: R("milk_wine") },
+      title: text("奶酒", "奶酒", "Milk Wine"),
+    },
+    {
+      id: R("barrel/yak_milk_wine"),
+      kind: "barrel",
+      fluid: R("yak_milk"),
+      ingredients: [[R("yogurt")], ["minecraft:wheat"]],
+      carrier: R("horn_cup"),
+      output: { item: R("yak_milk_wine") },
+      title: text("氂牛奶酒", "牦牛奶酒", "Yak Milk Wine"),
+    },
     {
       id: R("shaker/cream_cocoa"),
       kind: "shaker",
@@ -61,6 +100,16 @@ export const TAVERN_EXTENSION = {
         "Ranching's cream, yogurt, skim milk, condensed milk and vanilla ice cream all go into the shaker."
       ),
       recipeIds: [R("shaker/cream_cocoa"), R("shaker/yogurt_berry_drink")],
+    },
+    {
+      id: R("milk_wine"),
+      title: text("奶酒與角杯", "奶酒与角杯", "Milk wine and the horn cup"),
+      body: text(
+        "把桶裝鮮奶或桶裝氂牛奶倒進酒桶，加優格當酒引，再加糖、蜂蜜或小麥。熟成後用角杯（一個牛角做成）裝出來；喝完會留下角杯。桶裝鮮奶用原版牛奶桶換，或一個空桶加三瓶牛奶、山羊奶或水牛奶；桶裝氂牛奶用空桶加三瓶氂牛奶。",
+        "把桶装鲜奶或桶装牦牛奶倒进酒桶，加酸奶当酒引，再加糖、蜂蜜或小麦。熟成后用角杯（一个牛角做成）装出来；喝完会留下角杯。桶装鲜奶用原版牛奶桶换，或一个空桶加三瓶牛奶、山羊奶或水牛奶；桶装牦牛奶用空桶加三瓶牦牛奶。",
+        "Pour a bucket of fresh milk or yak milk into the barrel, add yogurt as the starter and sugar, honey or wheat. Draw the wine off into a horn cup (made from one cattle horn); the cup comes back when you drink it. Fresh milk comes from a vanilla milk bucket, or a bucket and three bottles of cow, goat or buffalo milk; yak milk from a bucket and three bottles of yak milk."
+      ),
+      recipeIds: [R("barrel/milk_wine"), R("barrel/yak_milk_wine")],
     },
   ],
 };
