@@ -19,7 +19,7 @@ const g = (name) => `${NS}:${name}`;
 const TUNING = {
   cow: { family: "cow", health: 10, speed: 0.25, box: [0.9, 1.3], mass: 1.0, bucketMilk: true },
   sheep: { family: "sheep", health: 8, speed: 0.25, box: [0.9, 1.3], mass: 0.75, wool: true },
-  goat: { family: "goat", health: 10, speed: 0.2, box: [0.9, 1.3], mass: 0.75, bucketMilk: true },
+  goat: { family: "goat", health: 10, speed: 0.2, box: [0.9, 1.3], mass: 0.75, bucketMilk: true, goat: true },
   pig: { family: "pig", health: 10, speed: 0.25, box: [0.9, 0.9], mass: 0.75, saddle: true },
   chicken: { family: "chicken", health: 4, speed: 0.25, box: [0.6, 0.8], mass: 0.5, noFallDamage: true },
   rabbit: { family: "rabbit", health: 3, speed: 0.3, box: [0.4, 0.5], mass: 0.4, variants: 6 },
@@ -57,6 +57,63 @@ function guardComponents() {
               { test: "is_family", subject: "other", value: "monster" },
               { test: "is_family", subject: "other", operator: "!=", value: "creeper" },
               { test: "is_baby", subject: "self", value: false },
+            ],
+          },
+          max_dist: 8,
+        },
+      ],
+    },
+  };
+}
+
+// 企劃書: goats keep the vanilla high jump and ram. The jump (jump_to_block) is for
+// every goat; ramming is for adults, at players and other mobs, as in vanilla, but
+// never at goats or Ranching's own livestock, so a goat does not batter the pen.
+function goatJump() {
+  return {
+    "minecraft:behavior.jump_to_block": {
+      priority: 8,
+      search_width: 10,
+      search_height: 10,
+      minimum_path_length: 8,
+      minimum_distance: 1,
+      scale_factor: 0.6,
+      max_velocity: 1,
+      cooldown_range: [30, 60],
+      preferred_blocks: ["minecraft:stone", "minecraft:snow", "minecraft:powder_snow"],
+      preferred_blocks_chance: 0.5,
+      forbidden_blocks: ["minecraft:water", "minecraft:lava", "minecraft:fire", "minecraft:magma"],
+    },
+  };
+}
+
+function goatRam() {
+  return {
+    "minecraft:attack": { damage: 2 },
+    "minecraft:behavior.ram_attack": {
+      priority: 5,
+      run_speed: 0.7,
+      ram_speed: 1.8,
+      min_ram_distance: 4,
+      ram_distance: 7,
+      knockback_force: 2.5,
+      knockback_height: 0.04,
+      pre_ram_sound: "pre_ram",
+      ram_impact_sound: "ram_impact",
+      cooldown_range: [30, 300],
+    },
+    "minecraft:behavior.nearest_attackable_target": {
+      priority: 6,
+      must_see: true,
+      reselect_targets: true,
+      within_radius: 8,
+      entity_types: [
+        {
+          filters: {
+            all_of: [
+              { test: "is_family", subject: "other", operator: "!=", value: "goat" },
+              { test: "is_family", subject: "other", operator: "!=", value: "ranching_livestock" },
+              { any_of: [{ test: "is_family", subject: "other", value: "player" }, { test: "is_family", subject: "other", value: "mob" }] },
             ],
           },
           max_dist: 8,
@@ -106,7 +163,7 @@ function buildEntity(animal, t) {
       "minecraft:ageable": { duration: 1200, grow_up: { event: g("grow_up"), target: "self" } },
       "minecraft:behavior.follow_parent": { priority: 5, speed_multiplier: 1.1 },
     },
-    [g("adult")]: adult,
+    [g("adult")]: { ...adult, ...(t.goat ? goatRam() : {}) },
     [g("sex_female")]: sexFamily("female"),
     [g("sex_male")]: { ...sexFamily("male"), ...(t.guard ? guardComponents() : {}) },
     [g("wild")]: { "minecraft:despawn": { despawn_from_distance: {} } },
@@ -223,6 +280,10 @@ function buildEntity(animal, t) {
     "minecraft:physics": {},
     "minecraft:pushable": { is_pushable: true, is_pushable_by_piston: true },
     "minecraft:conditional_bandwidth_optimization": {},
+    // Plays the "ambient" sound event every 8–24 s, like vanilla farm animals; the
+    // sounds themselves are mapped per animal in RP sounds.json (SOUNDS below).
+    "minecraft:ambient_sound_interval": { value: 8.0, range: 16.0, event_name: "ambient" },
+    ...(t.goat ? goatJump() : {}),
   };
   if (animal.temptItems.length) {
     components["minecraft:behavior.tempt"] = {
@@ -456,6 +517,50 @@ const KNOT_PNG =
   "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAEklEQVR4nGNgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC";
 mkdirSync(join(rpRoot, "textures/entity/ranching"), { recursive: true });
 writeFileSync(join(rpRoot, "textures/entity/ranching/hitch_knot.png"), Buffer.from(KNOT_PNG, "base64"));
+
+// --- Animal sounds (RP sounds.json) --------------------------------------------
+// Custom entities are silent unless sounds.json maps their sound events. The six
+// replaced animals use their vanilla sounds; the four new ones borrow the closest
+// vanilla voice at another pitch (no dedicated recordings yet). `milk` and
+// `saddle` are the events the entities' interact components play.
+const voice = (prefix, { death = `${prefix}.hurt`, hurt = `${prefix}.hurt`, ambient = `${prefix}.say`, step = `${prefix}.step` } = {}) =>
+  ({ ambient, hurt, death, step });
+const SOUNDS = {
+  cow: { pitch: [0.9, 1.1], events: { ...voice("mob.cow"), milk: "mob.cow.milk" } },
+  sheep: { pitch: [0.9, 1.1], events: voice("mob.sheep", { hurt: "mob.sheep.say", death: "mob.sheep.say" }) },
+  goat: {
+    pitch: [0.9, 1.1],
+    events: {
+      ...voice("mob.goat", { ambient: "mob.goat.ambient", death: "mob.goat.death" }),
+      milk: "mob.cow.milk",
+      pre_ram: "mob.goat.prepare_ram",
+      ram_impact: "mob.goat.ram_impact",
+    },
+  },
+  pig: { pitch: [0.9, 1.1], events: { ...voice("mob.pig", { hurt: "mob.pig.say", death: "mob.pig.death" }), saddle: "mob.horse.leather" } },
+  chicken: { pitch: [0.9, 1.1], events: { ...voice("mob.chicken"), plop: "mob.chicken.plop" } },
+  rabbit: { pitch: [0.9, 1.1], events: { ...voice("mob.rabbit", { ambient: "mob.rabbit.idle", death: "mob.rabbit.death", step: "mob.rabbit.hop" }), jump: "mob.rabbit.hop" } },
+  // New animals: duck and goose a lower, rougher chicken; buffalo and yak a deeper cow.
+  duck: { pitch: [0.7, 0.8], events: voice("mob.chicken") },
+  goose: { pitch: [0.55, 0.65], events: voice("mob.chicken") },
+  buffalo: { pitch: [0.75, 0.85], events: { ...voice("mob.cow"), milk: "mob.cow.milk" } },
+  yak: { pitch: [0.65, 0.75], events: { ...voice("mob.cow"), milk: "mob.cow.milk" } },
+};
+for (const animal of ANIMALS) if (!SOUNDS[animal.id]) throw new Error(`gen_entities: no sounds for ${animal.id}`);
+writeFileSync(
+  join(rpRoot, "sounds.json"),
+  JSON.stringify(
+    {
+      entity_sounds: {
+        entities: Object.fromEntries(
+          Object.entries(SOUNDS).map(([id, { pitch, events }]) => [`${NS}:${id}`, { volume: 1.0, pitch, events }])
+        ),
+      },
+    },
+    null,
+    2
+  ) + "\n"
+);
 
 const lootDir = join(root, `packs/BP/loot_tables/${NS}`);
 mkdirSync(lootDir, { recursive: true });

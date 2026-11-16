@@ -72,6 +72,65 @@
               "interact_text": "action.interact.milk"
             }
           ]
+        },
+        "minecraft:attack": {
+          "damage": 2
+        },
+        "minecraft:behavior.ram_attack": {
+          "priority": 5,
+          "run_speed": 0.7,
+          "ram_speed": 1.8,
+          "min_ram_distance": 4,
+          "ram_distance": 7,
+          "knockback_force": 2.5,
+          "knockback_height": 0.04,
+          "pre_ram_sound": "pre_ram",
+          "ram_impact_sound": "ram_impact",
+          "cooldown_range": [
+            30,
+            300
+          ]
+        },
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 6,
+          "must_see": true,
+          "reselect_targets": true,
+          "within_radius": 8,
+          "entity_types": [
+            {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "operator": "!=",
+                    "value": "goat"
+                  },
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "operator": "!=",
+                    "value": "ranching_livestock"
+                  },
+                  {
+                    "any_of": [
+                      {
+                        "test": "is_family",
+                        "subject": "other",
+                        "value": "player"
+                      },
+                      {
+                        "test": "is_family",
+                        "subject": "other",
+                        "value": "mob"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "max_dist": 8
+            }
+          ]
         }
       },
       "kaleidoscope_ranching:sex_female": {
@@ -220,6 +279,36 @@
         "is_pushable_by_piston": true
       },
       "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:ambient_sound_interval": {
+        "value": 8,
+        "range": 16,
+        "event_name": "ambient"
+      },
+      "minecraft:behavior.jump_to_block": {
+        "priority": 8,
+        "search_width": 10,
+        "search_height": 10,
+        "minimum_path_length": 8,
+        "minimum_distance": 1,
+        "scale_factor": 0.6,
+        "max_velocity": 1,
+        "cooldown_range": [
+          30,
+          60
+        ],
+        "preferred_blocks": [
+          "minecraft:stone",
+          "minecraft:snow",
+          "minecraft:powder_snow"
+        ],
+        "preferred_blocks_chance": 0.5,
+        "forbidden_blocks": [
+          "minecraft:water",
+          "minecraft:lava",
+          "minecraft:fire",
+          "minecraft:magma"
+        ]
+      },
       "minecraft:behavior.tempt": {
         "priority": 4,
         "speed_multiplier": 1.25,

@@ -1,0 +1,145 @@
+{
+  "entity_sounds": {
+    "entities": {
+      "kaleidoscope_ranching:cow": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.cow.say",
+          "hurt": "mob.cow.hurt",
+          "death": "mob.cow.hurt",
+          "step": "mob.cow.step",
+          "milk": "mob.cow.milk"
+        }
+      },
+      "kaleidoscope_ranching:sheep": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.sheep.say",
+          "hurt": "mob.sheep.say",
+          "death": "mob.sheep.say",
+          "step": "mob.sheep.step"
+        }
+      },
+      "kaleidoscope_ranching:goat": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.goat.ambient",
+          "hurt": "mob.goat.hurt",
+          "death": "mob.goat.death",
+          "step": "mob.goat.step",
+          "milk": "mob.cow.milk",
+          "pre_ram": "mob.goat.prepare_ram",
+          "ram_impact": "mob.goat.ram_impact"
+        }
+      },
+      "kaleidoscope_ranching:pig": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.pig.say",
+          "hurt": "mob.pig.say",
+          "death": "mob.pig.death",
+          "step": "mob.pig.step",
+          "saddle": "mob.horse.leather"
+        }
+      },
+      "kaleidoscope_ranching:chicken": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.chicken.say",
+          "hurt": "mob.chicken.hurt",
+          "death": "mob.chicken.hurt",
+          "step": "mob.chicken.step",
+          "plop": "mob.chicken.plop"
+        }
+      },
+      "kaleidoscope_ranching:rabbit": {
+        "volume": 1,
+        "pitch": [
+          0.9,
+          1.1
+        ],
+        "events": {
+          "ambient": "mob.rabbit.idle",
+          "hurt": "mob.rabbit.hurt",
+          "death": "mob.rabbit.death",
+          "step": "mob.rabbit.hop",
+          "jump": "mob.rabbit.hop"
+        }
+      },
+      "kaleidoscope_ranching:duck": {
+        "volume": 1,
+        "pitch": [
+          0.7,
+          0.8
+        ],
+        "events": {
+          "ambient": "mob.chicken.say",
+          "hurt": "mob.chicken.hurt",
+          "death": "mob.chicken.hurt",
+          "step": "mob.chicken.step"
+        }
+      },
+      "kaleidoscope_ranching:goose": {
+        "volume": 1,
+        "pitch": [
+          0.55,
+          0.65
+        ],
+        "events": {
+          "ambient": "mob.chicken.say",
+          "hurt": "mob.chicken.hurt",
+          "death": "mob.chicken.hurt",
+          "step": "mob.chicken.step"
+        }
+      },
+      "kaleidoscope_ranching:buffalo": {
+        "volume": 1,
+        "pitch": [
+          0.75,
+          0.85
+        ],
+        "events": {
+          "ambient": "mob.cow.say",
+          "hurt": "mob.cow.hurt",
+          "death": "mob.cow.hurt",
+          "step": "mob.cow.step",
+          "milk": "mob.cow.milk"
+        }
+      },
+      "kaleidoscope_ranching:yak": {
+        "volume": 1,
+        "pitch": [
+          0.65,
+          0.75
+        ],
+        "events": {
+          "ambient": "mob.cow.say",
+          "hurt": "mob.cow.hurt",
+          "death": "mob.cow.hurt",
+          "step": "mob.cow.step",
+          "milk": "mob.cow.milk"
+        }
+      }
+    }
+  }
+}
