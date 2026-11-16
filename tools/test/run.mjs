@@ -434,7 +434,7 @@ const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
 const STATION = COMPONENTS["kaleidoscope_ranching:station"];
 const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:butcher_rack", {
   "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:skinned": false, "kaleidoscope_ranching:cut": false,
-  "kaleidoscope_ranching:drying": 0,
+  "kaleidoscope_ranching:drying": 0, "kaleidoscope_ranching:drying_mix": 0,
 });
 /** Breaks a block the way the game does: both hooks fire, the block is air by then. */
 function breakBlock(component, block) {
@@ -2812,6 +2812,75 @@ test("1.1: a crated yak keeps its pack bag; a bag with things in it must be empt
 });
 
 const rackSystem = await import("../../packs/BP/scripts/systems/butcherRack.js");
+const processing = await import("../../packs/BP/scripts/data/processing.js");
+/** How each strip on a rack looks, slot 1 first: "dried", "half" or "fresh". */
+function stripsOn(rack) {
+  const row = rack.permutation.getState("kaleidoscope_ranching:drying") ?? 0;
+  const col = rack.permutation.getState("kaleidoscope_ranching:drying_mix") ?? 0;
+  const look = processing.DRYING_LOOKS[row]?.[col];
+  assert(look, `rack states ${row}/${col} name a look`);
+  return processing.DRYING_STAGES.flatMap((stage, n) => Array(look[n]).fill(stage));
+}
+
+test("1.1: each drying strip darkens on its own clock: fresh, half dry, dried", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  const DAY = 24000;
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  equal(stripsOn(rack).join(), "fresh", "just hung");
+  __skipTime(DAY);
+  hold(player, "kaleidoscope_ranching:beef_shank", 1);
+  use(RACK, rack, player);
+  equal(stripsOn(rack).join(), "fresh,fresh", "a day in, the belly is not half dry yet");
+  __skipTime(DAY * 0.6);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "half,fresh", "the belly turns half dry by itself at 1.5 days");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "half,half", "the shank follows");
+  hold(player, "kaleidoscope_ranching:duck_leg", 1);
+  use(RACK, rack, player);
+  equal(stripsOn(rack).join(), "half,half,fresh", "a new piece hangs fresh");
+  __skipTime(DAY * 0.5);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "dried,half,fresh", "the belly is done after three days");
+  hold(player, "minecraft:stick", 1);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_pork_belly"), 1, "the dried one comes down");
+  equal(stripsOn(rack).join(), "half,fresh", "the others keep their looks");
+  __skipTime(DAY * 3);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "dried,dried", "both done");
+  use(RACK, rack, player);
+  equal(stripsOn(rack).join(), "", "all down");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "", "an empty rack stays empty");
+});
+
+test("1.1: a rack saved with pieces drying shows each one's stage after loading and keeps updating", () => {
+  clearWorld();
+  const DAY = 24000;
+  const rack = rackAt(14);
+  rack.setPermutation(rack.permutation.withState("kaleidoscope_ranching:drying", 3)); // as an older build left it
+  const now = world.getAbsoluteTime();
+  world.setDynamicProperty(
+    "kaleidoscope_ranching:block:minecraft:overworld:14,64,0",
+    JSON.stringify({ type: "kaleidoscope_ranching:butcher_rack", data: { drying: [
+      { item: "kaleidoscope_ranching:pork_belly", start: now - DAY * 3 - 10 },
+      { item: "kaleidoscope_ranching:raw_sausage", start: now - DAY * 2 },
+      { item: "kaleidoscope_ranching:beef_shank", start: now - DAY / 2 },
+    ] } })
+  );
+  equal(rackSystem.showSavedDrying(), 0, "nothing left to show");
+  equal(stripsOn(rack).join(), "dried,half,fresh", "each piece by its own age");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "dried,dried,half", "the clock keeps a loaded rack up to date");
+});
+
 
 test("1.1: a rack saved with pieces drying before they were drawn shows them once the world loads", () => {
   clearWorld();
@@ -2822,14 +2891,14 @@ test("1.1: a rack saved with pieces drying before they were drawn shows them onc
     JSON.stringify({ type: "kaleidoscope_ranching:butcher_rack", data: { drying: [{ item: "kaleidoscope_ranching:raw_sausage", start: now }, { item: "kaleidoscope_ranching:pork_belly", start: now }] } })
   );
   equal(rackSystem.showSavedDrying(), 0, "nothing left to show");
-  equal(rack.permutation.getState("kaleidoscope_ranching:drying"), 2, "two pieces shown");
+  equal(stripsOn(rack).length, 2, "two pieces shown");
 });
 
 test("1.1: the butcher rack shows how many pieces are air-drying", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const rack = rackAt();
-  const shown = () => rack.permutation.getState("kaleidoscope_ranching:drying");
+  const shown = () => stripsOn(rack).length;
   equal(shown(), 0, "nothing hangs on a new rack");
   hold(player, "kaleidoscope_ranching:pork_belly", 1);
   use(RACK, rack, player);

@@ -122,6 +122,41 @@ export const DRYING = {
 export const DRYING_SLOTS = 4;
 export const DRYING_TICKS = DAY * 3;
 
+// ## No text says how far a piece has got: each strip on the rack changes colour by its own age.
+// ## A piece is "fresh" (red) when hung, "half" (dark red) once DRYING_HALF of its drying time
+// ## has passed, and "dried" (deep brown) when it is done and ready to take.
+export const DRYING_HALF = 0.5;
+/** The looks, in the order the strips show them from slot 1: driest first. */
+export const DRYING_STAGES = ["dried", "half", "fresh"];
+
+// ## What a rack can show is how many strips are at each stage (driest in the first slots):
+// ## 35 mixes of up to four strips. A block state may hold at most 16 values and every state
+// ## multiplies the rack's permutations, so the mixes are packed into two states, `drying`
+// ## (the row, 0..4) and `drying_mix` (the column, 0..6): DRYING_LOOKS[row][col] is
+// ## [dried, half, fresh]. Column 0 of row n is n fresh strips, which is what racks saved
+// ## when `drying` alone counted the pieces still show until their stages are set.
+const MIX_COLUMNS = 7;
+export const DRYING_LOOKS = (() => {
+  const mixed = [];
+  for (let count = 1; count <= DRYING_SLOTS; count++) {
+    for (let dried = count; dried >= 0; dried--) {
+      for (let half = count - dried; half >= 0; half--) if (dried + half > 0) mixed.push([dried, half, count - dried - half]);
+    }
+  }
+  const rows = Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => [[0, 0, n], ...mixed.splice(0, MIX_COLUMNS - 1)]);
+  if (mixed.length) throw new Error("DRYING_LOOKS: the mixes do not fit the rack's states");
+  return rows;
+})();
+
+/** The rack's [drying, drying_mix] states for so many dried, half-dry and fresh strips. */
+export function dryingLook(dried, half, fresh) {
+  for (let row = 0; row < DRYING_LOOKS.length; row++) {
+    const col = DRYING_LOOKS[row].findIndex(([d, h, f]) => d === dried && h === half && f === fresh);
+    if (col >= 0) return [row, col];
+  }
+  return [0, 0];
+}
+
 /** Washed at the water trough for one level of water (企劃書 1.1 清洗): input → output. */
 export const WASHING = {
   pig_intestine: "cleaned_intestine",

@@ -5,12 +5,15 @@
 // 1.1 掛架風乾: an empty rack also air-dries up to DRYING_SLOTS pieces
 // (data/processing.js DRYING). Each piece keeps its own start time; using the
 // rack takes down every piece that is done. A drying rack takes no carcass.
+// Each strip shows how far it has got by its colour (fresh, half dry, dried), kept up to
+// date by the block clock while the rack is loaded.
 
 import { ItemStack, system, world } from "@minecraft/server";
 import { DURABILITY_PER_STROKE, KNIFE_TAG, VANILLA_BLADE_TAGS } from "../data/butcher.js";
-import { DRYING, DRYING_SLOTS, DRYING_TICKS } from "../data/processing.js";
+import { DRYING, DRYING_HALF, DRYING_SLOTS, DRYING_TICKS, dryingLook } from "../data/processing.js";
 import { animalByCarcass, butcherEntry } from "../core/content.js";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
+import { defineClockBlock, startBlockClock, trackBlock, untrackBlock } from "../core/blockClock.js";
 import { rid, shortId } from "../core/ids.js";
 import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
@@ -23,6 +26,7 @@ const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
 const STATE_CUT = "kaleidoscope_ranching:cut";
 const STATE_DRYING = "kaleidoscope_ranching:drying";
+const STATE_DRYING_MIX = "kaleidoscope_ranching:drying_mix";
 
 const WOOL_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -54,6 +58,7 @@ function tell(player, key, values) {
 // --- 1.1 掛架風乾 ---------------------------------------------------------------
 
 const TICKS_PER_MINUTE = 1200;
+const RACK = "kaleidoscope_ranching:butcher_rack";
 
 /** The dried result for a held item, or undefined if it cannot be dried. */
 export function dryingResult(typeId) {
@@ -67,11 +72,35 @@ const SEA_SALT = "kaleidoscope_fishing:sea_salt";
 const SALTED_TICKS = DRYING_TICKS - 24000;
 const ticksOf = (piece) => (piece.salted ? SALTED_TICKS : DRYING_TICKS);
 
-/** Shows `count` pieces hanging from the beam (bones dry_1 … dry_<DRYING_SLOTS>). */
-function showDrying(block, count) {
+/** How far a piece has got: "dried" when done, "half" past DRYING_HALF of its time, else "fresh". */
+export function pieceStage(piece, now = nowTick()) {
+  const elapsed = now - piece.start;
+  if (elapsed >= ticksOf(piece)) return "dried";
+  return elapsed >= ticksOf(piece) * DRYING_HALF ? "half" : "fresh";
+}
+
+/** The rack's [drying, drying_mix] states for these pieces (data/processing.js DRYING_LOOKS). */
+export function dryingStates(pieces, now = nowTick()) {
+  const count = { dried: 0, half: 0, fresh: 0 };
+  for (const piece of pieces.slice(0, DRYING_SLOTS)) count[pieceStage(piece, now)]++;
+  return dryingLook(count.dried, count.half, count.fresh);
+}
+
+/** Shows the pieces hanging from the beam, driest first (bones dry_<n> and dry_<n>_<stage>). */
+function showDrying(block, pieces) {
+  const [row, col] = dryingStates(pieces ?? []);
+  const permutation = block.permutation;
+  if (permutation.getState(STATE_DRYING) === row && permutation.getState(STATE_DRYING_MIX) === col) return;
   try {
-    block.setPermutation(block.permutation.withState(STATE_DRYING, Math.max(0, Math.min(DRYING_SLOTS, count))));
+    block.setPermutation(permutation.withState(STATE_DRYING, row).withState(STATE_DRYING_MIX, col));
   } catch {}
+}
+
+/** Block clock pass: strips change colour on their own; a rack with nothing drying leaves the clock. */
+function tickDrying(block) {
+  const pieces = getBlockData(block)?.drying;
+  showDrying(block, pieces);
+  if (!pieces?.length) untrackBlock(RACK, block.dimension, block.location);
 }
 
 function hangToDry(block, player, item, data) {
@@ -81,7 +110,8 @@ function hangToDry(block, player, item, data) {
   pieces.push({ item: item.typeId, start: nowTick(), ...(salted ? { salted: true } : {}) });
   consumeMainHand(player);
   setBlockData(block, { drying: pieces });
-  showDrying(block, pieces.length);
+  showDrying(block, pieces);
+  trackBlock(block);
   block.dimension.playSound("block.itemframe.add_item", block.location);
   tell(player, "drying_hung", [String(pieces.length), String(DRYING_SLOTS)]);
 }
@@ -100,7 +130,8 @@ function takeDown(block, player, data) {
   }
   if (left.length) setBlockData(block, { drying: left });
   else clearBlockData(block.dimension, block.location);
-  showDrying(block, left.length);
+  showDrying(block, left);
+  if (!left.length) untrackBlock(RACK, block.dimension, block.location);
   if (taken) block.dimension.playSound("random.pop", block.location);
   if (!left.length) return;
   const soonest = Math.min(...left.map((piece) => piece.start + ticksOf(piece) - now));
@@ -108,9 +139,9 @@ function takeDown(block, player, data) {
 }
 
 // ## Racks saved before the drying pieces were drawn have the pieces in block data but a
-// ## `drying` state of 0. Once per session the stored racks are looked up and the state is
-// ## set from the data; racks in unloaded chunks are tried again on later passes.
-const RACK = "kaleidoscope_ranching:butcher_rack";
+// ## `drying` state of 0, and racks saved before the strips changed colour show every piece
+// ## fresh. Once per session the stored racks are looked up, their states set from the data
+// ## and the racks put on the block clock; racks in unloaded chunks are tried again later.
 const STORE_KEY = /^kaleidoscope_ranching:block:(.+):(-?\d+),(-?\d+),(-?\d+)$/;
 let savedRacks;
 
@@ -137,8 +168,9 @@ export function showSavedDrying() {
     } catch {}
     if (!block) return true; // not loaded: try again later
     if (block.typeId !== RACK) return false;
-    const count = getBlockData(block)?.drying?.length ?? 0;
-    if (block.permutation.getState(STATE_DRYING) !== Math.min(DRYING_SLOTS, count)) showDrying(block, count);
+    const pieces = getBlockData(block)?.drying;
+    showDrying(block, pieces);
+    if (pieces?.length) trackBlock(block);
     return false;
   });
   const left = savedRacks.length;
@@ -148,6 +180,8 @@ export function showSavedDrying() {
 
 /** Started with the other M3 systems (systems/m3.js). */
 export function startSavedDrying() {
+  defineClockBlock(RACK, "drying_racks", tickDrying);
+  startBlockClock();
   const pass = () => {
     if (showSavedDrying() === 0) system.clearRun(timer);
   };
