@@ -2697,6 +2697,82 @@ test("1.1: the observation journal reads an animal's health, rest, produce, fami
   assert(keys.includes("observe.produce.moult_shy"), "moulting needs hearts");
 });
 
+// --- 1.1 美術: what is worn or hung can be seen ---------------------------------
+
+test("1.1: gear put on an animal sets its synced property, and taking it off clears it", () => {
+  clearWorld();
+  toTimeOfDay(6000);
+  const player = __newPlayer(at(0, -6));
+  const on = (animal, id) => animal.getProperty(`kaleidoscope_ranching:gear_${id}`) === true;
+  const buffalo = ranch("buffalo", 0, "female");
+  care.setAffection(buffalo, 60);
+  for (const item of ["harness", "plough"]) {
+    hold(player, `kaleidoscope_ranching:${item}`, 1);
+    __interact(player, buffalo);
+    __advance(1);
+  }
+  assert(on(buffalo, "harness") && on(buffalo, "plough"), "harness and plough show");
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(on(buffalo, "harness") && !on(buffalo, "plough"), "plough unhitched");
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  hold(player, "minecraft:shears", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(!on(buffalo, "harness") && !on(buffalo, "plough"), "shears take both off");
+
+  const sheep = ranch("sheep", 4, "female");
+  hold(player, "kaleidoscope_ranching:animal_blanket", 1);
+  __interact(player, sheep);
+  __advance(1);
+  assert(on(sheep, "blanket"), "blanket shows");
+
+  const yak = ranch("yak", 8, "female");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, yak);
+  __advance(1);
+  assert(on(yak, "pack_bag"), "pack bag shows");
+  assert(packBag.takeOffPackBag(player, yak), "bag off");
+  assert(!on(yak, "pack_bag"), "pack bag gone");
+});
+
+test("1.1: an animal saved before gear was drawn shows its gear once it loads", () => {
+  clearWorld();
+  const cow = ranch("cow", 0, "female");
+  cow.setDynamicProperty(sleep.BLANKET, true);
+  world.afterEvents.entityLoad.fire({ entity: cow });
+  equal(cow.getProperty("kaleidoscope_ranching:gear_blanket"), true, "blanket shown after loading");
+});
+
+test("1.1: the butcher rack shows how many pieces are air-drying", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  const shown = () => rack.permutation.getState("kaleidoscope_ranching:drying");
+  equal(shown(), 0, "nothing hangs on a new rack");
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  equal(shown(), 1, "one piece");
+  __skipTime(24000 * 2);
+  hold(player, "kaleidoscope_ranching:beef_shank", 2);
+  use(RACK, rack, player);
+  use(RACK, rack, player);
+  equal(shown(), 3, "three pieces");
+  __skipTime(24000);
+  use(RACK, rack, player);
+  equal(shown(), 2, "the finished belly came down");
+  __skipTime(24000 * 3);
+  use(RACK, rack, player);
+  equal(shown(), 0, "all down");
+  player.inventory.setItem(8, carcassFrom("chicken", "female"));
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  equal(shown(), 0, "a carcass is not a drying piece");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);
