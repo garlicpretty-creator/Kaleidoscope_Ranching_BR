@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "incubator_candled",
+    "metalness_emissive_roughness_subsurface": "incubator_candled_mers",
+    "normal": "incubator_candled_normal"
+  }
+}

@@ -22,7 +22,25 @@
           3,
           4
         ],
+        "kaleidoscope_ranching:cracks": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "kaleidoscope_ranching:ready": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
         "kaleidoscope_ranching:busy": [
+          false,
+          true
+        ],
+        "kaleidoscope_ranching:candled": [
           false,
           true
         ]
@@ -32,10 +50,34 @@
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.incubator",
         "bone_visibility": {
-          "egg_1": "q.block_state('kaleidoscope_ranching:eggs') >= 1",
-          "egg_2": "q.block_state('kaleidoscope_ranching:eggs') >= 2",
-          "egg_3": "q.block_state('kaleidoscope_ranching:eggs') >= 3",
-          "egg_4": "q.block_state('kaleidoscope_ranching:eggs') >= 4",
+          "egg_1": "q.block_state('kaleidoscope_ranching:eggs') >= 1 && q.block_state('kaleidoscope_ranching:cracks') < 1 && q.block_state('kaleidoscope_ranching:ready') < 1 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1)",
+          "egg_1_crack": "q.block_state('kaleidoscope_ranching:cracks') >= 1 && q.block_state('kaleidoscope_ranching:ready') < 1 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1)",
+          "egg_1_hatch": "q.block_state('kaleidoscope_ranching:ready') >= 1 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1)",
+          "egg_1_lit": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1",
+          "egg_1_embryo_0": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1 && q.block_state('kaleidoscope_ranching:cracks') < 1 && q.block_state('kaleidoscope_ranching:ready') < 1",
+          "egg_1_embryo_1": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1 && q.block_state('kaleidoscope_ranching:cracks') >= 1 && q.block_state('kaleidoscope_ranching:ready') < 1",
+          "egg_1_embryo_2": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 1 && q.block_state('kaleidoscope_ranching:ready') >= 1",
+          "egg_2": "q.block_state('kaleidoscope_ranching:eggs') >= 2 && q.block_state('kaleidoscope_ranching:cracks') < 2 && q.block_state('kaleidoscope_ranching:ready') < 2 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2)",
+          "egg_2_crack": "q.block_state('kaleidoscope_ranching:cracks') >= 2 && q.block_state('kaleidoscope_ranching:ready') < 2 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2)",
+          "egg_2_hatch": "q.block_state('kaleidoscope_ranching:ready') >= 2 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2)",
+          "egg_2_lit": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2",
+          "egg_2_embryo_0": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2 && q.block_state('kaleidoscope_ranching:cracks') < 2 && q.block_state('kaleidoscope_ranching:ready') < 2",
+          "egg_2_embryo_1": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2 && q.block_state('kaleidoscope_ranching:cracks') >= 2 && q.block_state('kaleidoscope_ranching:ready') < 2",
+          "egg_2_embryo_2": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 2 && q.block_state('kaleidoscope_ranching:ready') >= 2",
+          "egg_3": "q.block_state('kaleidoscope_ranching:eggs') >= 3 && q.block_state('kaleidoscope_ranching:cracks') < 3 && q.block_state('kaleidoscope_ranching:ready') < 3 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3)",
+          "egg_3_crack": "q.block_state('kaleidoscope_ranching:cracks') >= 3 && q.block_state('kaleidoscope_ranching:ready') < 3 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3)",
+          "egg_3_hatch": "q.block_state('kaleidoscope_ranching:ready') >= 3 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3)",
+          "egg_3_lit": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3",
+          "egg_3_embryo_0": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3 && q.block_state('kaleidoscope_ranching:cracks') < 3 && q.block_state('kaleidoscope_ranching:ready') < 3",
+          "egg_3_embryo_1": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3 && q.block_state('kaleidoscope_ranching:cracks') >= 3 && q.block_state('kaleidoscope_ranching:ready') < 3",
+          "egg_3_embryo_2": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 3 && q.block_state('kaleidoscope_ranching:ready') >= 3",
+          "egg_4": "q.block_state('kaleidoscope_ranching:eggs') >= 4 && q.block_state('kaleidoscope_ranching:cracks') < 4 && q.block_state('kaleidoscope_ranching:ready') < 4 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4)",
+          "egg_4_crack": "q.block_state('kaleidoscope_ranching:cracks') >= 4 && q.block_state('kaleidoscope_ranching:ready') < 4 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4)",
+          "egg_4_hatch": "q.block_state('kaleidoscope_ranching:ready') >= 4 && !(q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4)",
+          "egg_4_lit": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4",
+          "egg_4_embryo_0": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4 && q.block_state('kaleidoscope_ranching:cracks') < 4 && q.block_state('kaleidoscope_ranching:ready') < 4",
+          "egg_4_embryo_1": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4 && q.block_state('kaleidoscope_ranching:cracks') >= 4 && q.block_state('kaleidoscope_ranching:ready') < 4",
+          "egg_4_embryo_2": "q.block_state('kaleidoscope_ranching:candled') && q.block_state('kaleidoscope_ranching:eggs') >= 4 && q.block_state('kaleidoscope_ranching:ready') >= 4",
           "busy": "q.block_state('kaleidoscope_ranching:busy')"
         }
       },
@@ -44,6 +86,10 @@
         "*": {
           "texture": "kr_incubator",
           "render_method": "alpha_test_single_sided"
+        },
+        "candled": {
+          "texture": "kr_incubator_candled",
+          "render_method": "blend"
         }
       },
       "minecraft:collision_box": {
@@ -130,9 +176,15 @@
         }
       },
       {
-        "condition": "q.block_state('kaleidoscope_ranching:busy')",
+        "condition": "q.block_state('kaleidoscope_ranching:busy') && !(q.block_state('kaleidoscope_ranching:candled'))",
         "components": {
           "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('kaleidoscope_ranching:candled')",
+        "components": {
+          "minecraft:light_emission": 10
         }
       }
     ]

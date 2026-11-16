@@ -429,6 +429,54 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
   for (const name of drawn.keys()) if (name.startsWith("dry_") && !(name in shown)) fail(`butcher rack: model bone ${name} has no bone_visibility rule`);
 }
 
+// 1.1 蛋的進度: the nest box and incubator show each egg's stage and the candler's glow
+// (systems/nest.js "How the eggs look"): eggs/cracks/ready count 0..4, `candled` is 0..4 in the
+// nest box and a bool in the incubator, and every egg slot has a bone for each look, shown by the
+// states it depends on. The candled shell is drawn from its own see-through texture.
+{
+  const SLOTS = 4;
+  const counts = Array.from({ length: SLOTS + 1 }, (_, n) => n);
+  const st = (name) => `kaleidoscope_ranching:${name}`;
+  for (const [id, candled] of [["nest_box", counts], ["incubator", [false, true]]]) {
+    const block = readJson(join(bp, "blocks", `r_${id}.json`))["minecraft:block"];
+    const states = block.description.states ?? {};
+    for (const name of ["eggs", "cracks", "ready"]) {
+      if (!sameJson(states[st(name)], counts)) fail(`${id}: state ${st(name)} must count 0..${SLOTS}`);
+    }
+    if (!sameJson(states[st("candled")], candled)) fail(`${id}: state ${st("candled")} must be ${JSON.stringify(candled)}`);
+    const shown = block.components["minecraft:geometry"].bone_visibility ?? {};
+    const needs = { "": ["eggs", "cracks", "candled"], _crack: ["cracks", "ready", "candled"], _hatch: ["ready", "candled"], _lit: ["candled"] };
+    for (let s = 0; s < 3; s++) needs[`_embryo_${s}`] = ["candled", s === 2 ? "ready" : "cracks"];
+    for (let n = 1; n <= SLOTS; n++) {
+      for (const [suffix, used] of Object.entries(needs)) {
+        const rule = shown[`egg_${n}${suffix}`];
+        if (typeof rule !== "string") fail(`${id}: no bone egg_${n}${suffix} in bone_visibility`);
+        else for (const name of used) if (!rule.includes(`'${st(name)}'`)) fail(`${id}: bone egg_${n}${suffix} is not shown by ${st(name)}`);
+      }
+    }
+    const material = block.components["minecraft:material_instances"]?.candled;
+    if (material?.render_method !== "blend") fail(`${id}: material instance "candled" must render with blend (a see-through shell)`);
+    const geo = readJson(join(rp, "models", "blocks", `kaleidoscope_ranching.${id}.geo.json`))["minecraft:geometry"][0];
+    for (let n = 1; n <= SLOTS; n++) {
+      const cubes = geo.bones.find((bone) => bone.name === `egg_${n}_lit`)?.cubes ?? [];
+      const tagged = cubes.length > 0 && cubes.every((cube) => typeof cube.uv === "object" && !Array.isArray(cube.uv)
+        && Object.values(cube.uv).every((face) => face.material_instance === "candled"));
+      if (!tagged) fail(`${id}: bone egg_${n}_lit must be drawn with the "candled" material on every face`);
+    }
+  }
+}
+
+// A block may have at most 65536 permutations (its states times its facings).
+for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
+  const block = readJson(path)["minecraft:block"];
+  const facings = block.description.traits?.["minecraft:placement_direction"]?.enabled_states?.includes("minecraft:cardinal_direction") ? 4 : 1;
+  const count = Object.values(block.description.states ?? {}).reduce(
+    (product, values) => product * (Array.isArray(values) ? values.length : (values.values?.max ?? values.max) - (values.values?.min ?? values.min) + 1),
+    facings
+  );
+  if (count > 65536) fail(`${relative(root, path)}: ${count} permutations, more than a block may have (65536)`);
+}
+
 // --- 3c. Animal rigs: the bones everything else is written against ---------------
 // The walk animation (tools/gen_art.py drops a bone it cannot find without a word), the sleep
 // poses and eyelids (tools/gen_sleep.mjs), the render controllers and the butcher rack all go by

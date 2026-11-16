@@ -172,6 +172,9 @@
     "kr_incubator": {
       "textures": "textures/blocks/ranching/incubator"
     },
+    "kr_incubator_candled": {
+      "textures": "textures/blocks/ranching/incubator_candled"
+    },
     "kr_meat_grinder": {
       "textures": "textures/blocks/ranching/meat_grinder"
     },
@@ -180,6 +183,9 @@
     },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
+    },
+    "kr_nest_box_candled": {
+      "textures": "textures/blocks/ranching/nest_box_candled"
     },
     "kr_pen_gate": {
       "textures": "textures/blocks/ranching/pen_gate"

@@ -146,8 +146,14 @@ def near(a, b, tol):
 GLOW_BONES = {"blocks/ranching/incubator": ("kaleidoscope_ranching.incubator", {"busy"})}
 
 
+# 1.1 蛋的進度: the candled eggs' shells (art_src/m4_scripts/blocks_m3.py) glow all over.
+GLOW_TEXTURES = re.compile(r"^blocks/ranching/(nest_box|incubator)_candled$")
+
+
 def glow_mask(key, size):
     """Pixels covered by the glowing bones' cubes (box UV: 2*(d+w) wide, d+h tall)."""
+    if GLOW_TEXTURES.search(key):
+        return {(x, y) for x in range(size[0]) for y in range(size[1])}
     if key not in GLOW_BONES:
         return set()
     geo_name, bones = GLOW_BONES[key]

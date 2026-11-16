@@ -96,6 +96,35 @@ function stageInSlot(look, n) {
   return undefined;
 }
 
+// 1.1 蛋的進度: the nest box's and incubator's eggs (systems/nest.js "How the eggs look",
+// art_src/m4_scripts/blocks_m3.py). Slot n shows one of: egg_n (plain), egg_n_crack (small
+// cracks), egg_n_hatch (big cracks, the cap lifting); or, while candled, egg_n_lit (a glowing,
+// see-through shell, material instance `candled`) with egg_n_embryo_<stage> inside.
+const EGG_SLOTS = 4;
+const SLOT_COUNTS = Array.from({ length: EGG_SLOTS + 1 }, (_, n) => n);
+const EGG_STATES = { [S("eggs")]: SLOT_COUNTS, [S("cracks")]: SLOT_COUNTS, [S("ready")]: SLOT_COUNTS };
+function eggBones(lit) {
+  return Object.fromEntries(
+    Array.from({ length: EGG_SLOTS }, (_, i) => i + 1).flatMap((n) => {
+      const on = lit(n);
+      // Exclusive even for state combinations the script never sets (ready > cracks), so two
+      // looks of one egg are never drawn in the same place.
+      const stage = [
+        `${state("cracks")} < ${n} && ${state("ready")} < ${n}`,
+        `${state("cracks")} >= ${n} && ${state("ready")} < ${n}`,
+        `${state("ready")} >= ${n}`,
+      ];
+      return [
+        [`egg_${n}`, `${state("eggs")} >= ${n} && ${stage[0]} && !(${on})`],
+        [`egg_${n}_crack`, `${stage[1]} && !(${on})`],
+        [`egg_${n}_hatch`, `${stage[2]} && !(${on})`],
+        [`egg_${n}_lit`, on],
+        ...stage.map((when, s) => [`egg_${n}_embryo_${s}`, `${on} && ${when}`]),
+      ];
+    })
+  );
+}
+
 const DEFS = {
   butcher_rack: {
     component: "butcher_rack",
@@ -128,22 +157,30 @@ const DEFS = {
     selection: FULL,
     seconds: 1.5,
   },
+  // 1.1 蛋的進度 (systems/nest.js, "How the eggs look"): eggs/cracks/ready count the eggs shown,
+  // with cracks, with big cracks, most advanced first; `candled` is the candler's glow.
   nest_box: {
     component: "nest_box",
-    states: { [S("eggs")]: [0, 1, 2, 3, 4] },
-    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`egg_${n}`, `${state("eggs")} >= ${n}`])),
+    states: { ...EGG_STATES, [S("candled")]: SLOT_COUNTS },
+    bones: eggBones((n) => `${state("candled")} >= ${n}`),
     collision: box(-7, 0, -7, 14, 6, 14),
     selection: box(-7, 0, -7, 14, 6, 14),
     seconds: 1,
+    glow: `${state("candled")} > 0`,
+    materials: ["candled"],
+    renderMethods: { candled: "blend" },
   },
   incubator: {
     component: "incubator",
-    states: { [S("eggs")]: [0, 1, 2, 3, 4], [S("busy")]: [false, true] },
-    bones: { ...Object.fromEntries([1, 2, 3, 4].map((n) => [`egg_${n}`, `${state("eggs")} >= ${n}`])), busy: state("busy") },
+    states: { ...EGG_STATES, [S("busy")]: [false, true], [S("candled")]: [false, true] },
+    bones: { ...eggBones((n) => `${state("candled")} && ${state("eggs")} >= ${n}`), busy: state("busy") },
     collision: box(-7, 0, -7, 14, 12, 14),
     selection: box(-7, 0, -7, 14, 12, 14),
     seconds: 1,
     light: true,
+    glow: state("candled"),
+    materials: ["candled"],
+    renderMethods: { candled: "blend" },
   },
   // 1.1 擠奶架 (systems/milkingRack.js): one animal tied to it, milked once a day.
   milking_rack: {
@@ -253,7 +290,7 @@ function blockJson(id, def) {
       "*": { texture: `kr_${id}`, render_method: "alpha_test_single_sided" },
       // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).
       ...Object.fromEntries(
-        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: "alpha_test_single_sided" }])
+        (def.materials ?? []).map((m) => [m, { texture: `kr_${id}_${m}`, render_method: def.renderMethods?.[m] ?? "alpha_test_single_sided" }])
       ),
     },
     "minecraft:collision_box": def.collision,
@@ -282,7 +319,11 @@ function blockJson(id, def) {
           condition: `q.block_state('minecraft:cardinal_direction') == '${direction}'`,
           components: { "minecraft:transformation": { rotation: [0, degrees, 0] } },
         })),
-        ...(def.light ? [{ condition: state("busy"), components: { "minecraft:light_emission": 7 } }] : []),
+        // The lamp's light, and the candler's glow (brighter; the two conditions never overlap).
+        ...(def.light
+          ? [{ condition: def.glow ? `${state("busy")} && !(${def.glow})` : state("busy"), components: { "minecraft:light_emission": 7 } }]
+          : []),
+        ...(def.glow ? [{ condition: def.glow, components: { "minecraft:light_emission": 10 } }] : []),
         ...(def.openable ? [{ condition: state("open"), components: { "minecraft:collision_box": false } }] : []),
         ...(def.textureByState
           ? def.textureByState.values.map((value) => ({

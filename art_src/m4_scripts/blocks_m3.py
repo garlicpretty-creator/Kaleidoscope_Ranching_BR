@@ -59,10 +59,24 @@ def autouv(bones, tw=64):
     return out, tw, th
 
 
+def material_uv(uv, size, material):
+    """Per-face UVs sampling the same texels as the box UV (as tools/fix_zfight.py writes them),
+    each face tagged with a material instance so it is drawn from <block>_<material>.png."""
+    u, v = uv
+    w, h, d = [max(1, round(s)) for s in size]
+    faces = {
+        "north": ([u + d, v + d], [w, h]), "east": ([u, v + d], [d, h]),
+        "south": ([u + 2 * d + w, v + d], [w, h]), "west": ([u + d + w, v + d], [d, h]),
+        "up": ([u + d, v], [w, d]), "down": ([u + d + w, v + d], [w, -d]),
+    }
+    return {f: {"uv": a, "uv_size": b, "material_instance": material} for f, (a, b) in faces.items()}
+
+
 def geo(bid, bones, tw, th):
     out = []
     for name, parent, pivot, cubes in bones:
-        b = {"name": name, "pivot": pivot, "cubes": [{"origin": o, "size": s, "uv": uv} for _, o, s, uv in cubes]}
+        b = {"name": name, "pivot": pivot, "cubes": [
+            {"origin": o, "size": s, "uv": material_uv(uv, s, "candled") if c in LIT else uv} for c, o, s, uv in cubes]}
         if parent:
             b["parent"] = parent
         out.append(b)
@@ -80,6 +94,32 @@ def egg(x, y, z):
     return [("egg", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]
 
 
+# 1.1 蛋的進度: every egg slot also has a cracked look, a nearly hatched look and a candled
+# look (a glowing see-through shell with the chick's shadow inside, three sizes). Which one
+# shows is chosen by the block's eggs/cracks/ready/candled states (tools/gen_blocks.mjs).
+EMBRYO = [  # per stage: (cube name, offset from the egg's centre bottom, size)
+    [("embryo_s", [-0.3, 0.7, -0.3], [0.6, 0.6, 0.6])],
+    [("embryo_m", [-0.5, 0.4, -0.5], [1, 1, 1]), ("embryo_m_head", [-0.25, 1.45, -0.25], [0.5, 0.5, 0.5])],
+    [("embryo_l", [-0.7, 0.25, -0.7], [1.4, 1.4, 1.4]), ("embryo_l_head", [-0.4, 1.6, -0.4], [0.8, 0.8, 0.8])],
+]
+LIT = {"shell", "shell_tip"}  # cubes drawn from <block>_candled.png with the `candled` material
+
+
+def egg_slot(n, parent, pivot, x, y, z):
+    """The bones of egg slot n: plain, cracked, hatching, candled shell and the three embryos."""
+    cx, cz = x + 1, z + 1
+    return [
+        (f"egg_{n}", parent, pivot, egg(x, y, z)),
+        (f"egg_{n}_crack", parent, pivot, [("egg_crack", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
+        # the cap is pushed up off the top, a dark gap where the chick is breaking out
+        (f"egg_{n}_hatch", parent, pivot, [("egg_hatch", [x, y, z], [2, 2, 2]), ("egg_cap", [x + 0.5, y + 2.5, z + 0.5], [1, 1, 1])]),
+        (f"egg_{n}_lit", parent, pivot, [("shell", [x, y, z], [2, 2, 2]), ("shell_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
+        *[(f"egg_{n}_embryo_{s}", parent, pivot,
+           [(name, [cx + dx, y + dy, cz + dz], size) for name, (dx, dy, dz), size in cubes])
+          for s, cubes in enumerate(EMBRYO)],
+    ]
+
+
 NEST_BOX = [
     ("box", None, [0, 0, 0], [
         ("floor", [-7, 0, -7], [14, 1, 14]),
@@ -91,10 +131,10 @@ NEST_BOX = [
         ("tuft", [-6, 3, 1], [3, 1, 2]),
         ("tuft", [3, 3, -3], [3, 1, 2]),
     ]),
-    ("egg_1", "box", [0, 3, 0], egg(-4, 3, -3)),
-    ("egg_2", "box", [0, 3, 0], egg(1, 3, -4)),
-    ("egg_3", "box", [0, 3, 0], egg(-3, 3, 1)),
-    ("egg_4", "box", [0, 3, 0], egg(2, 3, 1)),
+    *egg_slot(1, "box", [0, 3, 0], -4, 3, -3),
+    *egg_slot(2, "box", [0, 3, 0], 1, 3, -4),
+    *egg_slot(3, "box", [0, 3, 0], -3, 3, 1),
+    *egg_slot(4, "box", [0, 3, 0], 2, 3, 1),
 ]
 
 INCUBATOR = [
@@ -116,10 +156,10 @@ INCUBATOR = [
         ("bulb", [-1, 13, -1], [2, 1, 2]),
         ("heater", [-2, 9, -2], [4, 1, 4]),
     ]),
-    ("egg_1", "base", [0, 4, 0], egg(-4, 4, -4)),
-    ("egg_2", "base", [0, 4, 0], egg(2, 4, -4)),
-    ("egg_3", "base", [0, 4, 0], egg(-4, 4, 1)),
-    ("egg_4", "base", [0, 4, 0], egg(2, 4, 1)),
+    *egg_slot(1, "base", [0, 4, 0], -4, 4, -4),
+    *egg_slot(2, "base", [0, 4, 0], 2, 4, -4),
+    *egg_slot(3, "base", [0, 4, 0], -4, 4, 1),
+    *egg_slot(4, "base", [0, 4, 0], 2, 4, 1),
 ]
 
 BUTTER_CHURN = [
@@ -301,6 +341,45 @@ def egg_paint(f, i, j, w, h, fi):
     return EGG if f != "top" else (252, 244, 226)
 
 
+CRACK, CRACK_DK, HOLE = (168, 138, 100), (92, 66, 46), (58, 40, 30)
+
+
+SIDES = ("north", "east", "south", "west")
+
+
+def egg_crack(f, i, j, w, h, fi):
+    """Small cracks: a fine brown mark near the top of every side, a step higher or lower in turn."""
+    if f in SIDES and (i, j) == ((1, 0) if SIDES.index(f) % 2 else (0, 1)):
+        return CRACK
+    return egg_paint(f, i, j, w, h, fi)
+
+
+def egg_hatch(f, i, j, w, h, fi):
+    """Big cracks: a dark break round the top of every side, the top broken open under the lifted cap."""
+    if f == "top":
+        return HOLE if i == j else egg_paint(f, i, j, w, h, fi)
+    if f in SIDES and j == 0 and i == SIDES.index(f) % 2:
+        return CRACK_DK
+    if f in SIDES and (i, j) == ((0, 1) if SIDES.index(f) % 2 else (1, 1)):
+        return CRACK
+    return egg_paint(f, i, j, w, h, fi)
+
+
+def egg_cap(f, i, j, w, h, fi):
+    return mix(EGG, HOLE, 0.5) if f == "bottom" else egg_paint(f, i, j, w, h, fi)
+
+
+SHELL_ALPHA = 150  # the candled shell: light coming through, the chick's shadow seen inside
+
+
+def shell(f, i, j, w, h, fi):
+    return (255, 214, 140) if (i + j) % 2 else (255, 190, 104)
+
+
+def embryo(f, i, j, w, h, fi):
+    return (104, 46, 34) if f != "top" else (124, 58, 40)
+
+
 def glass(f, i, j, w, h, fi):
     """Clear pane (alpha_test): a pale frame and two diagonal streaks, the rest see-through."""
     if f in ("top", "bottom"):
@@ -382,6 +461,14 @@ PAINT["food_waste_bin"] = {
     **{f"scraps_{n}": scraps for n in (1, 2, 3, 4)},
 }
 
+# 1.1 蛋的進度: painted after the old cubes, so the noise on everything else stays as it was.
+EGG_LOOKS = {"egg_crack": egg_crack, "egg_hatch": egg_hatch, "egg_cap": egg_cap,
+             "embryo_s": embryo, "embryo_m": embryo, "embryo_m_head": embryo, "embryo_l": embryo, "embryo_l_head": embryo}
+for _bid in ("nest_box", "incubator"):
+    PAINT[_bid].update(EGG_LOOKS)
+# The candled shells are painted into <block>_candled.png (same size, so the UVs line up).
+CANDLED_PAINT = {"shell": shell, "shell_tip": shell}
+
 PAINT["tanning_rack"] = {
     "post": wood(WOOD_DK, rings=WOOD_LT), "foot": wood(WOOD_DK), "rail": wood(WOOD), "peg": wood(WOOD_LT),
     "tub": liquor, "cord": rope, "cord_v": rope,
@@ -411,6 +498,12 @@ def main():
             p.paint(cube, fn)
         (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid, bones, tw, th), indent=2) + "\n", encoding="utf8")
         p.save(out / f"{bid}.png")
+        if any(c in LIT for _, _, _, cubes in bones for c, *_ in cubes):
+            lit = Painter(tw, th, bones, f"{bid}_candled")
+            for cube, fn in CANDLED_PAINT.items():
+                lit.paint(cube, fn, light=False)
+            lit.img.putalpha(lit.img.getchannel("A").point(lambda a: SHELL_ALPHA if a else 0))
+            lit.save(out / f"{bid}_candled.png")
         print(f"{bid}: {tw}x{th}")
 
 
