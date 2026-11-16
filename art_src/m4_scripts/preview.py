@@ -2,9 +2,9 @@
 texture from a three-quarter view, one tile per block (and per bone set, e.g. `busy`).
 
 Only axis-aligned cubes are drawn, which is all these block models use: box UV, or per-face UV
-laid out as the box UV would be (art_src/m4_scripts/blocks_m3.py material_uv), whose faces may
-name a material instance drawn from <id>_<instance>.png. Texels that are partly transparent (the
-candled eggs' shells) are blended over what is behind them.
+(art_src/m4_scripts/blocks_m3.py lit_uv, rack_drying.py), whose faces may
+name a material instance drawn from <id>_<instance>.png (the candled eggs). Texels that are partly
+transparent are blended over what is behind them.
 
 Run with: python art_src/m4_scripts/preview.py out.png id[+bone+-bone][@facing] ...
 (+bone shows a bone that is hidden by default, +-bone hides one, e.g. an eaten portion; +-name

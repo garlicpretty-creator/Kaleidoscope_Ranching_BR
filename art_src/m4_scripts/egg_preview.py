@@ -15,7 +15,7 @@ import preview
 
 ROOT = Path(__file__).resolve().parents[2]
 STAGES = ["egg_1_hatch", "egg_2_crack", "egg_3"]  # big cracks, small cracks, plain
-CANDLED = ["egg_1_lit", "egg_1_embryo_2", "egg_2_lit", "egg_2_embryo_1", "egg_3_lit", "egg_3_embryo_0"]
+CANDLED = ["egg_1_lit_2", "egg_2_lit_1", "egg_3_lit_0"]  # big, medium and small shadow
 CASES = [
     ("nest box: big cracks, small cracks, plain, stored", "nest_box", STAGES + ["egg_4"]),
     ("nest box candled: three brooded eggs lit", "nest_box", CANDLED + ["egg_4"]),

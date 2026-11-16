@@ -432,7 +432,7 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
 // 1.1 蛋的進度: the nest box and incubator show each egg's stage and the candler's glow
 // (systems/nest.js "How the eggs look"): eggs/cracks/ready count 0..4, `candled` is 0..4 in the
 // nest box and a bool in the incubator, and every egg slot has a bone for each look, shown by the
-// states it depends on. The candled shell is drawn from its own see-through texture.
+// states it depends on. The candled shells (one per stage) are drawn from their own texture.
 {
   const SLOTS = 4;
   const counts = Array.from({ length: SLOTS + 1 }, (_, n) => n);
@@ -445,8 +445,8 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
     }
     if (!sameJson(states[st("candled")], candled)) fail(`${id}: state ${st("candled")} must be ${JSON.stringify(candled)}`);
     const shown = block.components["minecraft:geometry"].bone_visibility ?? {};
-    const needs = { "": ["eggs", "cracks", "candled"], _crack: ["cracks", "ready", "candled"], _hatch: ["ready", "candled"], _lit: ["candled"] };
-    for (let s = 0; s < 3; s++) needs[`_embryo_${s}`] = ["candled", s === 2 ? "ready" : "cracks"];
+    const needs = { "": ["eggs", "cracks", "candled"], _crack: ["cracks", "ready", "candled"], _hatch: ["ready", "candled"] };
+    for (let s = 0; s < 3; s++) needs[`_lit_${s}`] = ["candled", s === 2 ? "ready" : "cracks"];
     for (let n = 1; n <= SLOTS; n++) {
       for (const [suffix, used] of Object.entries(needs)) {
         const rule = shown[`egg_${n}${suffix}`];
@@ -454,16 +454,30 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
         else for (const name of used) if (!rule.includes(`'${st(name)}'`)) fail(`${id}: bone egg_${n}${suffix} is not shown by ${st(name)}`);
       }
     }
-    const material = block.components["minecraft:material_instances"]?.candled;
-    if (material?.render_method !== "blend") fail(`${id}: material instance "candled" must render with blend (a see-through shell)`);
+    if (!block.components["minecraft:material_instances"]?.candled) fail(`${id}: no material instance "candled"`);
     const geo = readJson(join(rp, "models", "blocks", `kaleidoscope_ranching.${id}.geo.json`))["minecraft:geometry"][0];
     for (let n = 1; n <= SLOTS; n++) {
-      const cubes = geo.bones.find((bone) => bone.name === `egg_${n}_lit`)?.cubes ?? [];
-      const tagged = cubes.length > 0 && cubes.every((cube) => typeof cube.uv === "object" && !Array.isArray(cube.uv)
-        && Object.values(cube.uv).every((face) => face.material_instance === "candled"));
-      if (!tagged) fail(`${id}: bone egg_${n}_lit must be drawn with the "candled" material on every face`);
+      for (let s = 0; s < 3; s++) {
+        const cubes = geo.bones.find((bone) => bone.name === `egg_${n}_lit_${s}`)?.cubes ?? [];
+        const tagged = cubes.length > 0 && cubes.every((cube) => typeof cube.uv === "object" && !Array.isArray(cube.uv)
+          && Object.values(cube.uv).every((face) => face.material_instance === "candled"));
+        if (!tagged) fail(`${id}: bone egg_${n}_lit_${s} must be drawn with the "candled" material on every face`);
+      }
     }
   }
+}
+
+// Every material instance of a block, its permutations' included, uses one render method: Bedrock
+// warns "All MaterialInstances must use the same render_method for a given block" otherwise.
+for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
+  const block = readJson(path)["minecraft:block"];
+  const methods = new Set();
+  for (const components of [block.components, ...(block.permutations ?? []).map((p) => p.components)]) {
+    for (const material of Object.values(components?.["minecraft:material_instances"] ?? {})) {
+      if (typeof material === "object" && material) methods.add(material.render_method ?? "opaque");
+    }
+  }
+  if (methods.size > 1) fail(`${relative(root, path)}: material instances mix render methods (${[...methods].join(", ")}); use one per block`);
 }
 
 // A block may have at most 65536 permutations (its states times its facings).
