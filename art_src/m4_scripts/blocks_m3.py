@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 
 from boxuv import Painter
-from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, stone, wood
+from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
 
 ROOT = Path(__file__).resolve().parents[2]
 NS = "kaleidoscope_ranching"
@@ -237,6 +237,28 @@ FOOD_WASTE_BIN = [
 ]
 
 
+# Tanning rack (proposal 1.1, in 1.0): an upright stretching frame with a tub of tanning
+# liquor at its foot; while busy a raw hide is laced into the frame.
+TANNING_RACK = [
+    ("frame", None, [0, 0, 0], [
+        ("post", [-8, 0, -1], [2, 16, 2]),
+        ("post", [6, 0, -1], [2, 16, 2]),
+        ("foot", [-8, 0, -4], [2, 1, 8]),
+        ("foot", [6, 0, -4], [2, 1, 8]),
+        ("rail", [-6, 14, -1], [12, 2, 2]),
+        ("rail", [-6, 2, -1], [12, 2, 2]),
+        ("peg", [-7.5, 16, -0.5], [1, 1, 1]),
+        ("peg", [6.5, 16, -0.5], [1, 1, 1]),
+        ("tub", [1, 0, -7], [5, 3, 3]),
+    ]),
+    ("busy", "frame", [0, 4, 0], [
+        ("hide", [-5, 4, -0.5], [10, 10, 1]),
+        *[("cord", [x, y, -0.5], [1, 1, 1]) for x in (-6, 5) for y in (5, 8, 11)],
+        *[("cord_v", [x, 13, -0.5], [1, 1, 1]) for x in (-3, 2)],
+    ]),
+]
+
+
 # --- textures ------------------------------------------------------------------------
 
 def solid(c, edge=None):
@@ -339,6 +361,27 @@ def scraps(f, i, j, w, h, fi):
     return (112, 90, 58) if r % 4 else (92, 72, 46)
 
 
+def hide(f, i, j, w, h, fi):
+    """Raw hide stretched flat: mottled tan with a darker rim and a ragged outline (clear pixels
+    at the corners and along the edges, read by alpha_test)."""
+    if f in ("north", "south"):
+        ragged = {(0, 0), (1, 0), (0, 1), (w - 1, 0), (w - 2, 0), (w - 1, 1), (0, h - 1), (1, h - 1), (0, h - 2),
+                  (w - 1, h - 1), (w - 2, h - 1), (w - 1, h - 2), (4, 0), (0, 5), (w - 1, 3), (6, h - 1)}
+        if (i, j) in ragged:
+            return None
+        if i in (0, w - 1) or j in (0, h - 1) or (i, j) in {(1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)}:
+            return (150, 104, 66)
+        r = (i * 7 + j * 11) % 13
+        return (214, 172, 128) if r < 3 else (184, 136, 92) if r > 10 else (200, 154, 110)
+    return (160, 114, 74)
+
+
+def liquor(f, i, j, w, h, fi):
+    if f == "top" and 0 < i < w - 1 and 0 < j < h - 1:
+        return (96, 58, 30)  # oak-bark tanning liquor
+    return wood(WOOD_DK)(f, i, j, w, h, fi)
+
+
 def whey(f, i, j, w, h, fi):
     return (226, 230, 186) if (i + j) % 3 else (240, 242, 210)
 
@@ -372,8 +415,14 @@ PAINT["food_waste_bin"] = {
     **{f"scraps_{n}": scraps for n in (1, 2, 3, 4)},
 }
 
+PAINT["tanning_rack"] = {
+    "post": wood(WOOD_DK, rings=WOOD_LT), "foot": wood(WOOD_DK), "rail": wood(WOOD), "peg": wood(WOOD_LT),
+    "tub": liquor, "hide": hide, "cord": rope, "cord_v": rope,
+}
+
 BLOCKS = {
     "food_waste_bin": FOOD_WASTE_BIN,
+    "tanning_rack": TANNING_RACK,
     "nest_box": NEST_BOX,
     "incubator": INCUBATOR,
     "butter_churn": BUTTER_CHURN,

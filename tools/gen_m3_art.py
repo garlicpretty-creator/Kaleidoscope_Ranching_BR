@@ -134,6 +134,9 @@ def main():
             board.paste(image, (x, y + 20))
             draw.text((x + 8, y + 4), block_id, fill=(60, 70, 56))
         board.save(ROOT / "docs" / "art" / "m3_procedural_blocks_preview.png")
+    else:
+        # Every block is hand-made: a sheet left from an earlier procedural block would be stale.
+        (ROOT / "docs" / "art" / "m3_procedural_blocks_preview.png").unlink(missing_ok=True)
     print(f"gen_m3_art: {len(ids)} icons, {len(blocks)} blocks")
 
 
