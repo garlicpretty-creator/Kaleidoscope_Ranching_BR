@@ -2860,6 +2860,109 @@ test("1.1: each drying strip darkens on its own clock: fresh, half dry, dried", 
   equal(stripsOn(rack).join(), "", "an empty rack stays empty");
 });
 
+test("1.1: a salted strip darkens a day sooner than a plain one and comes down first", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  const DAY = 24000;
+  player.selectedSlotIndex = 0;
+  hold(player, "kaleidoscope_ranching:beef_shank", 1);
+  use(RACK, rack, player);
+  player.inventory.setItem(5, new ItemStack("kaleidoscope_fishing:sea_salt", 1));
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_fishing:sea_salt"), 0, "the salt went on the belly");
+  equal(stripsOn(rack).join(), "fresh,fresh", "both hung fresh");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "half,fresh", "the salted belly is half dry after one day, the shank not");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "dried,half", "the salted belly is done after two days, the shank half dry");
+  hold(player, "minecraft:stick", 1);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_pork_belly"), 1, "the salted belly comes down first");
+  equal(player.inventory.count("kaleidoscope_ranching:beef_jerky"), 0, "the shank stays");
+  equal(stripsOn(rack).join(), "half", "the shank keeps its look");
+  __skipTime(DAY);
+  runBlockClock();
+  equal(stripsOn(rack).join(), "dried", "the shank is done after three days");
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:beef_jerky"), 1, "then the shank comes down");
+  equal(stripsOn(rack).join(), "", "all down");
+});
+
+/** Evaluates the bone_visibility Molang the rack uses: q.block_state('…') == n, &&, ||, (), false. */
+function molang(source, states) {
+  const tokens = source.match(/q\.block_state\('[^']+'\)|==|&&|\|\||\(|\)|-?\d+|false|true|\S/g);
+  let at = 0;
+  const peek = () => tokens[at];
+  const take = (want) => {
+    const token = tokens[at++];
+    if (want !== undefined && token !== want) throw new Error(`molang: expected ${want}, got ${token} in ${source}`);
+    return token;
+  };
+  const value = () => {
+    const token = take();
+    if (token === "(") {
+      const inner = or();
+      take(")");
+      return inner;
+    }
+    if (token === "false") return false;
+    if (token === "true") return true;
+    if (/^-?\d+$/.test(token)) return Number(token);
+    const name = token.match(/^q\.block_state\('([^']+)'\)$/)?.[1];
+    if (!name) throw new Error(`molang: unexpected ${token} in ${source}`);
+    if (!(name in states)) throw new Error(`molang: unknown state ${name}`);
+    return states[name];
+  };
+  const compare = () => {
+    const left = value();
+    if (peek() !== "==") return left;
+    take("==");
+    return left === value();
+  };
+  const and = () => {
+    let result = compare();
+    while (peek() === "&&") {
+      take("&&");
+      result = compare() && result;
+    }
+    return result;
+  };
+  const or = () => {
+    let result = and();
+    while (peek() === "||") {
+      take("||");
+      result = and() || result;
+    }
+    return result;
+  };
+  const result = or();
+  if (at !== tokens.length) throw new Error(`molang: trailing ${tokens.slice(at).join(" ")} in ${source}`);
+  return Boolean(result);
+}
+
+test("1.1: the generated rack bone rules show exactly the strips each drying look stands for", () => {
+  const rack = JSON.parse(readFileSync("packs/BP/blocks/r_butcher_rack.json", "utf8"))["minecraft:block"];
+  const states = rack.description.states;
+  const rules = Object.entries(rack.components["minecraft:geometry"].bone_visibility).filter(([bone]) => bone.startsWith("dry_"));
+  assert(rules.length === processing.DRYING_SLOTS * (1 + processing.DRYING_STAGES.length), "a twine and three strips per slot");
+  let checked = 0;
+  for (const row of states["kaleidoscope_ranching:drying"]) {
+    for (const col of states["kaleidoscope_ranching:drying_mix"]) {
+      const at = { "kaleidoscope_ranching:drying": row, "kaleidoscope_ranching:drying_mix": col };
+      const strips = processing.DRYING_STAGES.flatMap((stage, n) => Array(processing.DRYING_LOOKS[row][col][n]).fill(stage));
+      const wanted = strips.flatMap((stage, n) => [`dry_${n + 1}`, `dry_${n + 1}_${stage}`]).sort();
+      const shown = rules.filter(([, rule]) => molang(rule, at)).map(([bone]) => bone).sort();
+      equal(shown.join(), wanted.join(), `look ${row}/${col} (${strips.join() || "empty"})`);
+      checked++;
+    }
+  }
+  equal(checked, 35, "every look checked");
+});
+
 test("1.1: a rack saved with pieces drying shows each one's stage after loading and keeps updating", () => {
   clearWorld();
   const DAY = 24000;

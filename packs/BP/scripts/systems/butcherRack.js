@@ -93,7 +93,9 @@ function showDrying(block, pieces) {
   if (permutation.getState(STATE_DRYING) === row && permutation.getState(STATE_DRYING_MIX) === col) return;
   try {
     block.setPermutation(permutation.withState(STATE_DRYING, row).withState(STATE_DRYING_MIX, col));
-  } catch {}
+  } catch (error) {
+    console.warn(`[kaleidoscope_ranching] butcher rack drying look ${row}/${col} not shown: ${error}`);
+  }
 }
 
 /** Block clock pass: strips change colour on their own; a rack with nothing drying leaves the clock. */
