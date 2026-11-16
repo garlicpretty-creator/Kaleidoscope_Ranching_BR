@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cooked_duck_meat",
+    "metalness_emissive_roughness_subsurface": "cooked_duck_meat_mers",
+    "normal": "cooked_duck_meat_normal"
+  }
+}

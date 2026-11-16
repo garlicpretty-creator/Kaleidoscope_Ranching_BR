@@ -146,6 +146,9 @@
     "kr_whey": {
       "textures": "textures/items/ranching/whey"
     },
+    "kr_food_waste": {
+      "textures": "textures/items/ranching/food_waste"
+    },
     "kr_salted_duck_egg": {
       "textures": "textures/items/ranching/salted_duck_egg"
     },

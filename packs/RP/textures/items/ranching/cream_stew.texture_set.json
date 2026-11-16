@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cream_stew",
+    "metalness_emissive_roughness_subsurface": "cream_stew_mers",
+    "normal": "cream_stew_normal"
+  }
+}

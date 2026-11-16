@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "male_yellow",
+    "metalness_emissive_roughness_subsurface": "male_yellow_mers",
+    "normal": "male_yellow_normal"
+  }
+}

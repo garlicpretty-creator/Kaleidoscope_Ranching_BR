@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "trotter_soup",
+    "metalness_emissive_roughness_subsurface": "trotter_soup_mers",
+    "normal": "trotter_soup_normal"
+  }
+}

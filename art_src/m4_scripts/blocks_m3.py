@@ -217,6 +217,26 @@ PICKLING_VAT = [
 ]
 
 
+# Food waste bin (systems/foodWasteBin.js): an open slatted bucket with its lid propped up at
+# the back; fill_1..fill_4 raise the scraps by the block's `fill` state.
+FOOD_WASTE_BIN = [
+    ("bin", None, [0, 0, 0], [
+        ("floor", [-5, 0, -5], [10, 1, 10]),
+        ("wall_fb", [-6, 0, -6], [12, 13, 1]),
+        ("wall_fb", [-6, 0, 5], [12, 13, 1]),
+        ("wall_s", [-6, 0, -5], [1, 13, 10]),
+        ("wall_s", [5, 0, -5], [1, 13, 10]),
+        ("band_fb", [-6.5, 2, -6.5], [13, 1, 1]), ("band_fb", [-6.5, 2, 5.5], [13, 1, 1]),
+        ("band_s", [-6.5, 2, -5.5], [1, 1, 11]), ("band_s", [5.5, 2, -5.5], [1, 1, 11]),
+        ("band_fb", [-6.5, 10, -6.5], [13, 1, 1]), ("band_fb", [-6.5, 10, 5.5], [13, 1, 1]),
+        ("band_s", [-6.5, 10, -5.5], [1, 1, 11]), ("band_s", [5.5, 10, -5.5], [1, 1, 11]),
+        ("lid", [-6, 13, 5], [12, 7, 1]),
+        ("lid_grip", [-2, 17, 4], [4, 1, 1]),
+    ]),
+    *[(f"fill_{n}", "bin", [0, 1, 0], [(f"scraps_{n}", [-5, 1, -5], [10, 3 * n, 10])]) for n in (1, 2, 3, 4)],
+]
+
+
 # --- textures ------------------------------------------------------------------------
 
 def solid(c, edge=None):
@@ -309,6 +329,16 @@ def leafy(f, i, j, w, h, fi):
     return (120, 168, 72) if (i + j) % 2 else (156, 196, 96)
 
 
+def scraps(f, i, j, w, h, fi):
+    """Kitchen scraps: brown mash with carrot, greens, bread crust and peel bits on top."""
+    r = (i * 31 + j * 17 + len(f) * 7) % 23
+    if f == "top":
+        bits = {0: (232, 128, 40), 1: (232, 128, 40), 2: (118, 170, 70), 3: (118, 170, 70), 4: (182, 128, 66),
+                5: (236, 214, 150), 6: (196, 60, 52)}
+        return bits.get(r, (124, 100, 66) if r % 3 else (104, 82, 52))
+    return (112, 90, 58) if r % 4 else (92, 72, 46)
+
+
 def whey(f, i, j, w, h, fi):
     return (226, 230, 186) if (i + j) % 3 else (240, 242, 210)
 
@@ -336,7 +366,14 @@ PAINT = {
                      "droplid": wood(WOOD_LT), "weight": stone},
 }
 
+PAINT["food_waste_bin"] = {
+    "floor": wood(WOOD_DK), "wall_fb": staves(mix(WOOD, (90, 110, 70), 0.25)), "wall_s": staves(mix(WOOD, (90, 110, 70), 0.25)),
+    "band_fb": iron, "band_s": iron, "lid": wood(WOOD_DK), "lid_grip": iron,
+    **{f"scraps_{n}": scraps for n in (1, 2, 3, 4)},
+}
+
 BLOCKS = {
+    "food_waste_bin": FOOD_WASTE_BIN,
     "nest_box": NEST_BOX,
     "incubator": INCUBATOR,
     "butter_churn": BUTTER_CHURN,

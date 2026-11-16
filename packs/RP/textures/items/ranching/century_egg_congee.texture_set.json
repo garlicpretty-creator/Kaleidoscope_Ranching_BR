@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "century_egg_congee",
+    "metalness_emissive_roughness_subsurface": "century_egg_congee_mers",
+    "normal": "century_egg_congee_normal"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "male_green",
+    "metalness_emissive_roughness_subsurface": "male_green_mers",
+    "normal": "male_green_normal"
+  }
+}

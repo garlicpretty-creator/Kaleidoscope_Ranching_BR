@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "kr_compost_bin_top_empty",
+    "metalness_emissive_roughness_subsurface": "kr_compost_bin_top_empty_mers",
+    "normal": "kr_compost_bin_top_empty_normal"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "tomato_duck_egg",
+    "metalness_emissive_roughness_subsurface": "tomato_duck_egg_mers",
+    "normal": "tomato_duck_egg_normal"
+  }
+}

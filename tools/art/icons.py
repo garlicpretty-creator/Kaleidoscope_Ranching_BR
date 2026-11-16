@@ -357,6 +357,8 @@ def draw(item_id):
         fluff(c, {"down": (248, 248, 244), "yak_hair": (70, 56, 46), "pig_bristle": (196, 160, 140)}[base])
     elif base in ("manure", "dried_yak_dung"):
         pile(c, (98, 72, 44) if base == "manure" else (150, 124, 88))
+    elif base == "food_waste":
+        pile(c, (128, 108, 64))
     elif base == "fertilizer":
         sack(c, (120, 150, 80))
     elif base == "butter":

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "raw_cheese_gratin",
+    "metalness_emissive_roughness_subsurface": "raw_cheese_gratin_mers",
+    "normal": "raw_cheese_gratin_normal"
+  }
+}

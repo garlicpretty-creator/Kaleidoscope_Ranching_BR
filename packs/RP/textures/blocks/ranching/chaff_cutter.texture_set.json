@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "chaff_cutter",
+    "metalness_emissive_roughness_subsurface": "chaff_cutter_mers",
+    "normal": "chaff_cutter_normal"
+  }
+}

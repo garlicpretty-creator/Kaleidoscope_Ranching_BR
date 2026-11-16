@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "steamed_egg",
+    "metalness_emissive_roughness_subsurface": "steamed_egg_mers",
+    "normal": "steamed_egg_normal"
+  }
+}

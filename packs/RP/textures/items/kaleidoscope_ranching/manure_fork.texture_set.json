@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "manure_fork",
-    "metalness_emissive_roughness": [
-      215,
-      0,
-      85
-    ]
+    "metalness_emissive_roughness_subsurface": "manure_fork_mers",
+    "normal": "manure_fork_normal"
   }
 }

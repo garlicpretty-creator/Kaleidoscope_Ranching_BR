@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cumin_lamb_chops",
+    "metalness_emissive_roughness_subsurface": "cumin_lamb_chops_mers",
+    "normal": "cumin_lamb_chops_normal"
+  }
+}

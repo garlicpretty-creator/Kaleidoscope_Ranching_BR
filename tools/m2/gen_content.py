@@ -418,7 +418,8 @@ def recipes():
     shapeless("forage_alfalfa", ["alfalfa"], "forage", 3, tag=cut)
     shapeless("forage_hay", ["minecraft:hay_block"], "forage", 12, tag=cut)
     mix = f"{NS}_feed_mixer"
-    for extra in ["minecraft:wheat_seeds", "minecraft:carrot", "minecraft:potato", "minecraft:beetroot"]:
+    # food_waste: scraps from Ranching's food waste bin (systems/foodWasteBin.js)
+    for extra in ["minecraft:wheat_seeds", "minecraft:carrot", "minecraft:potato", "minecraft:beetroot", f"{NS}:food_waste"]:
         shapeless(f"mixed_feed_{extra.split(':')[1]}", [("forage", 2), "alfalfa", extra], "mixed_feed", 4, tag=mix)
     shapeless("concentrate_feed", [("mixed_feed", 2), ("minecraft:wheat", 2), "minecraft:bone_meal"],
               "concentrate_feed", 4, tag=mix)

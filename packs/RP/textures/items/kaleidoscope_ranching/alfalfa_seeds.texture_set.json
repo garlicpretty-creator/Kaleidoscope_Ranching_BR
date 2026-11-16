@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "alfalfa_seeds",
+    "metalness_emissive_roughness_subsurface": "alfalfa_seeds_mers",
+    "normal": "alfalfa_seeds_normal"
+  }
+}

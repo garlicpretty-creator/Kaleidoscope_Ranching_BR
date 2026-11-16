@@ -1603,6 +1603,77 @@ test("roosters near a player crow once at dawn; hens and chicks do not", () => {
   equal(crowAtDawn(), 1, "and again the next dawn");
 });
 
+// --- Food waste bin ---------------------------------------------------------------
+
+const { foodWasteBinComponent: BIN, CAPACITY: BIN_CAPACITY } = await import("../../packs/BP/scripts/systems/foodWasteBin.js");
+const binAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:food_waste_bin", { "kaleidoscope_ranching:fill": 0 });
+const held = (player, typeId) => {
+  let n = 0;
+  for (let i = 0; i < player.inventory.size; i++) {
+    const item = player.inventory.getItem(i);
+    if (item?.typeId === typeId) n += item.amount;
+  }
+  return n;
+};
+
+test("food goes into the waste bin one at a time, or a stack when sneaking, and comes out as scraps", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const bin = binAt();
+  hold(player, "minecraft:bread", 3);
+  use(BIN, bin, player);
+  equal(held(player, "minecraft:bread"), 2, "one bread taken");
+  equal(state(bin, "fill"), 1, "the bin shows scraps");
+  player.isSneaking = true;
+  use(BIN, bin, player);
+  player.isSneaking = false;
+  equal(held(player, "minecraft:bread"), 0, "sneaking tips in the rest");
+  hold(player, "kaleidoscope_ranching:cream");
+  use(BIN, bin, player);
+  equal(held(player, "kaleidoscope_ranching:cream"), 0, "Ranching's own food goes in too");
+
+  hold(player, "minecraft:stick");
+  use(BIN, bin, player);
+  equal(held(player, "kaleidoscope_ranching:food_waste"), 4, "four foods, four scraps");
+  equal(held(player, "minecraft:stick"), 1, "a non-food is not taken");
+  equal(state(bin, "fill"), 0, "empty again");
+});
+
+test("the waste bin refuses scraps and non-food, stops when full, and spills its contents when broken", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  let bin = binAt();
+  hold(player, "kaleidoscope_ranching:food_waste", 5);
+  use(BIN, bin, player);
+  equal(held(player, "kaleidoscope_ranching:food_waste"), 5, "scraps do not go back in");
+
+  player.isSneaking = true;
+  hold(player, "minecraft:apple", 40);
+  use(BIN, bin, player);
+  equal(held(player, "minecraft:apple"), 40 - BIN_CAPACITY, "only up to capacity");
+  equal(state(bin, "fill"), 4, "full");
+  use(BIN, bin, player);
+  equal(held(player, "minecraft:apple"), 40 - BIN_CAPACITY, "a full bin takes nothing");
+  player.isSneaking = false;
+
+  breakBlock(BIN, bin);
+  equal(dropsOf("kaleidoscope_ranching:food_waste").reduce((n, d) => n + d.item.amount, 0), BIN_CAPACITY, "everything spills once");
+});
+
+test("scraps are vegetable feed: pigs eat them from a trough, cows do not", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_ranching:food_waste", 2);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(state(trough, "fill"), 1, "one portion of scraps is one unit");
+  const pig = ranch("pig", 1, "female");
+  const cow = ranch("cow", 2, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(pig, "fed"), "the pig ate");
+  assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

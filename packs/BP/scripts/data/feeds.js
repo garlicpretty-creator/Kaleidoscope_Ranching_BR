@@ -36,6 +36,8 @@ export const FEEDS = {
   "minecraft:potato": { kind: KIND.VEG, units: 1 },
   "minecraft:beetroot": { kind: KIND.VEG, units: 1 },
   "minecraft:apple": { kind: KIND.VEG, units: 1 },
+  // 廚餘 (proposal: 豬吃廚餘): scraps from the food waste bin.
+  "kaleidoscope_ranching:food_waste": { kind: KIND.VEG, units: 1 },
 
   "kaleidoscope_ranching:mixed_feed": { kind: KIND.MIXED, units: 1 },
   // 乳清餵豬 (proposal, by-products line): whey from the cheese press fills a

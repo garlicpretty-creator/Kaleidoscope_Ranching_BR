@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "dried_yak_dung",
+    "metalness_emissive_roughness_subsurface": "dried_yak_dung_mers",
+    "normal": "dried_yak_dung_normal"
+  }
+}

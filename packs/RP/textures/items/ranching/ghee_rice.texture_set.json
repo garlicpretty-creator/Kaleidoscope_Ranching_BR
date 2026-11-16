@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "ghee_rice",
+    "metalness_emissive_roughness_subsurface": "ghee_rice_mers",
+    "normal": "ghee_rice_normal"
+  }
+}

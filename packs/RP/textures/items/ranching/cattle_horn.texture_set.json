@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "cattle_horn",
-    "metalness_emissive_roughness": [
-      0,
-      0,
-      140
-    ]
+    "metalness_emissive_roughness_subsurface": "cattle_horn_mers",
+    "normal": "cattle_horn_normal"
   }
 }

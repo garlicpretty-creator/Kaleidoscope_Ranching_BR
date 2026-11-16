@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "female_black",
+    "metalness_emissive_roughness_subsurface": "female_black_mers",
+    "normal": "female_black_normal"
+  }
+}

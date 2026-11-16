@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "baby_yellow",
+    "metalness_emissive_roughness_subsurface": "baby_yellow_mers",
+    "normal": "baby_yellow_normal"
+  }
+}

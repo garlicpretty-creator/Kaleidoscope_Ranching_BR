@@ -1,11 +1,8 @@
 {
-  "format_version": "1.16.100",
+  "format_version": "1.21.30",
   "minecraft:texture_set": {
     "color": "kr_feed_mixer_top",
-    "metalness_emissive_roughness": [
-      0,
-      0,
-      200
-    ]
+    "metalness_emissive_roughness_subsurface": "kr_feed_mixer_top_mers",
+    "normal": "kr_feed_mixer_top_normal"
   }
 }

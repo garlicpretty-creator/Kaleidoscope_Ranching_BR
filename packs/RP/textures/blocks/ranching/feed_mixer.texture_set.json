@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "feed_mixer",
+    "metalness_emissive_roughness_subsurface": "feed_mixer_mers",
+    "normal": "feed_mixer_normal"
+  }
+}

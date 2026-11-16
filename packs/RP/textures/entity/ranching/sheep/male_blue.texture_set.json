@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "male_blue",
+    "metalness_emissive_roughness_subsurface": "male_blue_mers",
+    "normal": "male_blue_normal"
+  }
+}

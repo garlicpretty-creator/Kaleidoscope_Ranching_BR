@@ -65,6 +65,7 @@ const TAGS = new Map([
   ["minecraft:iron_sword", ["minecraft:is_sword"]],
   ["minecraft:iron_axe", ["minecraft:is_axe"]],
   ["kaleidoscope_cookery:iron_kitchen_knife", ["kaleidoscope_cookery:kitchen_knife"]],
+  ...["bread", "apple", "carrot", "potato", "baked_potato", "cooked_beef", "rotten_flesh"].map((id) => [`minecraft:${id}`, ["minecraft:is_food"]]),
 ]);
 
 // Stack sizes, durability and tags of the pack's own items come from the
@@ -98,6 +99,7 @@ export class ItemStack {
   }
   getComponent(id) {
     if (id === "minecraft:durability") return this.durability;
+    if (id === "minecraft:food") return this.hasTag("minecraft:is_food") ? { canAlwaysEat: false } : undefined;
     return undefined;
   }
   hasTag(tag) {

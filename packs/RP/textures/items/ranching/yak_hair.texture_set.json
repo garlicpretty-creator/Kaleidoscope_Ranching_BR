@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "yak_hair",
+    "metalness_emissive_roughness_subsurface": "yak_hair_mers",
+    "normal": "yak_hair_normal"
+  }
+}
