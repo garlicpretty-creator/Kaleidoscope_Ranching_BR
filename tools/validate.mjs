@@ -375,9 +375,32 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
       if (pw !== ph || pw % w) fail(`${relative(root, png)}: ${pw}x${ph} does not match its model's ${w}x${h}`);
     }
   }
+  // Placed food (data/placedFoods.js): one bone per portion, inside the block's cell, and every
+  // shared pot and baking dish is its own model, not one shape in another colour.
+  {
+    const { PLACED_FOODS } = await load("placedFoods.js");
+    const shapes = new Map();
+    for (const food of PLACED_FOODS) {
+      const path = join(rp, "models", "blocks", `kaleidoscope_ranching.${food.block}.geo.json`);
+      if (!existsSync(path)) { fail(`placed food ${food.block}: no model`); continue; }
+      const bones = readJson(path)["minecraft:geometry"][0].bones;
+      for (let n = 1; n <= food.portions; n++) {
+        if (!bones.find((b) => b.name === `piece_${n}`)?.cubes?.length) fail(`placed food ${food.block}: bone piece_${n} is missing or empty`);
+      }
+      const cubes = bones.flatMap((b) => b.cubes ?? []);
+      for (const { origin: [x, y, z], size: [w, h, d] } of cubes) {
+        if (x < -8 || z < -8 || y < 0 || x + w > 8 || z + d > 8 || y + h > 16) fail(`placed food ${food.block}: cube at ${[x, y, z]} size ${[w, h, d]} leaves the block's cell`);
+      }
+      if (food.shape !== "wheel") {
+        const key = JSON.stringify(cubes.map((c) => [c.origin, c.size]).sort());
+        if (shapes.has(key)) fail(`placed food ${food.block}: same model as ${shapes.get(key)}; each dish needs its own`);
+        else shapes.set(key, food.block);
+      }
+    }
+  }
   for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
     const block = readJson(path)["minecraft:block"];
-    const all = [block.components, ...(block.permutations ?? []).map((p) => p.components)];
+    const all =[block.components, ...(block.permutations ?? []).map((p) => p.components)];
     const geometry = block.components["minecraft:geometry"];
     const crossed = (typeof geometry === "string" ? geometry : geometry?.identifier ?? "").endsWith(".cross");
     for (const components of all) {
