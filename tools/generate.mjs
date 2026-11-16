@@ -3,6 +3,8 @@
 // the Microsoft Store shortcut, which exists on PATH but only opens the Store.
 import { spawnSync } from "node:child_process";
 
+const PYFIX = [new URL("./pyfix", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), process.env.PYTHONPATH].filter(Boolean).join(process.platform === "win32" ? ";" : ":");
+
 const STEPS = [
   ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
@@ -44,7 +46,8 @@ if (!python) {
 
 for (const [kind, script, ...args] of STEPS) {
   const cmd = kind === "py" ? [...python, script, ...args] : [process.execPath, script, ...args];
-  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env: { ...process.env, PYTHONUTF8: "1" } });
+  // tools/pyfix/sitecustomize.py: file writes wait out a virus scanner on Windows.
+  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env: { ...process.env, PYTHONUTF8: "1", PYTHONPATH: PYFIX } });
   if (r.status !== 0) {
     console.error(`generate: ${script} failed` + (r.error ? ` (${r.error.message})` : ""));
     process.exit(r.status || 1);
