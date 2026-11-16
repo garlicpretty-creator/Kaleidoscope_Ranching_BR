@@ -1,71 +1,29 @@
 // Every Ranching action-bar message goes through showActionBar.
 //
-// ## Only messages that say why something did not work are shown (wrong item,
-// ## missing bottle, needs a heat source...). How-to hints and status read-outs
-// ## (fill counts, progress, "it looks happy") are not: the player asked for no
-// ## hint text on screen. Their language keys stay, so a key can be brought back
-// ## by taking it out of QUIET.
+// ## Nothing is shown: the add-on is played without text on screen (immersion). What happened
+// ## shows in the world instead (sounds, particles, the blocks' and animals' models). The only
+// ## exceptions are listed in SHOWN, until what they say can be seen in the world as well.
+// ## (The missing-Cookery warning is a setup error, sent as a chat message in api/cookery.js.)
 
 const NS = "kaleidoscope_ranching";
 
-const QUIET = new Set(
+const SHOWN = new Set(
   [
-    // How-to hints
-    "message.food_waste_bin.empty",
-    "message.hitching_post.empty",
-    "message.station.empty",
-    "message.rack.empty",
-    "ui.compost.filling",
-    // Status read-outs
-    "message.nest.empty",
-    "message.incubator.empty",
-    "message.nursing.grew",
-    "message.station.working",
-    "message.hay_rack.status",
-    "message.hitching_post.tied",
-    "message.hitching_post.untied",
-    "message.cowbell.called",
-    "message.food_waste_bin.added",
-    "ui.trough.status",
-    "ui.water.status",
-    "ui.waterer.ok",
-    "ui.compost.started",
-    "ui.compost.progress",
-    "ui.bag.status",
-    "ui.care.petted",
-    "ui.care.brushed",
-    "ui.care.ear_tagged",
-    // 1.1
-    "message.milking_rack.empty",
-    "message.milking_rack.tied",
-    "message.milking_rack.untied",
-    "message.rack.drying_hung",
-    "message.rack.drying_left",
-    "message.wash.done",
-    "message.harness.on",
-    "message.harness.off",
-    "message.plough.on",
-    "message.plough.off",
-    "message.blanket.on",
-    "message.horn.rally_set",
-    "message.horn.herding",
-    "message.horn.done",
-    "message.sheepdog.made",
-    "message.pack_bag.on",
-    "message.pack_bag.off",
-    "message.pack_bag.stored",
-    // (The candling lamp's read-out stays: showing hatching progress is what the tool is for.)
+    // The candling lamp's read-out: until the eggs themselves show how far along they are.
+    "message.candler.none",
+    "message.candler.status",
+    "message.candler.paused",
   ].map((key) => `${NS}.${key}`)
 );
 
 /** True when the message with this language key is not shown. */
 export function isQuiet(key) {
-  return QUIET.has(key);
+  return !SHOWN.has(key);
 }
 
-/** Shows rawtext on the player's action bar unless it is a hint or status message. */
+/** Shows rawtext on the player's action bar if its key is one of the few still SHOWN. */
 export function showActionBar(player, rawtext) {
-  if (rawtext && typeof rawtext === "object" && isQuiet(rawtext.translate)) return;
+  if (!rawtext || typeof rawtext !== "object" || isQuiet(rawtext.translate)) return;
   try {
     player.onScreenDisplay.setActionBar(rawtext);
   } catch {}

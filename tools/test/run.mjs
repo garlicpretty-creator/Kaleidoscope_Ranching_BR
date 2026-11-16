@@ -23,6 +23,11 @@ function equal(actual, expected, message) {
   if (actual !== expected) throw new Error(`${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
 }
 
+/** Immersion: Ranching shows no text on screen (core/actionBar.js); `why` is what used to be said. */
+function noText(player, why) {
+  equal(player.actionBar.length, 0, `no text on screen (${why})`);
+}
+
 const SEX = "kaleidoscope_ranching:sex";
 const at = (x, z = 0) => ({ x, y: 64, z });
 const isBaby = (entity) => entity.hasComponent("minecraft:is_baby");
@@ -160,7 +165,7 @@ test("two animals of the same sex never conceive", () => {
   __interact(player, b);
   equal(a.getDynamicProperty("kaleidoscope_ranching:pregnant_due"), undefined, "a");
   equal(b.getDynamicProperty("kaleidoscope_ranching:pregnant_due"), undefined, "b");
-  assert(player.actionBar.some((m) => m.translate.endsWith("same_sex")), "player is told why");
+  noText(player, "player is told why");
 });
 
 test("a pregnant female cannot be put in love again", () => {
@@ -175,7 +180,7 @@ test("a pregnant female cannot be put in love again", () => {
   __interact(player, boar);
   __interact(player, sow);
   equal(player.inventory.count("minecraft:carrot"), 1, "third carrot not used");
-  assert(player.actionBar.some((m) => m.translate.endsWith("pregnant")), "player is told she is pregnant");
+  noText(player, "player is told she is pregnant");
 });
 
 test("a lamb inherits its mother's wool colour", () => {
@@ -214,7 +219,7 @@ test("animals that were not cared for today do not breed", () => {
   hold(player, "minecraft:wheat", 2);
   __interact(player, cow);
   equal(player.inventory.count("minecraft:wheat"), 2, "wheat kept");
-  assert(player.actionBar.some((m) => m.translate.endsWith("not_cared")), "player told why");
+  noText(player, "player told why");
 });
 
 test("production has no quality grades and does not depend on care", () => {
@@ -497,7 +502,7 @@ test("a cow carcass has no horns, and needs a blade", () => {
   player.inventory.setItem(0, carcassFrom("cow", "female"));
   use(RACK, rack, player);
   use(RACK, rack, player); // empty hand
-  assert(player.actionBar.some((m) => m.translate.endsWith("rack.need_blade")), "asks for a blade");
+  noText(player, "asks for a blade");
   hold(player, "kaleidoscope_cookery:iron_kitchen_knife");
   use(RACK, rack, player);
   assert(player.inventory.count("kaleidoscope_ranching:raw_hide") > 0, "Cookery knife cuts");
@@ -749,13 +754,13 @@ test("milking gives one bottle per cow per day and needs an empty bottle", () =>
   careFor(cow, 3);
   hold(player, "kaleidoscope_ranching:milking_pail");
   __interact(player, cow);
-  assert(player.actionBar.at(-1).translate.endsWith("need_bottle"), "needs a bottle");
+  noText(player, "needs a bottle");
   player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 2));
   __interact(player, cow);
   equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 1, "a bottle of cow milk");
   __interact(player, cow);
   equal(player.inventory.count("minecraft:glass_bottle"), 1, "only once a day");
-  assert(player.actionBar.at(-1).translate.endsWith("milked_today"), "told it was milked");
+  noText(player, "told it was milked");
   __skipTime(DAY);
   __interact(player, cow);
   equal(player.inventory.count("minecraft:glass_bottle"), 0, "milked again the next day");
@@ -771,7 +776,7 @@ test("bulls and calves cannot be milked", () => {
   calf.triggerEvent("kaleidoscope_ranching:become_baby");
   __interact(player, calf);
   equal(player.inventory.count("minecraft:glass_bottle"), 2, "no bottle used");
-  assert(player.actionBar.every((m) => m.translate.endsWith("not_female")), "told why");
+  noText(player, "told why");
 });
 
 test("three bottle feedings make a calf grow up and return the bottles", () => {
@@ -880,7 +885,7 @@ test("the incubator hatches only while heated; the countdown pauses when cold", 
   INCUBATOR.onPlace({ block: incubator, dimension: overworld });
   hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
   use(INCUBATOR, incubator, player);
-  assert(player.actionBar.at(-1).translate.endsWith("incubator.cold"), "warned it is cold");
+  noText(player, "warned it is cold");
   __advance(24000 * 2);
   equal(overworld.getEntities({ type: "kaleidoscope_ranching:chicken" }).length, 0, "cold: nothing hatched");
   __place(overworld, { x: 0, y: 63, z: 0 }, "minecraft:campfire");
@@ -961,7 +966,7 @@ test("the pickling vat needs every ingredient and refunds them if broken early",
   const vat = stationAt("pickling_vat");
   player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:duck_egg", 4));
   use(STATION, vat, player);
-  assert(player.actionBar.at(-1).translate.endsWith("station.missing"), "missing clay");
+  noText(player, "missing clay");
   player.inventory.setItem(1, new ItemStack("minecraft:clay_ball", 1));
   use(STATION, vat, player);
   equal(player.inventory.count("kaleidoscope_ranching:duck_egg"), 0, "eggs in the vat");
@@ -1321,7 +1326,7 @@ test("a hay rack takes only grass feed and holds four hay bales", () => {
   const rack = place("hay_rack", at(0), { hay: 0 });
   hold(player, "minecraft:wheat_seeds", 1);
   use(HAY_RACK, rack, player);
-  assert(player.actionBar.at(-1).translate.endsWith("hay_rack.only_grass"), "seeds refused");
+  noText(player, "seeds refused");
   hold(player, "minecraft:hay_block", 1);
   use(HAY_RACK, rack, player);
   equal(hayUnits(rack), 9, "one bale is nine units");
@@ -1334,7 +1339,7 @@ test("a hay rack takes only grass feed and holds four hay bales", () => {
   equal(player.inventory.count("minecraft:hay_block"), 2, "the rest stays in hand");
   equal(state(rack, "hay"), 3, "full hay shown");
   use(HAY_RACK, rack, player);
-  assert(player.actionBar.at(-1).translate.endsWith("hay_rack.full"), "told it is full");
+  noText(player, "told it is full");
 });
 
 test("the hay rack feeds grass eaters once a day at tier 1, not chickens", () => {
@@ -1527,7 +1532,7 @@ test("a leashed animal cannot be crated", () => {
   __interact(player, cow);
   __advance(1);
   assert(cow.isValid, "still here");
-  assert(player.actionBar.at(-1).translate.endsWith("crate.leashed"), "told why");
+  noText(player, "told why");
 });
 
 test("the hitching post ties led animals and hands them back", () => {
@@ -1835,7 +1840,7 @@ test("M7: intestine and tripe are washed at the water trough for one level of wa
   equal(state(water, "water"), 0, "used one level");
   waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
   equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "no water, no wash");
-  assert(player.actionBar.at(-1).translate.endsWith("wash.no_water"), "says it is dry");
+  noText(player, "says it is dry");
 });
 
 test("M7: the meat grinder gives one mince per use and makes sausages from mince and casing", () => {
@@ -1863,11 +1868,11 @@ test("M7: an empty butcher rack air-dries up to four pieces for three days", () 
   hold(player, "kaleidoscope_ranching:raw_sausage", 5);
   for (let i = 0; i < 5; i++) use(RACK, rack, player);
   equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 1, "only four hang");
-  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_full"), "says it is full");
+  noText(player, "says it is full");
   player.inventory.setItem(8, carcassFrom("chicken", "female"));
   player.selectedSlotIndex = 8;
   use(RACK, rack, player);
-  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_busy"), "no carcass while drying");
+  noText(player, "no carcass while drying");
   equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "none", "carcass not hung");
   __skipTime(24000 * 2);
   player.selectedSlotIndex = 6;
@@ -2039,7 +2044,7 @@ test("M8: the milking rack milks its cow once a day into the container below", (
   bull.getComponent("minecraft:leashable").leashTo(player);
   MILKING_RACK.onPlayerInteract({ block: rack, player });
   __advance(1);
-  assert(player.actionBar.at(-1).translate.endsWith("milking_rack.not_milkable"), "no bulls");
+  noText(player, "no bulls");
   bull.getComponent("minecraft:leashable").unleash();
   const cow = ranch("cow", 2, "female");
   cow.getComponent("minecraft:leashable").leashTo(player);
@@ -2362,12 +2367,12 @@ test("M10: a harnessed buffalo with a plough tills three blocks wide while led",
   hold(player, "kaleidoscope_ranching:harness", 1);
   __interact(player, buffalo);
   __advance(1);
-  assert(player.actionBar.at(-1).translate.endsWith("harness.shy"), "needs three hearts");
+  noText(player, "needs three hearts");
   care.setAffection(buffalo, 60);
   hold(player, "kaleidoscope_ranching:plough", 1);
   __interact(player, buffalo);
   __advance(1);
-  assert(player.actionBar.at(-1).translate.endsWith("plough.need_harness"), "harness first");
+  noText(player, "harness first");
   hold(player, "kaleidoscope_ranching:harness", 1);
   __interact(player, buffalo);
   __advance(1);
@@ -2391,7 +2396,7 @@ test("M10: a sheepdog drives the animals to the rally point when the horn is blo
   hold(player, "kaleidoscope_ranching:herding_horn", 1);
   __interact(player, wolf);
   __advance(1);
-  assert(player.actionBar.at(-1).translate.endsWith("sheepdog.not_yours"), "an untamed wolf will not do");
+  noText(player, "an untamed wolf will not do");
   wolf.tamedTo = player.id;
   __interact(player, wolf);
   __advance(1);
@@ -2629,7 +2634,7 @@ test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", ()
   hold(player, "kaleidoscope_ranching:pack_bag", 1);
   __interact(player, calf);
   __advance(1);
-  assert(player.actionBar.at(-1).translate.endsWith("pack_bag.baby"), "not on a calf");
+  noText(player, "not on a calf");
   const yak = ranch("yak", 0, "female");
   __interact(player, yak);
   __advance(1);
@@ -2644,7 +2649,7 @@ test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", ()
   equal(player.inventory.count("minecraft:wheat"), 0, "stored, not fed");
   equal(packBag.bagContents(yak).length, 1, "one stack in the bag");
   assert(!packBag.takeOffPackBag(player, yak), "not while full");
-  assert(player.actionBar.at(-1).translate.endsWith("pack_bag.not_empty"), "says so");
+  noText(player, "says so");
   assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "taken out");
   equal(player.inventory.count("minecraft:wheat"), 20, "all 20 back");
   assert(packBag.takeOffPackBag(player, yak), "off when empty");
@@ -2802,7 +2807,7 @@ test("1.1: a crated yak keeps its pack bag; a bag with things in it must be empt
   __interact(player, yak);
   __advance(1);
   assert(yak.isValid, "not crated while the bag holds things");
-  assert(player.actionBar.at(-1).translate.endsWith("crate.bag_not_empty"), "told why");
+  noText(player, "told why");
   assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "emptied");
   const back = crateAndRelease(player, yak);
   assert(back, "released");
