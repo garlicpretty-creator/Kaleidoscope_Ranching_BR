@@ -16,14 +16,27 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 
-from sleep_preview import face_point, face_rects, molang, rot
+from sleep_preview import face_rects, molang, rot
+
+
+def face_point(cube, face, a, b):
+    """The model point at (a, b) of a face's texels, 0..1 across and down, as Bedrock lays out
+    box UV: the first column of the top, bottom and north faces is at the smallest x, and the
+    left strip of the unwrap ("east" to boxuv.Painter) is the face at the smallest x."""
+    (x, y, z), (w, h, d) = cube["origin"], cube["size"]
+    x1, y1, z1 = x + w, y + h, z + d
+    return {
+        "up": (x + a * w, y1, z1 - b * d), "down": (x + a * w, y, z1 - b * d),
+        "north": (x + a * w, y1 - b * h, z), "south": (x1 - a * w, y1 - b * h, z1),
+        "east": (x, y1 - b * h, z1 - a * d), "west": (x1, y1 - b * h, z + a * d),
+    }[face]
 
 ROOT = Path(__file__).resolve().parents[2]
 RP = ROOT / "packs" / "RP"
 NS = "kaleidoscope_ranching"
 TILE = 300
 PITCH = math.radians(22)
-SHADE = {"up": 1.0, "north": 0.86, "west": 0.72, "east": 0.76, "south": 0.8, "down": 0.55}
+SHADE = {"up": 1.0, "north": 0.86, "west": 0.76, "east": 0.72, "south": 0.8, "down": 0.55}
 BACKGROUND = (214, 224, 208)
 
 
