@@ -23,6 +23,29 @@ export function give(player, typeId, amount = 1) {
   }
 }
 
+/**
+ * `amount` items as full stacks.
+ * ## `new ItemStack(id, n)` silently clamps n to the item's stack size, so
+ * ## anything that may exceed one stack (eggs and milk stack to 16, another
+ * ## add-on's items to whatever it chose) has to be split, or items vanish.
+ */
+export function stacksOf(typeId, amount) {
+  const stacks = [];
+  let left = amount;
+  while (left > 0) {
+    const stack = new ItemStack(typeId, 1);
+    stack.amount = Math.min(left, stack.maxAmount);
+    left -= stack.amount;
+    stacks.push(stack);
+  }
+  return stacks;
+}
+
+/** Drops `amount` items at a location, as many stacks as it takes. */
+export function dropItems(dimension, typeId, amount, location) {
+  for (const stack of stacksOf(typeId, amount)) dimension.spawnItem(stack, location);
+}
+
 /** Gives an already built stack (keeps dynamic properties). */
 export function giveStack(player, stack) {
   const rest = player.getComponent("minecraft:inventory")?.container?.addItem(stack) ?? stack;

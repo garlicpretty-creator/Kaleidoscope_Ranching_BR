@@ -5,6 +5,7 @@ import { CARE, TEST_WITH_VANILLA } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { FAMILY_LIVESTOCK } from "../data/m1_contract.js";
 import { getBlockData, setBlockData, clearBlockData } from "../core/blockStore.js";
+import { dropItems, stacksOf } from "../core/inventory.js";
 
 /** Current game day and absolute tick, from the shared clock (core/time.js). */
 export { today, nowTick as absTime } from "../core/time.js";
@@ -75,12 +76,13 @@ export function damageMainhand(player) {
 export function give(player, itemId, amount = 1) {
   if (amount <= 0) return;
   const inv = player.getComponent("minecraft:inventory")?.container;
-  const stack = new ItemStack(itemId, amount);
-  const left = inv?.addItem(stack);
-  if (left) player.dimension.spawnItem(left, player.location);
+  for (const stack of stacksOf(itemId, amount)) {
+    const left = inv ? inv.addItem(stack) : stack;
+    if (left) player.dimension.spawnItem(left, player.location);
+  }
 }
 export function dropAt(dimension, location, itemId, amount = 1) {
-  if (amount > 0) dimension.spawnItem(new ItemStack(itemId, amount), location);
+  if (amount > 0) dropItems(dimension, itemId, amount, location);
 }
 
 // ---- pen queries ----

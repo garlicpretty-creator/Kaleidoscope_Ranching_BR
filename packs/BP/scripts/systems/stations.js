@@ -10,12 +10,11 @@
 // Quality: the lowest tier among the milk or eggs used scales the output count
 // (QUALITY_YIELD), rounded down, at least 1.
 
-import { ItemStack } from "@minecraft/server";
 import { QUALITY_YIELD } from "../data/processing.js";
 import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
-import { countItems, give, mainHand, takeItems } from "../core/inventory.js";
+import { countItems, dropItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { nowTick } from "../core/time.js";
 
 // ## The duration is stored with the running batch. A recipe another add-on
@@ -109,12 +108,12 @@ function spill(dimension, location, typeId) {
   const done = nowTick() >= data.start + ticksOf(data);
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
   if (done) {
-    for (const output of data.outputs) dimension.spawnItem(new ItemStack(output.item, output.count), at);
+    for (const output of data.outputs) dropItems(dimension, output.item, output.count, at);
   } else {
     // Unfinished work gives the ingredients back.
     const counts = new Map();
     for (const id of data.refund ?? []) counts.set(id, (counts.get(id) ?? 0) + 1);
-    for (const [id, count] of counts) dimension.spawnItem(new ItemStack(id, count), at);
+    for (const [id, count] of counts) dropItems(dimension, id, count, at);
   }
 }
 

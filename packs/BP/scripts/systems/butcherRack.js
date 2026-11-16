@@ -8,7 +8,7 @@ import { animalByCarcass, butcherEntry } from "../core/content.js";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid } from "../core/ids.js";
 import { emitRanchEvent } from "../core/events.js";
-import { consumeMainHand, damageMainHand, give, mainHand } from "../core/inventory.js";
+import { consumeMainHand, damageMainHand, dropItems, give, mainHand } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
@@ -132,7 +132,7 @@ function spill(dimension, location, typeId) {
   }
   const cuts = cutsOf(data.carcass);
   for (let i = data.stroke; i >= 0 && i < cuts.length; i = nextCut(cuts, data, i + 1)) {
-    for (const { typeId, amount } of rollCut(cuts[i], data)) dimension.spawnItem(new ItemStack(typeId, amount), at);
+    for (const { typeId, amount } of rollCut(cuts[i], data)) dropItems(dimension, typeId, amount, at);
   }
 }
 

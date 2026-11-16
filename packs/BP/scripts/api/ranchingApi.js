@@ -76,6 +76,11 @@ function list(value, field, max) {
   if (value.length > max) fail(`${field} has more than ${max} entries`);
   return value;
 }
+/** A JSON object (not an array, not null), or the call fails naming the field. */
+function object(value, field) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${field} must be an object`);
+  return value;
+}
 function room(kind, key) {
   if (!counts[kind].has(key) && counts[kind].size >= LIMITS[kind]) fail(`too many ${kind} registrations (limit ${LIMITS[kind]})`);
   counts[kind].add(key);
@@ -114,7 +119,7 @@ export function registerAnimal(data) {
   if (reproduction === "gestation" && !row.breedItems.length) fail("a gestation animal needs breedItems");
   if (data.carcass !== undefined) row.carcass = ownId(data.carcass, "carcass");
   if (data.dailyProduct !== undefined) {
-    const { via, items } = data.dailyProduct;
+    const { via, items } = object(data.dailyProduct, "dailyProduct");
     if (!["milking_pail", "nest_box"].includes(via)) fail('dailyProduct.via must be "milking_pail" or "nest_box"');
     if (via === "nest_box" && reproduction !== "egg") fail("only egg animals use the nest box");
     if (via === "milking_pail" && reproduction !== "gestation") fail("only gestation animals are milked");
@@ -126,10 +131,12 @@ export function registerAnimal(data) {
     if (data.fertilizedEgg === undefined) fail("an egg animal needs fertilizedEgg");
     row.fertilizedEgg = ownId(data.fertilizedEgg, "fertilizedEgg");
   }
-  const care = data.care ?? {};
+  const care = data.care === undefined ? {} : object(data.care, "care");
   const eats = list(care.eats ?? ["mixed", "concentrate"], "care.eats", 5).map((kind) => FEED_KINDS[kind] ?? fail(`unknown feed kind "${kind}"`));
   const treat = care.treat === undefined ? undefined : itemId(care.treat, "care.treat");
-  const brushDrops = list(care.brushDrops ?? [], "care.brushDrops", 4).map(([item, chance], i) => {
+  const brushDrops = list(care.brushDrops ?? [], "care.brushDrops", 4).map((drop, i) => {
+    if (!Array.isArray(drop)) fail(`care.brushDrops[${i}] must be [item, chance]`);
+    const [item, chance] = drop;
     if (!(typeof chance === "number" && chance >= 0 && chance <= 1)) fail(`care.brushDrops[${i}] chance must be 0–1`);
     return [itemId(item, `care.brushDrops[${i}]`), chance];
   });
@@ -151,7 +158,8 @@ export function registerFeedItem(data) {
 }
 
 function ingredient(entry, field) {
-  const count = int(entry?.count ?? 1, `${field}.count`, 1, 64);
+  object(entry, field);
+  const count = int(entry.count ?? 1, `${field}.count`, 1, 64);
   if (entry?.anyOf !== undefined) {
     const anyOf = list(entry.anyOf, `${field}.anyOf`, 12).map((v, i) => itemId(v, `${field}.anyOf[${i}]`));
     if (!anyOf.length) fail(`${field}.anyOf is empty`);
@@ -170,8 +178,8 @@ export function registerRecipe(data) {
   if (!STATIONS.includes(data.station)) fail(`station must be one of ${STATIONS.join(", ")}`);
   const inputs = list(data.inputs, "inputs", 4).map((entry, i) => ingredient(entry, `inputs[${i}]`));
   const outputs = list(data.outputs, "outputs", 4).map((entry, i) => ({
-    item: itemId(entry?.item, `outputs[${i}].item`),
-    count: int(entry?.count ?? 1, `outputs[${i}].count`, 1, 64),
+    item: itemId(object(entry, `outputs[${i}]`).item, `outputs[${i}].item`),
+    count: int(entry.count ?? 1, `outputs[${i}].count`, 1, 64),
   }));
   if (!inputs.length || !outputs.length) fail("a recipe needs inputs and outputs");
   const ticks = int(data.ticks ?? 0, "ticks", 0, 24000 * 7);
@@ -189,7 +197,8 @@ export function registerButcher(data) {
   const carcass = ownId(data.carcass, "carcass");
   const cuts = list(data.cuts, "cuts", 12).map((cut, i) => {
     const where = `cuts[${i}]`;
-    const [min, max] = Array.isArray(cut?.count) ? cut.count : [];
+    object(cut, where);
+    const [min, max] = Array.isArray(cut.count) ? cut.count : [];
     int(min, `${where}.count[0]`, 0, 64);
     int(max, `${where}.count[1]`, min, 64);
     const entry = { item: itemId(cut.item, `${where}.item`), count: [min, max] };
@@ -271,7 +280,7 @@ export function handleScriptEvent(id, message) {
   if (id === EV("query_animal")) {
     let info;
     try {
-      info = queryAnimal(JSON.parse(String(message ?? "")) ?? {});
+      info = queryAnimal(object(JSON.parse(String(message ?? "")), "message"));
     } catch (error) {
       info = { found: false, error: error instanceof ApiError ? error.message : "message is not valid JSON" };
     }

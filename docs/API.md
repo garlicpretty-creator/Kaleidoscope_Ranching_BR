@@ -167,3 +167,13 @@
 
 - 物品標籤 `kaleidoscope_ranching:milk`、`kaleidoscope_ranching:fertilized_egg`、`kaleidoscope_ranching:feed`、`kaleidoscope_ranching:brush`：讓別的附加包認得這是奶、受精蛋、飼料或毛刷。擠奶和孵化實際用到哪些物品，以 `register_animal` 註冊的內容為準。
 - 實體族群 `ranching_livestock`、`ranching_male`、`ranching_female`：可以用來篩選樂牧的動物，也是你的動物被樂牧認得的方式。
+
+## 伺服器設定指令
+
+這不是給附加包用的註冊介面，而是管理員可以在聊天欄或指令方塊下的指令：
+
+```
+/scriptevent kaleidoscope_ranching:config clean_need off
+```
+
+關閉（`off`）或開啟（`on`）「清潔」這項每日需求。管理員也可以在牧場記事本的名冊畫面裡切換。

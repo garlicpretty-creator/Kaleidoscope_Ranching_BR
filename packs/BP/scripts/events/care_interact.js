@@ -122,7 +122,7 @@ export function registerCareInteractions() {
 
   // Hurt lowers affection (rate-limited).
   world.afterEvents.entityHurt.subscribe(({ hurtEntity: e }) => {
-    if (!SPECIES[e.typeId] || !e.isValid) return;
+    if (!e?.isValid || !SPECIES[e.typeId]) return;
     const now = system.currentTick;
     const last = e.getDynamicProperty("kr:hurt_t") ?? -Infinity;
     if (now - last < CARE.HURT_COOLDOWN_TICKS && now >= last) return;

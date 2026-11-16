@@ -1049,6 +1049,38 @@ test("M5: petting, brushing and treats are broadcast as cared events", () => {
   equal(cared[0].player, player.id, "who did it");
 });
 
+test("M5: malformed registrations get a readable reason, never a script error", () => {
+  const bad = [
+    ["register_animal", { id: "kr_test:x", reproduction: "gestation", breedItems: ["minecraft:wheat"], dailyProduct: null }, "dailyProduct"],
+    ["register_animal", { id: "kr_test:x", reproduction: "gestation", breedItems: ["minecraft:wheat"], care: { brushDrops: ["minecraft:string"] } }, "brushDrops"],
+    ["register_butcher", { carcass: "kr_test:x_carcass", cuts: [null] }, "cuts[0]"],
+    ["register_recipe", { id: "kr_test:r", station: "butter_churn", inputs: [null], outputs: [{ item: "kr_test:o" }] }, "inputs[0]"],
+    ["register_recipe", { id: "kr_test:r", station: "butter_churn", inputs: [{ item: "kr_test:i" }], outputs: ["kr_test:o"] }, "outputs[0]"],
+  ];
+  for (const [event, payload, field] of bad) {
+    const r = call(event, payload);
+    equal(r.ok, false, `${field} refused`);
+    assert(r.error.includes(field) && !r.error.includes("TypeError"), `${field}: ${r.error}`);
+  }
+  system.sendScriptEvent(`${API}:query_animal`, "[]");
+  assert(sent("animal_info").at(-1).error, "query needs an object");
+});
+
+test("items beyond one stack are split, not lost", () => {
+  clearWorld();
+  __setMaxStack("kr_test:big_egg", 1);
+  const nest = nestAt();
+  blockStore.setBlockData(nest, { eggs: { "kr_test:big_egg": 5 }, hatching: [] });
+  breakBlock(NEST, nest);
+  equal(dropsOf("kr_test:big_egg").reduce((sum, drop) => sum + drop.item.amount, 0), 5, "all five eggs dropped");
+  // A compost bin gives back the manure put into it.
+  const bin = __place(overworld, { x: 30, y: 64, z: 0 }, `${NS}:compost_bin`, { [`${NS}:stage`]: 0, [`${NS}:manure`]: 3 });
+  const brokenBlockPermutation = bin.permutation;
+  bin.setType("minecraft:air");
+  compostBinComponent.onPlayerBreak({ block: bin, dimension: overworld, brokenBlockPermutation });
+  equal(dropsOf(`${NS}:manure_item`).reduce((sum, drop) => sum + drop.item.amount, 0), 3, "manure returned");
+});
+
 // --- M1: vanilla parity ---------------------------------------------------
 
 test("shearing drops wool of the sheep's colour and marks it sheared", () => {

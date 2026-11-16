@@ -9,6 +9,7 @@
 
 import { world } from "@minecraft/server";
 import { createRegistry, registerClockTask } from "../core/clock.js";
+import { takeBlockData } from "./blockStore.js";
 
 const TYPES = new Map(); // typeId → { registry, tick }
 
@@ -84,6 +85,9 @@ export function clockBlockEvents(extra = {}) {
       const typeId = event.brokenBlockPermutation?.type?.id ?? event.block.typeId;
       untrackBlock(typeId, event.block.dimension, event.block.location);
       extra.onPlayerBreak?.(event);
+      // ## These blocks only keep day stamps (last use, pen cleanliness); a new
+      // ## block placed on the same spot must not inherit them.
+      takeBlockData(event.block.dimension, event.block.location, null, typeId);
     },
   };
 }

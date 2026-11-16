@@ -28,7 +28,7 @@ import { CLOCK_INTERVAL } from "../core/clock.js";
 import { defineClockBlock, startBlockClock, trackBlock, untrackBlock } from "../core/blockClock.js";
 import { fertilizedChance, inheritedAffection, notifyBorn, production } from "../core/husbandry.js";
 import { dp, rid } from "../core/ids.js";
-import { consumeMainHand, give, mainHand } from "../core/inventory.js";
+import { consumeMainHand, dropItems, give, mainHand, stacksOf } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 
@@ -158,10 +158,11 @@ function pushToHopper(block, data) {
   if (!container) return;
   const moved = {};
   for (const [egg, count] of Object.entries(data.eggs)) {
-    const rest = container.addItem(new ItemStack(egg, count));
-    if (rest) data.eggs[egg] = rest.amount;
+    let left = 0;
+    for (const stack of stacksOf(egg, count)) left += container.addItem(stack)?.amount ?? 0;
+    if (left) data.eggs[egg] = left;
     else delete data.eggs[egg];
-    const n = count - (rest?.amount ?? 0);
+    const n = count - left;
     if (n > 0) moved[egg] = n;
   }
   if (Object.keys(moved).length) emitRanchEvent("harvested", { product: "egg", items: moved });
@@ -184,7 +185,7 @@ export function settleNest(block) {
 function dropNest(dimension, location, data) {
   if (!data) return;
   const at = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
-  for (const [egg, count] of Object.entries(data.eggs ?? {})) dimension.spawnItem(new ItemStack(egg, count), at);
+  for (const [egg, count] of Object.entries(data.eggs ?? {})) dropItems(dimension, egg, count, at);
   for (const egg of data.hatching ?? []) dimension.spawnItem(new ItemStack(egg.egg, 1), at);
 }
 
