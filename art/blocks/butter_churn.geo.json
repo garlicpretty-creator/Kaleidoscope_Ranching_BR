@@ -1,0 +1,202 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.butter_churn",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "churn",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0,
+                -5
+              ],
+              "size": [
+                10,
+                1,
+                10
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -4,
+                1,
+                -4
+              ],
+              "size": [
+                8,
+                11,
+                8
+              ],
+              "uv": [
+                0,
+                11
+              ]
+            },
+            {
+              "origin": [
+                -4.5,
+                2,
+                -4.5
+              ],
+              "size": [
+                9,
+                1,
+                9
+              ],
+              "uv": [
+                0,
+                30
+              ]
+            },
+            {
+              "origin": [
+                -4.5,
+                9,
+                -4.5
+              ],
+              "size": [
+                9,
+                1,
+                9
+              ],
+              "uv": [
+                0,
+                30
+              ]
+            },
+            {
+              "origin": [
+                -3,
+                12,
+                -3
+              ],
+              "size": [
+                6,
+                1,
+                6
+              ],
+              "uv": [
+                36,
+                30
+              ]
+            },
+            {
+              "origin": [
+                -0.5,
+                13,
+                -0.5
+              ],
+              "size": [
+                1,
+                7,
+                1
+              ],
+              "uv": [
+                60,
+                30
+              ]
+            },
+            {
+              "origin": [
+                -2.5,
+                19,
+                -0.5
+              ],
+              "size": [
+                5,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                40
+              ]
+            }
+          ]
+        },
+        {
+          "name": "busy",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                13,
+                -1.5
+              ],
+              "size": [
+                3,
+                1,
+                3
+              ],
+              "uv": [
+                12,
+                40
+              ]
+            },
+            {
+              "origin": [
+                0,
+                12,
+                -3.5
+              ],
+              "size": [
+                2,
+                1,
+                1
+              ],
+              "uv": [
+                24,
+                40
+              ]
+            },
+            {
+              "origin": [
+                1,
+                10,
+                -4.5
+              ],
+              "size": [
+                1,
+                2,
+                1
+              ],
+              "uv": [
+                30,
+                40
+              ]
+            }
+          ],
+          "parent": "churn"
+        }
+      ]
+    }
+  ]
+}
