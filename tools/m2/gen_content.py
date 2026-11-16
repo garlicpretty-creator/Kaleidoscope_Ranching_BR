@@ -636,11 +636,20 @@ def main():
     for name, g in GEOMETRY.items():
         write_json(RP / "models" / "blocks" / f"{NS}.{name}.geo.json", g)
 
+    def save_png(im, path):
+        # Keep the committed bytes when the pixels match, so another machine's PNG encoder
+        # does not rewrite every texture on a rerun.
+        if path.exists():
+            with Image.open(path) as old:
+                if old.mode == im.mode and old.size == im.size and old.tobytes() == im.tobytes():
+                    return
+        im.save(path)
+
     tex_dir = RP / "textures" / "blocks" / NS
     tex_dir.mkdir(parents=True, exist_ok=True)
     terrain = {}
     for key, im in blocks_textures().items():
-        im.save(tex_dir / f"{key}.png")
+        save_png(im, tex_dir / f"{key}.png")
         terrain[key] = {"textures": f"textures/blocks/{NS}/{key}"}
     write_json(SHARED / "terrain_texture.json", {
         "resource_pack_name": NS, "texture_name": "atlas.terrain", "padding": 8, "num_mip_levels": 4,
@@ -650,7 +659,7 @@ def main():
     itex_dir.mkdir(parents=True, exist_ok=True)
     itemtex = {}
     for key, im in item_textures().items():
-        im.save(itex_dir / f"{key}.png")
+        save_png(im, itex_dir / f"{key}.png")
         itemtex[f"kr_{key}"] = {"textures": f"textures/items/{NS}/{key}"}
     write_json(SHARED / "item_texture.json", {
         "resource_pack_name": NS, "texture_name": "atlas.items", "texture_data": itemtex})
