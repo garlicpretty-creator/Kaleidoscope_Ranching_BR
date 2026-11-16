@@ -40,7 +40,7 @@ export const RULES = [
   [/^blocks\/kaleidoscope_ranching\/kr_(planks|trough|chaff_cutter|compost_bin_side|feed_mixer)/, "wood"],
   [/^blocks\/ranching\/(fermenting_jar|pickling_vat)$/, "glazed"],
   [/^blocks\/ranching\/incubator$/, "stone"],
-  [/^blocks\/ranching\/(aging_rack|butcher_rack|butter_churn|cheese_press|nest_box|hay_rack|hitching_post)$/, "wood"],
+  [/^blocks\/ranching\/(aging_rack|butcher_rack|butter_churn|cheese_press|nest_box|hay_rack|hitching_post|tanning_rack)$/, "wood"],
   [/^blocks\/ranching\/cheese_wheel$/, "fat"],
   // Items
   [/^items\/ranching\/(milking_pail|cowbell)$/, "metal"],

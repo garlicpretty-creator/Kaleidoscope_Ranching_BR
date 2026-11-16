@@ -1,0 +1,25 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_egg_from_goose_egg"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:goose_egg"
+      }
+    ],
+    "result": {
+      "item": "minecraft:egg",
+      "count": 2
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:goose_egg"
+      }
+    ]
+  }
+}

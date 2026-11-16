@@ -315,6 +315,55 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
 }
 
+// --- 4b. Every item has somewhere to go --------------------------------------
+
+// ## A player who gets an item must be able to do something with it: eat or
+// ## drink it, use it, place it, burn it, or put it into a crafting, furnace,
+// ## processing, Cookery or feed recipe. Catches by-products that pile up with
+// ## no use (企劃書: 產物都有去處).
+{
+  const { DISHES, DISH_PREPS } = await load("dishes.js");
+  const consumed = new Set();
+  const take = (id) => typeof id === "string" && consumed.add(local(id));
+  for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json"))) {
+    const recipe = Object.values(readJson(path)).find((v) => v && typeof v === "object" && v.description);
+    if (!recipe) continue;
+    for (const entry of [...Object.values(recipe.key ?? {}), ...(recipe.ingredients ?? [])]) take(typeof entry === "string" ? entry : entry.item);
+    if (recipe.input) take(typeof recipe.input === "string" ? recipe.input : recipe.input.item);
+  }
+  for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach(take);
+  for (const recipe of VANILLA_COOKING) take(recipe.input);
+  const walkSlots = (value) => {
+    if (typeof value === "string") take(value);
+    else if (Array.isArray(value)) value.forEach(walkSlots);
+    else if (value && typeof value === "object" && !value.tag) Object.values(value).forEach(walkSlots);
+  };
+  for (const dish of [...DISHES, ...(DISH_PREPS ?? [])]) {
+    walkSlots(dish.slots ?? []);
+    if (dish.input) walkSlots(dish.input);
+  }
+  Object.keys(FEEDS).forEach(take);
+  Object.values(SPECIES).forEach((row) => take(row.treat));
+  for (const animal of ANIMALS) {
+    [...(animal.breedItems ?? []), ...(animal.temptItems ?? [])].forEach(take);
+    take(animal.fertilizedEgg); // nest box and incubator
+    take(animal.carcass); // butcher rack
+  }
+  Object.keys(BUTCHER_TABLE).forEach(take);
+  for (const { data } of itemFiles) {
+    const c = data.components ?? {};
+    const usable = c["minecraft:food"] || c["minecraft:block_placer"] || c["minecraft:fuel"] || c["minecraft:durability"] ||
+      Object.keys(c).some((k) => k.startsWith("kaleidoscope_ranching:"));
+    if (usable) take(data.description.identifier);
+  }
+  // Used by clicking an animal or a block (scripts), not by a recipe.
+  const CLICKED = ["ranch_notebook", "ear_tag", "manure_item", "milking_pail", "nursing_bottle", "brush", "feed_bag"];
+  // Registered with Cookery as wok oil (api/cookeryRecipes.js register_oil_container).
+  take("lard");
+  CLICKED.forEach(take);
+  for (const item of ITEMS) if (!consumed.has(item.id)) fail(`items.js: "${item.id}" (${item.zh}) has no use: no recipe, feed, dish, block or script consumes it`);
+}
+
 // --- 5. API example add-on -------------------------------------------------
 
 // ## The example is what add-on authors copy, so it must stay valid: its JSON

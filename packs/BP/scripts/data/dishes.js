@@ -35,7 +35,7 @@ export const DISHES = [
   },
   {
     id: "bone_broth", zh: "大骨高湯", en: "Bone Broth", food: [6, 0.6], station: "stockpot", carrier: BOWL, time: 600,
-    slots: [[r("large_bone")], [r("large_bone")], ["minecraft:carrot", "minecraft:potato"]],
+    slots: [[r("large_bone"), r("chicken_frame")], [r("large_bone"), r("chicken_frame")], ["minecraft:carrot", "minecraft:potato"]],
     look: ["bowl", [226, 206, 160]],
   },
   {

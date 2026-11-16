@@ -83,7 +83,7 @@
 
 ## register_recipe
 
-在樂牧的五個加工方塊之一加入配方：`butter_churn`、`cheese_press`、`aging_rack`、`fermenting_jar`、`pickling_vat`。
+在樂牧的六個加工方塊之一加入配方：`butter_churn`、`cheese_press`、`aging_rack`、`fermenting_jar`、`pickling_vat`、`tanning_rack`。
 
 ```json
 {
