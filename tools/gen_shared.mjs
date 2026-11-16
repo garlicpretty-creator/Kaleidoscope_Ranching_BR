@@ -192,6 +192,42 @@ function parseLang(text) {
     });
 }
 
+// --- Tooltip lines under item and block names --------------------------------
+
+// ## Like Cookery: under every Ranching item or block name, the add-on's name in
+// ## blue, and for an item that places a block, what it places in purple. Bedrock
+// ## shows the name's \n as a new line in the tooltip.
+const TOOLTIP = {
+  mod: { en_US: "Kaleidoscope Ranching", zh_TW: "森羅物語樂牧", zh_CN: "森罗物语乐牧" },
+  placeableFood: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
+  plantable: { en_US: "Plantable", zh_TW: "可種植", zh_CN: "可种植" },
+  placeable: { en_US: "Placeable", zh_TW: "可放置", zh_CN: "可放置" },
+};
+
+/** {item id: TOOLTIP key} for items that place a block (minecraft:block_placer). */
+function placeableItems() {
+  const out = {};
+  const dir = join(root, "packs", "BP", "items");
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const item = JSON.parse(readFileSync(join(dir, file), "utf8"))["minecraft:item"];
+    const placer = item?.components?.["minecraft:block_placer"];
+    if (!placer) continue;
+    const planted = (placer.use_on ?? []).includes("minecraft:farmland");
+    out[item.description.identifier] = item.components["minecraft:food"] ? "placeableFood" : planted ? "plantable" : "placeable";
+  }
+  return out;
+}
+const PLACEABLE = placeableItems();
+
+function withTooltip(key, value, language) {
+  const match = /^(item|tile)\.(kaleidoscope_ranching:[a-z0-9_]+)\.name$/.exec(key);
+  if (!match) return value;
+  let text = `${value}\\n§9§o${TOOLTIP.mod[language]}§r`;
+  const placeable = match[1] === "item" && PLACEABLE[match[2]];
+  if (placeable) text += `\\n§d${TOOLTIP[placeable][language]}§r`;
+  return text;
+}
+
 for (const language of LANGUAGES) {
   const sections = [["registries", registryEntries(language)]];
   for (const name of fragments) {
@@ -205,7 +241,7 @@ for (const language of LANGUAGES) {
     for (const [key, value] of entries) {
       if (seen.has(key)) errors.push(`${language}: "${key}" defined by both ${seen.get(key)} and ${source}`);
       seen.set(key, source);
-      lines.push(`${key}=${value}`);
+      lines.push(`${key}=${withTooltip(key, value, language)}`);
     }
     lines.push("");
   }
