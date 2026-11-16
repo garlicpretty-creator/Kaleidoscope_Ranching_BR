@@ -1,0 +1,170 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.placed_milk_wine",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "cup",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -2,
+                0,
+                -2
+              ],
+              "size": [
+                4,
+                1,
+                4
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -1,
+                1,
+                -1
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                16,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -3,
+                3,
+                -3
+              ],
+              "size": [
+                6,
+                1,
+                6
+              ],
+              "uv": [
+                24,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -3,
+                4,
+                -3
+              ],
+              "size": [
+                6,
+                5,
+                1
+              ],
+              "uv": [
+                48,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -3,
+                4,
+                2
+              ],
+              "size": [
+                6,
+                5,
+                1
+              ],
+              "uv": [
+                0,
+                7
+              ]
+            },
+            {
+              "origin": [
+                -3,
+                4,
+                -2
+              ],
+              "size": [
+                1,
+                5,
+                4
+              ],
+              "uv": [
+                14,
+                7
+              ]
+            },
+            {
+              "origin": [
+                2,
+                4,
+                -2
+              ],
+              "size": [
+                1,
+                5,
+                4
+              ],
+              "uv": [
+                24,
+                7
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_1",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -2,
+                4,
+                -2
+              ],
+              "size": [
+                4,
+                4,
+                4
+              ],
+              "uv": [
+                34,
+                7
+              ]
+            }
+          ],
+          "parent": "cup"
+        }
+      ]
+    }
+  ]
+}

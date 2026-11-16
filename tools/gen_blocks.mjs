@@ -57,10 +57,22 @@ const PLACED_SHAPES = {
   pot: both(-6, 0, -6, 12, 9, 12),
   claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
+  // The fondue's forks stand over the rim of its pot.
+  fondue: both(-6, 0, -6, 12, 11, 12),
+  // Placed drinks (art_src/m4_scripts/placed_drink.py), each as tall as its model (tools/validate.mjs checks).
+  goblet: both(-3, 0, -3, 6, 9, 6),
+  beaker: both(-3, 0, -3, 6, 11, 6),
+  crock: both(-3, 0, -3, 6, 8, 6),
+  mug: both(-3, 0, -3, 8, 9, 6),
+  bottle: both(-3, 0, -3, 6, 14, 6),
+  tea_bowl: both(-4, 0, -4, 8, 5, 8),
+  saucer_bowl: both(-4, 0, -4, 8, 7, 8),
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
   placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
+  placed_milk_wine: "#c8a068", placed_yak_milk_wine: "#705038", placed_cream_cocoa: "#683c26", placed_yogurt_berry_drink: "#e27896",
+  placed_yogurt: "#849cb6", placed_milk_tea: "#8c402c", placed_milk_skin_tea: "#f4f4ee",
 };
 
 // 1.1 掛架風乾: the rack packs its 35 mixes of strip stages into `drying` (row) and `drying_mix`
@@ -201,10 +213,11 @@ const DEFS = {
       food.block,
       {
         component: food.cut ? "cheese_wheel" : "placed_food",
-        states: { [S("cut")]: Array.from({ length: food.portions }, (_, n) => n) },
-        bones: Object.fromEntries(
+        // A drink (one portion) is drunk in one go, so it has no `cut` state and always shows piece_1.
+        states: food.portions > 1 ? { [S("cut")]: Array.from({ length: food.portions }, (_, n) => n) } : {},
+        bones: food.portions > 1 ? Object.fromEntries(
           Array.from({ length: food.portions }, (_, n) => [`piece_${n + 1}`, `${state("cut")} <= ${food.portions - 1 - n}`])
-        ),
+        ) : {},
         ...PLACED_SHAPES[food.shape],
         mapColor: PLACED_COLORS[food.block],
         seconds: 0.5,

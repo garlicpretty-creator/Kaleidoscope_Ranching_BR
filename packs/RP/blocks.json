@@ -102,6 +102,27 @@
   "kaleidoscope_ranching:placed_truffle_gratin": {
     "sound": "stone"
   },
+  "kaleidoscope_ranching:placed_milk_wine": {
+    "sound": "bone"
+  },
+  "kaleidoscope_ranching:placed_yak_milk_wine": {
+    "sound": "bone"
+  },
+  "kaleidoscope_ranching:placed_cream_cocoa": {
+    "sound": "glass"
+  },
+  "kaleidoscope_ranching:placed_yogurt_berry_drink": {
+    "sound": "glass"
+  },
+  "kaleidoscope_ranching:placed_yogurt": {
+    "sound": "stone"
+  },
+  "kaleidoscope_ranching:placed_milk_tea": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:placed_milk_skin_tea": {
+    "sound": "stone"
+  },
   "kaleidoscope_ranching:food_waste_bin": {
     "sound": "wood"
   },

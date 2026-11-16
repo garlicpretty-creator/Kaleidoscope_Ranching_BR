@@ -717,7 +717,7 @@ const { PLACED_FOODS } = await import("../../packs/BP/scripts/data/placedFoods.j
 const { DISHES: DISH_ROWS } = await import("../../packs/BP/scripts/data/dishes.js");
 
 test("every shared dish is eaten in four portions worth at least the dish, and hands its bowl back", () => {
-  const shared = PLACED_FOODS.filter((food) => food.eat && food.gives);
+  const shared = PLACED_FOODS.filter((food) => food.eat && food.gives && food.portions > 1);
   assert(shared.length >= 9, "the fondue, six stews and two gratins");
   for (const [n, food] of shared.entries()) {
     clearWorld();
@@ -744,6 +744,88 @@ test("the placeable foods carry a block placer and keep their own food value", (
     equal(item(id)["minecraft:block_placer"]?.block, `kaleidoscope_ranching:${block}`, `${id} places ${block}`);
   }
   equal(item("margherita_pizza")["minecraft:food"].nutrition, 12, "the pizza can still be eaten from the hand");
+});
+
+// Placed drinks: one serving each, drunk in place for what the item gives from the hand.
+const DRINK_IDS = ["milk_wine", "yak_milk_wine", "cream_cocoa", "yogurt", "yogurt_berry_drink", "milk_tea", "milk_skin_tea"];
+const DRINKS = PLACED_FOODS.filter((food) => DRINK_IDS.includes(food.item));
+const itemFood = (id) => JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${id}.json`, import.meta.url), "utf8"))["minecraft:item"].components;
+
+test("the two milk wines, cream cocoa, yogurt, yogurt berry drink and both milk teas can be put down", () => {
+  equal(DRINKS.map((food) => food.item).sort().join(), [...DRINK_IDS].sort().join(), "one placed row per drink");
+  for (const food of DRINKS) {
+    equal(food.portions, 1, `${food.item} is one serving`);
+    const item = itemFood(food.item);
+    equal(item["minecraft:block_placer"]?.block, `kaleidoscope_ranching:${food.block}`, `${food.item} places ${food.block}`);
+    equal(food.eat, item["minecraft:food"].nutrition, `${food.item}: the same hunger as from the hand`);
+    equal(food.gives, item["minecraft:food"].using_converts_to, `${food.item}: the same container back`);
+    equal(item["minecraft:food"].can_always_eat, true, `${food.item}: like all Ranching food, drinkable when full`);
+    equal(Boolean(food.drink), item["minecraft:use_animation"] === "drink", `${food.item}: drunk, or eaten, as the item is`);
+  }
+});
+
+test("a placed drink is drunk in one go: its food, its container back, and the block is gone", () => {
+  for (const [n, food] of DRINKS.entries()) {
+    clearWorld();
+    const player = __newPlayer(at(0));
+    player.hunger = 0;
+    const block = `kaleidoscope_ranching:${food.block}`;
+    const placed = __place(overworld, { x: 70 + n * 2, y: 64, z: 0 }, block);
+    use(PLACED, placed, player);
+    equal(player.hunger, food.eat, `${food.item} feeds as the item does`);
+    equal(placed.permutation.type.id, "minecraft:air", `${food.item} is gone after one use`);
+    if (food.gives) equal(player.inventory.count(food.gives), 1, `${food.item} hands back its container`);
+    equal(overworld.items.length, 0, `${food.item}: nothing dropped as well`);
+    const sound = overworld.sounds.at(-1)?.id;
+    equal(sound, food.drink ? "random.drink" : "random.eat", `${food.item} sounds drunk or eaten`);
+  }
+});
+
+test("breaking an untouched placed drink gives the drink back", () => {
+  for (const [n, food] of DRINKS.entries()) {
+    clearWorld();
+    const placed = __place(overworld, { x: 70 + n * 2, y: 64, z: 2 }, `kaleidoscope_ranching:${food.block}`);
+    breakBlock(PLACED, placed);
+    equal(dropsOf(`kaleidoscope_ranching:${food.item}`).length, 1, `${food.item} back whole`);
+    if (food.gives) equal(dropsOf(food.gives).length, 0, `${food.item}: not its empty container as well`);
+  }
+});
+
+test("a placed drink is drunk even with a full hunger bar, with no text on screen", () => {
+  for (const [n, food] of DRINKS.entries()) {
+    clearWorld();
+    const player = __newPlayer(at(0));
+    player.hunger = 20;
+    const placed = __place(overworld, { x: 70 + n * 2, y: 64, z: 4 }, `kaleidoscope_ranching:${food.block}`);
+    use(PLACED, placed, player);
+    equal(player.actionBar.length, 0, `${food.item}: no text on screen`);
+    equal(placed.permutation.type.id, "minecraft:air", `${food.item} is drunk when full`);
+    if (food.gives) equal(player.inventory.count(food.gives), 1, `${food.item}: container back`);
+  }
+});
+
+test("using the spot of a drink already drunk gives nothing more", () => {
+  for (const [n, food] of DRINKS.entries()) {
+    clearWorld();
+    const player = __newPlayer(at(0));
+    player.hunger = 0;
+    const placed = __place(overworld, { x: 70 + n * 2, y: 64, z: 8 }, `kaleidoscope_ranching:${food.block}`);
+    use(PLACED, placed, player);
+    use(PLACED, placed, player);
+    equal(player.hunger, food.eat, `${food.item}: fed once`);
+    if (food.gives) equal(player.inventory.count(food.gives), 1, `${food.item}: one container`);
+    equal(overworld.items.length, 0, `${food.item}: nothing dropped`);
+    equal(placed.permutation.type.id, "minecraft:air", `${food.item}: still gone`);
+  }
+});
+
+test("a placed drink is only drunk by a player", () => {
+  clearWorld();
+  const food = DRINKS[0];
+  const placed = __place(overworld, { x: 70, y: 64, z: 6 }, `kaleidoscope_ranching:${food.block}`);
+  use(PLACED, placed, undefined);
+  equal(placed.permutation.type.id, `kaleidoscope_ranching:${food.block}`, "nothing happens without a player");
+  equal(overworld.items.length, 0, "and nothing is dropped");
 });
 
 // --- M3: milking and nursing ----------------------------------------------
