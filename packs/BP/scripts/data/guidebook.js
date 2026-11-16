@@ -62,23 +62,18 @@ export const GUIDE_ALSO = {
   hay_rack: ["feed"],
 };
 
-/** Blocks with no entry of their own, and why. */
+/**
+ * Blocks with no entry of their own, and why. Food set down on the ground (data/placedFoods.js)
+ * is added below: its block is explained in the food item's entry.
+ */
 export const GUIDE_SKIP = {
   manure: "Left by animals and cleared with the manure fork; explained in the Manure item's entry.",
   alfalfa_crop: "Grows from Alfalfa Seeds planted on farmland; explained in the seeds' entry.",
-  cheese_wheel: "The Aged Cheese Wheel set down on the ground; explained in the item's entry.",
   pen_gate_top: "The upper half of the Pen Gate, placed with it.",
-  placed_pizza: "Margherita Pizza set down; explained in the dish's entry.",
-  placed_fondue: "Cheese Fondue set down; explained in the dish's entry.",
-  placed_old_duck_soup: "Old Duck Soup set down; explained in the dish's entry.",
-  placed_braised_brisket: "Braised Beef Brisket set down; explained in the dish's entry.",
-  placed_yak_stew: "Yak Meat Stew set down; explained in the dish's entry.",
-  placed_goose_stew: "Iron Pot Goose Stew set down; explained in the dish's entry.",
-  placed_lion_head_meatballs: "Braised Lion's Head Meatballs set down; explained in the dish's entry.",
-  placed_claypot_rice: "Cured Meat Claypot Rice set down; explained in the dish's entry.",
-  placed_cheese_gratin: "Cheese Gratin set down; explained in the dish's entry.",
-  placed_truffle_gratin: "Truffle Cheese Gratin set down; explained in the dish's entry.",
 };
+for (const food of PLACED_FOODS) {
+  if (food.block !== food.item) GUIDE_SKIP[food.block] ??= `The ${food.item} item set down on the ground; explained in that item's entry.`;
+}
 
 // --- Icons ------------------------------------------------------------------------------
 
@@ -154,6 +149,7 @@ const OTHER_NAMES = {
   "minecraft:potato": ["馬鈴薯", "Potato"],
   "minecraft:carrot": ["胡蘿蔔", "Carrot"],
   "minecraft:beetroot": ["甜菜根", "Beetroot"],
+  "minecraft:sugar": ["糖", "Sugar"],
   "kaleidoscope_cookery:red_chili": ["紅辣椒", "Red Chili"],
   "kaleidoscope_cookery:green_chili": ["青辣椒", "Green Chili"],
 };
@@ -183,7 +179,7 @@ export const GUIDE_TEXT_KEYS = {
       "先從屠宰開始：樂牧的動物死亡後不會直接掉肉，而是掉一具屠體。把屠體掛上屠宰掛架，再用廚房菜刀、劍或斧一刀一刀分切，每一刀切下一類部位肉或副產物。",
       "照顧：每隻動物每天要吃到飼料、喝到水、被照料（蹲下空手撫摸，或用毛刷刷）、畜欄乾淨。四項都做到，隔天好感度 +1 心，最多 5 心。繁殖、受精蛋、換羽、松露和役用都要看好感度。",
       "成年母畜每天可以擠一次奶，每次用掉一個空玻璃瓶。母禽只在巢箱裡下蛋；受精蛋放在巢箱或有熱源的孵化器裡，2 天孵化。",
-      "加工方塊都一樣：手持任一材料點方塊，背包裡材料齊了就開始；時間到再點一次取出。加工途中打掉會退回材料。一個遊戲日約是現實 20 分鐘。",
+      "加工方塊都一樣：手持任一材料點方塊，背包裡材料齊了就開始；時間到再點一次取出。加工途中打掉會退回材料。一個遊戲日約是現實 20 分鐘。樂牧的食物吃飽了也能吃。",
       "畫面上不會跳出提示文字，各樣東西怎麼用，都寫在本章的條目裡。",
     ].join("\n\n"),
     all: "全部條目",
@@ -199,9 +195,9 @@ export const GUIDE_TEXT_KEYS = {
     title: "Kaleidoscope Ranching",
     intro: [
       "Butchering comes first: a Ranching animal that dies drops one carcass instead of meat. Hang the carcass on a Butcher Rack, then cut it with a kitchen knife, a sword or an axe, one stroke at a time; each stroke gives one kind of meat or by-product.",
-      "Care: every day each animal needs feed, water, care (pet it while sneaking with an empty hand, or brush it) and a clean pen. With all four met, its affection rises by one heart the next day, up to five. Breeding, fertilized eggs, moulting, truffles and work all depend on affection.",
+      "Care: every day each animal needs feed, water, care (pet it while sneaking with an empty hand, or brush it) and a clean pen. With all four met, its affection rises by one heart the next day, up to five. Breeding, fertilized eggs, molting, truffles and work all depend on affection.",
       "Adult females can be milked once a day; each milking uses an empty glass bottle. Hens lay only in Nest Boxes; fertilized eggs hatch in two days in a nest box or a heated Incubator.",
-      "Every processing block works the same way: use it while holding any ingredient and it starts when your inventory holds them all; use it again when the time is up to take the result. Breaking it while it works gives the ingredients back. A game day is about 20 real minutes.",
+      "Every processing block works the same way: use it while holding any ingredient and it starts when your inventory holds them all; use it again when the time is up to take the result. Breaking it while it works gives the ingredients back. A game day is about 20 real minutes. All Ranching food can be eaten with a full hunger bar.",
       "Nothing pops up on screen to explain things; how each item and block works is written in this chapter's entries.",
     ].join("\n\n"),
     all: "All Entries",
@@ -219,8 +215,8 @@ export const GUIDE_TEXT_KEYS = {
 
 // Shared wording for the processing blocks (systems/stations.js).
 const STATION = [
-  "手持任一材料點它，背包裡材料齊了就全部取走並開始；時間到再點一次取出。加工途中打掉會退回材料。",
-  "Use it while holding any ingredient: when your inventory holds them all, they are taken and it starts. Use it again when the time is up. Breaking it early gives the ingredients back.",
+  "手持任一材料點它，背包裡材料齊了就全部取走並開始；裡面的東西分三階段變色，時間到再點一次取出。加工途中打掉會退回材料。",
+  "Use it while holding any ingredient: when your inventory holds them all, they are taken and it starts. What is inside changes color in three stages; use it again when the time is up. Breaking it early gives the ingredients back.",
 ];
 const AUTO_STATION = [
   "也會自己做：從正上方的容器拿材料，成品放進正下方的容器。",
@@ -235,62 +231,62 @@ export const GUIDE_TEXT = {
   // --- Animals ---------------------------------------------------------------------------
   cow: [
     ["取代原版的牛。成年母牛每天可用擠奶桶或擠奶架擠一次牛奶。", "Replaces the vanilla cow. An adult female gives milk once a day, by Milking Pail or Milking Rack."],
-    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favourite treat is the Alfalfa Cake."],
+    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favorite treat is the Alfalfa Cake."],
     ["繁殖要一公一母：拿小麥、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，8 格內一起發情就會懷孕，3 天後生產。生產後要休息 5 分鐘。", "Breeding needs a male and a female: feed adults wheat, forage, mixed feed or concentrate; both must have had all their care that day. In love within 8 blocks, she carries for 3 days. Parents then rest 5 minutes."],
     ["成年死亡時掉一具牛屠體，幼體不掉東西。", "An adult drops a Cow Carcass when it dies; a calf drops nothing."],
   ],
   sheep: [
-    ["取代原版的羊，可以用剪刀剪毛。沒剪過毛的羊，屠體會先切下 1 塊同色羊毛。", "Replaces the vanilla sheep and can be shorn. An unshorn sheep's carcass first gives one wool of its colour."],
-    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favourite treat is the Alfalfa Cake."],
+    ["取代原版的羊，可以用剪刀剪毛。沒剪過毛的羊，屠體會先切下 1 塊同色羊毛。", "Replaces the vanilla sheep and can be shorn. An unshorn sheep's carcass first gives one wool of its color."],
+    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favorite treat is the Alfalfa Cake."],
     ["繁殖要一公一母：拿小麥、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed wheat, forage, mixed feed or concentrate, both cared for that day; lambs come 3 days later, and parents rest 5 minutes."],
     ["成年死亡時掉一具羊屠體，幼體不掉東西。", "An adult drops a Sheep Carcass when it dies; a lamb drops nothing."],
   ],
   goat: [
     ["取代原版的山羊。成年母山羊每天可擠一次山羊奶；用毛刷刷牠有 30% 機率掉山羊絨。", "Replaces the vanilla goat. An adult female gives goat milk once a day; brushing has a 30% chance to comb out cashmere."],
-    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favourite treat is the Alfalfa Cake."],
+    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favorite treat is the Alfalfa Cake."],
     ["繁殖要一公一母：拿小麥、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed wheat, forage, mixed feed or concentrate, both cared for that day; kids come 3 days later, and parents rest 5 minutes."],
     ["成年死亡時掉一具山羊屠體，公山羊的屠體有羊角。", "An adult drops a Goat Carcass when it dies; a billy's carcass has horns."],
   ],
   pig: [
     ["取代原版的豬。用毛刷刷牠有 35% 機率掉豬鬃。", "Replaces the vanilla pig. Brushing has a 35% chance to give a Pig Bristle."],
-    ["吃蔬菜類（包括廚餘和生內臟）、混合飼料和精飼料；最愛甜菜糖塊。", "Eats vegetable feed (food scraps and raw offal count), mixed feed and concentrate; its favourite treat is the Beet Sugar Cube."],
+    ["吃蔬菜類（包括廚餘和生內臟）、混合飼料和精飼料；最愛甜菜糖塊。", "Eats vegetable feed (food scraps and raw offal count), mixed feed and concentrate; its favorite treat is the Beet Sugar Cube."],
     ["繁殖要一公一母：拿胡蘿蔔、馬鈴薯、甜菜根、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed carrots, potatoes, beetroot, mixed feed or concentrate, both cared for that day; piglets come 3 days later, and parents rest 5 minutes."],
     ["好感度滿 5 心的成年豬站在草地或灰壤上、4 格內有原木時，每天有 25% 機率拱出松露。", "A five-heart adult pig on grass or podzol with a log within 4 blocks has a 25% chance a day to root up a Truffle."],
   ],
   chicken: [
     ["取代原版的雞。母雞不會隨地下蛋，只在 8 格內的巢箱裡每天下 1 顆雞蛋。", "Replaces the vanilla chicken. Hens never lay on the ground: one egg a day into a Nest Box within 8 blocks."],
-    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favourite treat is the Grain Cake."],
+    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favorite treat is the Grain Cake."],
     ["繁殖靠受精蛋：巢箱 8 格內有成年公雞時，蛋有機會受精，好感度越高越容易。受精蛋放在巢箱或孵化器，2 天孵出小雞。", "Chickens breed through eggs: with an adult rooster within 8 blocks of the nest, eggs may be fertilized, more often the happier the hen. They hatch in 2 days in a nest box or incubator."],
     ["公雞每天清晨啼叫。成年死亡時掉一具雞屠體。", "Roosters crow at dawn. An adult drops a Chicken Carcass when it dies."],
   ],
   rabbit: [
     ["取代原版的兔子。用毛刷刷牠有 30% 機率掉兔毛。", "Replaces the vanilla rabbit. Brushing has a 30% chance to give Rabbit Fur."],
-    ["吃乾草類、蔬菜類、混合飼料和精飼料；最愛胡蘿蔔脆片。", "Eats grass feed, vegetable feed, mixed feed and concentrate; its favourite treat is Carrot Chips."],
+    ["吃乾草類、蔬菜類、混合飼料和精飼料；最愛胡蘿蔔脆片。", "Eats grass feed, vegetable feed, mixed feed and concentrate; its favorite treat is Carrot Chips."],
     ["繁殖要一公一母：拿蒲公英、胡蘿蔔、金胡蘿蔔、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed dandelions, carrots, golden carrots, forage, mixed feed or concentrate, both cared for that day; kits come 3 days later, and parents rest 5 minutes."],
     ["成年死亡時掉一具兔屠體，幼體不掉東西。", "An adult drops a Rabbit Carcass when it dies; a kit drops nothing."],
   ],
   duck: [
     ["新動物，出現在河流與沼澤。會游泳，不受摔落傷害。", "A new animal of rivers and swamps. It swims and takes no fall damage."],
-    ["母鴨每天在 8 格內的巢箱下 1 顆鴨蛋。好感度 4 心以上的成年鴨每天有 20% 機率掉一根羽絨。", "A female lays one Duck Egg a day into a Nest Box within 8 blocks. An adult with four hearts or more has a 20% chance a day to moult a Down."],
-    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favourite treat is the Grain Cake."],
+    ["母鴨每天在 8 格內的巢箱下 1 顆鴨蛋。好感度 4 心以上的成年鴨每天有 20% 機率掉一根羽絨。", "A female lays one Duck Egg a day into a Nest Box within 8 blocks. An adult with four hearts or more has a 20% chance a day to molt a Down."],
+    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favorite treat is the Grain Cake."],
     ["繁殖靠受精蛋：巢箱 8 格內有成年公鴨時，蛋有機會受精；受精蛋 2 天孵化。", "Ducks breed through eggs: with an adult drake within 8 blocks of the nest, eggs may be fertilized; they hatch in 2 days."],
   ],
   goose: [
-    ["新動物，出現在平原與河流。成年公鵝會攻擊 8 格內的敵對生物（苦力怕除外）。", "A new animal of plains and rivers. An adult gander attacks hostile mobs within 8 blocks (not creepers)."],
-    ["母鵝每天在 8 格內的巢箱下 1 顆鵝蛋。好感度 4 心以上的成年鵝每天有 20% 機率掉一根羽絨。", "A female lays one Goose Egg a day into a Nest Box within 8 blocks. An adult with four hearts or more has a 20% chance a day to moult a Down."],
-    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favourite treat is the Grain Cake."],
+    ["新動物，出現在平原與河流。成年公鵝會攻擊 8 格內的敵對生物（苦力怕除外），晚上也會守夜：16 格內有敵對生物就醒來。", "A new animal of plains and rivers. An adult gander attacks hostile mobs within 8 blocks (not creepers) and keeps watch at night, waking when one comes within 16."],
+    ["母鵝每天在 8 格內的巢箱下 1 顆鵝蛋。好感度 4 心以上的成年鵝每天有 20% 機率掉一根羽絨。", "A female lays one Goose Egg a day into a Nest Box within 8 blocks. An adult with four hearts or more has a 20% chance a day to molt a Down."],
+    ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favorite treat is the Grain Cake."],
     ["繁殖靠受精蛋：巢箱 8 格內有成年公鵝時，蛋有機會受精；受精蛋 2 天孵化。", "Geese breed through eggs: with an adult gander within 8 blocks of the nest, eggs may be fertilized; they hatch in 2 days."],
   ],
   buffalo: [
     ["新動物，出現在沼澤與叢林。成年母水牛每天可擠一次水牛奶。", "A new animal of swamps and jungles. An adult female gives buffalo milk once a day."],
-    ["好感度 3 心以上的成年水牛可以裝挽具、拉犁耕地。", "An adult buffalo with three hearts or more takes a Harness and can pull a Plough."],
-    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favourite treat is the Alfalfa Cake."],
+    ["好感度 3 心以上的成年水牛可以裝挽具、拉犁耕地。", "An adult buffalo with three hearts or more takes a Harness and can pull a Plow."],
+    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favorite treat is the Alfalfa Cake."],
     ["繁殖要一公一母：拿小麥、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed wheat, forage, mixed feed or concentrate, both cared for that day; calves come 3 days later, and parents rest 5 minutes."],
   ],
   yak: [
     ["新動物，出現在山地、草甸、雪坡與凍峰。成年母氂牛每天可擠一次氂牛奶。", "A new animal of mountains, meadows, snowy slopes and frozen peaks. An adult female gives yak milk once a day."],
     ["不怕冷，晚上不會受寒。成年氂牛可以背馱袋。牠的糞便留在地上過一天會曬乾。", "It never feels the cold at night. An adult can carry a Pack Bag. Its dung dries after a day on the ground."],
-    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favourite treat is the Alfalfa Cake."],
+    ["吃乾草類、青貯料、混合飼料和精飼料；最愛苜蓿草餅。", "Eats grass feed, silage, mixed feed and concentrate; its favorite treat is the Alfalfa Cake."],
     ["繁殖要一公一母：拿小麥、飼草、混合飼料或精飼料餵成年的牠，雙方當天都要照顧好，3 天後生產；生產後休息 5 分鐘。", "Breeding needs a male and a female fed wheat, forage, mixed feed or concentrate, both cared for that day; calves come 3 days later, and parents rest 5 minutes."],
   ],
 
@@ -329,7 +325,7 @@ export const GUIDE_TEXT = {
     ["只放乾草類飼料：乾草塊（算 9 份）、小麥、飼草、苜蓿。最多 36 份，蹲下點可放入整疊。", "Takes only grass feed: hay bales (9 units each), wheat, forage and alfalfa. Holds 36 units; sneak to add a stack."],
     ["每天餵 8 格內吃乾草的動物：牛、羊、山羊、水牛、氂牛、兔。雞、鴨、鵝、豬不吃。", "Feeds the grass eaters within 8 blocks every day: cows, sheep, goats, buffalo, yaks and rabbits. Poultry and pigs do not eat from it."],
     ["範圍內也有飼槽時，飼槽先餵。打掉時存量變回乾草塊和小麥。", "When a trough is also in range, the trough feeds first. Broken, it gives its hay back as hay bales and wheat."],
-    ["動物入睡時 4 格內有乾草架或毛毯、頭上 8 格內有遮蔽，就算睡得好，好感度 +4 點。", "An animal that falls asleep with a hay rack or rug within 4 blocks and a roof within 8 sleeps well: +4 affection points."],
+    ["動物入睡時 4 格內有乾草架或地毯、頭上 8 格內有遮蔽，就算睡得好，好感度 +4 點。", "An animal that falls asleep with a hay rack or rug within 4 blocks and a roof within 8 sleeps well: +4 affection points."],
   ],
   nest_box: [
     ["8 格內的成年母雞、母鴨、母鵝每天在這裡下 1 顆蛋。巢箱最多存 16 顆，多的掉在旁邊。", "Adult hens, ducks and geese within 8 blocks lay one egg a day into it. It stores 16; more drop beside it."],
@@ -379,8 +375,8 @@ export const GUIDE_TEXT = {
   // --- Facilities: processing -----------------------------------------------------------------
   butcher_rack: [
     ["上方要有空間才能放。手持屠體點它掛上，一次一具。", "Needs room above to be placed. Use it holding a carcass to hang it, one at a time."],
-    ["用廚房菜刀、劍或斧點屠體，一刀切下一類部位肉或副產物，直接進背包，每刀扣 1 點耐久。打掉掛架時，沒切過的屠體整具掉回，切過的掉出剩下的部位。", "Use a kitchen knife, sword or axe on the carcass: each stroke puts one kind of meat or by-product in your inventory and costs 1 durability. Broken, an uncut carcass drops whole, a cut one drops what is left."],
-    ["空的掛架可以風乾最多 4 件，各自計時，3 天後取下：生香腸 → 臘腸、五花肉 → 臘肉、鴨腿 → 臘鴨腿、牛腱 → 牛肉乾。", "An empty rack air-dries up to 4 pieces, each on its own clock, ready after 3 days: Raw Sausage → Cured Sausage, Pork Belly → Cured Pork Belly, Duck Leg → Cured Duck Leg, Beef Shank → Beef Jerky."],
+    ["用廚房菜刀、劍或斧點屠體，一刀切下一類部位肉或副產物，直接進背包，每刀扣 1 點耐久度。打掉掛架時，沒切過的屠體整具掉回，切過的掉出剩下的部位。", "Use a kitchen knife, sword or axe on the carcass: each stroke puts one kind of meat or by-product in your inventory and costs 1 durability. Broken, an uncut carcass drops whole, a cut one drops what is left."],
+    ["空的掛架可以風乾最多 4 件，各自計時，3 天後取下：生香腸 → 臘腸、五花肉 → 臘肉、鴨腿 → 臘鴨腿、牛腱 → 牛肉乾。掛著的肉會一邊風乾一邊變色。", "An empty rack air-dries up to 4 pieces, each on its own clock, ready after 3 days: Raw Sausage → Cured Sausage, Pork Belly → Cured Pork Belly, Duck Leg → Cured Duck Leg, Beef Shank → Beef Jerky. Each piece changes color as it dries."],
     ["風乾中不能掛屠體。身上有漁歌的海鹽時，掛上的那一件用掉一份海鹽，2 天就好。", "No carcass while pieces are drying. Carrying Fishing Voyage's sea salt uses one per piece and dries it in 2 days."],
   ],
   butter_churn: [
@@ -432,7 +428,7 @@ export const GUIDE_TEXT = {
   ],
   spinning_wheel: [
     STATION,
-    ["半個遊戲日：1 塊羊毛（任何顏色）→ 2 毛線；2 份氂牛毛 → 2 毛線；2 份山羊絨或兔毛 → 2 絨線。", "Half a game day: 1 wool of any colour → 2 Yarn; 2 yak hair → 2 yarn; 2 goat cashmere or rabbit fur → 2 Fine Yarn."],
+    ["半個遊戲日：1 塊羊毛（任何顏色）→ 2 毛線；2 份氂牛毛 → 2 毛線；2 份山羊絨或兔毛 → 2 絨線。", "Half a game day: 1 wool of any color → 2 Yarn; 2 yak hair → 2 yarn; 2 goat cashmere or rabbit fur → 2 Fine Yarn."],
     AUTO_STATION,
   ],
   weaving_loom: [
@@ -443,8 +439,8 @@ export const GUIDE_TEXT = {
 
   // --- Facilities: decoration ---------------------------------------------------------------
   rug: [
-    ["2 張絨布做 2 塊。拿染料點它就染成那個顏色，共 16 色。", "2 plush cloth make 2. Use a dye on it to colour it, 16 colours."],
-    ["動物入睡時 4 格內有毛毯，算睡得好。", "Animals that fall asleep with a rug within 4 blocks sleep well."],
+    ["2 張絨布做 2 塊。拿染料點它就染成那個顏色，共 16 色。", "2 plush cloth make 2. Use a dye on it to color it, 16 colors."],
+    ["動物入睡時 4 格內有地毯，算睡得好。", "Animals that fall asleep with a rug within 4 blocks sleep well."],
   ],
   down_pillow: [["3 羽絨、1 毛氈做成的裝飾方塊。", "A decoration made from 3 down and 1 felt."]],
   down_quilt: [["4 羽絨、2 絨布做成的裝飾方塊。", "A decoration made from 4 down and 2 plush cloth."]],
@@ -453,12 +449,12 @@ export const GUIDE_TEXT = {
   // --- Tools --------------------------------------------------------------------------------
   milking_pail: [
     ["對成年母牛、母山羊、母水牛或母氂牛使用，每隻每天只能擠一次。", "Use it on an adult female cow, goat, buffalo or yak, once a day each."],
-    ["每擠一次要用掉背包裡一個空玻璃瓶，換成一瓶奶。耐久 128。", "Each milking needs an empty glass bottle from your inventory and fills it. 128 durability."],
+    ["每擠一次要用掉背包裡一個空玻璃瓶，換成一瓶奶。耐久度 128。", "Each milking needs an empty glass bottle from your inventory and fills it. 128 durability."],
     ["生病的動物不產奶。睡著的動物被擠奶會醒來，副手戴皮手套就不會。", "A sick animal gives no milk. Milking wakes a sleeping animal unless you wear Leather Gloves in your off hand."],
   ],
   nursing_bottle: [
     ["對哺乳類的幼體使用，用掉背包裡一瓶奶（先用脫脂奶），還回玻璃瓶。", "Use it on a mammal baby: it uses a bottle of milk from your inventory (skim milk first) and gives the bottle back."],
-    ["餵滿 3 次幼體就立刻長大。耐久 32。", "Three feedings and the baby grows up at once. 32 durability."],
+    ["餵滿 3 次幼體就立刻長大。耐久度 32。", "Three feedings and the baby grows up at once. 32 durability."],
   ],
   cowbell: [
     ["搖一下，32 格內好感度 3 心以上的樂牧動物會過來，一分鐘內跟著拿牧鈴的你走。", "Ring it: Ranching animals with three hearts or more within 32 blocks come and follow you for a minute."],
@@ -470,7 +466,7 @@ export const GUIDE_TEXT = {
     ["被牽著、有人騎著，或背著裝了東西的馱袋時，不能裝籠。", "An animal on a lead, being ridden, or carrying a pack bag with things in it cannot be crated."],
   ],
   brush: [
-    ["對動物使用，算當天的照料。每隻每天只算一次。耐久 64。", "Use it on an animal to give its daily care, once a day each. 64 durability."],
+    ["對動物使用，算當天的照料。每隻每天只算一次。耐久度 64。", "Use it on an animal to give its daily care, once a day each. 64 durability."],
     ["刷豬可能掉豬鬃，刷山羊、兔各有 30% 機率掉山羊絨、兔毛，刷家禽可能掉羽毛。", "Brushing may give a pig bristle from pigs, cashmere or fur (30%) from goats and rabbits, and feathers from poultry."],
     ["不用毛刷時，蹲下空手撫摸也算照料。", "Petting while sneaking with an empty hand counts as care too."],
   ],
@@ -487,28 +483,28 @@ export const GUIDE_TEXT = {
     ["蹲下對空中使用，把背包裡同類的飼料收進袋子；拿它點飼槽就倒進去。", "Sneak and use it in the air to gather that feed from your inventory; use it on a trough to pour it in."],
   ],
   manure_fork: [
-    ["對地面使用，清掉周圍 3×3 範圍的糞便，掉出糞便物品。耐久 128。", "Use it on the ground to clear manure in a 3×3 area; the manure drops as items. 128 durability."],
+    ["對地面使用，清掉周圍 3×3 範圍的糞便，掉出糞便物品。耐久度 128。", "Use it on the ground to clear manure in a 3×3 area; the manure drops as items. 128 durability."],
     ["氂牛的糞便留在地上超過一天再清，得到的是乾氂牛糞。", "Yak dung left on the ground over a day comes up as Dried Yak Dung."],
   ],
   leather_apron: [
-    ["穿在胸甲欄位，護甲 2，耐久 120。", "Worn in the chest slot: 2 armour, 120 durability."],
-    ["在屠宰掛架分切時，每一刀有 30% 機率不扣刀的耐久。", "While butchering on the rack, each stroke has a 30% chance not to wear the blade."],
+    ["穿在胸甲欄位，護甲 2，耐久度 120。", "Worn in the chest slot: 2 armor, 120 durability."],
+    ["在屠宰掛架分切時，每一刀有 30% 機率不扣刀的耐久度。", "While butchering on the rack, each stroke has a 30% chance not to wear the blade."],
   ],
   lasso: [
     ["看著 8 格內的樂牧動物使用，就像牽繩一樣把牠牽住。", "Use it looking at a Ranching animal within 8 blocks to put it on a lead."],
-    ["耐久 64，每次扣 1。被套住會吵醒睡著的動物。", "64 durability, 1 per throw. Being lassoed wakes a sleeping animal."],
+    ["耐久度 64，每次扣 1。被套住會吵醒睡著的動物。", "64 durability, 1 per throw. Being lassoed wakes a sleeping animal."],
   ],
   pack_bag: [
     ["對成年氂牛使用就裝上，共 15 格。", "Use it on an adult yak to put it on: 15 slots."],
     ["蹲下拿著物品對氂牛互動，整組放進馱袋；不蹲下空手互動，打開清單選一組取出。", "Sneak and use an item on the yak to store the stack; use it with an empty hand, standing, to pick a stack to take out."],
     ["清空後才能取下馱袋。氂牛死亡時馱袋和裡面的東西會掉出來。", "Empty it before taking it off. If the yak dies, the bag and its contents drop."],
   ],
-  feather_duster: [["對蜘蛛網或雪層使用，清掉周圍 3×3 範圍內的同種方塊。耐久 64。", "Use it on cobwebs or snow layers to clear that block in a 3×3 area. 64 durability."]],
-  wool_hat: [["戴在頭盔欄位，護甲 1，耐久 80。", "Worn in the helmet slot: 1 armour, 80 durability."]],
-  wool_scarf: [["穿在胸甲欄位，護甲 1，耐久 80。", "Worn in the chest slot: 1 armour, 80 durability."]],
+  feather_duster: [["對蜘蛛網或雪層使用，清掉周圍 3×3 範圍內的同種方塊。耐久度 64。", "Use it on cobwebs or snow layers to clear that block in a 3×3 area. 64 durability."]],
+  wool_hat: [["戴在頭盔欄位，護甲 1，耐久度 80。", "Worn in the helmet slot: 1 armor, 80 durability."]],
+  wool_scarf: [["穿在胸甲欄位，護甲 1，耐久度 80。", "Worn in the chest slot: 1 armor, 80 durability."]],
   harness: [
     ["對好感度 3 心以上的成年水牛使用就裝上；幼體和還不親近的水牛不肯裝。", "Use it on an adult buffalo with three hearts or more; calves and shy buffalo refuse it."],
-    ["拿剪刀點水牛卸下挽具，犁也一起卸。", "Use shears on the buffalo to take the harness (and any plough) off."],
+    ["拿剪刀點水牛卸下挽具，犁也一起卸。", "Use shears on the buffalo to take the harness (and any plow) off."],
   ],
   plough: [
     ["對裝了挽具的水牛使用就接上犁，再用一次卸下。沒有挽具接不上。", "Use it on a harnessed buffalo to hitch it, again to unhitch. Without a harness it will not hitch."],
@@ -518,7 +514,7 @@ export const GUIDE_TEXT = {
     ["披在牛、羊、山羊、豬或水牛身上，晚上就不會受寒。", "Put it on a cow, sheep, goat, pig or buffalo and it no longer feels the cold at night."],
     ["受寒：入睡時頭上沒遮蔽、腳邊 2 格內有雪、粉雪或冰，好感度 −4 點。氂牛不怕冷。", "Cold: falling asleep with no roof and snow, powder snow or ice within 2 blocks costs 4 affection points. Yaks never feel it."],
   ],
-  leather_gloves: [["戴在副手，替睡著的動物擠奶時不會吵醒牠。耐久 100。", "Worn in the off hand: milking a sleeping animal does not wake it. 100 durability."]],
+  leather_gloves: [["戴在副手，替睡著的動物擠奶時不會吵醒牠。耐久度 100。", "Worn in the off hand: milking a sleeping animal does not wake it. 100 durability."]],
   herding_horn: [
     ["對拴畜樁使用，設為集合點；對你馴服的狼使用，牠就成為你的牧羊犬。", "Use it on a hitching post to set your rally point; on a wolf you tamed to make it your sheepdog."],
     ["在空中吹：叫醒附近 32 格的動物，並派 48 格內你的牧羊犬去趕畜。要先設好集合點。", "Blow it in the air to wake animals within 32 blocks and send your sheepdogs within 48 to herd. Set a rally point first."],
@@ -538,13 +534,13 @@ export const GUIDE_TEXT = {
     [`${TAVERN[0]}用它從酒館的酒桶裝出奶酒，喝完角杯留下。`, `${TAVERN[1]} Fill it with milk wine from a Tavern barrel; the cup is left when you drink it.`],
   ],
   egg_candler: [
-    ["對巢箱或孵化器使用，裡面正在孵的蛋會亮幾秒，透出蛋裡的胚胎。", "Use it on a nest box or incubator: the eggs hatching inside glow for a few seconds and show the embryo within."],
-    ["胚胎越大，離孵化越近。", "The bigger the embryo, the closer it is to hatching."],
+    ["對巢箱或孵化器使用，裡面正在孵的蛋會亮 5 秒，透出蛋裡的胚胎。", "Use it on a nest box or incubator: the eggs hatching inside glow for 5 seconds and show the embryo within."],
+    ["胚胎越大，離孵化越近。不用照蛋燈也看得出大概：孵到一半蛋殼出現小裂紋，快孵化時裂開。", "The bigger the embryo, the closer it is to hatching. The shells tell too: small cracks halfway, big cracks when the chick is nearly out."],
   ],
 
   // --- Feed and treats -------------------------------------------------------------------------
   alfalfa: [
-    ["苜蓿種子種成熟後收成，掉 1–2 份苜蓿和 1–2 顆種子。", "Harvested from grown alfalfa: 1–2 alfalfa and 1–2 seeds."],
+    ["苜蓿長成後收割，得 1–2 份苜蓿和 1–2 顆種子。", "Harvested from grown alfalfa: 1–2 alfalfa and 1–2 seeds."],
     ["乾草類飼料，可放飼槽或乾草架。", "Grass feed for the trough or hay rack."],
     ["鍘草機 1 份切成 3 份飼草；也是混合飼料、苜蓿草餅和獸藥的材料。", "The Chaff Cutter turns 1 into 3 forage; also goes into mixed feed, alfalfa cakes and medicine."],
   ],
@@ -575,41 +571,41 @@ export const GUIDE_TEXT = {
   ],
   alfalfa_cake: [
     ["2 苜蓿、1 糖合成 2 個。", "2 alfalfa and 1 sugar make 2."],
-    [`${RUMINANTS[0]}最愛的零食：拿著點牠，每隻每天吃 1 個，好感度 +½ 心。`, `The favourite treat of ${RUMINANTS[1]}: use it on one, once a day each, for half a heart.`],
+    [`${RUMINANTS[0]}最愛的零食：拿著對牠使用，每隻每天吃 1 個，好感度 +½ 心。`, `The favorite treat of ${RUMINANTS[1]}: use it on one, once a day each, for half a heart.`],
   ],
   grain_cake: [
     ["2 小麥種子、1 小麥合成 2 個。", "2 wheat seeds and 1 wheat make 2."],
-    ["雞、鴨、鵝最愛的零食：拿著點牠，每隻每天吃 1 個，好感度 +½ 心。", "The favourite treat of chickens, ducks and geese: use it on one, once a day each, for half a heart."],
+    ["雞、鴨、鵝最愛的零食：拿著對牠使用，每隻每天吃 1 個，好感度 +½ 心。", "The favorite treat of chickens, ducks and geese: use it on one, once a day each, for half a heart."],
   ],
   beet_sugar_cube: [
     ["1 甜菜根、1 糖合成 2 個。", "1 beetroot and 1 sugar make 2."],
-    ["豬最愛的零食：拿著點牠，每隻每天吃 1 個，好感度 +½ 心。", "Pigs' favourite treat: use it on one, once a day each, for half a heart."],
+    ["豬最愛的零食：拿著對牠使用，每隻每天吃 1 個，好感度 +½ 心。", "Pigs' favorite treat: use it on one, once a day each, for half a heart."],
   ],
   carrot_chips: [
     ["1 胡蘿蔔、1 糖合成 2 個。", "1 carrot and 1 sugar make 2."],
-    ["兔子最愛的零食：拿著點牠，每隻每天吃 1 個，好感度 +½ 心。", "Rabbits' favourite treat: use it on one, once a day each, for half a heart."],
+    ["兔子最愛的零食：拿著對牠使用，每隻每天吃 1 個，好感度 +½ 心。", "Rabbits' favorite treat: use it on one, once a day each, for half a heart."],
   ],
 
   // --- Milk ------------------------------------------------------------------------------------
   cow_milk: [
     ["用擠奶桶或擠奶架從成年母牛擠出，每隻每天一次，每次用掉一個空玻璃瓶。", "Milked from an adult female cow with a Milking Pail or Milking Rack, once a day; each milking uses an empty glass bottle."],
-    ["可以直接喝，喝完留下玻璃瓶。料理裡要「奶」的地方都能用。", "Drink it and keep the bottle. It works wherever a dish asks for milk."],
+    ["可以直接喝，喝完留下玻璃瓶。樂牧的奶類料理都能用。", "Drink it and keep the bottle. Any Ranching dish that takes milk takes it."],
     ["攪乳桶做奶油或鮮奶油，乳酪壓模做新鮮乳酪，發酵罐做優格。", "Churn it into butter or cream, press it into Fresh Cheese, ferment it into yogurt."],
     ["空桶加 3 瓶做成桶裝鮮奶，給酒館釀奶酒。", "A bucket and 3 bottles make a Bucket of Fresh Milk for Tavern milk wine."],
   ],
   goat_milk: [
     ["用擠奶桶或擠奶架從成年母山羊擠出，每隻每天一次，每次用掉一個空玻璃瓶。", "Milked from an adult female goat with a Milking Pail or Milking Rack, once a day; each milking uses an empty glass bottle."],
-    ["可以直接喝，喝完留下玻璃瓶。料理裡要「奶」的地方都能用。", "Drink it and keep the bottle. It works wherever a dish asks for milk."],
+    ["可以直接喝，喝完留下玻璃瓶。樂牧的奶類料理都能用。", "Drink it and keep the bottle. Any Ranching dish that takes milk takes it."],
     ["攪乳桶做奶油或鮮奶油，乳酪壓模做山羊乳酪，發酵罐做優格。", "Churn it into butter or cream, press it into Goat Cheese, ferment it into yogurt."],
   ],
   buffalo_milk: [
     ["用擠奶桶或擠奶架從成年母水牛擠出，每隻每天一次，每次用掉一個空玻璃瓶。", "Milked from an adult female buffalo with a Milking Pail or Milking Rack, once a day; each milking uses an empty glass bottle."],
-    ["可以直接喝，喝完留下玻璃瓶。料理裡要「奶」的地方都能用。", "Drink it and keep the bottle. It works wherever a dish asks for milk."],
+    ["可以直接喝，喝完留下玻璃瓶。樂牧的奶類料理都能用。", "Drink it and keep the bottle. Any Ranching dish that takes milk takes it."],
     ["攪乳桶做奶油或鮮奶油，乳酪壓模做莫札瑞拉，發酵罐做優格。", "Churn it into butter or cream, press it into Mozzarella, ferment it into yogurt."],
   ],
   yak_milk: [
     ["用擠奶桶或擠奶架從成年母氂牛擠出，每隻每天一次，每次用掉一個空玻璃瓶。", "Milked from an adult female yak with a Milking Pail or Milking Rack, once a day; each milking uses an empty glass bottle."],
-    ["可以直接喝，喝完留下玻璃瓶。料理裡要「奶」的地方都能用。", "Drink it and keep the bottle. It works wherever a dish asks for milk."],
+    ["可以直接喝，喝完留下玻璃瓶。樂牧的奶類料理都能用。", "Drink it and keep the bottle. Any Ranching dish that takes milk takes it."],
     ["攪乳桶只做酥油（2 瓶），乳酪壓模做曲拉，發酵罐做優格。", "The churn makes only Ghee from it (2 bottles); press it into Chhurpi, ferment it into yogurt."],
     ["空桶加 3 瓶做成桶裝氂牛奶，給酒館釀氂牛奶酒。", "A bucket and 3 bottles make a Bucket of Yak Milk for Tavern yak milk wine."],
   ],
@@ -642,7 +638,7 @@ export const GUIDE_TEXT = {
   ],
   century_egg: [
     ["醃製缸：4 顆鴨蛋、1 塊木炭、1 顆黏土球放 3 天，得 4 顆。", "Pickling Vat: 4 duck eggs, 1 charcoal and 1 clay ball for 3 days make 4."],
-    ["可以直接吃；也用來煮皮蛋瘦肉粥。", "Eat it as it is, or cook Century Egg and Pork Congee."],
+    ["可以直接吃；也用來做皮蛋瘦肉粥。", "Eat it as it is, or cook Century Egg and Pork Congee."],
   ],
 
   // --- Dairy -----------------------------------------------------------------------------------
@@ -687,15 +683,13 @@ export const GUIDE_TEXT = {
   ],
   vanilla_ice_cream: [
     ["冰淇淋桶：鮮奶油、糖、冰各 1 份，點一下得 2 份。", "Ice Cream Churn: one each of cream, sugar and ice make 2 at once."],
-    ["吃飽也能吃。裝了酒館可以放進調酒器。", "You can eat it even when full. Goes into the Tavern shaker if installed."],
+    ["裝了酒館可以放進調酒器。", "Goes into the Tavern shaker if installed."],
   ],
   berry_ice_cream: [
     ["冰淇淋桶：鮮奶油、糖、冰之外，背包裡有甜莓時多用 1 個，得 2 份。", "Ice Cream Churn: cream, sugar and ice with sweet berries in your inventory make 2."],
-    ["吃飽也能吃。", "You can eat it even when full."],
   ],
   chocolate_ice_cream: [
     ["冰淇淋桶：鮮奶油、糖、冰之外，背包裡有可可豆（沒有甜莓）時多用 1 個，得 2 份。", "Ice Cream Churn: cream, sugar and ice with cocoa beans (and no berries) in your inventory make 2."],
-    ["吃飽也能吃。", "You can eat it even when full."],
   ],
   custard: [
     ["攪乳桶：手拿雞蛋點，2 顆雞蛋、1 瓶任何奶、1 份糖，15 秒得 2 份。", "Butter Churn, holding an egg: 2 eggs, 1 milk of any kind and 1 sugar make 2 in 15 seconds."],
@@ -719,7 +713,7 @@ export const GUIDE_TEXT = {
   ],
   chhurpi_block: [
     ["熟成架：2 塊曲拉風乾 2 天，得 2 份。", "Aging Rack: 2 chhurpi dried for 2 days make 2."],
-    ["可以吃；也用來煮曲拉酥油茶。", "Edible, and goes into Chhurpi Butter Tea."],
+    ["可以吃；也用來做曲拉酥油茶。", "Edible, and goes into Chhurpi Butter Tea."],
   ],
   vintage_cheese_wheel: [
     ["熟成架：4 塊新鮮乳酪放滿 7 天才取出。", "Aging Rack: 4 fresh cheese left 7 days or more."],
@@ -781,19 +775,19 @@ export const GUIDE_TEXT = {
   yak_meat: [
     ["分切氂牛屠體取得，公氂牛多 1 份。", "Cut from a Yak Carcass; a bull gives one more."],
     ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
-    ["燉氂牛肉燉菜；絞肉機絞成牛絞肉。", "Goes into Yak Meat Stew; the Meat Grinder turns it into Ground Beef."],
+    ["用來做氂牛肉燉菜；絞肉機絞成牛絞肉。", "Goes into Yak Meat Stew; the Meat Grinder turns it into Ground Beef."],
   ],
   cooked_yak_meat: [["生氂牛肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw yak cooked in a furnace or the wok. 8 hunger."]],
   duck_meat: [
     ["分切鴨屠體取得。", "Cut from a Duck Carcass."],
     ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
-    ["燉老鴨湯。", "Goes into Old Duck Soup."],
+    ["用來做老鴨湯。", "Goes into Old Duck Soup."],
   ],
   cooked_duck_meat: [["生鴨肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw duck cooked in a furnace or the wok. 8 hunger."]],
   goose_meat: [
     ["分切鵝屠體取得。", "Cut from a Goose Carcass."],
     ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
-    ["燉鐵鍋燉大鵝。", "Goes into Iron Pot Goose Stew."],
+    ["用來做鐵鍋燉大鵝。", "Goes into Iron Pot Goose Stew."],
   ],
   cooked_goose_meat: [["生鵝肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw goose cooked in a furnace or the wok. 8 hunger."]],
   beef_brisket: [
@@ -815,11 +809,11 @@ export const GUIDE_TEXT = {
   ],
   pork_ribs: [
     ["分切豬屠體取得。", "Cut from a Pig Carcass."],
-    ["目前只能直接吃（2 點飢餓值），還沒有料理用到它。", "For now it is only eaten as it is (2 hunger); no dish uses it yet."],
+    ["2 份加糖、番茄在炒鍋做糖醋排骨。", "2 with sugar and a tomato in the wok make Sweet and Sour Spare Ribs."],
   ],
   pork_trotter: [
     ["分切豬屠體取得，一具 2 到 4 隻。", "Cut from a Pig Carcass, 2 to 4 each."],
-    ["2 隻加大骨燉豬蹄湯。", "2 with a large bone make Pork Trotter Soup."],
+    ["2 隻加大骨做豬蹄湯。", "2 with a large bone make Pork Trotter Soup."],
   ],
   lamb_chop: [
     ["分切羊、山羊屠體取得。", "Cut from sheep and goat carcasses."],
@@ -827,7 +821,7 @@ export const GUIDE_TEXT = {
   ],
   lamb_leg: [
     ["分切羊、山羊屠體取得。", "Cut from sheep and goat carcasses."],
-    ["目前只能直接吃（2 點飢餓值），還沒有料理用到它。", "For now it is only eaten as it is (2 hunger); no dish uses it yet."],
+    ["加紅辣椒在工作台做成醃羊腿，再烤成孜然烤羊腿。", "With a red chili it crafts into a Seasoned Lamb Leg, which roasts into Spiced Roast Lamb Leg."],
   ],
   chicken_leg: [
     ["分切雞屠體取得，一具 2 隻。", "Cut from a Chicken Carcass, 2 each."],
@@ -835,7 +829,7 @@ export const GUIDE_TEXT = {
   ],
   chicken_wing: [
     ["分切雞屠體取得，一具 2 隻。", "Cut from a Chicken Carcass, 2 each."],
-    ["目前只能直接吃（2 點飢餓值），還沒有料理用到它。", "For now it is only eaten as it is (2 hunger); no dish uses it yet."],
+    ["2 隻加糖在炒鍋做蜜汁雞翅。", "2 with sugar in the wok make Honey-glazed Chicken Wings."],
   ],
   duck_leg: [
     ["分切鴨屠體取得，一具 2 隻。", "Cut from a Duck Carcass, 2 each."],
@@ -847,11 +841,11 @@ export const GUIDE_TEXT = {
   ],
   rabbit_leg: [
     ["分切兔屠體取得，一具 2 隻。", "Cut from a Rabbit Carcass, 2 each."],
-    ["目前只能直接吃（2 點飢餓值），還沒有料理用到它。", "For now it is only eaten as it is (2 hunger); no dish uses it yet."],
+    ["2 隻加胡蘿蔔、糖在湯鍋做紅燒兔腿。", "2 with a carrot and sugar in the stockpot make Braised Rabbit Legs."],
   ],
   pork_mince: [
     ["絞肉機：手持生豬肉點一下。", "Meat Grinder: use it holding a raw porkchop."],
-    ["2 份煮紅燒獅子頭；任兩份絞肉加腸衣做生香腸。裝了漁歌可以當魚餌。", "2 make Braised Lion's Head Meatballs; any 2 mince and a casing make sausages. Fishing Voyage takes it as bait."],
+    ["2 份用來做紅燒獅子頭；任兩份絞肉加腸衣做生香腸。裝了漁歌可以當魚餌。", "2 make Braised Lion's Head Meatballs; any 2 mince and a casing make sausages. Fishing Voyage takes it as bait."],
   ],
   beef_mince: [
     ["絞肉機：手持生牛肉、生水牛肉或生氂牛肉點一下。", "Meat Grinder: use it holding raw beef, buffalo or yak."],
@@ -859,7 +853,7 @@ export const GUIDE_TEXT = {
   ],
   mutton_mince: [
     ["絞肉機：手持生羊肉點一下。", "Meat Grinder: use it holding raw mutton."],
-    ["2 份加胡蘿蔔煮羊肉丸湯；任兩份絞肉加腸衣做生香腸。裝了漁歌可以當魚餌。", "2 with a carrot make Lamb Meatball Soup; any 2 mince and a casing make sausages. Fishing Voyage takes it as bait."],
+    ["2 份加胡蘿蔔做羊肉丸湯；任兩份絞肉加腸衣做生香腸。裝了漁歌可以當魚餌。", "2 with a carrot make Lamb Meatball Soup; any 2 mince and a casing make sausages. Fishing Voyage takes it as bait."],
   ],
   raw_sausage: [
     ["絞肉機：手持絞肉點，任兩份絞肉加 1 份腸衣，得 2 條。", "Meat Grinder, holding mince: any 2 mince and 1 casing make 2."],
@@ -879,7 +873,7 @@ export const GUIDE_TEXT = {
   ],
   beef_jerky: [
     ["牛腱掛在空的屠宰掛架風乾 3 天。", "Beef shank air-dried for 3 days on an empty Butcher Rack."],
-    ["可以吃，吃飽也能吃。", "Edible, even when you are full."],
+    ["可以吃。", "Edible."],
   ],
   pork_liver: [
     ["分切豬屠體時剝皮後的那一刀取得。", "Cut from a Pig Carcass right after the skin."],
@@ -893,12 +887,12 @@ export const GUIDE_TEXT = {
   ],
   chicken_gizzard: [
     ["分切雞屠體時剝完毛後的那一刀取得。", "Cut from a Chicken Carcass right after the feathers."],
-    ["2 份煮滷雞胗；裝了漁歌可以當魚餌。", "2 make Braised Chicken Gizzards; Fishing Voyage takes it as bait."],
+    ["2 份用來做滷雞胗；裝了漁歌可以當魚餌。", "2 make Braised Chicken Gizzards; Fishing Voyage takes it as bait."],
     OFFAL_FEED,
   ],
   duck_blood: [
     ["分切鴨屠體時取得。", "Cut from a Duck Carcass."],
-    ["用來煮鴨血粉絲湯。", "Goes into Duck Blood Vermicelli Soup."],
+    ["用來做鴨血粉絲湯。", "Goes into Duck Blood Vermicelli Soup."],
     OFFAL_FEED,
   ],
   goose_liver: [
@@ -928,7 +922,7 @@ export const GUIDE_TEXT = {
     ["做皮圍裙、套索、挽具、皮手套和馱袋。", "Makes the Leather Apron, Lasso, Harness, Leather Gloves and Pack Bag."],
   ],
   yarn: [
-    ["紡車：1 塊羊毛（任何顏色）→ 2 份；2 份氂牛毛 → 2 份。", "Spinning Wheel: 1 wool of any colour → 2; 2 yak hair → 2."],
+    ["紡車：1 塊羊毛（任何顏色）→ 2 份；2 份氂牛毛 → 2 份。", "Spinning Wheel: 1 wool of any color → 2; 2 yak hair → 2."],
     ["4 份在工作台壓成 2 張毛氈；織布機 2 份織成毛呢布；1 份可換回 1 條線。", "4 craft into 2 felt; 2 weave into wool cloth on the loom; 1 crafts back into string."],
   ],
   fine_yarn: [
@@ -945,7 +939,7 @@ export const GUIDE_TEXT = {
   ],
   plush_cloth: [
     ["織布機：2 份絨線，半個遊戲日。", "Weaving Loom: 2 fine yarn, half a game day."],
-    ["做毛毯（2 張做 2 塊）、羽絨被和動物披毯（3 張）。", "Makes rugs (2 for 2), the Down Quilt and the Animal Blanket (3)."],
+    ["做地毯（2 張做 2 塊）、羽絨被和動物披毯（3 張）。", "Makes rugs (2 for 2), the Down Quilt and the Animal Blanket (3)."],
   ],
 
   // --- By-products ------------------------------------------------------------------------------
@@ -1027,7 +1021,7 @@ export const GUIDE_TEXT = {
     ["做牧笛或角製掛飾；在工作台換成原版的山羊角。", "Makes a Herding Horn or a Horn Decoration, or crafts into a vanilla goat horn."],
   ],
   down: [
-    ["分切鴨、鵝屠體取得；好感度 4 心以上的成年鴨、鵝每天也有 20% 機率掉一根。", "Cut from duck and goose carcasses; adult ducks and geese with four hearts also moult one a day at a 20% chance."],
+    ["分切鴨、鵝屠體取得；好感度 4 心以上的成年鴨、鵝每天也有 20% 機率掉一根。", "Cut from duck and goose carcasses; adult ducks and geese with four hearts also molt one a day at a 20% chance."],
     ["做羽絨枕（3 根）和羽絨被（4 根）；4 根換 1 塊白色羊毛。", "Makes the Down Pillow (3) and Down Quilt (4); 4 craft into a white wool."],
   ],
   yak_hair: [
@@ -1067,6 +1061,10 @@ export const GUIDE_TEXT = {
   raw_pizza: [
     ["工作台：廚房的生麵團、番茄、莫札瑞拉。", "Crafting table: Cookery's raw dough, a tomato and mozzarella."],
     ["放進熔爐或煙燻爐烤成瑪格麗特披薩。", "Bakes into Margherita Pizza in a furnace or smoker."],
+  ],
+  seasoned_lamb_leg: [
+    ["工作台：1 隻羊腿加 1 根廚房的紅辣椒。", "Crafting table: 1 lamb leg and 1 Cookery red chili."],
+    ["放進熔爐或煙燻爐烤成孜然烤羊腿。", "Bakes into Spiced Roast Lamb Leg in a furnace or smoker."],
   ],
   raw_truffle_gratin: [
     ["工作台：松露、乳酪塊、馬鈴薯、碗。", "Crafting table: truffle, cheese slice, potato and a bowl."],
@@ -1113,7 +1111,7 @@ function carcassLines(animal) {
     }
     lines.push([`公${zh}：${zhParts.join("，")}。`, `A male gives ${enParts.join(", plus ")}.`]);
   }
-  if (cuts.some((cut) => cut.ifUnshorn)) lines.push(["沒剪過毛的羊，第一刀先切下 1 塊同色的羊毛。", "An unshorn sheep first gives one wool of its own colour."]);
+  if (cuts.some((cut) => cut.ifUnshorn)) lines.push(["沒剪過毛的羊，第一刀先切下 1 塊同色的羊毛。", "An unshorn sheep first gives one wool of its own color."]);
   return lines;
 }
 
@@ -1158,14 +1156,31 @@ function dishLines(dish) {
     });
     lines.push([`${parts.map((p) => p[0]).join("；")}。`, `${parts.map((p) => p[1]).join("; ")}.`]);
   }
-  const placed = PLACED.get(dish.id);
-  if (placed?.eat) {
-    lines.push([
-      `對著方塊使用會放在地上，分 ${placed.portions} 份，每份 ${placed.eat} 點飢餓值，誰都能吃${placed.gives ? "；吃完最後一份還碗" : ""}。對空中使用則直接吃。`,
-      `Use it on a block to set it down: ${placed.portions} portions of ${placed.eat} hunger anyone can eat${placed.gives ? ", the bowl back with the last" : ""}. Use it in the air to eat it whole.`,
-    ]);
-  }
   return lines;
+}
+
+const CONTAINER = {
+  "minecraft:bowl": ["碗", "bowl"],
+  "minecraft:glass_bottle": ["玻璃瓶", "glass bottle"],
+  "kaleidoscope_ranching:horn_cup": ["角杯", "horn cup"],
+};
+
+/** The line for food that can be set down and eaten in place (data/placedFoods.js), or null. */
+function placedLine(placed) {
+  if (!placed?.eat) return null;
+  const [cz, ce] = placed.gives ? CONTAINER[placed.gives] : ["", ""];
+  if (placed.portions === 1) {
+    // One serving in its own cup or crock, taken in one go.
+    const [vz, ve] = placed.drink ? ["一口喝完", "drink it in one go"] : ["一次吃完", "eat it in one go"];
+    return [
+      `對著方塊使用會放在地上，再對它使用就${vz}${cz ? `，留下${cz}` : ""}。`,
+      `Use it on a block to set it down, then use it to ${ve}${ce ? `; the ${ce} is left` : ""}.`,
+    ];
+  }
+  return [
+    `對著方塊使用會放在地上，分 ${placed.portions} 份，每份 ${placed.eat} 點飢餓值，誰都能吃${cz ? `；吃完最後一份還${cz}` : ""}。對空中使用則直接吃。`,
+    `Use it on a block to set it down: ${placed.portions} portions of ${placed.eat} hunger anyone can eat${ce ? `, the ${ce} back with the last` : ""}. Use it in the air to eat it whole.`,
+  ];
 }
 
 /**
@@ -1183,10 +1198,10 @@ function keeperLines(animal) {
   return [
     [
       "好感度：四項需求都滿足的隔天 +1 心，最愛的零食每天 +½ 心，鹽磚範圍內每天 +¼ 心；受傷 −½ 心，連續 2 天沒吃到飼料 −1 心。",
-      "Affection: +1 heart the day after all four needs are met, +½ for its favourite treat once a day, +¼ near a salt lick; −½ when hurt, −1 after two days unfed.",
+      "Affection: +1 heart the day after all four needs are met, +½ for its favorite treat once a day, +¼ near a salt lick; −½ when hurt, −1 after two days unfed.",
     ],
     [
-      `晚上會睡覺。入睡時頭上 8 格內有遮蔽、4 格內有乾草架或毛毯，好感度 +4 點（20 點 = 1 心）；露天又靠近雪或冰會受寒，−4 點。${cold[0]}`,
+      `晚上會睡覺。入睡時頭上 8 格內有遮蔽、4 格內有乾草架或地毯，好感度 +4 點（20 點 = 1 心）；露天又靠近雪或冰會受寒，−4 點。${cold[0]}`,
       `It sleeps at night. Falling asleep with a roof within 8 blocks and a hay rack or rug within 4: +4 affection points (20 = a heart); in the open near snow or ice it gets cold: −4. ${cold[1]}`.trim(),
     ],
     [
@@ -1237,7 +1252,8 @@ export function guideEntries() {
     if (!category) throw new Error(`guidebook: no category for item ${item.id} (${item.category})`);
     const dish = DISH_BY_ID.get(item.id);
     const animal = ANIMALS.find((a) => a.carcass === item.id);
-    const pairs = dish ? dishLines(dish) : animal ? carcassLines(animal) : handWritten(item.id);
+    const placed = placedLine(PLACED.get(item.id));
+    const pairs = [...(dish ? dishLines(dish) : animal ? carcassLines(animal) : handWritten(item.id)), ...(placed ? [placed] : [])];
     add(item.id, "item", category, item.id, pairs, { dish, placeable: PLACED.has(item.id) });
   }
   for (const block of BLOCKS) {

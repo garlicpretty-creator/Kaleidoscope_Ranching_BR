@@ -1786,7 +1786,8 @@ test("the guidebook chapter arrives in chunks under 2048 characters and parses b
 // --- Guidebook chapter: coverage, text and Cookery's limits --------------------------
 // Limits mirror Cookery 1.6.6's scripts/api/guidebookExtensionRegistry.js (normalizeExtension).
 
-const { guidebookPayload, guidebookMessages } = await import("../../packs/BP/scripts/api/cookeryRecipes.js");
+const COOKERY_CONTENT = await import("../../packs/BP/scripts/api/cookeryRecipes.js");
+const { guidebookPayload, guidebookMessages } = COOKERY_CONTENT;
 const { ITEMS: GB_ITEMS } = await import("../../packs/BP/scripts/data/items.js");
 const { BLOCKS: GB_BLOCKS } = await import("../../packs/BP/scripts/data/blocks.js");
 const { ANIMALS: GB_ANIMALS } = await import("../../packs/BP/scripts/data/animals.js");
@@ -1797,6 +1798,8 @@ const GB_LOCALES = ["en_US", "zh_TW", "zh_CN"];
 const GB_ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
 const GB_TOKEN = /^[a-z0-9_.-]+$/;
 const gbEntry = new Map(GB.entries.map((e) => [e.id, e]));
+// English lines are Cookery's fallback `mechanics`; the Chinese ones are per language.
+const gbLines = (entry, locale) => (locale === "en_US" ? entry?.mechanics : entry?.mechanicsByLocale[locale]) ?? [];
 const gbNs = (id) => `kaleidoscope_ranching:${id}`;
 const gbTop = (id) => GB.categories.find((c) => c.id === id)?.parent || id;
 
@@ -1850,15 +1853,15 @@ test("guidebook: every entry has one to four lines (animals up to seven) in Engl
   for (const entry of GB.entries) {
     const most = entry.category === "animals" ? 7 : 4; // Cookery shows at most 8
     for (const locale of GB_LOCALES) {
-      const lines = entry.mechanicsByLocale[locale];
+      const lines = gbLines(entry, locale);
       assert(Array.isArray(lines) && lines.length >= 1 && lines.length <= most, `${entry.id}: 1-${most} ${locale} lines`);
       for (const line of lines) {
         assert(typeof line === "string" && line.trim() && line.length <= 512, `${entry.id}: ${locale} line within 512 characters`);
         assert(!/kaleidoscope_|minecraft:|undefined|NaN/.test(line), `${entry.id}: ${locale} line names things, not ids: ${line}`);
       }
     }
-    equal(JSON.stringify(entry.mechanics), JSON.stringify(entry.mechanicsByLocale.en_US), `${entry.id}: English is the fallback for other languages`);
-    equal(entry.mechanicsByLocale.zh_TW.length, entry.mechanicsByLocale.en_US.length, `${entry.id}: as many lines in both languages`);
+    assert(!("en_US" in entry.mechanicsByLocale), `${entry.id}: English only once, as the fallback`);
+    equal(entry.mechanicsByLocale.zh_TW.length, entry.mechanics.length, `${entry.id}: as many lines in both languages`);
   }
 });
 
@@ -1929,7 +1932,7 @@ test("guidebook: the revision changes whenever the chapter does", () => {
 
 test("guidebook: rules the action bar used to explain are written in the entries", () => {
   const says = (id, locale, ...words) => {
-    const text = (gbEntry.get(gbNs(id))?.mechanicsByLocale[locale] ?? []).join(" ");
+    const text = gbLines(gbEntry.get(gbNs(id)), locale).join(" ");
     for (const word of words) assert(text.includes(word), `${id} (${locale}) mentions "${word}": ${text}`);
   };
   says("milking_pail", "zh_TW", "成年母", "每天", "空玻璃瓶"); // milking.not_female / milked_today / need_bottle
@@ -1964,7 +1967,7 @@ test("guidebook: rules the action bar used to explain are written in the entries
   // Animals: what they like and what a keeper must know.
   for (const animal of GB_ANIMALS) {
     says(animal.id, "zh_TW", "最愛", "好感度", "睡覺");
-    says(animal.id, "en_US", "favourite treat", "Affection", "sleeps");
+    says(animal.id, "en_US", "favorite treat", "Affection", "sleeps");
   }
 });
 
@@ -1975,6 +1978,138 @@ test("guidebook: dishes use Cookery's station names, so their recipes show trans
   const stew = gbEntry.get(gbNs("cream_stew"));
   assert(stew.mechanicsByLocale.zh_TW.join(" ").includes("生雞肉"), "the stew's other meats are named");
   assert(gbEntry.get(gbNs("braised_brisket")).kinds.includes("block"), "a stew that can be set down shows as placeable");
+});
+
+const { PLACED_FOODS: GB_PLACED } = await import("../../packs/BP/scripts/data/placedFoods.js");
+
+test("guidebook: food set down shows as placeable, and a one-serving drink never reads like a shared pot", () => {
+  for (const food of GB_PLACED) {
+    const entry = gbEntry.get(gbNs(food.item));
+    assert(entry.kinds.includes("item") && entry.kinds.includes("block"), `${food.item}: item + block`);
+    if (!food.eat) continue;
+    const zh = gbLines(entry, "zh_TW").join(" ");
+    const en = gbLines(entry, "en_US").join(" ");
+    assert(zh.includes("對著方塊使用會放在地上"), `${food.item}: says it can be set down`);
+    if (food.portions === 1) {
+      assert(!zh.includes("誰都能吃") && !zh.includes("還碗") && !en.includes("portions"), `${food.item}: not the shared-pot wording: ${zh}`);
+      assert(zh.includes(food.drink ? "一口喝完" : "一次吃完"), `${food.item}: taken in one go`);
+      const back = { "minecraft:glass_bottle": "玻璃瓶", "kaleidoscope_ranching:horn_cup": "角杯" }[food.gives];
+      if (back) assert(zh.includes(`留下${back}`), `${food.item}: the ${back} is left`);
+    } else {
+      assert(zh.includes(`分 ${food.portions} 份`) && zh.includes(`每份 ${food.eat} 點`), `${food.item}: portions`);
+    }
+  }
+});
+
+test("guidebook: food can always be eaten, said once on the front page rather than per item", () => {
+  for (const entry of GB.entries) {
+    assert(!gbLines(entry, "zh_TW").join("").includes("吃飽也能吃"), `${entry.id}: no per-item full-bar note`);
+    assert(!/even when (you are )?full/.test(gbLines(entry, "en_US").join(" ")), `${entry.id}: no per-item full-bar note (en)`);
+  }
+  assert(GB.text.zh_TW.intro.includes("樂牧的食物吃飽了也能吃。"), "front page, zh_TW");
+  assert(GB.text.en_US.intro.includes("All Ranching food can be eaten with a full hunger bar."), "front page, en_US");
+  equal(GB.showAll, false, "no flat All Entries list of 250 buttons");
+});
+
+test("guidebook: English names match the game's en_US names and use US spelling", () => {
+  const lang = {};
+  for (const line of readFileSync(new URL("../../packs/RP/texts/en_US.lang", import.meta.url), "utf8").split(/\r?\n/)) {
+    const m = line.match(/^(?:item|tile)\.(kaleidoscope_ranching:[a-z0-9_]+)\.name=([^\\]*)/);
+    if (m && !lang[m[1]]) lang[m[1]] = m[2].replace(/§./g, "").trim();
+  }
+  for (const [id, name] of Object.entries(GB.names.en_US)) if (lang[id]) equal(name, lang[id], `${id}: in-game name`);
+  const british = /\b(favourite|colour|armour|moult|plough|grey|centre|flavour)/i;
+  for (const entry of GB.entries) assert(!british.test(gbLines(entry, "en_US").join(" ")), `${entry.id}: US spelling: ${gbLines(entry, "en_US").join(" ")}`);
+  for (const name of Object.values(GB.names.en_US)) assert(!british.test(name), `US spelling: ${name}`);
+  assert(!british.test(GB.text.en_US.intro), "US spelling on the front page");
+});
+
+test("guidebook: 著 only ever as the particle, since data/zh_cn.js turns every 著 into 着", () => {
+  const all = [...GB.entries.flatMap((e) => gbLines(e, "zh_TW")), ...Object.values(GB.text.zh_TW), ...Object.values(GB.names.zh_TW)].join(" ");
+  for (const word of ["顯著", "著名", "著作", "土著", "著重", "著實"]) assert(!all.includes(word), `"${word}" would become ${word.replace("著", "着")} in zh_CN`);
+});
+
+const gbMod = (path) => import(`../../packs/BP/scripts/${path}.js`);
+const GBC = {
+  ...(await gbMod("data/care_config")).CARE,
+  ...(await gbMod("data/animals")),
+  ...(await gbMod("data/processing")),
+  ...(await gbMod("systems/workAnimals")),
+  ...(await gbMod("systems/hayRack")),
+  ...(await gbMod("systems/nest")),
+  ...(await gbMod("systems/moult")),
+  ...(await gbMod("systems/truffle")),
+  ...(await gbMod("systems/cowbell")),
+  ...(await gbMod("systems/textiles")),
+  ...(await gbMod("systems/disease")),
+  ...(await gbMod("systems/sleep")),
+  WASTE_CAPACITY: (await gbMod("systems/foodWasteBin")).CAPACITY,
+};
+
+test("guidebook: numbers in the lines are the ones the code uses", () => {
+  const pct = (x) => `${Math.round(x * 1000) / 10}%`;
+  const F = GBC.FERTILIZED_CHANCE_BY_AFFECTION;
+  const WANT = {
+    trough: [`最多 ${GBC.TROUGH_CAPACITY} 份`, `${GBC.RADIUS} 格內`, `超過 ${GBC.MANURE_DIRTY_THRESHOLD} 坨`],
+    water_trough: [`裝滿 ${GBC.WATER_LEVELS_PER_BUCKET} 格水`],
+    salt_lick: [`${GBC.SALT_LICK_DAYS} 天`],
+    compost_bin: [`${GBC.COMPOST_MANURE} 份糞便`, `${GBC.COMPOST_OUTPUT} 份肥料`],
+    feed_bag: [`最多 ${GBC.FEED_BAG_CAPACITY} 份`],
+    alfalfa_seeds: [pct(GBC.GRASS_SEED_CHANCE)],
+    nursing_bottle: [`餵滿 ${GBC.NURSING_FEEDS_TO_GROW} 次`],
+    nest_box: [`最多存 ${GBC.NEST_CAPACITY} 顆`, `${pct(F[0])} 到 ${pct(F.at(-1))}`, `最多 ${GBC.HATCH_SLOTS} 顆`, `${GBC.BROOD_RADIUS} 格內有同種母禽`, `${GBC.NEST_RADIUS} 格內`],
+    incubator: [`最多 ${GBC.EGG_SLOTS} 顆`, `${GBC.INCUBATION_DAYS} 天孵化`],
+    butcher_rack: [`最多 ${GBC.DRYING_SLOTS} 件`, `${GBC.DRYING_TICKS / 24000} 天後取下`],
+    hay_rack: [`最多 ${GBC.HAY_RACK_CAPACITY} 份`, `+${GBC.SLEPT_WELL_POINTS} 點`],
+    harness: [`${GBC.HARNESS_HEARTS} 心`],
+    duck: [`${GBC.MOULT_MIN_HEARTS} 心以上`, pct(GBC.MOULT_CHANCE)],
+    goose: [`${GBC.GOOSE_WATCH_RANGE} 格內`],
+    pig: [pct(GBC.TRUFFLE_CHANCE), `${GBC.TRUFFLE_MIN_HEARTS} 心`],
+    cow: [`${GBC.GESTATION_DAYS} 天後生產`, `休息 ${GBC.BREED_COOLDOWN_TICKS / 1200} 分鐘`, `${GBC.MATE_RADIUS} 格內`, `+${GBC.SLEPT_WELL_POINTS} 點`, `−${GBC.COLD_NIGHT_POINTS} 點`, `${GBC.HOSTILE_RANGE} 格內有敵對`],
+    cowbell: [`${GBC.CALL_RADIUS} 格`, `${GBC.BOND_HEARTS} 心`],
+    lasso: [`${GBC.LASSO_RANGE} 格`],
+    leather_apron: [pct(GBC.APRON_SAVE_CHANCE)],
+    vet_medicine: [pct(GBC.SICK_CHANCE)],
+    herding_horn: [`${GBC.HERD_RADIUS} 格`, `超過 ${GBC.RALLY_RADIUS} 格`, `最多 ${GBC.HERD_LIMIT} 隻`, `${GBC.HERD_TICKS / 20} 秒`],
+    pen_gate: [`${GBC.GATE_REACH} 格內`],
+    food_waste_bin: [`最多 ${GBC.WASTE_CAPACITY} 份`],
+    calcium_feed: [pct(GBC.CALCIUM_EXTRA_EGG_CHANCE)],
+    egg_candler: [`亮 ${GBC.CANDLE_GLOW_TICKS / 20} 秒`],
+  };
+  for (const [id, words] of Object.entries(WANT)) {
+    const text = gbLines(gbEntry.get(gbNs(id)), "zh_TW").join(" ");
+    for (const word of words) assert(text.includes(word), `${id} says "${word}": ${text}`);
+  }
+  // Every durability quoted is the item's own.
+  for (const entry of GB.entries) {
+    const quoted = gbLines(entry, "zh_TW").join(" ").match(/耐久度 (\d+)/);
+    if (!quoted) continue;
+    const id = entry.id.split(":")[1];
+    const file = [`r_${id}.json`, `${id}.json`].map((name) => new URL(`../../packs/BP/items/${name}`, import.meta.url)).find((url) => {
+      try {
+        readFileSync(url);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+    const max = JSON.parse(readFileSync(file, "utf8"))["minecraft:item"].components["minecraft:durability"]?.max_durability;
+    equal(Number(quoted[1]), max, `${id}: durability`);
+  }
+});
+
+test("guidebook: a chapter that cannot be sent is not marked as sent", () => {
+  const { sendGuidebook } = COOKERY_CONTENT;
+  const real = system.sendScriptEvent;
+  system.sendScriptEvent = () => {
+    throw new Error("refused");
+  };
+  try {
+    equal(sendGuidebook(), false, "a refused message means not sent");
+  } finally {
+    system.sendScriptEvent = real;
+  }
+  equal(sendGuidebook(), true, "sent when the game takes every message");
 });
 
 test("whey from the cheese press fills a trough as mixed feed that pigs eat", () => {

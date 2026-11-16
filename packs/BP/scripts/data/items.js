@@ -177,7 +177,7 @@ const CLOTH_LINE = [
 // blanket come from the leather and cloth lines; they act on sleep and the cold.
 const WORK_LINE = [
   ["harness", "挽具", "Harness", "tool"],
-  ["plough", "犁", "Plough", "tool"],
+  ["plough", "犁", "Plow", "tool"],
   ["animal_blanket", "動物披毯", "Animal Blanket", "tool"],
   ["leather_gloves", "皮手套", "Leather Gloves", "tool"],
   ["herding_horn", "牧笛", "Herding Horn", "tool"],
@@ -231,7 +231,7 @@ const BYPRODUCTS = [
 const FEED = [
   ["alfalfa", "苜蓿", "Alfalfa", "feed", "m2"],
   ["alfalfa_seeds", "苜蓿種子", "Alfalfa Seeds", "feed", "m2"],
-  ["forage", "飼草", "Forage", "feed", "m2"],
+  ["forage", "飼草", "Chopped Forage", "feed", "m2"],
   ["mixed_feed", "混合飼料", "Mixed Feed", "feed", "m2"],
   ["concentrate_feed", "精飼料", "Concentrate Feed", "feed", "m2"],
 ];
@@ -249,7 +249,7 @@ const TOOLS = [
   ["cowbell", "牧鈴", "Cowbell", "tool"],
   // A hand-held item, not a block: it carries one animal (systems/crate.js).
   ["animal_crate", "運畜籠", "Animal Crate", "tool"],
-  ["brush", "毛刷", "Brush", "tool", "m2"],
+  ["brush", "毛刷", "Grooming Brush", "tool", "m2"],
   // 觀察手冊 (formerly 牧場記事本; the id stays so existing worlds keep their copies).
   ["ranch_notebook", "觀察手冊", "Observation Journal", "tool", "m2"],
   ["ear_tag", "耳標", "Ear Tag", "tool", "m2"],

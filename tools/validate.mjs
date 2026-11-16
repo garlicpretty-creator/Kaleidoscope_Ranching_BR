@@ -946,7 +946,17 @@ for (const item of ITEMS) {
 
 {
   const { TRADITIONAL_HINTS } = await load("zh_cn.js");
-  const { guideEntries, GUIDE_SKIP } = await load("guidebook.js");
+  const { guideEntries, guideCategories, GUIDE_SKIP, GUIDE_TEXT_KEYS } = await load("guidebook.js");
+  const { toSimplified } = await load("zh_cn.js");
+  const traditional = (text) => [...new Set([...text].filter((ch) => TRADITIONAL_HINTS.includes(ch)))].join("");
+  for (const category of guideCategories()) {
+    const left = traditional(category.labels.zh_CN);
+    if (left) fail(`data/guidebook.js: zh_CN label of category "${category.id}" still has Traditional characters: ${left}`);
+  }
+  for (const [key, value] of Object.entries(GUIDE_TEXT_KEYS.zh)) {
+    const left = traditional(toSimplified(value));
+    if (left) fail(`data/guidebook.js: zh_CN text "${key}" still has Traditional characters: ${left}; add them to data/zh_cn.js`);
+  }
   let entries = [];
   try {
     entries = guideEntries();

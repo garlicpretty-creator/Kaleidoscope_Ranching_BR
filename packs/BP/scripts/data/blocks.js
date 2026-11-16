@@ -4,7 +4,7 @@
 
 export const BLOCKS = [
   // Husbandry and management
-  ["trough", "飼槽", "Trough", "husbandry", "m2"],
+  ["trough", "飼槽", "Feed Trough", "husbandry", "m2"],
   ["manure", "糞便", "Manure", "husbandry", "m2"],
   ["alfalfa_crop", "苜蓿", "Alfalfa", "husbandry", "m2"],
   ["water_trough", "水槽", "Water Trough", "husbandry", "m2"],
@@ -61,7 +61,7 @@ export const BLOCKS = [
   ["weaving_loom", "織布機", "Weaving Loom", "processing"],
   ["silage_barrel", "青貯桶", "Silage Barrel", "husbandry"],
   // Decoration: a rug dyed in 16 colours (systems/textiles.js), a down pillow and a quilt.
-  ["rug", "毛毯", "Rug", "decoration"],
+  ["rug", "地毯", "Rug", "decoration"],
   ["down_pillow", "羽絨枕", "Down Pillow", "decoration"],
   ["down_quilt", "羽絨被", "Down Quilt", "decoration"],
   // 1.1 役用與牧場管理: a two-block gate that opens for players only (systems/workAnimals.js), and horn decor.

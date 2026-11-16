@@ -25,11 +25,14 @@ const SOURCE = NAMESPACE;
 const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
 const KIND = { stockpot: "stockpot_exact", wok: "wok", steamer: "steamer" };
 
+/** Sends one script event; false if the game refused it. */
 function send(event, payload) {
   try {
     system.sendScriptEvent(event, typeof payload === "string" ? payload : JSON.stringify(payload));
+    return true;
   } catch (error) {
     console.warn(`[kaleidoscope_ranching] could not send ${event}: ${error}`);
+    return false;
   }
 }
 
@@ -124,7 +127,9 @@ export function guidebookPayload() {
       kinds: row.kind === "animal" ? [] : row.kind === "block" || row.placeable ? ["item", "block"] : ["item"],
       icon: row.icon,
       mechanics: row.lines.en_US,
-      mechanicsByLocale: row.lines,
+      // ## English goes only in `mechanics`, Cookery's fallback for every language
+      // ## without lines of its own, so the chapter does not carry English twice.
+      mechanicsByLocale: { zh_TW: row.lines.zh_TW, zh_CN: row.lines.zh_CN },
     };
     if (row.dish) {
       Object.assign(entry, { stack: 64, food: { nutrition: row.dish.food[0], saturation: row.dish.food[1] } });
@@ -165,6 +170,7 @@ export function guidebookPayload() {
     selectKey: "select",
     languageNoteKey: "language_note",
     backKey: "back",
+    showAll: false,
     showIds: false,
     showKinds: false,
     categories: categories.map(({ id, parent, icon }) => ({ id, labelKey: id, fallback: text.en_US[id], icon, ...(parent ? { parent } : {}) })),
@@ -199,15 +205,30 @@ export function guidebookMessages(payload = guidebookPayload()) {
   ];
 }
 
+/** Builds and sends the chapter; true only if every message went out. */
+export function sendGuidebook() {
+  let messages;
+  try {
+    messages = guidebookMessages();
+  } catch (error) {
+    console.warn(`[kaleidoscope_ranching] could not build the guidebook chapter: ${error}`);
+    return false;
+  }
+  // A refused message spoils the transfer; stop there and let the next guidebook_ready retry.
+  for (const [id, message] of messages) if (!send(id, message)) return false;
+  return true;
+}
+
 let guidebookSent = false;
 
 export function startCookeryContent() {
   onCookeryReady(() => registerRecipes());
 
+  // ## A chapter that fails to build or send is tried again on Cookery's next
+  // ## guidebook_ready (Cookery broadcasts it several times) instead of being lost.
   system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "kaleidoscope_cookery:guidebook_ready" || guidebookSent) return;
-    guidebookSent = true;
-    for (const [id, message] of guidebookMessages()) send(id, message);
+    guidebookSent = sendGuidebook();
   });
   system.run(() => send("kaleidoscope_cookery:guidebook_ping", SOURCE));
 }

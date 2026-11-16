@@ -43,7 +43,7 @@ const stationDef = (component) => ({
   selection: FULL,
   seconds: 1.5,
 });
-// 1.1 毛毯: one block, dyed by state (systems/textiles.js); each colour has its own texture kr_rug_<colour>.
+// 1.1 地毯: one block, dyed by state (systems/textiles.js); each colour has its own texture kr_rug_<colour>.
 const RUG_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
   "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
