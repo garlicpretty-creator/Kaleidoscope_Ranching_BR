@@ -125,7 +125,7 @@ def render(layers, anim=None, baby=False, yaw=-40, scale=8.0, ground=0.74, backg
 # --- Animals ---------------------------------------------------------------------
 
 
-def animal_layers(animal, worn, baby=False, asleep=False, skin=None):
+def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=False, saddled=False):
     """The animal and its gear layer, with the gear kinds in `worn` switched on."""
     entity = load(RP / "entity" / f"{animal}.entity.json")["minecraft:client_entity"]["description"]
     values = {f"q.property('{NS}:gear_{kind}')": "True" for kind in worn}
@@ -135,7 +135,7 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None):
         for key, value in values.items():
             e = e.replace(key, value)
         e = e.replace(f"q.property('{NS}:sex') == 'male'", "False")
-        e = e.replace("q.is_saddled", "False").replace("q.is_sheared", "False")
+        e = e.replace("q.is_saddled", str(saddled)).replace("q.is_sheared", str(sheared))
         import re
         e = re.sub(r"q\.property\('[^']+'\)", "False", e)
         # Only the pack's own render-controller conditions are evaluated here.
@@ -172,8 +172,8 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None):
     return layers, anim
 
 
-def animal_tile(animal, worn, baby=False, asleep=False, yaw=-40, scale=8.0):
-    layers, anim = animal_layers(animal, worn, baby, asleep)
+def animal_tile(animal, worn, baby=False, asleep=False, yaw=-40, scale=8.0, sheared=False, saddled=False):
+    layers, anim = animal_layers(animal, worn, baby, asleep, sheared=sheared, saddled=saddled)
     return render(layers, anim, baby, yaw, scale)
 
 
@@ -217,6 +217,14 @@ def worn_tile(items, yaw, scale=7.0):
     return render(layers, yaw=yaw, scale=scale, ground=0.9 if scale < 10 else 2.2)
 
 
+def held_tile(item, yaw=-25):
+    """The flat icon sprite the attachable shows in a hand (bound to the hand bone in game)."""
+    attachable = load(RP / "attachables" / f"{item}.json")["minecraft:attachable"]["description"]
+    geo = load(RP / "models" / "entity" / f"wearable_{item}_held.geo.json")["minecraft:geometry"][0]
+    size = (geo["description"]["texture_width"], geo["description"]["texture_height"])
+    return render([Layer(geo["bones"], Image.open(RP / f"{attachable['textures']['held']}.png"), size)], yaw=yaw, scale=22, ground=0.8)
+
+
 # --- The rack --------------------------------------------------------------------
 
 
@@ -240,9 +248,16 @@ def main():
         [("cow: blanket", lambda: animal_tile("cow", ["blanket"])), ("sheep: blanket", lambda: animal_tile("sheep", ["blanket"])),
          ("goat: blanket", lambda: animal_tile("goat", ["blanket"])), ("pig: blanket", lambda: animal_tile("pig", ["blanket"])),
          ("calf: blanket", lambda: animal_tile("cow", ["blanket"], baby=True))],
+        [("sheared sheep: blanket", lambda: animal_tile("sheep", ["blanket"], sheared=True)),
+         ("sheared sheep, from behind", lambda: animal_tile("sheep", ["blanket"], sheared=True, yaw=140)),
+         ("sheared lamb: blanket", lambda: animal_tile("sheep", ["blanket"], baby=True, sheared=True)),
+         ("saddled pig: blanket", lambda: animal_tile("pig", ["blanket"], saddled=True)),
+         ("saddled pig, no blanket", lambda: animal_tile("pig", [], saddled=True))],
         [("cow asleep: blanket", lambda: animal_tile("cow", ["blanket"], asleep=True)), ("pig asleep: blanket", lambda: animal_tile("pig", ["blanket"], asleep=True)),
          ("yak: pack bag", lambda: animal_tile("yak", ["pack_bag"], scale=7)), ("yak: pack bag, from behind", lambda: animal_tile("yak", ["pack_bag"], yaw=140, scale=7)),
          ("yak asleep: pack bag", lambda: animal_tile("yak", ["pack_bag"], asleep=True, scale=7))],
+        [("held: wool_hat icon", lambda: held_tile("wool_hat")), ("held: wool_scarf icon", lambda: held_tile("wool_scarf")),
+         ("held: leather_apron icon", lambda: held_tile("leather_apron")), ("held: hat icon, back", lambda: held_tile("wool_hat", 155))],
         [("rack: nothing drying", lambda: rack_tile(0)), ("rack: 1 piece drying", lambda: rack_tile(1)), ("rack: 2 pieces", lambda: rack_tile(2)),
          ("rack: 4 pieces", lambda: rack_tile(4)), ("rack: 4 pieces, from the side", lambda: rack_tile(4, yaw=-75))],
     ]
