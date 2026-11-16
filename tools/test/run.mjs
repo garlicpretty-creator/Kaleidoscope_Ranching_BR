@@ -1701,36 +1701,64 @@ const { DISH_PREPS } = await import("../../packs/BP/scripts/data/dishes.js");
 const { ITEMS: ITEM_ROWS } = await import("../../packs/BP/scripts/data/items.js");
 
 test("pork ribs, chicken wings, lamb legs and rabbit legs each cook into a dish", () => {
-  const known = new Set(ITEM_ROWS.map((item) => `kaleidoscope_ranching:${item.id}`));
-  // Cookery 1.6.6 items these dishes use (checked against its installed pack).
-  const cookery = new Set(["kaleidoscope_cookery:red_chili", "kaleidoscope_cookery:tomato"]);
-  const valid = (id) => id.startsWith("minecraft:") || known.has(id) || cookery.has(id);
+  const KR = (id) => `kaleidoscope_ranching:${id}`;
+  const known = new Set([
+    ...ITEM_ROWS.map((item) => KR(item.id)),
+    // Vanilla and Cookery 1.6.6 items these dishes use (checked against the installed packs).
+    "minecraft:sugar", "minecraft:carrot", "minecraft:bowl",
+    "kaleidoscope_cookery:red_chili", "kaleidoscope_cookery:tomato",
+  ]);
   const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
   const json = (path) => JSON.parse(readFileSync(new URL(`../../packs/BP/${path}`, import.meta.url), "utf8"));
-  const expected = { pork_ribs: "sweet_sour_ribs", chicken_wing: "honey_chicken_wings", lamb_leg: "roast_lamb_leg", rabbit_leg: "braised_rabbit_legs" };
-  for (const [cut, dishId] of Object.entries(expected)) {
-    const cutId = `kaleidoscope_ranching:${cut}`;
-    const dish = DISHES.find((d) => d.id === dishId);
-    assert(dish, `${dishId} exists`);
-    const food = json(`items/r_${dishId}.json`)["minecraft:item"].components["minecraft:food"];
-    equal(food.nutrition, dish.food[0], `${dishId} nutrition`);
-    equal(food.can_always_eat, true, `${dishId} can always be eaten`);
-    if (dish.station === "furnace") {
-      const prep = DISH_PREPS.find((p) => `kaleidoscope_ranching:${p.id}` === dish.input || p.id === dish.input);
-      assert(prep, `${dishId}: its uncooked step is a prep`);
-      const shapeless = json(`recipes/r_m5_${prep.id}_0.json`)["minecraft:recipe_shapeless"];
-      const ids = shapeless.ingredients.map((i) => i.item);
-      assert(ids.includes(cutId), `${prep.id} is made from ${cut}`);
-      for (const id of ids) assert(valid(id), `${prep.id}: ${id} exists`);
-      const furnace = json(`recipes/r_m5_furnace_${dishId}.json`)["minecraft:recipe_furnace"];
-      equal(furnace.input, `kaleidoscope_ranching:${prep.id}`, `${dishId} is roasted from ${prep.id}`);
-      equal(furnace.output, `kaleidoscope_ranching:${dishId}`, `${dishId} comes out of the furnace`);
-    } else {
-      const sent = recipes.find((r) => r.recipe.result === `kaleidoscope_ranching:${dishId}`);
-      assert(sent, `${dishId} registered with Cookery`);
-      assert(sent.recipe.ingredients.filter((slot) => slot.includes(cutId)).length >= 1, `${dishId} takes ${cut}`);
-      for (const slot of sent.recipe.ingredients) for (const id of slot) assert(valid(id), `${dishId}: ${id} exists`);
-    }
+  const same = (actual, expected, message) => equal(JSON.stringify(actual), JSON.stringify(expected), message);
+
+  // Cookery dishes: exact slots (one item per slot, so a doubled slot is a count of two), kind, carrier, time.
+  const cookery = [
+    { dish: "sweet_sour_ribs", kind: "wok", carrier: "minecraft:bowl", time: 200,
+      slots: [[KR("pork_ribs")], [KR("pork_ribs")], ["minecraft:sugar"], ["kaleidoscope_cookery:tomato"]] },
+    // Sugar only: Cookery's wok never hands back a honey bottle's glass bottle.
+    { dish: "honey_chicken_wings", kind: "wok", carrier: "", time: 200,
+      slots: [[KR("chicken_wing")], [KR("chicken_wing")], ["minecraft:sugar"]] },
+    { dish: "braised_rabbit_legs", kind: "stockpot_exact", carrier: "minecraft:bowl", time: 400,
+      slots: [[KR("rabbit_leg")], [KR("rabbit_leg")], ["minecraft:carrot"], ["minecraft:sugar"]] },
+  ];
+  for (const want of cookery) {
+    const sent = recipes.find((r) => r.recipe.result === KR(want.dish));
+    assert(sent, `${want.dish} registered with Cookery`);
+    equal(sent.kind, want.kind, `${want.dish} station`);
+    same(sent.recipe.ingredients, want.slots, `${want.dish} slots`);
+    equal(sent.recipe.carrier, want.carrier, `${want.dish} carrier`);
+    equal(sent.recipe.time, want.time, `${want.dish} time`);
+    equal(sent.recipe.count, 1, `${want.dish} makes one`);
+    for (const slot of sent.recipe.ingredients) for (const id of slot) assert(known.has(id), `${want.dish}: ${id} exists`);
+  }
+
+  // The lamb leg: seasoned on the crafting table, then roasted in the furnace or smoker.
+  const craft = json("recipes/r_m5_seasoned_lamb_leg_0.json");
+  equal(craft.format_version, "1.20.10", "seasoning recipe format");
+  const shapeless = craft["minecraft:recipe_shapeless"];
+  same(shapeless.tags, ["crafting_table"], "seasoned on the crafting table");
+  same(shapeless.ingredients, [{ item: KR("lamb_leg") }, { item: "kaleidoscope_cookery:red_chili" }], "a lamb leg and one red chili");
+  same(shapeless.result, { item: KR("seasoned_lamb_leg"), count: 1 }, "one seasoned lamb leg");
+  for (const ingredient of shapeless.ingredients) assert(known.has(ingredient.item), `${ingredient.item} exists`);
+  assert(shapeless.unlock.every((u) => Object.keys(u).join() === "item"), "every unlock entry is {item}");
+  same(shapeless.unlock, [{ item: KR("lamb_leg") }], "unlocked by holding a lamb leg");
+  const roast = json("recipes/r_m5_furnace_roast_lamb_leg.json");
+  equal(roast.format_version, "1.20.10", "roast recipe format");
+  const furnace = roast["minecraft:recipe_furnace"];
+  same(furnace.tags, ["furnace", "smoker"], "furnace or smoker");
+  equal(furnace.input, KR("seasoned_lamb_leg"), "roasted from the seasoned leg");
+  equal(furnace.output, KR("roast_lamb_leg"), "into the roast lamb leg");
+  assert(!furnace.unlock || furnace.unlock.every((u) => Object.keys(u).join() === "item"), "furnace unlock entries are {item}");
+  assert(DISH_PREPS.some((p) => p.id === "seasoned_lamb_leg"), "the seasoned leg is a dish prep");
+  equal(DISHES.find((d) => d.id === "roast_lamb_leg").carrier, "", "the roast comes on its own");
+
+  for (const id of ["sweet_sour_ribs", "honey_chicken_wings", "roast_lamb_leg", "braised_rabbit_legs"]) {
+    const dish = DISHES.find((d) => d.id === id);
+    const food = json(`items/r_${id}.json`)["minecraft:item"].components["minecraft:food"];
+    equal(food.nutrition, dish.food[0], `${id} nutrition`);
+    equal(food.saturation_modifier, dish.food[1], `${id} saturation`);
+    equal(food.can_always_eat, true, `${id} can always be eaten`);
   }
 });
 

@@ -295,7 +295,7 @@ export const DISHES = [
   },
   {
     id: "honey_chicken_wings", zh: "蜜汁雞翅", en: "Honey-glazed Chicken Wings", food: [8, 0.75], station: "wok", carrier: "", time: 200,
-    slots: [[r("chicken_wing")], [r("chicken_wing")], ["minecraft:honey_bottle", "minecraft:sugar"]],
+    slots: [[r("chicken_wing")], [r("chicken_wing")], ["minecraft:sugar"]],
     look: ["plate", [196, 120, 50]],
   },
   {
@@ -344,6 +344,7 @@ export const DISH_PREPS = [
   {
     id: "seasoned_lamb_leg", zh: "醃羊腿", en: "Seasoned Lamb Leg",
     makes: [[r("lamb_leg"), KC("red_chili")]],
+    unlock: r("lamb_leg"), // shows in the recipe book once a lamb leg is held
   },
 ];
 
