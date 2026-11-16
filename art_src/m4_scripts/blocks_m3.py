@@ -4,11 +4,14 @@ Bone names match the procedural models in tools/art/blocks.py, so the block stat
 bone_visibility in packs/BP/blocks/r_<id>.json keep working:
   nest_box        box + egg_1..egg_4            (eggs state)
   incubator       base + busy + egg_1..egg_4    (eggs, busy states)
-  butter_churn    churn + busy
-  cheese_press    press + busy
-  aging_rack      rack + busy
-  fermenting_jar  jar + busy
-  pickling_vat    vat + busy
+  butter_churn    churn + busy + busy_1..busy_3
+  cheese_press    press + busy + busy_1..busy_3
+  aging_rack      rack + busy + busy_1..busy_3
+  fermenting_jar  jar + busy + busy_1..busy_3
+  pickling_vat    vat + busy + busy_1..busy_3
+  tanning_rack    frame + busy + busy_1..busy_3
+On the stations, busy_1..3 are the contents of `busy` in the colours of the three stages of a
+batch (station_stages.py); `busy` keeps what is shown all through the job.
 The blocks render with alpha_test, so glass is clear pixels with a painted frame and streaks.
 tools/gen_m3_art.py installs these in place of the procedural versions.
 
@@ -19,6 +22,7 @@ from pathlib import Path
 
 from boxuv import Painter
 from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
+from station_stages import STAGE_PAINT, stage_paints, staged
 
 ROOT = Path(__file__).resolve().parents[2]
 NS = "kaleidoscope_ranching"
@@ -314,17 +318,6 @@ def glow(core, rim):
     return fn
 
 
-def cream(f, i, j, w, h, fi):
-    return CREAM if (i + 2 * j) % 5 else (255, 250, 232)
-
-
-def cheese_wheel(f, i, j, w, h, fi):
-    if f in ("top", "bottom"):
-        edge = i in (0, w - 1) or j in (0, h - 1)
-        return (214, 150, 52) if edge else (244, 204, 100)
-    return (196, 128, 44) if j in (0, h - 1) else (226, 160, 60)
-
-
 def glaze(f, i, j, w, h, fi):
     if f == "top":
         return mix(GLAZE, GLAZE_DK, 0.4)
@@ -333,12 +326,6 @@ def glaze(f, i, j, w, h, fi):
     if j == 1:
         return (150, 96, 54)  # pale glaze band
     return GLAZE
-
-
-def cloth(f, i, j, w, h, fi):
-    if f != "top" and j == h - 1:
-        return (196, 44, 40)  # red string
-    return (232, 222, 196) if (i + j) % 4 else (214, 202, 174)
 
 
 def brine(f, i, j, w, h, fi):
@@ -361,29 +348,10 @@ def scraps(f, i, j, w, h, fi):
     return (112, 90, 58) if r % 4 else (92, 72, 46)
 
 
-def hide(f, i, j, w, h, fi):
-    """Raw hide stretched flat: mottled tan with a darker rim and a ragged outline (clear pixels
-    at the corners and along the edges, read by alpha_test)."""
-    if f in ("north", "south"):
-        ragged = {(0, 0), (1, 0), (0, 1), (w - 1, 0), (w - 2, 0), (w - 1, 1), (0, h - 1), (1, h - 1), (0, h - 2),
-                  (w - 1, h - 1), (w - 2, h - 1), (w - 1, h - 2), (4, 0), (0, 5), (w - 1, 3), (6, h - 1)}
-        if (i, j) in ragged:
-            return None
-        if i in (0, w - 1) or j in (0, h - 1) or (i, j) in {(1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)}:
-            return (150, 104, 66)
-        r = (i * 7 + j * 11) % 13
-        return (214, 172, 128) if r < 3 else (184, 136, 92) if r > 10 else (200, 154, 110)
-    return (160, 114, 74)
-
-
 def liquor(f, i, j, w, h, fi):
     if f == "top" and 0 < i < w - 1 and 0 < j < h - 1:
         return (96, 58, 30)  # oak-bark tanning liquor
     return wood(WOOD_DK)(f, i, j, w, h, fi)
-
-
-def whey(f, i, j, w, h, fi):
-    return (226, 230, 186) if (i + j) % 3 else (240, 242, 210)
 
 
 PAINT = {
@@ -394,19 +362,18 @@ PAINT = {
                   "lamp": iron, "bulb": glow((255, 214, 96), (255, 170, 60)),
                   "heater": glow((255, 150, 60), (220, 90, 40)), "egg": egg_paint, "egg_tip": egg_paint},
     "butter_churn": {"stand": wood(WOOD_DK), "staves": staves(WOOD), "hoop": iron, "lid": wood(WOOD_DK),
-                     "pole": wood(WOOD_LT), "handle": wood(WOOD), "foam": cream, "spill": cream, "drip": cream},
+                     "pole": wood(WOOD_LT), "handle": wood(WOOD)},
     "cheese_press": {"board": wood(WOOD), "spout": wood(WOOD_DK), "mould": staves(WOOD_LT, top=CREAM),
                      "band": iron, "follower": wood(WOOD_DK), "upright": wood(WOOD_DK, rings=WOOD_LT),
-                     "beam": wood(WOOD_DK), "screw": iron, "bar": wood(WOOD_LT), "bar_z": wood(WOOD_LT),
-                     "cloth": solid((236, 230, 212), edge=(214, 206, 184)), "whey": whey},
+                     "beam": wood(WOOD_DK), "screw": iron, "bar": wood(WOOD_LT), "bar_z": wood(WOOD_LT)},
     "aging_rack": {"post": wood(WOOD_DK, rings=WOOD_LT), "shelf": wood(WOOD), "top": wood(WOOD),
-                   "rail": wood(WOOD_LT), "wheel": cheese_wheel, "wheel_s": cheese_wheel},
+                   "rail": wood(WOOD_LT)},
     "fermenting_jar": {"foot": solid(CLAY), "belly": glaze, "shoulder": glaze, "neck": solid(GLAZE_DK),
                        "lid": solid(CLAY, edge=mix(CLAY, (40, 20, 10), 0.25)), "knob": solid(CLAY),
-                       "cover": cloth, "tie": solid((196, 44, 40))},
+                       "tie": solid((196, 44, 40))},
     "pickling_vat": {"floor": wood(WOOD_DK), "wall_fb": staves(WOOD), "wall_s": staves(WOOD),
                      "hoop_fb": iron, "hoop_s": iron, "brine": brine, "veg": leafy,
-                     "droplid": wood(WOOD_LT), "weight": stone},
+                     "weight": stone},
 }
 
 PAINT["food_waste_bin"] = {
@@ -417,19 +384,19 @@ PAINT["food_waste_bin"] = {
 
 PAINT["tanning_rack"] = {
     "post": wood(WOOD_DK, rings=WOOD_LT), "foot": wood(WOOD_DK), "rail": wood(WOOD), "peg": wood(WOOD_LT),
-    "tub": liquor, "hide": hide, "cord": rope, "cord_v": rope,
+    "tub": liquor, "cord": rope, "cord_v": rope,
 }
 
 BLOCKS = {
     "food_waste_bin": FOOD_WASTE_BIN,
-    "tanning_rack": TANNING_RACK,
+    "tanning_rack": staged("tanning_rack", TANNING_RACK),
     "nest_box": NEST_BOX,
     "incubator": INCUBATOR,
-    "butter_churn": BUTTER_CHURN,
-    "cheese_press": CHEESE_PRESS,
-    "aging_rack": AGING_RACK,
-    "fermenting_jar": FERMENTING_JAR,
-    "pickling_vat": PICKLING_VAT,
+    "butter_churn": staged("butter_churn", BUTTER_CHURN),
+    "cheese_press": staged("cheese_press", CHEESE_PRESS),
+    "aging_rack": staged("aging_rack", AGING_RACK),
+    "fermenting_jar": staged("fermenting_jar", FERMENTING_JAR),
+    "pickling_vat": staged("pickling_vat", PICKLING_VAT),
 }
 
 
@@ -439,7 +406,8 @@ def main():
     for bid, raw in BLOCKS.items():
         bones, tw, th = autouv(raw)
         p = Painter(tw, th, bones, bid)
-        for cube, fn in PAINT[bid].items():
+        paints = {**PAINT[bid], **(stage_paints(bid) if bid in STAGE_PAINT else {})}
+        for cube, fn in paints.items():
             p.paint(cube, fn)
         (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid, bones, tw, th), indent=2) + "\n", encoding="utf8")
         p.save(out / f"{bid}.png")

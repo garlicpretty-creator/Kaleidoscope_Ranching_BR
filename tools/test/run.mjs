@@ -3031,6 +3031,150 @@ test("1.1: the butcher rack shows how many pieces are air-drying", () => {
   equal(shown(), 0, "a carcass is not a drying piece");
 });
 
+// --- Station stages: the contents change colour as a job advances ------------------
+
+const STAGE = "kaleidoscope_ranching:stage";
+const BUSY = "kaleidoscope_ranching:busy";
+const shownStage = (block) => (block.permutation.getState(BUSY) ? block.permutation.getState(STAGE) : 0);
+
+test("stages: a station's job shows stage 1, 2, 3 as time passes, then idle once collected", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const press = stationAt("cheese_press");
+  hold(player, "kaleidoscope_ranching:cow_milk", 3); // half a day: 12000 ticks
+  use(STATION, press, player);
+  equal(shownStage(press), 1, "just started");
+  __advance(4100);
+  equal(shownStage(press), 2, "a third of the way");
+  __advance(4000);
+  equal(shownStage(press), 3, "two thirds of the way");
+  __advance(4000);
+  equal(shownStage(press), 3, "finished, waiting to be taken");
+  hold(player, "minecraft:stick", 1);
+  use(STATION, press, player);
+  equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 1, "collected");
+  equal(shownStage(press), 0, "idle again");
+});
+
+test("stages: a short churn (shorter than a clock pass) still goes through its stages", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  hold(player, "kaleidoscope_ranching:cow_milk", 2); // butter: 600 ticks
+  use(STATION, churn, player);
+  equal(shownStage(churn), 1, "cream");
+  __advance(210);
+  equal(shownStage(churn), 2, "lumpy cream");
+  __advance(200);
+  equal(shownStage(churn), 3, "butter");
+});
+
+test("stages: an automated station shows its stages on the clock and goes idle when emptied", () => {
+  clearWorld();
+  const wheel = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:spinning_wheel", { [BUSY]: false });
+  const above = hopperAt({ x: 0, y: 65, z: 0 });
+  hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("minecraft:white_wool", 1)); // 12000 ticks
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 1, "wool");
+  __skipTime(4500);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 2, "half spun");
+  __skipTime(4500);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 3, "yarn");
+  __skipTime(3000);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 0, "unloaded, nothing more to spin");
+});
+
+test("stages: a station saved mid-job shows its stage after a reload", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  hold(player, "kaleidoscope_ranching:raw_hide", 1); // a day: 24000 ticks
+  use(STATION, rack, player);
+  // A save from before stages: the block only knows it is busy; timers of the old session are gone.
+  __place(overworld, rack.location, "kaleidoscope_ranching:tanning_rack", { [BUSY]: true });
+  __skipTime(10000);
+  runBlockClock();
+  equal(shownStage(rack), 2, "the ranch clock catches up");
+  // A rack the clock has never seen (worked in an old save, never used since): using it shows the stage.
+  for (const key of world.getDynamicPropertyIds()) if (key.includes("registry")) world.setDynamicProperty(key, undefined);
+  __place(overworld, rack.location, "kaleidoscope_ranching:tanning_rack", { [BUSY]: true });
+  __skipTime(8000);
+  hold(player, "minecraft:stick", 1);
+  use(STATION, rack, player);
+  equal(shownStage(rack), 3, "late in the job");
+  equal(player.inventory.count("minecraft:leather"), 0, "not finished yet");
+});
+
+test("stages: collecting leaves the raw states idle (busy false, stage 1)", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  hold(player, "kaleidoscope_ranching:cow_milk", 2);
+  use(STATION, churn, player);
+  __advance(700);
+  equal(churn.permutation.getState(STAGE), 3, "butter");
+  hold(player, "minecraft:stick", 1);
+  use(STATION, churn, player);
+  equal(churn.permutation.getState(BUSY), false, "not busy");
+  equal(churn.permutation.getState(STAGE), 1, "stage back to 1");
+});
+
+for (const [label, fillBelow] of [["no container below", false], ["a full container below", true]]) {
+  test(`stages: a finished automated batch with ${label} shows stage 3 after a reload`, () => {
+    clearWorld();
+    const wheel = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:spinning_wheel", { [BUSY]: false });
+    hopperItems(hopperAt({ x: 0, y: 65, z: 0 })).addItem(new ItemStack("minecraft:white_wool", 1));
+    if (fillBelow) {
+      const below = hopperItems(hopperAt({ x: 0, y: 63, z: 0 }));
+      for (let n = 0; n < below.size; n++) below.setItem(n, new ItemStack("minecraft:cobblestone", 64));
+    }
+    tickAutoStation(wheel);
+    equal(shownStage(wheel), 1, "started");
+    // Reload: the permutation is as saved, the timers are gone (skipTime runs none).
+    __place(overworld, wheel.location, "kaleidoscope_ranching:spinning_wheel", { [BUSY]: true, [STAGE]: 1 });
+    __skipTime(12500);
+    tickAutoStation(wheel);
+    equal(shownStage(wheel), 3, "ready to collect");
+  });
+}
+
+test("stages: a stage timer does nothing once the station was broken or replaced", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const press = stationAt("cheese_press");
+  hold(player, "kaleidoscope_ranching:cow_milk", 3);
+  use(STATION, press, player);
+  breakBlock(STATION, press);
+  const fresh = stationAt("cheese_press");
+  __advance(4100);
+  equal(fresh.permutation.getState(BUSY), false, "a new press stays idle");
+  equal(fresh.permutation.getState(STAGE), undefined, "and untouched");
+  // A job started later: the first job's timers must not move it on.
+  hold(player, "kaleidoscope_ranching:cow_milk", 3);
+  use(STATION, fresh, player);
+  __advance(4000); // the first job's second timer fires now; the new job is a third in
+  equal(shownStage(fresh), 2, "follows its own start");
+  __place(overworld, fresh.location, "kaleidoscope_ranching:aging_rack", { [BUSY]: false });
+  __advance(4100);
+  equal(overworld.getBlock(fresh.location).permutation.getState(BUSY), false, "another block is left alone");
+});
+
+test("stages: an old-save batch without its stored ticks uses the recipe's time", () => {
+  clearWorld();
+  const press = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:cheese_press", { [BUSY]: true });
+  blockStore.setBlockData(press, {
+    recipe: "press/fresh_cheese", start: world.getAbsoluteTime() - 7000,
+    outputs: [{ item: "kaleidoscope_ranching:fresh_cheese", count: 1 }], refund: [],
+  });
+  trackBlock(press);
+  runBlockClock();
+  equal(shownStage(press), 2, "7000 of 12000 ticks");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

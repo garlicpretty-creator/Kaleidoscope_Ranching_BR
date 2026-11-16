@@ -17,8 +17,22 @@
 //   smoked (煙燻乳酪).
 // - Automated stations (AUTO_STATIONS) also run on the ranch clock: they take
 //   inputs from the container above and put outputs into the container below.
+//
+// Stages (no text on screen, so the block itself shows how far a job has got):
+// - `busy` (bool) is true while a batch sits in the station, as before.
+// - `stage` (1, 2, 3) is the third of its time the batch has reached: 1 in the
+//   first third, 2 in the second, 3 from two thirds on and while the finished
+//   batch waits to be taken. The model shows bone busy_<stage> (the contents in
+//   that stage's colours, tools/gen_blocks.mjs). It goes back to 1 when idle.
+// - It follows the stored start time: timers at the two boundaries while the
+//   world runs (jobs shorter than a clock pass too), every station on the ranch
+//   clock, and on every use. A save from before stages loads as stage 1 (the
+//   state's first value) until the clock or a use brings it up to date.
+// - The meat grinder and the ice cream churn only have instant recipes here
+//   (ticks 0), so they are not on the clock and show stages only for timed
+//   recipes other add-ons register (timers and uses keep those up to date).
 
-import { AUTO_STATIONS, SMOKING } from "../data/processing.js";
+import { AUTO_STATIONS, PROCESSING_RECIPES, SMOKING, STATIONS } from "../data/processing.js";
 import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
@@ -28,6 +42,7 @@ import { showActionBar } from "../core/actionBar.js";
 import { containerOf, countIn, putInto, takeFrom } from "../core/containers.js";
 import { taggedItems } from "../core/tags.js";
 import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
+import { system, world } from "@minecraft/server";
 
 // ## The duration is stored with the running batch. A recipe another add-on
 // ## registered is unknown again after a world reload until that add-on
@@ -35,14 +50,61 @@ import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
 const ticksOf = (data) => data.ticks ?? recipeById(data.recipe)?.ticks ?? 0;
 
 const BUSY_STATE = "kaleidoscope_ranching:busy";
-const TICKS_PER_MINUTE = 1200;
+const STAGE_STATE = "kaleidoscope_ranching:stage";
+export const STAGES = 3;
 
 function tell(player, key, values) {
   showActionBar(player, { translate: `kaleidoscope_ranching.message.station.${key}`, with: values });
 }
 
-function setBusy(block, busy) {
-  block.setPermutation(block.permutation.withState(BUSY_STATE, busy));
+/** The stage a batch has reached now: 1..STAGES by the share of its time gone. */
+export function stageOf(data, now = nowTick()) {
+  const ticks = ticksOf(data);
+  if (ticks <= 0) return STAGES;
+  const share = (now - data.start) / ticks;
+  return Math.max(1, Math.min(STAGES, Math.floor(share * STAGES) + 1));
+}
+
+/** Shows a stage on the block: 0 is idle (not busy), 1..STAGES a running batch. */
+function setStage(block, stage) {
+  const busy = stage > 0;
+  const shown = busy ? stage : 1;
+  const permutation = block.permutation;
+  if (permutation.getState(BUSY_STATE) === busy && permutation.getState(STAGE_STATE) === shown) return;
+  block.setPermutation(permutation.withState(BUSY_STATE, busy).withState(STAGE_STATE, shown));
+}
+
+/** Brings the shown stage up to date with the batch stored in the block (if any). */
+export function refreshStage(block) {
+  const data = getBlockData(block);
+  if (data) setStage(block, stageOf(data));
+}
+
+/** Timers at the stage boundaries still ahead of a batch, so short jobs change too. */
+function scheduleStages(block, data) {
+  const ticks = ticksOf(data);
+  const dimensionId = block.dimension.id;
+  const location = { ...block.location };
+  const typeId = block.typeId;
+  for (let n = 1; n < STAGES; n++) {
+    const delay = data.start + Math.ceil((ticks * n) / STAGES) - nowTick();
+    if (delay <= 0) continue;
+    system.runTimeout(() => {
+      try {
+        const here = world.getDimension(dimensionId).getBlock(location);
+        if (here?.typeId !== typeId || getBlockData(here)?.start !== data.start) return;
+        setStage(here, stageOf(getBlockData(here)));
+      } catch {
+        // unloaded or gone: the clock or the next use catches up
+      }
+    }, delay);
+  }
+}
+
+function startBatch(block, data) {
+  setBlockData(block, data);
+  setStage(block, stageOf(data));
+  scheduleStages(block, data);
 }
 
 // ## Recipes come from core/content.js: data/processing.js plus recipes other
@@ -111,7 +173,7 @@ function candidatesFor(station, typeId) {
 function collect(block, player, data) {
   for (const output of finalOutputs(block, data)) give(player, output.item, output.count);
   takeBlockData(block.dimension, block.location, null, block.typeId);
-  setBusy(block, false);
+  setStage(block, 0);
   block.dimension.playSound("random.pop", block.location);
 }
 
@@ -131,8 +193,7 @@ function start(block, player) {
       block.dimension.playSound("block.grindstone.use", block.location);
       return;
     }
-    setBlockData(block, batchFor(recipe, result));
-    setBusy(block, true);
+    startBatch(block, batchFor(recipe, result));
     block.dimension.playSound("bucket.fill_water", block.location);
     return;
   }
@@ -156,14 +217,14 @@ function spill(dimension, location, typeId) {
   }
 }
 
-export const stationComponent = {
+const stationEvents = {
   onPlayerInteract({ block, player }) {
     if (!player) return;
     const data = getBlockData(block);
     if (!data) return start(block, player);
-    const left = data.start + ticksOf(data) - nowTick();
-    if (left <= 0) return collect(block, player, data);
-    tell(player, "working", [String(Math.ceil(left / TICKS_PER_MINUTE))]);
+    if (nowTick() >= data.start + ticksOf(data)) return collect(block, player, data);
+    // Still working: no read-out (message.station.working is silenced); the contents show the stage.
+    setStage(block, stageOf(data));
   },
 
   onPlayerBreak({ block, dimension, brokenBlockPermutation }) {
@@ -188,6 +249,8 @@ function takeInputsFrom(container, recipe) {
 /** One clock pass of an automated station: unload a finished batch below, then load a new one from above. */
 export function tickAutoStation(block) {
   let data = getBlockData(block);
+  // First, so a finished batch that cannot be unloaded (no container below, or a full one) still shows stage 3.
+  if (data) setStage(block, stageOf(data));
   if (data && nowTick() >= data.start + ticksOf(data)) {
     const below = containerOf(block.below());
     if (!below) return;
@@ -201,7 +264,7 @@ export function tickAutoStation(block) {
       return;
     }
     takeBlockData(block.dimension, block.location, null, block.typeId);
-    setBusy(block, false);
+    setStage(block, 0);
     data = null;
   }
   if (data) return;
@@ -211,15 +274,19 @@ export function tickAutoStation(block) {
   for (const recipe of recipes) {
     const result = takeInputsFrom(above, recipe);
     if (!result) continue;
-    setBlockData(block, batchFor(recipe, result));
-    setBusy(block, true);
+    startBatch(block, batchFor(recipe, result));
     return;
   }
 }
 
-/** The station component, also tracked on the ranch clock. */
-export const autoStationComponent = clockBlockEvents(stationComponent);
+/** Hand-worked stations are tracked on the ranch clock too, to keep their stage up to date. */
+export const stationComponent = clockBlockEvents(stationEvents);
+/** The automated stations' component: the same events; the clock pass also loads and unloads them. */
+export const autoStationComponent = clockBlockEvents(stationEvents);
 
 export function startAutoStations() {
   for (const id of AUTO_STATIONS) defineClockBlock(rid(id), `auto_${id}`, tickAutoStation);
+  // Only stations with timed recipes of their own (not the cranked meat grinder and ice cream churn).
+  const timed = new Set(PROCESSING_RECIPES.filter((recipe) => recipe.ticks > 0).map((recipe) => recipe.station));
+  for (const id of STATIONS.filter((id) => timed.has(id))) defineClockBlock(rid(id), `station_${id}`, refreshStage);
 }

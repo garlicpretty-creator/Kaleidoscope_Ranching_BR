@@ -102,6 +102,8 @@ PROCESSING_RECIPES.push(
   { id: "silage/forage", station: "silage_barrel", inputs: [{ item: "forage", count: 4 }], outputs: [{ item: "silage", count: 4 }], ticks: DAY * 3 },
 );
 
+/** Hand-worked stations (systems/stations.js): used while holding an ingredient. */
+export const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder", "ice_cream_churn"];
 /** Stations that also run on the ranch clock with containers above and below (systems/stations.js). */
 export const AUTO_STATIONS = ["cream_separator", "spinning_wheel", "weaving_loom", "silage_barrel"];
 
