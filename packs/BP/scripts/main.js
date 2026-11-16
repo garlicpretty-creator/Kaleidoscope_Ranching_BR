@@ -4,6 +4,7 @@
 import { connectToCookery } from "./api/cookery.js";
 import { startCookeryContent } from "./api/cookeryRecipes.js";
 import { startRanchingApi } from "./api/ranchingApi.js";
+import { connectToFishing } from "./api/fishing.js";
 import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
 import { startConversion } from "./systems/conversion.js";
@@ -18,6 +19,9 @@ startCookeryContent();
 
 // M5: Ranching's own public API for other add-ons (docs/API.md)
 startRanchingApi();
+
+// Optional: Fishing Voyage fish offal and bones as poultry feed (api/fishing.js)
+connectToFishing();
 
 // M1: own animals, sex, breeding
 startConversion();

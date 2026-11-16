@@ -53,3 +53,13 @@ export function registerFeed(itemId, kind, units = 1) {
   FEEDS[itemId] = { kind, units };
   return true;
 }
+
+// --- Optional: Kaleidoscope Fishing Voyage (森羅物語：漁歌) -----------------
+// 企劃書 系列定位: 漁歌的雜魚、魚骨可做成家禽飼料. These items exist only when
+// Fishing Voyage is installed, so api/fishing.js registers them as feed after
+// Fishing answers its api_ping; without Fishing nothing refers to them (a
+// crafting recipe would log an error for the unknown item).
+export const FISHING_FEEDS = {
+  "kaleidoscope_fishing:fish_offal": { kind: KIND.GRAIN, units: 2 }, // 魚雜
+  "kaleidoscope_fishing:fish_bones": { kind: KIND.GRAIN, units: 1 }, // 魚骨
+};
