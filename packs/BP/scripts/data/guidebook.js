@@ -1014,7 +1014,7 @@ export const GUIDE_TEXT = {
   ],
   cattle_horn: [
     ["分切公牛屠體或水牛屠體取得，一次 2 支。", "Cut from a bull's carcass or any buffalo carcass, 2 at a time."],
-    ["做牧笛、角製掛飾或角杯；在工作台換 3 份骨粉。", "Makes a Herding Horn, a Horn Decoration or a Horn Cup, or crafts into 3 bone meal."],
+    ["做牧笛、角製掛飾或角杯；在工作台 2 根換 6 份骨粉。", "Makes a Herding Horn, a Horn Decoration or a Horn Cup, or two craft into 6 bone meal."],
   ],
   billy_goat_horn: [
     ["分切公山羊屠體取得，一次 2 支。", "Cut from a billy goat's carcass, 2 at a time."],

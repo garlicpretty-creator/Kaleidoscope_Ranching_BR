@@ -684,6 +684,23 @@ for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json")))
     }
   }
 }
+// Two shapeless crafting-table recipes with the same ingredients clash: the game logs "has the same
+// ingredients as … Adding duplicate crafting_table recipe" (seen with the horn cup and horn bone meal).
+{
+  const shapelessBy = new Map();
+  for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json"))) {
+    const recipe = readJson(path)["minecraft:recipe_shapeless"];
+    if (!recipe || !(recipe.tags ?? []).includes("crafting_table")) continue;
+    const key = recipe.ingredients.flatMap((i) => Array(i.count ?? 1).fill(i.item ?? `tag:${i.tag}`)).sort().join("+");
+    const other = shapelessBy.get(key);
+    if (other) fail(`${relative(root, path)}: same ingredients (${key}) as ${other}; the game keeps a duplicate recipe`);
+    else shapelessBy.set(key, relative(root, path));
+  }
+  // Ranching's own items standing in for vanilla ingredients would clash the same way with
+  // vanilla recipes; the one-ingredient vanilla recipes that matter here:
+  const VANILLA_ONE = new Set(["minecraft:bone"]);
+  for (const key of shapelessBy.keys()) if (VANILLA_ONE.has(key)) fail(`${shapelessBy.get(key)}: clashes with a vanilla one-ingredient recipe (${key})`);
+}
 for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
   if (/\bq(uery)?\.color\b/.test(readFileSync(path, "utf8"))) {
     fail(`${relative(root, path)}: render controllers cannot use query.color; mirror it into an entity property`);
