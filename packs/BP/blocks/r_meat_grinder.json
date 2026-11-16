@@ -18,6 +18,11 @@
         "kaleidoscope_ranching:busy": [
           false,
           true
+        ],
+        "kaleidoscope_ranching:stage": [
+          1,
+          2,
+          3
         ]
       }
     },
@@ -25,7 +30,10 @@
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.meat_grinder",
         "bone_visibility": {
-          "busy": "q.block_state('kaleidoscope_ranching:busy')"
+          "busy": "q.block_state('kaleidoscope_ranching:busy')",
+          "busy_1": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 1",
+          "busy_2": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 2",
+          "busy_3": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 3"
         }
       },
       "minecraft:display_name": "tile.kaleidoscope_ranching:meat_grinder.name",

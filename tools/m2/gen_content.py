@@ -396,13 +396,22 @@ def item_defs():
 R = []
 def it(i):
     return {"tag": i[4:]} if i.startswith("tag:") else {"item": i}
+# Tags cannot unlock a recipe, and game 1.26 drops a recipe whose unlock is
+# {"context": "AlwaysUnlocked"} ("invalid unlock ingredient"), so a tag stands for its items here.
+TAG_UNLOCK = {"minecraft:planks": [f"minecraft:{wood}_planks" for wood in (
+    "oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "mangrove", "cherry", "pale_oak",
+    "bamboo", "crimson", "warped")]}
+
 def unlock(ingredients):
-    """1.20+ recipes need unlock data: shown once the player holds any ingredient (tags cannot unlock)."""
+    """1.20+ recipes need unlock data: shown once the player holds any ingredient."""
     items = []
     for ingredient in ingredients:
-        if "item" in ingredient and {"item": ingredient["item"]} not in items:
-            items.append({"item": ingredient["item"]})
-    return items or [{"context": "AlwaysUnlocked"}]
+        for item in [ingredient["item"]] if "item" in ingredient else TAG_UNLOCK.get(ingredient["tag"], []):
+            if {"item": item} not in items:
+                items.append({"item": item})
+    if not items:
+        raise ValueError(f"no item to unlock a recipe made of {ingredients}")
+    return items
 
 def shaped(name, pattern, key, result, count=1, tag="crafting_table"):
     R.append((name, {"format_version": "1.20.10", "minecraft:recipe_shaped": {

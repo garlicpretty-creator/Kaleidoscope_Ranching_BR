@@ -2,7 +2,7 @@
 //
 // For each client entity (tools/gen_art.py writes the M1 animals, the M4 ones
 // are hand made) this writes animation.kaleidoscope_ranching.<id>.sleep,
-// played while the synced `sleeping` property is true, stops look_at_target
+// played while the synced `sleeping` property is true, stops walk and look_at_target
 // while asleep, and adds closed eyelids shown only while asleep.
 //
 // Poses, as the proposal describes them, posed per species from the model's
@@ -32,6 +32,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PNG } from "./png.mjs";
+import { drawnFor, lowestPoint, molang } from "./posed.mjs";
+
+/** How far (pixels) the lowest corner of a sleep pose stays above the ground. */
+export const GROUND_CLEARANCE = 0.15;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/animals.js")).href);
@@ -200,11 +204,25 @@ function curl(bones, A, B, anim) {
 
 const POSES = { lie, side, roost, curl };
 
+/**
+ * A face lying in the ground plane flickers against the block below (the folded legs, tilted
+ * 8°, reached y -0.26 to 0; a rabbit's soles sat at exactly 0). Raise the whole body until the
+ * lowest corner of the pose is GROUND_CLEARANCE above the ground, for adult and young apart.
+ */
+function liftOffGround(bones, anim) {
+  const y = (baby) => molang(anim.body?.position?.[1] ?? 0, { baby });
+  const lift = (baby) => Math.max(0, GROUND_CLEARANCE - lowestPoint(bones, anim, { baby, visible: drawnFor(bones, baby) }).y);
+  const [adult, young] = [false, true].map((baby) => y(baby) + lift(baby));
+  const position = anim.body?.position ?? [0, 0, 0];
+  anim.body = { ...(anim.body ?? {}), position: [position[0], pick(adult, young), position[2]] };
+}
+
 function sleepAnimation(id, bones) {
   const A = rig(bones, "a");
   const B = rig(bones, "b");
   const anim = {};
   POSES[POSE[id] ?? "lie"](bones, A, B, anim);
+  liftOffGround(bones, anim);
   for (const torso of ["a_torso", "b_torso"]) {
     if (bones.some((b) => b.name === torso)) anim[torso] = { ...(anim[torso] ?? {}), scale: [1, BREATH, 1] };
   }
@@ -314,8 +332,10 @@ for (const { id } of ANIMALS) {
   description.animations.sleep = `animation.${NS}.${id}.sleep`;
   const animate = (description.scripts.animate ?? []).filter((entry) => {
     const key = typeof entry === "string" ? entry : Object.keys(entry)[0];
-    return key !== "sleep" && key !== "look_at_target";
+    return key !== "sleep" && key !== "look_at_target" && key !== "walk";
   });
+  // The walk swing would add to the folded legs of the sleep pose.
+  if (description.animations.walk) animate.unshift({ walk: `!${ASLEEP}` });
   if (description.animations.look_at_target) animate.push({ look_at_target: `!${ASLEEP}` });
   animate.push({ sleep: ASLEEP });
   description.scripts.animate = animate;

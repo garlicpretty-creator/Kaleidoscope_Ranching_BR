@@ -13,7 +13,8 @@ RULES = [
     ("a_", "!q.is_baby"),
     ("b_", "q.is_baby"),
 ]
-SWING = "math.cos(q.modified_distance_moved * 38.17)"
+# Fades with the speed, so a standing animal stands straight and the sleep pose is not offset.
+SWING = "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed"
 
 SPECIES = {
     "duck": {

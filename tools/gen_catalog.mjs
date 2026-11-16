@@ -18,26 +18,13 @@ const { BLOCKS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/
 
 const NS = NAMESPACE;
 
-// Group order is the order shown in the tab. `from` lists registry categories; "blocks" means
-// every placeable block in the registry.
-const GROUPS = [
-  { id: "facilities", from: ["blocks"], icon: "trough", zh: "牧場設施", en: "Ranch Facilities" },
-  { id: "tools", from: ["tool"], icon: "brush", zh: "牧場工具", en: "Ranch Tools" },
-  { id: "feed", from: ["feed", "treat"], icon: "mixed_feed", zh: "飼料與零食", en: "Feed and Treats" },
-  { id: "milk", from: ["milk"], icon: "cow_milk", zh: "乳品", en: "Milk" },
-  { id: "eggs", from: ["egg", "fertilized_egg", "preserved"], icon: "duck_egg", zh: "蛋", en: "Eggs" },
-  { id: "dairy", from: ["dairy", "drink"], icon: "butter", zh: "乳製品", en: "Dairy" },
-  { id: "carcasses", from: ["carcass"], icon: "cow_carcass", zh: "屠體", en: "Carcasses" },
-  { id: "meat", from: ["meat", "cut", "mince", "cured", "offal"], icon: "beef_brisket", zh: "肉品", en: "Meat" },
-  { id: "materials", from: ["material"], icon: "wool_cloth", zh: "布料與皮革", en: "Cloth and Leather" },
-  { id: "byproducts", from: ["byproduct"], icon: "large_bone", zh: "副產物", en: "By-products" },
-];
+// Group order is the order shown in the tab (data/catalog.js, shared with the guidebook
+// chapter). `from` lists registry categories; "blocks" means every placeable block.
+const { CATALOG_GROUPS: GROUPS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/catalog.js")).href);
 
-// Simplified names for the zh_CN tab headers.
-const ZH_CN = {
-  牧場設施: "牧场设施", 牧場工具: "牧场工具", 飼料與零食: "饲料与零食", 乳品: "乳品", 蛋: "蛋",
-  乳製品: "乳制品", 屠體: "屠体", 肉品: "肉品", 副產物: "副产物", 布料與皮革: "布料与皮革",
-};
+// Simplified names for the zh_CN tab headers come from data/zh_cn.js, like every other name.
+const { toSimplified } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/zh_cn.js")).href);
+
 
 /** {identifier: creative category} read from the generated item and block files. */
 function categories(folder, key) {
@@ -103,7 +90,7 @@ writeFileSync(join(root, "packs/BP/item_catalog/crafting_item_catalog.json"), JS
 // (itemGroup.name.planks), so both spellings are given.
 const texts = join(root, "tools/fragments/catalog/texts");
 mkdirSync(texts, { recursive: true });
-for (const [language, label] of [["en_US", (g) => g.en], ["zh_TW", (g) => g.zh], ["zh_CN", (g) => ZH_CN[g.zh] ?? g.zh]]) {
+for (const [language, label] of [["en_US", (g) => g.en], ["zh_TW", (g) => g.zh], ["zh_CN", (g) => toSimplified(g.zh)]]) {
   const lines = GROUPS.flatMap((g) => [
     `${NS}:itemGroup.name.ranching_${g.id}=${label(g)}`,
     `itemGroup.name.ranching_${g.id}=${label(g)}`,

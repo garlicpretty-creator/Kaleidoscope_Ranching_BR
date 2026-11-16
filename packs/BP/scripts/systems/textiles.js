@@ -4,7 +4,7 @@
 //   blocks; it goes on a lead to you, as with a lead held next to it.
 // - 羽毛撣 (feather duster): use it on cobweb or a snow layer to clear that block
 //   and the same blocks around it in a 3 × 3 patch.
-// - 毛毯 (rug): use a vanilla dye on it to dye it (16 colours).
+// - 地毯 (rug): use a vanilla dye on it to dye it (16 colours).
 // - 皮圍裙 (leather apron): worn in the chest slot, every butcher-rack stroke has
 //   APRON_SAVE_CHANCE not to cost the blade durability (systems/butcherRack.js).
 

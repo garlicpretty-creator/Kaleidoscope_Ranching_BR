@@ -78,6 +78,11 @@ RULES = [
     (r"^blocks/ranching/(vintage_|smoked_)?cheese_wheel$", "fat"),
     (r"^blocks/ranching/placed_pizza$", "food"),
     (r"^blocks/ranching/placed_(cheese_gratin|truffle_gratin|claypot_rice|old_duck_soup|fondue)$", "glazed"),
+    # Placed drinks (art_src/m4_scripts/placed_drink.py): horn cups, glass, glazed crock and porcelain, a wooden bowl.
+    (r"^blocks/ranching/placed_(yak_)?milk_wine$", "horn"),
+    (r"^blocks/ranching/placed_(cream_cocoa|yogurt_berry_drink)$", "glass"),
+    (r"^blocks/ranching/placed_(yogurt|milk_skin_tea)$", "glazed"),
+    (r"^blocks/ranching/placed_milk_tea$", "wood"),
     (r"^blocks/ranching/placed_", "metal"),
     (r"^blocks/ranching/(rug|down_pillow|down_quilt)", "feather"),
     (r"^blocks/ranching/horn_decor$", "bone"),
@@ -116,6 +121,9 @@ RULES = [(re.compile(p), m) for p, m in RULES]
 METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$)")
 GLASS_TEXTURES = re.compile(r"^blocks/ranching/incubator$")
 PLACED_FOOD = re.compile(r"^blocks/ranching/placed_")
+# Placed drinks: every pixel keeps the texture's base material. There is no iron on them, so pale,
+# cool pixels (glass, porcelain, the silver bands) never turn metal; a drink in glass is as smooth.
+PLACED_DRINK = re.compile(r"^blocks/ranching/placed_((yak_)?milk_wine|cream_cocoa|yogurt_berry_drink|yogurt|milk_tea|milk_skin_tea)$")
 EYE = (26, 22, 26)  # boxuv.plain_eyes
 EYE_WHITE = (238, 236, 232)
 
@@ -138,8 +146,14 @@ def near(a, b, tol):
 GLOW_BONES = {"blocks/ranching/incubator": ("kaleidoscope_ranching.incubator", {"busy"})}
 
 
+# 1.1 蛋的進度: the candled eggs' shells (art_src/m4_scripts/blocks_m3.py) glow all over.
+GLOW_TEXTURES = re.compile(r"^blocks/ranching/(nest_box|incubator)_candled$")
+
+
 def glow_mask(key, size):
     """Pixels covered by the glowing bones' cubes (box UV: 2*(d+w) wide, d+h tall)."""
+    if GLOW_TEXTURES.search(key):
+        return {(x, y) for x in range(size[0]) for y in range(size[1])}
     if key not in GLOW_BONES:
         return set()
     geo_name, bones = GLOW_BONES[key]
@@ -191,6 +205,8 @@ def classify(key, base, rgb, neighbours):
     if GLASS_TEXTURES.search(key):
         if 175 < rgb[2] and rgb[2] >= rgb[0] + 10 and s < 0.25:
             return "glass"
+    if PLACED_DRINK.search(key):
+        return base
     if PLACED_FOOD.search(key) and s < 0.3 and v > 0.3 and rgb[0] >= rgb[2] - 3:
         # pale, warm food (radish, rice, egg white) and white ceramic; iron and steel are cool greys
         return "food" if base == "metal" else base

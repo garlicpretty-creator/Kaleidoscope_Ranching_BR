@@ -89,6 +89,9 @@
     "kr_incubator": {
       "textures": "textures/blocks/ranching/incubator"
     },
+    "kr_incubator_candled": {
+      "textures": "textures/blocks/ranching/incubator_candled"
+    },
     "kr_meat_grinder": {
       "textures": "textures/blocks/ranching/meat_grinder"
     },
@@ -97,6 +100,9 @@
     },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
+    },
+    "kr_nest_box_candled": {
+      "textures": "textures/blocks/ranching/nest_box_candled"
     },
     "kr_pen_gate": {
       "textures": "textures/blocks/ranching/pen_gate"
@@ -116,6 +122,9 @@
     "kr_placed_claypot_rice": {
       "textures": "textures/blocks/ranching/placed_claypot_rice"
     },
+    "kr_placed_cream_cocoa": {
+      "textures": "textures/blocks/ranching/placed_cream_cocoa"
+    },
     "kr_placed_fondue": {
       "textures": "textures/blocks/ranching/placed_fondue"
     },
@@ -124,6 +133,15 @@
     },
     "kr_placed_lion_head_meatballs": {
       "textures": "textures/blocks/ranching/placed_lion_head_meatballs"
+    },
+    "kr_placed_milk_skin_tea": {
+      "textures": "textures/blocks/ranching/placed_milk_skin_tea"
+    },
+    "kr_placed_milk_tea": {
+      "textures": "textures/blocks/ranching/placed_milk_tea"
+    },
+    "kr_placed_milk_wine": {
+      "textures": "textures/blocks/ranching/placed_milk_wine"
     },
     "kr_placed_old_duck_soup": {
       "textures": "textures/blocks/ranching/placed_old_duck_soup"
@@ -134,8 +152,17 @@
     "kr_placed_truffle_gratin": {
       "textures": "textures/blocks/ranching/placed_truffle_gratin"
     },
+    "kr_placed_yak_milk_wine": {
+      "textures": "textures/blocks/ranching/placed_yak_milk_wine"
+    },
     "kr_placed_yak_stew": {
       "textures": "textures/blocks/ranching/placed_yak_stew"
+    },
+    "kr_placed_yogurt": {
+      "textures": "textures/blocks/ranching/placed_yogurt"
+    },
+    "kr_placed_yogurt_berry_drink": {
+      "textures": "textures/blocks/ranching/placed_yogurt_berry_drink"
     },
     "kr_rug": {
       "textures": "textures/blocks/ranching/rug"

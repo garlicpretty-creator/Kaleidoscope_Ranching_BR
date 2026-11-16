@@ -1,7 +1,8 @@
 // Dishes put down to share (data/placedFoods.js rows with `eat`): the dish item
 // places the block, and each use eats one portion, whoever uses it. The `cut`
 // state hides one portion (piece_4 first); the last portion leaves air and
-// hands back the dish's bowl, if it has one.
+// hands back the dish's bowl, if it has one. Like every Ranching food, it can be
+// eaten even with a full hunger bar.
 //
 // ## A portion is eaten with a one-tick saturation effect: level n restores n
 // ## hunger points (and 2n saturation), which is how the item's own food value
@@ -9,11 +10,15 @@
 //
 // Breaking an untouched dish gives the item back. A started dish gives nothing
 // but its bowl: the portions left cannot be picked up again.
+//
+// Drinks (rows with one portion) are drunk in one go: the item's hunger, its
+// container back, and the block is gone, so a drink standing there is always
+// untouched; like every dish, even with a full hunger bar. (The effect's saturation is 2 x hunger, a little more than the item's own
+// 2 x hunger x saturation_modifier.)
 
 import { ItemStack } from "@minecraft/server";
 import { rid } from "../core/ids.js";
 import { give } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
 import { PLACED_FOODS } from "../data/placedFoods.js";
 import { STATE_CUT } from "./cheeseWheel.js";
 
@@ -21,12 +26,6 @@ import { STATE_CUT } from "./cheeseWheel.js";
 export const EATEN = Object.fromEntries(PLACED_FOODS.filter((food) => food.eat).map((food) => [rid(food.block), food]));
 
 const eatenOf = (permutation) => Number(permutation?.getState(STATE_CUT) ?? 0);
-
-/** True when the player's hunger bar is full; unknown (no hunger attribute) counts as hungry. */
-function isFull(player) {
-  const hunger = player.getComponent?.("minecraft:player.hunger");
-  return hunger ? hunger.currentValue >= hunger.effectiveMax : false;
-}
 
 /** What breaking the dish gives back, given how many portions were already eaten. */
 export function leftovers(eaten, blockId) {
@@ -40,9 +39,8 @@ export const placedFoodComponent = {
   onPlayerInteract({ block, player }) {
     const food = EATEN[block.typeId];
     if (!player || !food) return;
-    if (isFull(player)) return showActionBar(player, { translate: "kaleidoscope_ranching.message.food.full" });
     player.addEffect("saturation", 1, { amplifier: food.eat - 1, showParticles: false });
-    block.dimension.playSound("random.eat", block.location);
+    block.dimension.playSound(food.drink ? "random.drink" : "random.eat", block.location);
     const eaten = eatenOf(block.permutation) + 1;
     if (eaten < food.portions) return block.setPermutation(block.permutation.withState(STATE_CUT, eaten));
     block.setType("minecraft:air");

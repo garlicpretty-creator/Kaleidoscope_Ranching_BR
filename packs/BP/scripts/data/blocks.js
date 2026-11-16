@@ -4,7 +4,7 @@
 
 export const BLOCKS = [
   // Husbandry and management
-  ["trough", "飼槽", "Trough", "husbandry", "m2"],
+  ["trough", "飼槽", "Feed Trough", "husbandry", "m2"],
   ["manure", "糞便", "Manure", "husbandry", "m2"],
   ["alfalfa_crop", "苜蓿", "Alfalfa", "husbandry", "m2"],
   ["water_trough", "水槽", "Water Trough", "husbandry", "m2"],
@@ -41,6 +41,14 @@ export const BLOCKS = [
   ["placed_claypot_rice", "臘味煲仔飯", "Cured Meat Claypot Rice", "processing"],
   ["placed_cheese_gratin", "乳酪焗烤", "Cheese Gratin", "processing"],
   ["placed_truffle_gratin", "松露乳酪焗烤", "Truffle Cheese Gratin", "processing"],
+  // Placed drinks (data/placedFoods.js): one serving each, drunk in place.
+  ["placed_milk_wine", "奶酒", "Milk Wine", "processing"],
+  ["placed_yak_milk_wine", "氂牛奶酒", "Yak Milk Wine", "processing"],
+  ["placed_cream_cocoa", "鮮奶油可可飲", "Cream Cocoa", "processing"],
+  ["placed_yogurt_berry_drink", "優格莓果飲", "Yogurt Berry Drink", "processing"],
+  ["placed_yogurt", "優格", "Yogurt", "processing"],
+  ["placed_milk_tea", "奶茶", "Milk Tea", "processing"],
+  ["placed_milk_skin_tea", "奶皮子奶茶", "Milk Skin Tea", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],
   // 1.1 肉類線: cranked, one mince per use (data/processing.js).
   ["meat_grinder", "絞肉機", "Meat Grinder", "processing"],
@@ -53,7 +61,7 @@ export const BLOCKS = [
   ["weaving_loom", "織布機", "Weaving Loom", "processing"],
   ["silage_barrel", "青貯桶", "Silage Barrel", "husbandry"],
   // Decoration: a rug dyed in 16 colours (systems/textiles.js), a down pillow and a quilt.
-  ["rug", "毛毯", "Rug", "decoration"],
+  ["rug", "地毯", "Rug", "decoration"],
   ["down_pillow", "羽絨枕", "Down Pillow", "decoration"],
   ["down_quilt", "羽絨被", "Down Quilt", "decoration"],
   // 1.1 役用與牧場管理: a two-block gate that opens for players only (systems/workAnimals.js), and horn decor.

@@ -4,11 +4,14 @@ Bone names match the procedural models in tools/art/blocks.py, so the block stat
 bone_visibility in packs/BP/blocks/r_<id>.json keep working:
   nest_box        box + egg_1..egg_4            (eggs state)
   incubator       base + busy + egg_1..egg_4    (eggs, busy states)
-  butter_churn    churn + busy
-  cheese_press    press + busy
-  aging_rack      rack + busy
-  fermenting_jar  jar + busy
-  pickling_vat    vat + busy
+  butter_churn    churn + busy + busy_1..busy_3
+  cheese_press    press + busy + busy_1..busy_3
+  aging_rack      rack + busy + busy_1..busy_3
+  fermenting_jar  jar + busy + busy_1..busy_3
+  pickling_vat    vat + busy + busy_1..busy_3
+  tanning_rack    frame + busy + busy_1..busy_3
+On the stations, busy_1..3 are the contents of `busy` in the colours of the three stages of a
+batch (station_stages.py); `busy` keeps what is shown all through the job.
 The blocks render with alpha_test, so glass is clear pixels with a painted frame and streaks.
 tools/gen_m3_art.py installs these in place of the procedural versions.
 
@@ -19,6 +22,7 @@ from pathlib import Path
 
 from boxuv import Painter
 from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
+from station_stages import STAGE_PAINT, stage_paints, staged
 
 ROOT = Path(__file__).resolve().parents[2]
 NS = "kaleidoscope_ranching"
@@ -55,10 +59,24 @@ def autouv(bones, tw=64):
     return out, tw, th
 
 
+def material_uv(uv, size, material):
+    """Per-face UVs sampling the same texels as the box UV (as tools/fix_zfight.py writes them),
+    each face tagged with a material instance so it is drawn from <block>_<material>.png."""
+    u, v = uv
+    w, h, d = [max(1, round(s)) for s in size]
+    faces = {
+        "north": ([u + d, v + d], [w, h]), "east": ([u, v + d], [d, h]),
+        "south": ([u + 2 * d + w, v + d], [w, h]), "west": ([u + d + w, v + d], [d, h]),
+        "up": ([u + d, v], [w, d]), "down": ([u + d + w, v + d], [w, -d]),
+    }
+    return {f: {"uv": a, "uv_size": b, "material_instance": material} for f, (a, b) in faces.items()}
+
+
 def geo(bid, bones, tw, th):
     out = []
     for name, parent, pivot, cubes in bones:
-        b = {"name": name, "pivot": pivot, "cubes": [{"origin": o, "size": s, "uv": uv} for _, o, s, uv in cubes]}
+        b = {"name": name, "pivot": pivot, "cubes": [
+            {"origin": o, "size": s, "uv": material_uv(uv, s, "candled") if c in LIT else uv} for c, o, s, uv in cubes]}
         if parent:
             b["parent"] = parent
         out.append(b)
@@ -76,6 +94,32 @@ def egg(x, y, z):
     return [("egg", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]
 
 
+# 1.1 蛋的進度: every egg slot also has a cracked look, a nearly hatched look and a candled
+# look (a glowing see-through shell with the chick's shadow inside, three sizes). Which one
+# shows is chosen by the block's eggs/cracks/ready/candled states (tools/gen_blocks.mjs).
+EMBRYO = [  # per stage: (cube name, offset from the egg's centre bottom, size)
+    [("embryo_s", [-0.3, 0.7, -0.3], [0.6, 0.6, 0.6])],
+    [("embryo_m", [-0.5, 0.4, -0.5], [1, 1, 1]), ("embryo_m_head", [-0.25, 1.45, -0.25], [0.5, 0.5, 0.5])],
+    [("embryo_l", [-0.7, 0.25, -0.7], [1.4, 1.4, 1.4]), ("embryo_l_head", [-0.4, 1.6, -0.4], [0.8, 0.8, 0.8])],
+]
+LIT = {"shell", "shell_tip"}  # cubes drawn from <block>_candled.png with the `candled` material
+
+
+def egg_slot(n, parent, pivot, x, y, z):
+    """The bones of egg slot n: plain, cracked, hatching, candled shell and the three embryos."""
+    cx, cz = x + 1, z + 1
+    return [
+        (f"egg_{n}", parent, pivot, egg(x, y, z)),
+        (f"egg_{n}_crack", parent, pivot, [("egg_crack", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
+        # the cap is pushed up off the top, a dark gap where the chick is breaking out
+        (f"egg_{n}_hatch", parent, pivot, [("egg_hatch", [x, y, z], [2, 2, 2]), ("egg_cap", [x + 0.5, y + 2.5, z + 0.5], [1, 1, 1])]),
+        (f"egg_{n}_lit", parent, pivot, [("shell", [x, y, z], [2, 2, 2]), ("shell_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
+        *[(f"egg_{n}_embryo_{s}", parent, pivot,
+           [(name, [cx + dx, y + dy, cz + dz], size) for name, (dx, dy, dz), size in cubes])
+          for s, cubes in enumerate(EMBRYO)],
+    ]
+
+
 NEST_BOX = [
     ("box", None, [0, 0, 0], [
         ("floor", [-7, 0, -7], [14, 1, 14]),
@@ -87,10 +131,10 @@ NEST_BOX = [
         ("tuft", [-6, 3, 1], [3, 1, 2]),
         ("tuft", [3, 3, -3], [3, 1, 2]),
     ]),
-    ("egg_1", "box", [0, 3, 0], egg(-4, 3, -3)),
-    ("egg_2", "box", [0, 3, 0], egg(1, 3, -4)),
-    ("egg_3", "box", [0, 3, 0], egg(-3, 3, 1)),
-    ("egg_4", "box", [0, 3, 0], egg(2, 3, 1)),
+    *egg_slot(1, "box", [0, 3, 0], -4, 3, -3),
+    *egg_slot(2, "box", [0, 3, 0], 1, 3, -4),
+    *egg_slot(3, "box", [0, 3, 0], -3, 3, 1),
+    *egg_slot(4, "box", [0, 3, 0], 2, 3, 1),
 ]
 
 INCUBATOR = [
@@ -112,10 +156,10 @@ INCUBATOR = [
         ("bulb", [-1, 13, -1], [2, 1, 2]),
         ("heater", [-2, 9, -2], [4, 1, 4]),
     ]),
-    ("egg_1", "base", [0, 4, 0], egg(-4, 4, -4)),
-    ("egg_2", "base", [0, 4, 0], egg(2, 4, -4)),
-    ("egg_3", "base", [0, 4, 0], egg(-4, 4, 1)),
-    ("egg_4", "base", [0, 4, 0], egg(2, 4, 1)),
+    *egg_slot(1, "base", [0, 4, 0], -4, 4, -4),
+    *egg_slot(2, "base", [0, 4, 0], 2, 4, -4),
+    *egg_slot(3, "base", [0, 4, 0], -4, 4, 1),
+    *egg_slot(4, "base", [0, 4, 0], 2, 4, 1),
 ]
 
 BUTTER_CHURN = [
@@ -297,6 +341,45 @@ def egg_paint(f, i, j, w, h, fi):
     return EGG if f != "top" else (252, 244, 226)
 
 
+CRACK, CRACK_DK, HOLE = (168, 138, 100), (92, 66, 46), (58, 40, 30)
+
+
+SIDES = ("north", "east", "south", "west")
+
+
+def egg_crack(f, i, j, w, h, fi):
+    """Small cracks: a fine brown mark near the top of every side, a step higher or lower in turn."""
+    if f in SIDES and (i, j) == ((1, 0) if SIDES.index(f) % 2 else (0, 1)):
+        return CRACK
+    return egg_paint(f, i, j, w, h, fi)
+
+
+def egg_hatch(f, i, j, w, h, fi):
+    """Big cracks: a dark break round the top of every side, the top broken open under the lifted cap."""
+    if f == "top":
+        return HOLE if i == j else egg_paint(f, i, j, w, h, fi)
+    if f in SIDES and j == 0 and i == SIDES.index(f) % 2:
+        return CRACK_DK
+    if f in SIDES and (i, j) == ((0, 1) if SIDES.index(f) % 2 else (1, 1)):
+        return CRACK
+    return egg_paint(f, i, j, w, h, fi)
+
+
+def egg_cap(f, i, j, w, h, fi):
+    return mix(EGG, HOLE, 0.5) if f == "bottom" else egg_paint(f, i, j, w, h, fi)
+
+
+SHELL_ALPHA = 150  # the candled shell: light coming through, the chick's shadow seen inside
+
+
+def shell(f, i, j, w, h, fi):
+    return (255, 214, 140) if (i + j) % 2 else (255, 190, 104)
+
+
+def embryo(f, i, j, w, h, fi):
+    return (104, 46, 34) if f != "top" else (124, 58, 40)
+
+
 def glass(f, i, j, w, h, fi):
     """Clear pane (alpha_test): a pale frame and two diagonal streaks, the rest see-through."""
     if f in ("top", "bottom"):
@@ -314,17 +397,6 @@ def glow(core, rim):
     return fn
 
 
-def cream(f, i, j, w, h, fi):
-    return CREAM if (i + 2 * j) % 5 else (255, 250, 232)
-
-
-def cheese_wheel(f, i, j, w, h, fi):
-    if f in ("top", "bottom"):
-        edge = i in (0, w - 1) or j in (0, h - 1)
-        return (214, 150, 52) if edge else (244, 204, 100)
-    return (196, 128, 44) if j in (0, h - 1) else (226, 160, 60)
-
-
 def glaze(f, i, j, w, h, fi):
     if f == "top":
         return mix(GLAZE, GLAZE_DK, 0.4)
@@ -333,12 +405,6 @@ def glaze(f, i, j, w, h, fi):
     if j == 1:
         return (150, 96, 54)  # pale glaze band
     return GLAZE
-
-
-def cloth(f, i, j, w, h, fi):
-    if f != "top" and j == h - 1:
-        return (196, 44, 40)  # red string
-    return (232, 222, 196) if (i + j) % 4 else (214, 202, 174)
 
 
 def brine(f, i, j, w, h, fi):
@@ -361,29 +427,10 @@ def scraps(f, i, j, w, h, fi):
     return (112, 90, 58) if r % 4 else (92, 72, 46)
 
 
-def hide(f, i, j, w, h, fi):
-    """Raw hide stretched flat: mottled tan with a darker rim and a ragged outline (clear pixels
-    at the corners and along the edges, read by alpha_test)."""
-    if f in ("north", "south"):
-        ragged = {(0, 0), (1, 0), (0, 1), (w - 1, 0), (w - 2, 0), (w - 1, 1), (0, h - 1), (1, h - 1), (0, h - 2),
-                  (w - 1, h - 1), (w - 2, h - 1), (w - 1, h - 2), (4, 0), (0, 5), (w - 1, 3), (6, h - 1)}
-        if (i, j) in ragged:
-            return None
-        if i in (0, w - 1) or j in (0, h - 1) or (i, j) in {(1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)}:
-            return (150, 104, 66)
-        r = (i * 7 + j * 11) % 13
-        return (214, 172, 128) if r < 3 else (184, 136, 92) if r > 10 else (200, 154, 110)
-    return (160, 114, 74)
-
-
 def liquor(f, i, j, w, h, fi):
     if f == "top" and 0 < i < w - 1 and 0 < j < h - 1:
         return (96, 58, 30)  # oak-bark tanning liquor
     return wood(WOOD_DK)(f, i, j, w, h, fi)
-
-
-def whey(f, i, j, w, h, fi):
-    return (226, 230, 186) if (i + j) % 3 else (240, 242, 210)
 
 
 PAINT = {
@@ -394,19 +441,18 @@ PAINT = {
                   "lamp": iron, "bulb": glow((255, 214, 96), (255, 170, 60)),
                   "heater": glow((255, 150, 60), (220, 90, 40)), "egg": egg_paint, "egg_tip": egg_paint},
     "butter_churn": {"stand": wood(WOOD_DK), "staves": staves(WOOD), "hoop": iron, "lid": wood(WOOD_DK),
-                     "pole": wood(WOOD_LT), "handle": wood(WOOD), "foam": cream, "spill": cream, "drip": cream},
+                     "pole": wood(WOOD_LT), "handle": wood(WOOD)},
     "cheese_press": {"board": wood(WOOD), "spout": wood(WOOD_DK), "mould": staves(WOOD_LT, top=CREAM),
                      "band": iron, "follower": wood(WOOD_DK), "upright": wood(WOOD_DK, rings=WOOD_LT),
-                     "beam": wood(WOOD_DK), "screw": iron, "bar": wood(WOOD_LT), "bar_z": wood(WOOD_LT),
-                     "cloth": solid((236, 230, 212), edge=(214, 206, 184)), "whey": whey},
+                     "beam": wood(WOOD_DK), "screw": iron, "bar": wood(WOOD_LT), "bar_z": wood(WOOD_LT)},
     "aging_rack": {"post": wood(WOOD_DK, rings=WOOD_LT), "shelf": wood(WOOD), "top": wood(WOOD),
-                   "rail": wood(WOOD_LT), "wheel": cheese_wheel, "wheel_s": cheese_wheel},
+                   "rail": wood(WOOD_LT)},
     "fermenting_jar": {"foot": solid(CLAY), "belly": glaze, "shoulder": glaze, "neck": solid(GLAZE_DK),
                        "lid": solid(CLAY, edge=mix(CLAY, (40, 20, 10), 0.25)), "knob": solid(CLAY),
-                       "cover": cloth, "tie": solid((196, 44, 40))},
+                       "tie": solid((196, 44, 40))},
     "pickling_vat": {"floor": wood(WOOD_DK), "wall_fb": staves(WOOD), "wall_s": staves(WOOD),
                      "hoop_fb": iron, "hoop_s": iron, "brine": brine, "veg": leafy,
-                     "droplid": wood(WOOD_LT), "weight": stone},
+                     "weight": stone},
 }
 
 PAINT["food_waste_bin"] = {
@@ -415,21 +461,29 @@ PAINT["food_waste_bin"] = {
     **{f"scraps_{n}": scraps for n in (1, 2, 3, 4)},
 }
 
+# 1.1 蛋的進度: painted after the old cubes, so the noise on everything else stays as it was.
+EGG_LOOKS = {"egg_crack": egg_crack, "egg_hatch": egg_hatch, "egg_cap": egg_cap,
+             "embryo_s": embryo, "embryo_m": embryo, "embryo_m_head": embryo, "embryo_l": embryo, "embryo_l_head": embryo}
+for _bid in ("nest_box", "incubator"):
+    PAINT[_bid].update(EGG_LOOKS)
+# The candled shells are painted into <block>_candled.png (same size, so the UVs line up).
+CANDLED_PAINT = {"shell": shell, "shell_tip": shell}
+
 PAINT["tanning_rack"] = {
     "post": wood(WOOD_DK, rings=WOOD_LT), "foot": wood(WOOD_DK), "rail": wood(WOOD), "peg": wood(WOOD_LT),
-    "tub": liquor, "hide": hide, "cord": rope, "cord_v": rope,
+    "tub": liquor, "cord": rope, "cord_v": rope,
 }
 
 BLOCKS = {
     "food_waste_bin": FOOD_WASTE_BIN,
-    "tanning_rack": TANNING_RACK,
+    "tanning_rack": staged("tanning_rack", TANNING_RACK),
     "nest_box": NEST_BOX,
     "incubator": INCUBATOR,
-    "butter_churn": BUTTER_CHURN,
-    "cheese_press": CHEESE_PRESS,
-    "aging_rack": AGING_RACK,
-    "fermenting_jar": FERMENTING_JAR,
-    "pickling_vat": PICKLING_VAT,
+    "butter_churn": staged("butter_churn", BUTTER_CHURN),
+    "cheese_press": staged("cheese_press", CHEESE_PRESS),
+    "aging_rack": staged("aging_rack", AGING_RACK),
+    "fermenting_jar": staged("fermenting_jar", FERMENTING_JAR),
+    "pickling_vat": staged("pickling_vat", PICKLING_VAT),
 }
 
 
@@ -439,10 +493,17 @@ def main():
     for bid, raw in BLOCKS.items():
         bones, tw, th = autouv(raw)
         p = Painter(tw, th, bones, bid)
-        for cube, fn in PAINT[bid].items():
+        paints = {**PAINT[bid], **(stage_paints(bid) if bid in STAGE_PAINT else {})}
+        for cube, fn in paints.items():
             p.paint(cube, fn)
         (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid, bones, tw, th), indent=2) + "\n", encoding="utf8")
         p.save(out / f"{bid}.png")
+        if any(c in LIT for _, _, _, cubes in bones for c, *_ in cubes):
+            lit = Painter(tw, th, bones, f"{bid}_candled")
+            for cube, fn in CANDLED_PAINT.items():
+                lit.paint(cube, fn, light=False)
+            lit.img.putalpha(lit.img.getchannel("A").point(lambda a: SHELL_ALPHA if a else 0))
+            lit.save(out / f"{bid}_candled.png")
         print(f"{bid}: {tw}x{th}")
 
 

@@ -8,6 +8,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { drawnFor, lowestPoint } from "./posed.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = join(root, "packs", "BP", "scripts", "data");
@@ -314,21 +315,24 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
     const texture = attachable.textures?.[key];
     if (!texture || !exists(join(rp, texture + ".png"))) fail(`${id}: attachable texture "${key}" (${texture}.png) is missing`);
   }
-  // Worn: the clothes, only in their own armour slot. Anywhere else (in a hand): the item's
-  // icon as a flat sprite bound to the holding bone, with the icon as its texture.
-  const slot = { "slot.armor.head": "head", "slot.armor.chest": "chest", "slot.armor.legs": "legs", "slot.armor.feet": "feet" }[item.components["minecraft:wearable"].slot];
+  // Worn: the clothes, whenever the item is not in a hand (the game's name for the chest slot
+  // is not 'chest': gated on it, the scarf and apron never showed). In a hand: the item's icon
+  // as a flat sprite on the hand bone, with the icon as its texture. The held geometry is bound
+  // even while worn, and q.item_slot_to_bone_name of an armor slot names a bone a persona skin
+  // does not have ("returned a bone name that doesn't exist"), so it binds to the hand bones.
+  const IN_HAND = "c.item_slot=='main_hand'||c.item_slot=='off_hand'";
   const entries = (attachable.render_controllers ?? []).map((entry) => (typeof entry === "string" ? [entry, null] : Object.entries(entry)[0]));
   for (const [rcId] of entries) if (!renderControllers.has(rcId)) fail(`${id}: attachable uses unknown render controller ${rcId}`);
   const worn = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.default");
   const held = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.held");
   const squash = (text) => String(text ?? "").replace(/\s+/g, "").replace(/\bcontext\./g, "c.");
-  if (!worn || squash(worn[1]) !== `c.item_slot=='${slot}'`) fail(`${id}: the worn render controller must be gated on c.item_slot == '${slot}'`);
-  if (!held || squash(held[1]) !== `c.item_slot!='${slot}'`) fail(`${id}: no render controller draws the held icon when c.item_slot != '${slot}'`);
+  if (!worn || squash(worn[1]) !== `!(${IN_HAND})`) fail(`${id}: the worn render controller must be gated on not being in a hand`);
+  if (!held || squash(held[1]) !== IN_HAND) fail(`${id}: no render controller draws the held icon in a hand`);
   else if (!JSON.stringify(renderControllers.get(held[0]).textures ?? []).includes("Texture.held")) fail(`${id}: the held render controller does not use Texture.held`);
   const heldGeo = geometryById.get(attachable.geometry?.held);
   if (!heldGeo) fail(`${id}: attachable geometry "held" ${attachable.geometry?.held} does not exist`);
-  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && /item_slot_to_bone_name\(c(ontext)?\.item_slot\)/.test(bone.binding ?? ""))) {
-    fail(`${id}: the held geometry has no bone bound to the holding slot`);
+  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && squash(bone.binding) === "c.item_slot=='off_hand'?'leftitem':'rightitem'")) {
+    fail(`${id}: the held geometry must be bound with c.item_slot == 'off_hand' ? 'leftitem' : 'rightitem'`);
   }
   const icon = item.components["minecraft:icon"];
   const iconAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
@@ -388,17 +392,89 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
   }
 }
 
-// The butcher rack shows what is air-drying on it: a `drying` state counting the pieces and
-// one `dry_<n>` bone per slot (the bones' existence is checked with the other blocks below).
+// The butcher rack shows what is air-drying on it, each strip in the colour of its stage:
+// `drying` and `drying_mix` pick a look of data/processing.js DRYING_LOOKS, and per slot the
+// bones dry_<n> (twine) and dry_<n>_<stage> (the strip) show it. Every look must be there once,
+// every such bone must be drawn by the model and switched by those states, and no drying bone of
+// the model may be left without a rule (it would always show).
 {
-  const { DRYING_SLOTS } = await load("processing.js");
+  const { DRYING_LOOKS, DRYING_SLOTS, DRYING_STAGES } = await load("processing.js");
   const rack = readJson(join(bp, "blocks", "r_butcher_rack.json"))["minecraft:block"];
-  const counts = rack.description.states?.["kaleidoscope_ranching:drying"];
-  if (!sameJson(counts, Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => n))) fail(`butcher rack: state kaleidoscope_ranching:drying must count 0..${DRYING_SLOTS}`);
-  const shown = rack.components["minecraft:geometry"].bone_visibility ?? {};
-  for (let n = 1; n <= DRYING_SLOTS; n++) {
-    if (!String(shown[`dry_${n}`] ?? "").includes("kaleidoscope_ranching:drying")) fail(`butcher rack: no bone dry_${n} shown by the drying state`);
+  const states = rack.description.states ?? {};
+  if (!sameJson(states["kaleidoscope_ranching:drying"], DRYING_LOOKS.map((_, n) => n))) fail("butcher rack: state kaleidoscope_ranching:drying must number the rows of DRYING_LOOKS");
+  if (!sameJson(states["kaleidoscope_ranching:drying_mix"], DRYING_LOOKS[0].map((_, n) => n))) fail("butcher rack: state kaleidoscope_ranching:drying_mix must number the columns of DRYING_LOOKS");
+  for (const [name, values] of Object.entries(states)) if (values.length > 16) fail(`butcher rack: state ${name} has more than 16 values`);
+  const permutations = Object.values(states).reduce((n, values) => n * values.length, 4);
+  if (permutations > 8192) fail(`butcher rack: ${permutations} permutations (keep it to a few thousand)`);
+  const looks = DRYING_LOOKS.flat().map((look) => look.join());
+  const wanted = [];
+  for (let count = 0; count <= DRYING_SLOTS; count++) {
+    for (let dried = 0; dried <= count; dried++) for (let half = 0; dried + half <= count; half++) wanted.push([dried, half, count - dried - half].join());
   }
+  if (DRYING_LOOKS.some((row) => row.length !== DRYING_LOOKS[0].length) || !sameJson([...looks].sort(), wanted.sort())) {
+    fail("butcher rack: DRYING_LOOKS must hold every mix of strip stages exactly once");
+  }
+  const shown = rack.components["minecraft:geometry"].bone_visibility ?? {};
+  const modelBones = readJson(join(rp, "models", "blocks", "kaleidoscope_ranching.butcher_rack.geo.json"))["minecraft:geometry"][0].bones;
+  const drawn = new Map(modelBones.map((bone) => [bone.name, bone]));
+  for (let n = 1; n <= DRYING_SLOTS; n++) {
+    for (const name of [`dry_${n}`, ...DRYING_STAGES.map((stage) => `dry_${n}_${stage}`)]) {
+      if (!drawn.get(name)?.cubes?.length) fail(`butcher rack: the model has no bone ${name} with cubes`);
+      const rule = String(shown[name] ?? "");
+      if (!rule.includes("kaleidoscope_ranching:drying'") || !(rule.includes("kaleidoscope_ranching:drying_mix'") || name === `dry_${n}`)) {
+        fail(`butcher rack: bone ${name} is not switched by the drying states`);
+      }
+    }
+  }
+  for (const name of drawn.keys()) if (name.startsWith("dry_") && !(name in shown)) fail(`butcher rack: model bone ${name} has no bone_visibility rule`);
+}
+
+// 1.1 蛋的進度: the nest box and incubator show each egg's stage and the candler's glow
+// (systems/nest.js "How the eggs look"): eggs/cracks/ready count 0..4, `candled` is 0..4 in the
+// nest box and a bool in the incubator, and every egg slot has a bone for each look, shown by the
+// states it depends on. The candled shell is drawn from its own see-through texture.
+{
+  const SLOTS = 4;
+  const counts = Array.from({ length: SLOTS + 1 }, (_, n) => n);
+  const st = (name) => `kaleidoscope_ranching:${name}`;
+  for (const [id, candled] of [["nest_box", counts], ["incubator", [false, true]]]) {
+    const block = readJson(join(bp, "blocks", `r_${id}.json`))["minecraft:block"];
+    const states = block.description.states ?? {};
+    for (const name of ["eggs", "cracks", "ready"]) {
+      if (!sameJson(states[st(name)], counts)) fail(`${id}: state ${st(name)} must count 0..${SLOTS}`);
+    }
+    if (!sameJson(states[st("candled")], candled)) fail(`${id}: state ${st("candled")} must be ${JSON.stringify(candled)}`);
+    const shown = block.components["minecraft:geometry"].bone_visibility ?? {};
+    const needs = { "": ["eggs", "cracks", "candled"], _crack: ["cracks", "ready", "candled"], _hatch: ["ready", "candled"], _lit: ["candled"] };
+    for (let s = 0; s < 3; s++) needs[`_embryo_${s}`] = ["candled", s === 2 ? "ready" : "cracks"];
+    for (let n = 1; n <= SLOTS; n++) {
+      for (const [suffix, used] of Object.entries(needs)) {
+        const rule = shown[`egg_${n}${suffix}`];
+        if (typeof rule !== "string") fail(`${id}: no bone egg_${n}${suffix} in bone_visibility`);
+        else for (const name of used) if (!rule.includes(`'${st(name)}'`)) fail(`${id}: bone egg_${n}${suffix} is not shown by ${st(name)}`);
+      }
+    }
+    const material = block.components["minecraft:material_instances"]?.candled;
+    if (material?.render_method !== "blend") fail(`${id}: material instance "candled" must render with blend (a see-through shell)`);
+    const geo = readJson(join(rp, "models", "blocks", `kaleidoscope_ranching.${id}.geo.json`))["minecraft:geometry"][0];
+    for (let n = 1; n <= SLOTS; n++) {
+      const cubes = geo.bones.find((bone) => bone.name === `egg_${n}_lit`)?.cubes ?? [];
+      const tagged = cubes.length > 0 && cubes.every((cube) => typeof cube.uv === "object" && !Array.isArray(cube.uv)
+        && Object.values(cube.uv).every((face) => face.material_instance === "candled"));
+      if (!tagged) fail(`${id}: bone egg_${n}_lit must be drawn with the "candled" material on every face`);
+    }
+  }
+}
+
+// A block may have at most 65536 permutations (its states times its facings).
+for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {
+  const block = readJson(path)["minecraft:block"];
+  const facings = block.description.traits?.["minecraft:placement_direction"]?.enabled_states?.includes("minecraft:cardinal_direction") ? 4 : 1;
+  const count = Object.values(block.description.states ?? {}).reduce(
+    (product, values) => product * (Array.isArray(values) ? values.length : (values.values?.max ?? values.max) - (values.values?.min ?? values.min) + 1),
+    facings
+  );
+  if (count > 65536) fail(`${relative(root, path)}: ${count} permutations, more than a block may have (65536)`);
 }
 
 // --- 3c. Animal rigs: the bones everything else is written against ---------------
@@ -439,7 +515,31 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
         for (const limb of LIMBS[animal.id] ?? []) {
           for (const age of ["a", "b"]) if (!anim?.bones?.[`${age}_${limb}`]) fail(`${where}: walk animation does not move "${age}_${limb}"`);
         }
+        // A swing that follows the distance walked keeps the last angle when the animal stops,
+        // so it has to fade with the speed: otherwise a standing animal stands with its legs
+        // spread, and asleep the swing adds to the folded legs and pushes them through the back.
+        for (const [bone, channels] of Object.entries(anim?.bones ?? {})) {
+          for (const molang of channels.rotation ?? []) {
+            if (typeof molang === "string" && molang.includes("modified_distance_moved") && !molang.includes("modified_move_speed")) {
+              fail(`${where}: walk swing on "${bone}" does not scale with q.modified_move_speed`);
+            }
+          }
+        }
       }
+    }
+    // The sleep pose stays off the ground plane: a face lying in y = 0 flickers against the
+    // block below (seen in game with the folded legs). tools/gen_sleep.mjs lifts it 0.15 px.
+    const sleepAnim = animationFiles.map((file) => file.animations?.[description.animations?.sleep]).find(Boolean);
+    if (sleepAnim) {
+      for (const baby of [false, true]) {
+        const low = lowestPoint(bones, sleepAnim.bones ?? {}, { baby, visible: drawnFor(bones, baby) });
+        if (low.y < 0.1) fail(`${where}: asleep${baby ? " (young)" : ""}, "${low.bone}" reaches y ${low.y.toFixed(2)}: it sinks into or lies on the ground and flickers`);
+      }
+    }
+    // The walk animation must not play under the sleep pose (tools/gen_sleep.mjs).
+    const walkEntry = (description.scripts?.animate ?? []).find((entry) => (typeof entry === "string" ? entry : Object.keys(entry)[0]) === "walk");
+    if (description.animations?.sleep && (typeof walkEntry === "string" || !String(Object.values(walkEntry ?? {})[0] ?? "").includes("sleeping"))) {
+      fail(`${where}: walk animation still plays while asleep`);
     }
     for (const rcId of description.render_controllers ?? []) {
       const rc = renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]);
@@ -465,6 +565,12 @@ const itemFiles = fileIds(join(bp, "items"), "minecraft:item");
 const blockFiles = fileIds(join(bp, "blocks"), "minecraft:block");
 const itemAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
 const terrainAtlas = exists(join(rp, "textures/terrain_texture.json")) ? readJson(join(rp, "textures/terrain_texture.json")).texture_data : {};
+
+// Every Ranching food can be eaten with a full hunger bar (the player's choice).
+for (const { path, data } of itemFiles) {
+  const food = data.components?.["minecraft:food"];
+  if (food && food.can_always_eat !== true) fail(`${relative(root, path)}: food must have can_always_eat: true`);
+}
 
 const fileItemIds = new Set();
 for (const { path, data } of itemFiles) {
@@ -510,6 +616,38 @@ for (const { path, data } of blockFiles) {
   }
 }
 
+// Station stages (systems/stations.js): every station shows its contents in three colours, one
+// bone per stage with the same cubes, shown by the `stage` state.
+{
+  const { STATIONS, AUTO_STATIONS } = await load("processing.js");
+  const cubesOf = new Map();
+  for (const path of walk(join(rp, "models")).filter((p) => p.endsWith(".json"))) {
+    for (const geo of readJson(path)["minecraft:geometry"] ?? []) cubesOf.set(geo.description.identifier, geo.bones ?? []);
+  }
+  for (const id of [...STATIONS, ...AUTO_STATIONS]) {
+    const block = blockFiles.find(({ data }) => local(data.description.identifier) === id);
+    if (!block) {
+      fail(`station ${id}: no block file`);
+      continue;
+    }
+    const where = relative(root, block.path);
+    const stage = block.data.description.states?.["kaleidoscope_ranching:stage"];
+    if (JSON.stringify(stage) !== "[1,2,3]") fail(`${where}: state kaleidoscope_ranching:stage must be [1, 2, 3]`);
+    const geometry = block.data.components["minecraft:geometry"];
+    const bones = cubesOf.get(geometry.identifier) ?? [];
+    const shape = (bone) => JSON.stringify((bone?.cubes ?? []).map((c) => [c.origin.map((v) => Math.round(v)), c.size.map((v) => Math.round(v))]));
+    const stages = [1, 2, 3].map((n) => bones.find((bone) => bone.name === `busy_${n}`));
+    for (const [n, bone] of stages.entries()) {
+      if (!bone?.cubes?.length) fail(`${where}: geometry has no cubes in bone busy_${n + 1}`);
+      const shown = geometry.bone_visibility?.[`busy_${n + 1}`];
+      if (typeof shown !== "string" || !shown.includes(`q.block_state('kaleidoscope_ranching:stage') == ${n + 1}`)) {
+        fail(`${where}: bone_visibility must show busy_${n + 1} at stage ${n + 1}`);
+      }
+    }
+    if (stages.every(Boolean) && new Set(stages.map(shape)).size !== 1) fail(`${where}: busy_1..busy_3 must hold the same cubes`);
+  }
+}
+
 for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(terrainAtlas)]) {
   const file = typeof entry.textures === "string" ? entry.textures : entry.textures?.[0];
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);
@@ -524,6 +662,11 @@ for (const path of walk(join(bp, "recipes")).filter((p) => p.endsWith(".json")))
   for (const type of ["minecraft:recipe_shaped", "minecraft:recipe_shapeless"]) {
     if (data[type] && !(Array.isArray(data[type].unlock) && data[type].unlock.length)) {
       fail(`${relative(root, path)}: crafting recipe needs "unlock" (1.20+ recipes require unlock data)`);
+    }
+    // Game 1.26 rejects { "context": "AlwaysUnlocked" } as an invalid unlock ingredient and drops
+    // the whole recipe; unlock by an item instead.
+    for (const entry of data[type]?.unlock ?? []) {
+      if (!entry.item) fail(`${relative(root, path)}: unlock entry ${JSON.stringify(entry)} is not an item; the game drops the recipe`);
     }
   }
 }
@@ -565,6 +708,15 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
         if (!bones.find((b) => b.name === `piece_${n}`)?.cubes?.length) fail(`placed food ${food.block}: bone piece_${n} is missing or empty`);
       }
       const cubes = bones.flatMap((b) => b.cubes ?? []);
+      // The selection box is as tall as the model (tools/gen_blocks.mjs PLACED_SHAPES), half a pixel either way.
+      const blockPath = join(bp, "blocks", `r_${food.block}.json`);
+      if (!existsSync(blockPath)) fail(`placed food ${food.block}: no block file`);
+      else {
+        const selection = readJson(blockPath)["minecraft:block"].components["minecraft:selection_box"];
+        const top = Math.max(...cubes.map((c) => c.origin[1] + c.size[1]));
+        const boxTop = selection.origin[1] + selection.size[1];
+        if (Math.abs(boxTop - top) > 0.5) fail(`placed food ${food.block}: selection box top ${boxTop}, model top ${top}`);
+      }
       for (const { origin: [x, y, z], size: [w, h, d] } of cubes) {
         if (x < -8 || z < -8 || y < 0 || x + w > 8 || z + d > 8 || y + h > 16) fail(`placed food ${food.block}: cube at ${[x, y, z]} size ${[w, h, d]} leaves the block's cell`);
       }
@@ -784,6 +936,51 @@ for (const item of ITEMS) {
   for (const [id, zh] of [...names, ...ANIMAL_NAMES.map(([id, zh]) => [id, zh])]) {
     const left = [...toSimplified(zh)].filter((ch) => TRADITIONAL_HINTS.includes(ch));
     if (left.length) fail(`zh_CN name of "${id}" (${toSimplified(zh)}) still has Traditional characters: ${left.join("")}; add them to data/zh_cn.js`);
+  }
+}
+
+// --- Guidebook chapter (data/guidebook.js) ----------------------------------------
+// Every animal, item and creative block is explained in Cookery's guidebook, since the
+// add-on shows no hint text on screen. A block may be skipped only with a reason, and
+// only if players cannot pick it from the creative inventory (it is a placed form).
+
+{
+  const { TRADITIONAL_HINTS } = await load("zh_cn.js");
+  const { guideEntries, guideCategories, GUIDE_SKIP, GUIDE_TEXT_KEYS } = await load("guidebook.js");
+  const { toSimplified } = await load("zh_cn.js");
+  const traditional = (text) => [...new Set([...text].filter((ch) => TRADITIONAL_HINTS.includes(ch)))].join("");
+  for (const category of guideCategories()) {
+    const left = traditional(category.labels.zh_CN);
+    if (left) fail(`data/guidebook.js: zh_CN label of category "${category.id}" still has Traditional characters: ${left}`);
+  }
+  for (const [key, value] of Object.entries(GUIDE_TEXT_KEYS.zh)) {
+    const left = traditional(toSimplified(value));
+    if (left) fail(`data/guidebook.js: zh_CN text "${key}" still has Traditional characters: ${left}; add them to data/zh_cn.js`);
+  }
+  let entries = [];
+  try {
+    entries = guideEntries();
+  } catch (error) {
+    fail(`data/guidebook.js: ${error.message}`);
+  }
+  const listed = new Set(entries.map((entry) => entry.id));
+  for (const animal of ANIMALS) if (!listed.has(animal.id)) fail(`data/guidebook.js: no entry for the ${animal.id}`);
+  for (const item of ITEMS) if (!listed.has(item.id)) fail(`data/guidebook.js: no entry for item "${item.id}"`);
+  const creative = (id) => {
+    for (const name of [`r_${id}.json`, `${id}.json`]) {
+      const path = join(bp, "blocks", name);
+      if (existsSync(path)) return (readJson(path)["minecraft:block"].description.menu_category?.category ?? "none") !== "none";
+    }
+    return false;
+  };
+  for (const block of BLOCKS) {
+    if (listed.has(block.id)) continue;
+    if (!GUIDE_SKIP[block.id]) fail(`data/guidebook.js: block "${block.id}" needs an entry, or a reason in GUIDE_SKIP`);
+    else if (creative(block.id)) fail(`data/guidebook.js: "${block.id}" is in the creative inventory, so it needs an entry rather than GUIDE_SKIP`);
+  }
+  for (const entry of entries) {
+    const left = [...new Set(entry.lines.zh_CN.join("").split("").filter((ch) => TRADITIONAL_HINTS.includes(ch)))];
+    if (left.length) fail(`data/guidebook.js: zh_CN lines of "${entry.id}" still have Traditional characters: ${left.join("")}; add them to data/zh_cn.js`);
   }
 }
 

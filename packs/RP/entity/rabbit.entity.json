@@ -25,7 +25,9 @@
       "scripts": {
         "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.0 : 1.0)",
         "animate": [
-          "walk",
+          {
+            "walk": "!q.property('kaleidoscope_ranching:sleeping')"
+          },
           {
             "look_at_target": "!q.property('kaleidoscope_ranching:sleeping')"
           },

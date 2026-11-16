@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "nest_box_candled",
+    "metalness_emissive_roughness_subsurface": "nest_box_candled_mers",
+    "normal": "nest_box_candled_normal"
+  }
+}

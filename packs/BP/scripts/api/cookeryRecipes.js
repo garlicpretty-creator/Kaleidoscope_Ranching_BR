@@ -15,10 +15,9 @@
 
 import { system } from "@minecraft/server";
 import { cookeryHas, onCookeryReady } from "./cookery.js";
-import { ANIMALS } from "../data/animals.js";
-import { DAIRY_PRODUCTS, DISHES, DISH_PREPS, MEAT_PRODUCTS } from "../data/dishes.js";
-import { ITEMS, NAMESPACE } from "../data/items.js";
-import { BLOCKS } from "../data/blocks.js";
+import { DISHES } from "../data/dishes.js";
+import { GUIDE_TEXT_KEYS, guideCategories, guideEntries, guideName, iconPath } from "../data/guidebook.js";
+import { NAMESPACE } from "../data/items.js";
 import { WOK_MEATS } from "../data/processing.js";
 import { toSimplified } from "../data/zh_cn.js";
 
@@ -26,11 +25,14 @@ const SOURCE = NAMESPACE;
 const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
 const KIND = { stockpot: "stockpot_exact", wok: "wok", steamer: "steamer" };
 
+/** Sends one script event; false if the game refused it. */
 function send(event, payload) {
   try {
     system.sendScriptEvent(event, typeof payload === "string" ? payload : JSON.stringify(payload));
+    return true;
   } catch (error) {
     console.warn(`[kaleidoscope_ranching] could not send ${event}: ${error}`);
+    return false;
   }
 }
 
@@ -92,131 +94,129 @@ export function registerRecipes() {
 }
 
 // --- Guidebook chapter ---------------------------------------------------------------
+//
+// The chapter's categories, entries and lines live in data/guidebook.js; this turns
+// them into the payload Cookery's guidebook extension registry accepts (Cookery 1.6.6
+// scripts/api/guidebookExtensionRegistry.js): at most 32 categories, 1024 entries,
+// 8 lines of 512 characters per entry and 4096 characters per text value.
 
 const GUIDEBOOK_ID = `${NAMESPACE}:guidebook`;
-const GUIDEBOOK_REVISION = "m5r1";
 const CHUNK_SIZE = 1600;
+const LOCALES = ["en_US", "zh_TW", "zh_CN"];
 
-const NAMES = new Map(ITEMS.map((item) => [item.id, item]));
-const BLOCK_NAMES = new Map(BLOCKS.map((block) => [block.id, block]));
-const icon = (id) => `textures/items/ranching/${id}`;
-const STATION_LABEL = { stockpot: "stockpot", wok: "wok", steamer: "steamer", furnace: "furnace", crafting: "crafting" };
+// ## Cookery translates these station names and shows a cooking time for the timed ones
+// ## (its extensionPreparationLabel); any other method string is shown as it is.
+const METHOD = { stockpot: "Stockpot", wok: "Wok", steamer: "Steamer", crafting: "Crafting Table" };
 
-const TEXT = {
-  en_US: {
-    title: "Kaleidoscope Ranching",
-    intro:
-      "Butchering comes first: a Ranching animal that dies drops one carcass instead of meat. Hang the carcass on a Butcher Rack (use it on the rack), then cut it piece by piece with a kitchen knife, a sword or an axe. Each cut gives one kind of meat or by-product; males of large animals give more.\n\nMilk adult females once a day with the Milking Pail (each milking needs an empty glass bottle). Hens lay into Nest Boxes; fertilized eggs hatch under a hen or in a heated Incubator.\n\nRanching dishes cook on Cookery's stockpot, wok and steamer. Any milk works.",
-    all: "All Entries",
-    select: "Select an entry.",
-    language_note: "This section uses the same language setting as the main guidebook.",
-    back: "Back",
-    item: "Item",
-    block: "Block",
-    item_block: "Item + Block",
-    dishes: "Dishes",
-    dairy: "Dairy and Eggs",
-    butchery: "Butchery",
-  },
-  zh_TW: {
-    title: "森羅物語：樂牧",
-    intro:
-      "先從屠宰開始：樂牧的動物死亡後不會直接掉肉，而是掉一具屠體。拿屠體點一下屠宰掛架把它掛上，再用廚房菜刀、劍或斧逐刀分切。每一刀切下一類部位肉或副產物；大型動物的公畜切得比較多。\n\n成年母畜每天可以用擠奶桶擠一次奶，每次需要一個空玻璃瓶。母禽在巢箱裡下蛋；受精蛋放在母禽身邊或有熱源的孵化器裡就會孵化。\n\n樂牧的料理用廚房的湯鍋、炒鍋與蒸籠烹調，任何一種奶都能用。",
-    all: "全部條目",
-    select: "請選擇條目。",
-    language_note: "本章節與主手冊使用相同的語言設定。",
-    back: "返回",
-    item: "物品",
-    block: "方塊",
-    item_block: "物品＋方塊",
-    dishes: "料理",
-    dairy: "乳製品與蛋",
-    butchery: "屠宰",
-  },
-};
-TEXT.zh_CN = Object.fromEntries(Object.entries(TEXT.zh_TW).map(([key, value]) => [key, toSimplified(value)]));
-
-const METHOD = {
-  en_US: { stockpot: "Stockpot", wok: "Wok", steamer: "Steamer", furnace: "Furnace or smoker", crafting: "Crafting table" },
-  zh_TW: { stockpot: "湯鍋", wok: "炒鍋", steamer: "蒸籠", furnace: "熔爐或煙燻爐", crafting: "工作台" },
-};
-METHOD.zh_CN = Object.fromEntries(Object.entries(METHOD.zh_TW).map(([key, value]) => [key, toSimplified(value)]));
-
-const BUTCHER_STEPS = {
-  en_US: ["Hold the carcass and use it on a Butcher Rack to hang it.", "Use a kitchen knife, sword or axe on the hanging carcass, once per cut.", "Each cut puts one kind of meat or by-product in your inventory and costs durability.", "An empty rack air-dries up to 4 raw sausages, pork bellies, duck legs or beef shanks; take them down after 3 days."],
-  zh_TW: ["手拿屠體點屠宰掛架，把屠體掛上。", "用廚房菜刀、劍或斧點掛著的屠體，一次切一刀。", "每一刀把一類部位肉或副產物放進背包，並消耗工具耐久。", "空的掛架可以風乾最多 4 件生香腸、五花肉、鴨腿或牛腱，3 天後取下。"],
-};
-BUTCHER_STEPS.zh_CN = BUTCHER_STEPS.zh_TW.map(toSimplified);
+/** The recipe Cookery lists for a dish (none for the furnace: Cookery has no "furnace only" label). */
+function dishRecipe(dish) {
+  const method = METHOD[dish.station];
+  if (!method) return [];
+  const ingredients = dish.station === "steamer" ? [rid(dish.input)] : dish.slots.map((slot) => rid(slot[0]));
+  return [{ method, ingredients, count: 1, time: dish.time ?? 0, result: rid(dish.id), ...(dish.station === "stockpot" ? { base: "minecraft:water" } : {}) }];
+}
 
 /** The guidebook payload Cookery shows as a "Kaleidoscope Ranching" tab. */
 export function guidebookPayload() {
-  const entries = [];
-  for (const dish of DISHES) {
-    const ingredients = dish.station === "steamer" || dish.station === "furnace" ? [rid(dish.input)] : dish.slots.map((slot) => rid(slot[0]));
-    entries.push({
-      id: rid(dish.id),
-      category: "dishes",
-      kinds: ["item"],
-      stack: 64,
-      food: { nutrition: dish.food[0], saturation: dish.food[1] },
-      icon: icon(dish.id),
-      recipes: [{ method: STATION_LABEL[dish.station], ingredients, count: 1, time: dish.time ?? 0, result: rid(dish.id), ...(dish.station === "stockpot" ? { base: "minecraft:water" } : {}) }],
-      mechanicsByLocale: Object.fromEntries(Object.entries(METHOD).map(([locale, labels]) => [locale, [labels[dish.station]]])),
-    });
-  }
-  for (const prep of DISH_PREPS) entries.push({ id: rid(prep.id), category: "dishes", kinds: ["item"], stack: 16, icon: icon(prep.id) });
-  for (const id of DAIRY_PRODUCTS) entries.push({ id: rid(id), category: "dairy", kinds: ["item"], icon: icon(id) });
-  entries.push({ id: rid("butcher_rack"), category: "butchery", kinds: ["block"], icon: icon("cow_carcass"), mechanicsByLocale: BUTCHER_STEPS });
-  for (const animal of ANIMALS) entries.push({ id: rid(animal.carcass), category: "butchery", kinds: ["item"], icon: icon(animal.carcass) });
-  for (const id of MEAT_PRODUCTS) entries.push({ id: rid(id), category: "butchery", kinds: ["item"], icon: icon(id) });
+  const rows = guideEntries();
+  const entries = rows.map((row) => {
+    const entry = {
+      id: rid(row.id),
+      category: row.category,
+      categories: row.categories,
+      kinds: row.kind === "animal" ? [] : row.kind === "block" || row.placeable ? ["item", "block"] : ["item"],
+      icon: row.icon,
+      mechanics: row.lines.en_US,
+      // ## English goes only in `mechanics`, Cookery's fallback for every language
+      // ## without lines of its own, so the chapter does not carry English twice.
+      mechanicsByLocale: { zh_TW: row.lines.zh_TW, zh_CN: row.lines.zh_CN },
+    };
+    if (row.dish) {
+      Object.assign(entry, { stack: 64, food: { nutrition: row.dish.food[0], saturation: row.dish.food[1] } });
+      const recipes = dishRecipe(row.dish);
+      if (recipes.length) entry.recipes = recipes;
+    }
+    return entry;
+  });
 
-  const names = {};
-  for (const locale of ["en_US", "zh_TW", "zh_CN"]) {
-    const column = locale === "en_US" ? "en" : "zh";
-    const localize = locale === "zh_CN" ? toSimplified : (text) => text;
-    names[locale] = Object.fromEntries(
-      entries.map((entry) => {
-        const id = entry.id.split(":")[1];
-        const row = NAMES.get(id) ?? BLOCK_NAMES.get(id);
-        return [entry.id, localize(row[column])];
-      })
-    );
+  // Names for every entry and every Ranching ingredient a recipe lists.
+  const named = new Set(entries.map((entry) => entry.id));
+  for (const entry of entries) for (const recipe of entry.recipes ?? []) for (const id of recipe.ingredients) if (id.startsWith(`${NAMESPACE}:`)) named.add(id);
+  const names = Object.fromEntries(LOCALES.map((locale) => [locale, {}]));
+  for (const id of named) {
+    const [zh, en] = guideName(id);
+    names.en_US[id] = en;
+    names.zh_TW[id] = zh;
+    names.zh_CN[id] = toSimplified(zh);
   }
+
+  const categories = guideCategories();
+  const text = {
+    en_US: { ...GUIDE_TEXT_KEYS.en },
+    zh_TW: { ...GUIDE_TEXT_KEYS.zh },
+    zh_CN: Object.fromEntries(Object.entries(GUIDE_TEXT_KEYS.zh).map(([key, value]) => [key, toSimplified(value)])),
+  };
+  for (const category of categories) for (const locale of LOCALES) text[locale][category.id] = category.labels[locale];
 
   return {
     api: 1,
     id: GUIDEBOOK_ID,
-    version: "1.0.0",
+    version: "1.1.0",
     order: 200,
-    icon: icon("cow_milk"),
+    icon: iconPath("cow_milk"),
     titleKey: "title",
     introKey: "intro",
     allKey: "all",
     selectKey: "select",
     languageNoteKey: "language_note",
     backKey: "back",
+    showAll: false,
     showIds: false,
-    categories: [
-      { id: "butchery", labelKey: "butchery", fallback: "Butchery", icon: icon("cow_carcass") },
-      { id: "dishes", labelKey: "dishes", fallback: "Dishes", icon: icon("cream_stew") },
-      { id: "dairy", labelKey: "dairy", fallback: "Dairy and Eggs", icon: icon("butter") },
-    ],
+    showKinds: false,
+    categories: categories.map(({ id, parent, icon }) => ({ id, labelKey: id, fallback: text.en_US[id], icon, ...(parent ? { parent } : {}) })),
     entries,
     names,
-    text: TEXT,
+    text,
   };
+}
+
+/** A short hash of the chapter, so Cookery always takes a changed chapter as new. */
+function revisionOf(json) {
+  let a = 0x811c9dc5;
+  let b = 0;
+  for (let i = 0; i < json.length; i++) {
+    const c = json.charCodeAt(i);
+    a = Math.imul(a ^ c, 0x01000193) >>> 0;
+    b = (Math.imul(b, 31) + c) >>> 0;
+  }
+  return `g${a.toString(36)}${b.toString(36)}`;
 }
 
 /** Splits the payload into Cookery's begin / chunk / end messages. */
 export function guidebookMessages(payload = guidebookPayload()) {
   const json = JSON.stringify(payload);
+  const revision = revisionOf(json);
   const parts = [];
   for (let at = 0; at < json.length; at += CHUNK_SIZE) parts.push(json.slice(at, at + CHUNK_SIZE));
   return [
-    ["kaleidoscope_cookery:guidebook_begin", JSON.stringify({ api: 1, source: SOURCE, id: GUIDEBOOK_ID, revision: GUIDEBOOK_REVISION, chunks: parts.length })],
-    ...parts.map((data, index) => ["kaleidoscope_cookery:guidebook_chunk", [SOURCE, GUIDEBOOK_ID, GUIDEBOOK_REVISION, index, data].join("\n")]),
-    ["kaleidoscope_cookery:guidebook_end", JSON.stringify({ api: 1, source: SOURCE, id: GUIDEBOOK_ID, revision: GUIDEBOOK_REVISION })],
+    ["kaleidoscope_cookery:guidebook_begin", JSON.stringify({ api: 1, source: SOURCE, id: GUIDEBOOK_ID, revision, chunks: parts.length })],
+    ...parts.map((data, index) => ["kaleidoscope_cookery:guidebook_chunk", [SOURCE, GUIDEBOOK_ID, revision, index, data].join("\n")]),
+    ["kaleidoscope_cookery:guidebook_end", JSON.stringify({ api: 1, source: SOURCE, id: GUIDEBOOK_ID, revision })],
   ];
+}
+
+/** Builds and sends the chapter; true only if every message went out. */
+export function sendGuidebook() {
+  let messages;
+  try {
+    messages = guidebookMessages();
+  } catch (error) {
+    console.warn(`[kaleidoscope_ranching] could not build the guidebook chapter: ${error}`);
+    return false;
+  }
+  // A refused message spoils the transfer; stop there and let the next guidebook_ready retry.
+  for (const [id, message] of messages) if (!send(id, message)) return false;
+  return true;
 }
 
 let guidebookSent = false;
@@ -224,10 +224,11 @@ let guidebookSent = false;
 export function startCookeryContent() {
   onCookeryReady(() => registerRecipes());
 
+  // ## A chapter that fails to build or send is tried again on Cookery's next
+  // ## guidebook_ready (Cookery broadcasts it several times) instead of being lost.
   system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "kaleidoscope_cookery:guidebook_ready" || guidebookSent) return;
-    guidebookSent = true;
-    for (const [id, message] of guidebookMessages()) send(id, message);
+    guidebookSent = sendGuidebook();
   });
   system.run(() => send("kaleidoscope_cookery:guidebook_ping", SOURCE));
 }

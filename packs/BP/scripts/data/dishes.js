@@ -286,6 +286,28 @@ export const DISHES = [
     slots: [[r("chhurpi_block")], [r("ghee")], [KC("dried_tea_leaves")]],
     look: ["bottle", [214, 180, 120]],
   },
+
+  // --- Spare cuts: ribs, wings, lamb leg and rabbit leg -------------------------------
+  {
+    id: "sweet_sour_ribs", zh: "糖醋排骨", en: "Sweet and Sour Spare Ribs", food: [10, 0.8], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("pork_ribs")], [r("pork_ribs")], ["minecraft:sugar"], [KC("tomato")]],
+    look: ["bowl", [180, 60, 40]],
+  },
+  {
+    id: "honey_chicken_wings", zh: "蜜汁雞翅", en: "Honey-glazed Chicken Wings", food: [8, 0.75], station: "wok", carrier: "", time: 200,
+    slots: [[r("chicken_wing")], [r("chicken_wing")], ["minecraft:sugar"]],
+    look: ["plate", [196, 120, 50]],
+  },
+  {
+    id: "roast_lamb_leg", zh: "孜然烤羊腿", en: "Spiced Roast Lamb Leg", food: [12, 0.85], station: "furnace", carrier: "",
+    input: r("seasoned_lamb_leg"),
+    look: ["plate", [150, 80, 40]],
+  },
+  {
+    id: "braised_rabbit_legs", zh: "紅燒兔腿", en: "Braised Rabbit Legs", food: [10, 0.8], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("rabbit_leg")], [r("rabbit_leg")], ["minecraft:carrot"], ["minecraft:sugar"]],
+    look: ["bowl", [140, 70, 40]],
+  },
 ];
 
 /**
@@ -317,6 +339,12 @@ export const DISH_PREPS = [
   {
     id: "raw_truffle_gratin", zh: "松露焗烤生料", en: "Unbaked Truffle Gratin",
     makes: [[r("truffle"), r("cheese_slice"), "minecraft:potato", BOWL]],
+  },
+  // Spare cuts
+  {
+    id: "seasoned_lamb_leg", zh: "醃羊腿", en: "Seasoned Lamb Leg",
+    makes: [[r("lamb_leg"), KC("red_chili")]],
+    unlock: r("lamb_leg"), // shows in the recipe book once a lamb leg is held
   },
 ];
 
