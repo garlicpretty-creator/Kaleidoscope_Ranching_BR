@@ -1,8 +1,6 @@
 entity.kr_example:alpaca.name=Alpaca
 item.spawn_egg.entity.kr_example:alpaca.name=Alpaca Spawn Egg
 item.kr_example:alpaca_milk.name=Alpaca Milk
-item.kr_example:alpaca_milk_fine.name=Fine Alpaca Milk
-item.kr_example:alpaca_milk_superb.name=Superb Alpaca Milk
 item.kr_example:alpaca_carcass.name=Alpaca Carcass
 item.kr_example:hay_cube.name=Hay Cube
 item.kr_example:alpaca_yogurt.name=Alpaca Yogurt

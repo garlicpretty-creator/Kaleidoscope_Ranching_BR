@@ -106,7 +106,7 @@ const TEXT = {
   en_US: {
     title: "Kaleidoscope Ranching",
     intro:
-      "Butchering comes first: a Ranching animal that dies drops one carcass instead of meat. Hang the carcass on a Butcher Rack (use it on the rack), then cut it piece by piece with a kitchen knife, a sword or an axe. Each cut gives one kind of meat or by-product; males of large animals give more.\n\nMilk adult females once a day with the Milking Pail (each milking needs an empty glass bottle). Hens lay into Nest Boxes; fertilized eggs hatch under a hen or in a heated Incubator.\n\nRanching dishes cook on Cookery's stockpot, wok and steamer. Any quality of milk or egg works.",
+      "Butchering comes first: a Ranching animal that dies drops one carcass instead of meat. Hang the carcass on a Butcher Rack (use it on the rack), then cut it piece by piece with a kitchen knife, a sword or an axe. Each cut gives one kind of meat or by-product; males of large animals give more.\n\nMilk adult females once a day with the Milking Pail (each milking needs an empty glass bottle). Hens lay into Nest Boxes; fertilized eggs hatch under a hen or in a heated Incubator.\n\nRanching dishes cook on Cookery's stockpot, wok and steamer. Any milk works.",
     all: "All Entries",
     select: "Select an entry.",
     language_note: "This section uses the same language setting as the main guidebook.",
@@ -121,7 +121,7 @@ const TEXT = {
   zh_TW: {
     title: "森羅物語：樂牧",
     intro:
-      "先從屠宰開始：樂牧的動物死亡後不會直接掉肉，而是掉一具屠體。拿屠體點一下屠宰掛架把它掛上，再用廚房菜刀、劍或斧逐刀分切。每一刀切下一類部位肉或副產物；大型動物的公畜切得比較多。\n\n成年母畜每天可以用擠奶桶擠一次奶，每次需要一個空玻璃瓶。母禽在巢箱裡下蛋；受精蛋放在母禽身邊或有熱源的孵化器裡就會孵化。\n\n樂牧的料理用廚房的湯鍋、炒鍋與蒸籠烹調，任何品質的奶與蛋都能用。",
+      "先從屠宰開始：樂牧的動物死亡後不會直接掉肉，而是掉一具屠體。拿屠體點一下屠宰掛架把它掛上，再用廚房菜刀、劍或斧逐刀分切。每一刀切下一類部位肉或副產物；大型動物的公畜切得比較多。\n\n成年母畜每天可以用擠奶桶擠一次奶，每次需要一個空玻璃瓶。母禽在巢箱裡下蛋；受精蛋放在母禽身邊或有熱源的孵化器裡就會孵化。\n\n樂牧的料理用廚房的湯鍋、炒鍋與蒸籠烹調，任何一種奶都能用。",
     all: "全部條目",
     select: "請選擇條目。",
     language_note: "本章節與主手冊使用相同的語言設定。",

@@ -4,7 +4,7 @@
 // - replaces:      vanilla entity converted into this animal on spawn/load, or null for new animals.
 // - reproduction:  "gestation" (female carries, then gives birth) or "egg" (female lays, fertilized eggs hatch).
 // - days:          gestation length or incubation length, in game days.
-// - dailyProduct:  what a female yields each day when her needs are met. `tiered` products come in three qualities.
+// - dailyProduct:  what a female yields each day (no quality grades).
 // - groomProduct:  occasional drop when brushed (M2's species.js decides the actual brush drops).
 // - treat:         favourite treat, owned by M2 (data/species.js).
 // - largeCarcass:  large carcasses do not stack and remember the animal's sex (males yield more).
@@ -33,7 +33,7 @@ export const ANIMALS = [
     replaces: "minecraft:cow",
     reproduction: "gestation",
     days: GESTATION_DAYS,
-    dailyProduct: { item: "cow_milk", tiered: true, via: "milking_pail" },
+    dailyProduct: { item: "cow_milk", via: "milking_pail" },
     groomProduct: null,
     treat: "alfalfa_cake",
     carcass: "cow_carcass",
@@ -63,7 +63,7 @@ export const ANIMALS = [
     replaces: "minecraft:goat",
     reproduction: "gestation",
     days: GESTATION_DAYS,
-    dailyProduct: { item: "goat_milk", tiered: true, via: "milking_pail" },
+    dailyProduct: { item: "goat_milk", via: "milking_pail" },
     groomProduct: null,
     treat: "alfalfa_cake",
     carcass: "goat_carcass",
@@ -93,8 +93,8 @@ export const ANIMALS = [
     replaces: "minecraft:chicken",
     reproduction: "egg",
     days: INCUBATION_DAYS,
-    // ## The plain tier is the vanilla egg; see items.js.
-    dailyProduct: { item: "minecraft:egg", tiered: true, tierItems: ["minecraft:egg", "egg_fine", "egg_superb"], via: "nest_box" },
+    // ## The vanilla egg; see items.js.
+    dailyProduct: { item: "minecraft:egg", via: "nest_box" },
     fertilizedEgg: "fertilized_chicken_egg",
     groomProduct: "minecraft:feather",
     treat: "grain_cake",
@@ -125,7 +125,7 @@ export const ANIMALS = [
     replaces: null,
     reproduction: "egg",
     days: INCUBATION_DAYS,
-    dailyProduct: { item: "duck_egg", tiered: true, via: "nest_box" },
+    dailyProduct: { item: "duck_egg", via: "nest_box" },
     fertilizedEgg: "fertilized_duck_egg",
     groomProduct: "down",
     treat: "grain_cake",
@@ -141,7 +141,7 @@ export const ANIMALS = [
     replaces: null,
     reproduction: "egg",
     days: INCUBATION_DAYS,
-    dailyProduct: { item: "goose_egg", tiered: true, via: "nest_box" },
+    dailyProduct: { item: "goose_egg", via: "nest_box" },
     fertilizedEgg: "fertilized_goose_egg",
     groomProduct: "down",
     treat: "grain_cake",
@@ -157,7 +157,7 @@ export const ANIMALS = [
     replaces: null,
     reproduction: "gestation",
     days: GESTATION_DAYS,
-    dailyProduct: { item: "buffalo_milk", tiered: true, via: "milking_pail" },
+    dailyProduct: { item: "buffalo_milk", via: "milking_pail" },
     groomProduct: null,
     treat: "alfalfa_cake",
     carcass: "buffalo_carcass",
@@ -172,7 +172,7 @@ export const ANIMALS = [
     replaces: null,
     reproduction: "gestation",
     days: GESTATION_DAYS,
-    dailyProduct: { item: "yak_milk", tiered: true, via: "milking_pail" },
+    dailyProduct: { item: "yak_milk", via: "milking_pail" },
     groomProduct: "yak_hair",
     treat: "alfalfa_cake",
     carcass: "yak_carcass",
@@ -196,14 +196,6 @@ export const AFFECTION = {
   // Share of the parents' average affection a newborn starts with.
   inheritedShare: 0.5,
 };
-
-// Product quality from affection and that day's feed tier (see feeds.js).
-// The first matching row wins.
-export const QUALITY_RULES = [
-  { tier: "superb", minAffection: 5, minFeedTier: 3 },
-  { tier: "fine", minAffection: 3, minFeedTier: 2 },
-  { tier: "plain", minAffection: 0, minFeedTier: 1 },
-];
 
 // Chance that a hen with a same-species male in trough range lays a fertilized
 // egg, indexed by affection hearts 0..5.

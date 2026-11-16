@@ -1,6 +1,6 @@
 // Feed table. Each feed item gives `units` of a trough "kind".
 // Trough state `kaleidoscope_ranching:kind`: 0 empty, then the ids below.
-// Tier (乾草 1 / 混合 2 / 精飼料 3) is used by M3 for milk & egg quality.
+// Tier (乾草 1 / 混合 2 / 精飼料 3): which animals a feed suits. Milk and eggs have no quality grades.
 
 export const KIND = {
   EMPTY: 0,

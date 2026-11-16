@@ -1,8 +1,0 @@
-{
-  "format_version": "1.21.30",
-  "minecraft:texture_set": {
-    "color": "buffalo_milk_superb",
-    "metalness_emissive_roughness_subsurface": "buffalo_milk_superb_mers",
-    "normal": "buffalo_milk_superb_normal"
-  }
-}

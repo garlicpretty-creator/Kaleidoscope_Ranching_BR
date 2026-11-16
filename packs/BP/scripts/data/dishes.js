@@ -16,13 +16,12 @@
 
 const NS = "kaleidoscope_ranching";
 const r = (id) => (id.includes(":") ? id : `${NS}:${id}`);
-const tiers = (base) => [r(base), r(`${base}_fine`), r(`${base}_superb`)];
 const KC = (id) => `kaleidoscope_cookery:${id}`;
 
-/** Any Ranching milk, any quality. */
-export const ANY_MILK = ["cow_milk", "goat_milk", "buffalo_milk", "yak_milk"].flatMap(tiers);
-/** Any duck egg, any quality. */
-export const ANY_DUCK_EGG = tiers("duck_egg");
+/** Any Ranching milk. */
+export const ANY_MILK = ["cow_milk", "goat_milk", "buffalo_milk", "yak_milk"].map(r);
+/** A duck egg. */
+export const ANY_DUCK_EGG = [r("duck_egg")];
 
 const BOWL = "minecraft:bowl";
 
@@ -136,7 +135,7 @@ export const DISHES = [
 
 /**
  * Uncooked steps some dishes need first (crafting recipes), each made with any
- * quality of milk or egg. `with` lists one slot per ingredient; a slot that is
+ * milk or egg. `with` lists one slot per ingredient; a slot that is
  * a tag string accepts every item carrying that tag.
  */
 export const DISH_PREPS = [

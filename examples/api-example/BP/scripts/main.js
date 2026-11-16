@@ -27,7 +27,7 @@ export const REGISTRATIONS = [
       largeCarcass: true,
       dailyProduct: {
         via: "milking_pail",
-        items: [`${ME}:alpaca_milk`, `${ME}:alpaca_milk_fine`, `${ME}:alpaca_milk_superb`],
+        items: [`${ME}:alpaca_milk`],
       },
       care: { eats: ["grass", "mixed", "concentrate"], treat: "kaleidoscope_ranching:alfalfa_cake", brushDrops: [["minecraft:white_wool", 0.2]] },
     },
@@ -50,7 +50,7 @@ export const REGISTRATIONS = [
     {
       id: `${ME}:alpaca_yogurt`,
       station: "fermenting_jar",
-      inputs: [{ anyOf: [`${ME}:alpaca_milk`, `${ME}:alpaca_milk_fine`, `${ME}:alpaca_milk_superb`], count: 1 }],
+      inputs: [{ item: `${ME}:alpaca_milk`, count: 1 }],
       outputs: [{ item: `${ME}:alpaca_yogurt`, count: 1 }],
       ticks: 24000,
     },

@@ -7,22 +7,14 @@
 //            record the start time and compare on collection; nothing ticks
 //            while the player is away.
 //
-// No 1.0.0 processed good is tiered. The quality of the milk or eggs that went
-// in scales the output `count` through QUALITY_YIELD instead.
-//
 // Identifiers without a namespace belong to `kaleidoscope_ranching:`.
-
-import { tierIds } from "./items.js";
 
 const DAY = 24000;
 
-const ANY_COW_LIKE_MILK = [...tierIds("cow_milk"), ...tierIds("goat_milk"), ...tierIds("buffalo_milk")];
-const ANY_YAK_MILK = tierIds("yak_milk");
+const ANY_COW_LIKE_MILK = ["cow_milk", "goat_milk", "buffalo_milk"];
+const ANY_YAK_MILK = ["yak_milk"];
 const ANY_MILK = [...ANY_COW_LIKE_MILK, ...ANY_YAK_MILK];
-const ANY_DUCK_EGG = tierIds("duck_egg");
-
-/** Output multiplier by the quality tier of the milk or egg that went in. */
-export const QUALITY_YIELD = { plain: 1, fine: 1.5, superb: 2 };
+const ANY_DUCK_EGG = ["duck_egg"];
 
 export const PROCESSING_RECIPES = [
   // Butter churn

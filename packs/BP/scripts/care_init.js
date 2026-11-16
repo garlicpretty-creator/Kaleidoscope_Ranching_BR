@@ -47,7 +47,7 @@ startBlockClock();
 registerCareInteractions();
 registerWorldHooks();
 
-// Public surface for M1 (breeding) and M3 (quality).
+// Public surface for M1 (breeding) and M3.
 export {
   ensureSettled, getHearts, getAffection, setAffection, addAffection,
   needsMetToday, feedTierToday, lastDayTier,

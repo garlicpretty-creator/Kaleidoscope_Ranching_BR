@@ -214,17 +214,15 @@ test("animals that were not cared for today do not breed", () => {
   assert(player.actionBar.some((m) => m.translate.endsWith("not_cared")), "player told why");
 });
 
-test("quality follows M2's hearts and today's feed tier", () => {
+test("production has no quality grades and does not depend on care", () => {
   clearWorld();
   const cow = ranch("cow", 1, "female");
   const day = Math.floor(world.getAbsoluteTime() / 24000);
   care.setAffection(cow, 100);
   careFor(cow, 3);
-  equal(husbandry.production(cow, day).quality, "superb", "5 hearts + concentrate");
-  care.setAffection(cow, 60);
-  equal(husbandry.production(cow, day).quality, "fine", "3 hearts");
+  equal(JSON.stringify(husbandry.production(cow, day)), JSON.stringify({ produces: true }), "5 hearts + concentrate");
   care.setAffection(cow, 20);
-  equal(husbandry.production(cow, day).quality, "plain", "1 heart");
+  equal(JSON.stringify(husbandry.production(cow, day)), JSON.stringify({ produces: true }), "1 heart, unfed");
   equal(husbandry.getAffection(cow), 1, "hearts, not points");
 });
 
@@ -626,7 +624,7 @@ test("breaking a cheese wheel gives back the whole wheel, or the slices left", (
 
 // --- M3: milking and nursing ----------------------------------------------
 
-test("milking gives one graded bottle per cow per day and needs an empty bottle", () => {
+test("milking gives one bottle per cow per day and needs an empty bottle", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const cow = ranch("cow", 1, "female");
@@ -637,7 +635,7 @@ test("milking gives one graded bottle per cow per day and needs an empty bottle"
   assert(player.actionBar.at(-1).translate.endsWith("need_bottle"), "needs a bottle");
   player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 2));
   __interact(player, cow);
-  equal(player.inventory.count("kaleidoscope_ranching:cow_milk_superb"), 1, "superb milk from a 5-heart cow on concentrate");
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 1, "a bottle of cow milk");
   __interact(player, cow);
   equal(player.inventory.count("minecraft:glass_bottle"), 1, "only once a day");
   assert(player.actionBar.at(-1).translate.endsWith("milked_today"), "told it was milked");
@@ -664,7 +662,7 @@ test("three bottle feedings make a calf grow up and return the bottles", () => {
   const player = __newPlayer(at(0));
   const calf = ranch("cow", 1, "female");
   calf.triggerEvent("kaleidoscope_ranching:become_baby");
-  player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:cow_milk_fine", 1));
+  player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:goat_milk", 1));
   player.inventory.setItem(2, new ItemStack("kaleidoscope_ranching:cow_milk", 3));
   hold(player, "kaleidoscope_ranching:nursing_bottle");
   __interact(player, calf);
@@ -672,7 +670,7 @@ test("three bottle feedings make a calf grow up and return the bottles", () => {
   assert(isBaby(calf), "still a calf after two");
   __interact(player, calf);
   assert(!isBaby(calf), "grown after three");
-  equal(player.inventory.count("kaleidoscope_ranching:cow_milk_fine"), 1, "plain milk used first");
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk") + player.inventory.count("kaleidoscope_ranching:goat_milk"), 1, "three bottles of milk used");
   equal(player.inventory.count("minecraft:glass_bottle"), 3, "bottles returned");
 });
 
@@ -777,37 +775,35 @@ test("the incubator hatches only while heated; the countdown pauses when cold", 
 
 const stationAt = (id, x = 0) => __place(overworld, { x, y: 64, z: 0 }, `kaleidoscope_ranching:${id}`, { "kaleidoscope_ranching:busy": false });
 
-test("the cheese press takes three milk, works half a day, and yields by the lowest quality", () => {
+test("the cheese press takes three milk and works half a day", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const press = stationAt("cheese_press");
-  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:cow_milk_superb", 3));
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:cow_milk", 3));
   use(STATION, press, player);
   equal(press.permutation.getState("kaleidoscope_ranching:busy"), true, "working");
-  equal(player.inventory.count("kaleidoscope_ranching:cow_milk_superb"), 0, "milk taken");
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 0, "milk taken");
   use(STATION, press, player);
   assert(!player.actionBar.some((m) => m?.translate?.endsWith("station.working")), "no progress read-out (core/actionBar.js)");
   __skipTime(12000);
   use(STATION, press, player);
-  equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 2, "superb milk doubles the cheese");
-  equal(player.inventory.count("kaleidoscope_ranching:whey"), 2, "and the whey");
+  equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 1, "one cheese");
+  equal(player.inventory.count("kaleidoscope_ranching:whey"), 1, "and the whey");
   equal(press.permutation.getState("kaleidoscope_ranching:busy"), false, "idle again");
 });
 
-test("mixed quality uses the lowest tier, and plain milk is spent before better milk", () => {
+test("a station takes the milk in hand before other milk", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const churn = stationAt("butter_churn");
-  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:goat_milk_fine", 1));
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:goat_milk", 1));
   player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:cow_milk", 2));
-  player.inventory.setItem(2, new ItemStack("kaleidoscope_ranching:cow_milk_superb", 1));
   player.selectedSlotIndex = 1;
-  use(STATION, churn, player); // holding plain cow milk: butter needs 2
+  use(STATION, churn, player); // holding cow milk: butter needs 2
   __skipTime(600);
   use(STATION, churn, player);
   equal(player.inventory.count("kaleidoscope_ranching:butter"), 1, "one butter");
-  equal(player.inventory.count("kaleidoscope_ranching:cow_milk_superb"), 1, "superb milk kept");
-  equal(player.inventory.count("kaleidoscope_ranching:goat_milk_fine"), 1, "fine milk kept");
+  equal(player.inventory.count("kaleidoscope_ranching:goat_milk"), 1, "goat milk kept");
 });
 
 test("the tanning rack turns hides into leather in a day; sheepskin also gives wool", () => {
@@ -899,7 +895,7 @@ test("M5 acceptance: the example add-on registers its alpaca, feed, cuts and rec
   equal(LIVE_FEEDS["kr_example:hay_cube"]?.units, 2, "hay cube is feed");
 });
 
-test("M5: a registered animal is fed at the trough, milked by quality, and drops its carcass", () => {
+test("M5: a registered animal is fed at the trough, milked, and drops its carcass", () => {
   clearWorld();
   const player = __newPlayer(at(0, -3));
   const trough = place("trough", at(0), { fill: 0, kind: 0 });
@@ -909,14 +905,13 @@ test("M5: a registered animal is fed at the trough, milked by quality, and drops
   runBlockClock();
   equal(female.getDynamicProperty("kr:fed_day"), Math.floor(world.getAbsoluteTime() / DAY), "ate from the trough");
 
-  // Five hearts, but today's feed was hay (tier 1): plain milk.
   care.setAffection(female, 100);
   careFor(female);
   hold(player, `${API}:milking_pail`);
   player.inventory.setItem(5, new ItemStack("minecraft:glass_bottle", 1));
   system.__scriptEvents.length = 0;
   assert(__interact(player, female), "pail handled");
-  equal(player.inventory.count("kr_example:alpaca_milk"), 1, "alpaca milk at the quality hay earns");
+  equal(player.inventory.count("kr_example:alpaca_milk"), 1, "alpaca milk");
   const harvest = sent("animal_event").find((e) => e.type === "harvested");
   equal(harvest?.items?.["kr_example:alpaca_milk"], 1, "harvest broadcast");
 
@@ -947,11 +942,11 @@ test("M5: a registered recipe runs in the fermenting jar", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const jar = stationAt("fermenting_jar");
-  player.inventory.setItem(0, new ItemStack("kr_example:alpaca_milk_fine", 1));
+  player.inventory.setItem(0, new ItemStack("kr_example:alpaca_milk", 1));
   use(STATION, jar, player);
   __skipTime(DAY);
   use(STATION, jar, player);
-  equal(player.inventory.count("kr_example:alpaca_yogurt"), 1, "yogurt (fine ×1.5 rounds down)");
+  equal(player.inventory.count("kr_example:alpaca_yogurt"), 1, "yogurt");
 });
 
 test("M5: registered animals breed, and the birth is broadcast", () => {
@@ -977,7 +972,7 @@ test("M5: a registered bird lays into the nest box and its fertilized egg hatche
     id: "kr_test:quail",
     reproduction: "egg",
     carcass: "kr_test:quail_carcass",
-    dailyProduct: { via: "nest_box", items: ["kr_test:quail_egg", "kr_test:quail_egg_fine", "kr_test:quail_egg_superb"] },
+    dailyProduct: { via: "nest_box", items: ["kr_test:quail_egg"] },
     fertilizedEgg: "kr_test:fertilized_quail_egg",
     care: { eats: ["grain"] },
   });
@@ -1488,12 +1483,12 @@ test("when Cookery is ready every Cookery dish, the cheese board and the wok mea
   assert(cookeryDishes.length + DISHES.filter((d) => !["stockpot", "wok", "steamer"].includes(d.station)).length >= 20, "about twenty dishes");
 });
 
-test("every quality of milk and duck egg is accepted in the dishes that use them", () => {
+test("every milk and the duck egg are accepted in the dishes that use them", () => {
   const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
   const tea = recipes.find((r) => r.recipe.result === "kaleidoscope_ranching:milk_tea");
-  assert(tea.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:yak_milk_superb") && slot.includes("kaleidoscope_ranching:cow_milk")), "milk tea takes any milk");
+  assert(tea.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:yak_milk") && slot.includes("kaleidoscope_ranching:cow_milk")), "milk tea takes any milk");
   const eggs = recipes.find((r) => r.recipe.result === "kaleidoscope_ranching:tomato_duck_egg");
-  assert(eggs.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:duck_egg_fine")), "any duck egg");
+  assert(eggs.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:duck_egg")), "the duck egg");
 });
 
 test("the guidebook chapter arrives in chunks under 2048 characters and parses back", () => {

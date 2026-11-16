@@ -36,9 +36,9 @@ for (const path of jsonFiles) {
 
 // --- 2. Data tables -------------------------------------------------------
 
-const { ITEMS, tierIds } = await load("items.js");
+const { ITEMS } = await load("items.js");
 const { BLOCKS } = await load("blocks.js");
-const { ANIMALS, NEEDS, QUALITY_RULES, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load("animals.js");
+const { ANIMALS, NEEDS, FERTILIZED_CHANCE_BY_AFFECTION, AFFECTION } = await load("animals.js");
 const { FEEDS, KIND_TIER } = await load("feeds.js");
 const { SPECIES } = await load("species.js");
 const { PROCESSING_RECIPES, VANILLA_COOKING, WOK_MEATS } = await load("processing.js");
@@ -93,7 +93,7 @@ for (const animal of ANIMALS) {
 
   const product = animal.dailyProduct;
   if (product) {
-    const ids = product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item]);
+    const ids = [product.item];
     ids.forEach((id) => checkItem(id, `${where} dailyProduct`));
     if (!itemIds.has(product.via) && !blockIds.has(product.via)) fail(`${where}: dailyProduct.via "${product.via}" is not a declared tool or block`);
   }
@@ -140,7 +140,6 @@ for (const pair of WOK_MEATS) {
 
 if (NEEDS.length !== 4) fail("animals.js: expected four daily needs");
 if (FERTILIZED_CHANCE_BY_AFFECTION.length !== AFFECTION.max + 1) fail("animals.js: fertilized chance needs one entry per affection level");
-if (QUALITY_RULES.at(-1).tier !== "plain") fail("animals.js: the last quality rule must be the plain fallback");
 
 // Every declared item should be reachable from some table, so the registry
 // does not accumulate dead entries.
@@ -149,7 +148,7 @@ const note = (id) => typeof id === "string" && !id.includes(":") && referenced.a
 for (const animal of ANIMALS) {
   [animal.carcass, animal.treat, animal.groomProduct, animal.fertilizedEgg, animal.dailyProduct?.via, ...animal.breedItems, ...animal.temptItems].forEach(note);
   const product = animal.dailyProduct;
-  if (product) (product.tierItems ?? (product.tiered ? tierIds(product.item) : [product.item])).forEach(note);
+  if (product) note(product.item);
 }
 Object.values(BUTCHER_TABLE).forEach((entry) => entry.cuts.forEach((cut) => note(cut.item)));
 Object.keys(FEEDS).forEach((item) => note(local(item)));

@@ -57,17 +57,9 @@
             },
             "items": [
               "kaleidoscope_ranching:cow_milk",
-              "kaleidoscope_ranching:cow_milk_fine",
-              "kaleidoscope_ranching:cow_milk_superb",
               "kaleidoscope_ranching:goat_milk",
-              "kaleidoscope_ranching:goat_milk_fine",
-              "kaleidoscope_ranching:goat_milk_superb",
               "kaleidoscope_ranching:buffalo_milk",
-              "kaleidoscope_ranching:buffalo_milk_fine",
-              "kaleidoscope_ranching:buffalo_milk_superb",
-              "kaleidoscope_ranching:yak_milk",
-              "kaleidoscope_ranching:yak_milk_fine",
-              "kaleidoscope_ranching:yak_milk_superb"
+              "kaleidoscope_ranching:yak_milk"
             ]
           },
           {
@@ -76,14 +68,8 @@
               "name": "kaleidoscope_ranching:itemGroup.name.ranching_eggs"
             },
             "items": [
-              "kaleidoscope_ranching:egg_fine",
-              "kaleidoscope_ranching:egg_superb",
               "kaleidoscope_ranching:duck_egg",
-              "kaleidoscope_ranching:duck_egg_fine",
-              "kaleidoscope_ranching:duck_egg_superb",
               "kaleidoscope_ranching:goose_egg",
-              "kaleidoscope_ranching:goose_egg_fine",
-              "kaleidoscope_ranching:goose_egg_superb",
               "kaleidoscope_ranching:fertilized_chicken_egg",
               "kaleidoscope_ranching:fertilized_duck_egg",
               "kaleidoscope_ranching:fertilized_goose_egg",

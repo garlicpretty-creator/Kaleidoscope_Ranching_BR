@@ -2,14 +2,14 @@
 //
 // Milking pail: once per game day on an adult female whose daily product is
 // milked (data/animals.js `dailyProduct.via === "milking_pail"`). Each milking
-// fills one empty glass bottle from the player's inventory with milk of the
-// quality M2 reports for today. The vanilla bucket still works as before.
+// fills one empty glass bottle from the player's inventory with that animal's
+// milk (no quality grades). The vanilla bucket still works as before.
 //
 // Nursing bottle: a reusable tool. Feeding a baby mammal uses one bottle of any
-// milk from the inventory (lowest quality first) and gives the glass bottle
+// milk from the inventory and gives the glass bottle
 // back. Three feedings make the baby grow up.
 
-import { ITEMS, tierIds } from "../data/items.js";
+import { ITEMS } from "../data/items.js";
 import { NURSING_FEEDS_TO_GROW } from "../data/animals.js";
 import { isBaby, isFemale, speciesOf } from "../core/animal.js";
 import { notifyCared, production } from "../core/husbandry.js";
@@ -25,23 +25,10 @@ const BOTTLE = rid("nursing_bottle");
 const LAST_MILKED_DAY = dp("last_milked_day");
 const NURSING_FEEDS = dp("nursing_feeds");
 
-const TIER_INDEX = { plain: 0, fine: 1, superb: 2 };
-
-const tierOf = (id) => (id.endsWith("_superb") ? 2 : id.endsWith("_fine") ? 1 : 0);
-
-// Plain milk first, so feeding uses the cheapest milk the player carries.
-const MILK_FOR_FEEDING = ITEMS.filter((item) => item.category === "milk")
-  .map((item) => item.id)
-  .sort((a, b) => tierOf(a) - tierOf(b))
-  .map(rid);
+const MILK_FOR_FEEDING = ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id));
 
 function tell(player, key) {
   showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
-}
-
-function milkTiers(species) {
-  const product = species.dailyProduct;
-  return (product.tierItems ?? tierIds(product.item)).map(rid);
 }
 
 function milk(player, animal) {
@@ -49,12 +36,12 @@ function milk(player, animal) {
   if (isBaby(animal) || !isFemale(animal)) return tell(player, "milking.not_female");
   const day = today();
   if (animal.getDynamicProperty(LAST_MILKED_DAY) === day) return tell(player, "milking.milked_today");
-  const { produces, quality } = production(animal, day);
+  const { produces } = production(animal, day);
   if (!produces) return tell(player, "milking.no_milk");
   if (!takeItems(player, ["minecraft:glass_bottle"], 1)) return tell(player, "milking.need_bottle");
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
-  const bottle = milkTiers(species)[TIER_INDEX[quality]];
+  const bottle = rid(species.dailyProduct.item);
   give(player, bottle);
   emitRanchEvent("harvested", { animal: animal.typeId, entity: animal.id, product: "milk", items: { [bottle]: 1 } });
   damageMainHand(player);

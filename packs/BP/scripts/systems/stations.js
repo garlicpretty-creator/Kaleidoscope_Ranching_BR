@@ -6,11 +6,7 @@
 // of a recipe that takes that ingredient, the inputs are taken and the station
 // starts. Using it again once the time is up gives the outputs. Nothing ticks
 // while it works: the start time is stored and compared on the next use.
-//
-// Quality: the lowest tier among the milk or eggs used scales the output count
-// (QUALITY_YIELD), rounded down, at least 1.
 
-import { QUALITY_YIELD } from "../data/processing.js";
 import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
@@ -25,11 +21,6 @@ const ticksOf = (data) => data.ticks ?? recipeById(data.recipe)?.ticks ?? 0;
 
 const BUSY_STATE = "kaleidoscope_ranching:busy";
 const TICKS_PER_MINUTE = 1200;
-const TIER_NAMES = ["plain", "fine", "superb"];
-
-const tierOf = (typeId) => (typeId.endsWith("_superb") ? 2 : typeId.endsWith("_fine") ? 1 : 0);
-/** Input ids that come in quality tiers (anything with a _fine sibling in the same list). */
-const isTiered = (ids) => ids.some((id) => id.endsWith("_fine"));
 
 function tell(player, key, values) {
   showActionBar(player, { translate: `kaleidoscope_ranching.message.station.${key}`, with: values });
@@ -44,31 +35,22 @@ function setBusy(block, busy) {
 
 const inputIds = (input) => (input.anyOf ?? [input.item]).map(rid);
 
-/** Takes a recipe's inputs and returns { taken, tier }, or null if something is missing. */
+/** Takes a recipe's inputs and returns { taken }, or null if something is missing. */
 function takeInputs(player, recipe, heldId) {
   for (const input of recipe.inputs) {
     if (countItems(player, inputIds(input)) < input.count) return null;
   }
   const taken = [];
-  let tier = 2;
-  let tiered = false;
   for (const input of recipe.inputs) {
-    const ids = inputIds(input);
-    // Prefer the held item, then the lowest quality, so players keep their best milk.
-    const order = [...ids].sort((a, b) => (a === heldId ? -1 : b === heldId ? 1 : tierOf(a) - tierOf(b)));
-    const removed = takeItems(player, order, input.count);
-    taken.push(...removed);
-    if (isTiered(ids)) {
-      tiered = true;
-      for (const id of removed) tier = Math.min(tier, tierOf(id));
-    }
+    // Prefer the item in hand when an input accepts several.
+    const order = [...inputIds(input)].sort((a, b) => (a === heldId ? -1 : b === heldId ? 1 : 0));
+    taken.push(...takeItems(player, order, input.count));
   }
-  return { taken, tier: tiered ? tier : 0 };
+  return { taken };
 }
 
-function outputsFor(recipe, tier) {
-  const factor = QUALITY_YIELD[TIER_NAMES[tier]];
-  return recipe.outputs.map((output) => ({ item: rid(output.item), count: Math.max(1, Math.floor(output.count * factor)) }));
+function outputsFor(recipe) {
+  return recipe.outputs.map((output) => ({ item: rid(output.item), count: output.count }));
 }
 
 function collect(block, player, data) {
@@ -90,7 +72,7 @@ function start(block, player) {
   for (const recipe of candidates) {
     const result = takeInputs(player, recipe, held.typeId);
     if (!result) continue;
-    const outputs = outputsFor(recipe, result.tier);
+    const outputs = outputsFor(recipe);
     if (recipe.ticks <= 0) {
       for (const output of outputs) give(player, output.item, output.count);
       return;

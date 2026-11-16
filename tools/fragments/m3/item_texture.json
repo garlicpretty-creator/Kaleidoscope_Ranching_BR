@@ -5,62 +5,20 @@
     "kr_cow_milk": {
       "textures": "textures/items/ranching/cow_milk"
     },
-    "kr_cow_milk_fine": {
-      "textures": "textures/items/ranching/cow_milk_fine"
-    },
-    "kr_cow_milk_superb": {
-      "textures": "textures/items/ranching/cow_milk_superb"
-    },
     "kr_goat_milk": {
       "textures": "textures/items/ranching/goat_milk"
-    },
-    "kr_goat_milk_fine": {
-      "textures": "textures/items/ranching/goat_milk_fine"
-    },
-    "kr_goat_milk_superb": {
-      "textures": "textures/items/ranching/goat_milk_superb"
     },
     "kr_buffalo_milk": {
       "textures": "textures/items/ranching/buffalo_milk"
     },
-    "kr_buffalo_milk_fine": {
-      "textures": "textures/items/ranching/buffalo_milk_fine"
-    },
-    "kr_buffalo_milk_superb": {
-      "textures": "textures/items/ranching/buffalo_milk_superb"
-    },
     "kr_yak_milk": {
       "textures": "textures/items/ranching/yak_milk"
-    },
-    "kr_yak_milk_fine": {
-      "textures": "textures/items/ranching/yak_milk_fine"
-    },
-    "kr_yak_milk_superb": {
-      "textures": "textures/items/ranching/yak_milk_superb"
-    },
-    "kr_egg_fine": {
-      "textures": "textures/items/ranching/egg_fine"
-    },
-    "kr_egg_superb": {
-      "textures": "textures/items/ranching/egg_superb"
     },
     "kr_duck_egg": {
       "textures": "textures/items/ranching/duck_egg"
     },
-    "kr_duck_egg_fine": {
-      "textures": "textures/items/ranching/duck_egg_fine"
-    },
-    "kr_duck_egg_superb": {
-      "textures": "textures/items/ranching/duck_egg_superb"
-    },
     "kr_goose_egg": {
       "textures": "textures/items/ranching/goose_egg"
-    },
-    "kr_goose_egg_fine": {
-      "textures": "textures/items/ranching/goose_egg_fine"
-    },
-    "kr_goose_egg_superb": {
-      "textures": "textures/items/ranching/goose_egg_superb"
     },
     "kr_fertilized_chicken_egg": {
       "textures": "textures/items/ranching/fertilized_chicken_egg"

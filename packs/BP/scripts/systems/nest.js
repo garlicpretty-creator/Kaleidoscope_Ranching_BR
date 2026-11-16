@@ -4,7 +4,7 @@
 // - Adult females of laying species within NEST_RADIUS lay into the box, one
 //   egg per game day each, settled lazily (up to MAX_BACKLOG_DAYS at once).
 // - With a male of her species within MALE_RADIUS, a hen lays a fertilized egg
-//   with M2's affection-based chance; otherwise a plain/fine/superb egg.
+//   with M2's affection-based chance; otherwise its ordinary egg.
 // - A hopper under the box receives the eggs.
 // - Placing a fertilized egg in the box sets it to hatch after INCUBATION_DAYS,
 //   provided a hen of that species is nearby to brood it when it is due.
@@ -21,7 +21,6 @@
 import { ItemStack } from "@minecraft/server";
 import { INCUBATION_DAYS } from "../data/animals.js";
 import { allAnimals, animalByFertilizedEgg } from "../core/content.js";
-import { tierIds } from "../data/items.js";
 import { animalsNear, isAdultFemale, isBaby, sexOf } from "../core/animal.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { CLOCK_INTERVAL } from "../core/clock.js";
@@ -76,12 +75,6 @@ function setStates(block, states) {
   block.setPermutation(permutation);
 }
 
-function eggForQuality(species, quality) {
-  const product = species.dailyProduct;
-  const tiers = (product.tierItems ?? tierIds(product.item)).map(rid);
-  return tiers[{ plain: 0, fine: 1, superb: 2 }[quality] ?? 0];
-}
-
 function hatch(dimension, location, speciesId, mother) {
   let baby;
   try {
@@ -131,9 +124,9 @@ function lay(block, data) {
         (bird) => !isBaby(bird) && sexOf(bird) === "male"
       );
       for (let d = day - days + 1; d <= day; d++) {
-        const { produces, quality } = production(hen, d);
+        const { produces } = production(hen, d);
         if (!produces) continue;
-        const egg = hasMale && Math.random() < fertilizedChance(hen) ? rid(species.fertilizedEgg) : eggForQuality(species, quality);
+        const egg = rid(hasMale && Math.random() < fertilizedChance(hen) ? species.fertilizedEgg : species.dailyProduct.item);
         if (storedCount(data) < NEST_CAPACITY) data.eggs[egg] = (data.eggs[egg] ?? 0) + 1;
         else block.dimension.spawnItem(new ItemStack(egg, 1), at);
       }
