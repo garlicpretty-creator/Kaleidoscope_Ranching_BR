@@ -19,6 +19,25 @@ from PIL import Image, ImageDraw
 from sleep_preview import face_rects, molang, rot
 
 
+def molang_bool(expr):
+    """Evaluates a render-controller condition already reduced to True/False, and, or, not and
+    parentheses, without running it as Python: anything else is an error."""
+    import ast
+
+    def walk(node):
+        if isinstance(node, ast.Expression):
+            return walk(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, bool):
+            return node.value
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+            return not walk(node.operand)
+        if isinstance(node, ast.BoolOp):
+            values = [walk(v) for v in node.values]
+            return all(values) if isinstance(node.op, ast.And) else any(values)
+        raise ValueError(f"unsupported condition: {expr!r}")
+    return walk(ast.parse(expr.strip(), mode="eval"))
+
+
 def face_point(cube, face, a, b):
     """The model point at (a, b) of a face's texels, 0..1 across and down, as Bedrock lays out
     box UV: the first column of the top, bottom and north faces is at the smallest x, and the
@@ -138,8 +157,7 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=Fal
         e = e.replace("q.is_saddled", str(saddled)).replace("q.is_sheared", str(sheared))
         import re
         e = re.sub(r"q\.property\('[^']+'\)", "False", e)
-        # Only the pack's own render-controller conditions are evaluated here.
-        return bool(eval(e.replace("&&", " and ").replace("||", " or ").replace("!", " not ")))
+        return molang_bool(e.replace("&&", " and ").replace("||", " or ").replace("!", " not "))
 
     def layer(geo_key, tex_key, controller):
         geo = next(g for path in (RP / "models" / "entity").glob("*.json")
