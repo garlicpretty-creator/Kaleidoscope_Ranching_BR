@@ -11,6 +11,17 @@
       "textures": [
         "Texture.default"
       ]
+    },
+    "controller.render.kaleidoscope_ranching.wearable_held": {
+      "geometry": "Geometry.held",
+      "materials": [
+        {
+          "*": "Material.held"
+        }
+      ],
+      "textures": [
+        "Texture.held"
+      ]
     }
   }
 }

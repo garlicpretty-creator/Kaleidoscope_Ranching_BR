@@ -310,9 +310,30 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
     if (!geo.bones.some((bone) => bone.cubes?.length)) fail(`${id}: attachable geometry has no cubes`);
     for (const bone of geo.bones) if (!PLAYER_BONES.has(bone.name)) fail(`${id}: attachable bone "${bone.name}" is not a player bone`);
   }
-  if (!attachable.textures?.default || !exists(join(rp, attachable.textures.default + ".png"))) fail(`${id}: attachable texture ${attachable.textures?.default}.png is missing`);
-  for (const rcId of attachable.render_controllers ?? []) if (!renderControllers.has(rcId)) fail(`${id}: attachable uses unknown render controller ${rcId}`);
-  if (!attachable.render_controllers?.length) fail(`${id}: attachable has no render controller`);
+  for (const key of ["default", "held"]) {
+    const texture = attachable.textures?.[key];
+    if (!texture || !exists(join(rp, texture + ".png"))) fail(`${id}: attachable texture "${key}" (${texture}.png) is missing`);
+  }
+  // Worn: the clothes, only in their own armour slot. Anywhere else (in a hand): the item's
+  // icon as a flat sprite bound to the holding bone, with the icon as its texture.
+  const slot = { "slot.armor.head": "head", "slot.armor.chest": "chest", "slot.armor.legs": "legs", "slot.armor.feet": "feet" }[item.components["minecraft:wearable"].slot];
+  const entries = (attachable.render_controllers ?? []).map((entry) => (typeof entry === "string" ? [entry, null] : Object.entries(entry)[0]));
+  for (const [rcId] of entries) if (!renderControllers.has(rcId)) fail(`${id}: attachable uses unknown render controller ${rcId}`);
+  const worn = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.default");
+  const held = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.held");
+  const squash = (text) => String(text ?? "").replace(/\s+/g, "").replace(/\bcontext\./g, "c.");
+  if (!worn || squash(worn[1]) !== `c.item_slot=='${slot}'`) fail(`${id}: the worn render controller must be gated on c.item_slot == '${slot}'`);
+  if (!held || squash(held[1]) !== `c.item_slot!='${slot}'`) fail(`${id}: no render controller draws the held icon when c.item_slot != '${slot}'`);
+  else if (!JSON.stringify(renderControllers.get(held[0]).textures ?? []).includes("Texture.held")) fail(`${id}: the held render controller does not use Texture.held`);
+  const heldGeo = geometryById.get(attachable.geometry?.held);
+  if (!heldGeo) fail(`${id}: attachable geometry "held" ${attachable.geometry?.held} does not exist`);
+  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && /item_slot_to_bone_name\(c(ontext)?\.item_slot\)/.test(bone.binding ?? ""))) {
+    fail(`${id}: the held geometry has no bone bound to the holding slot`);
+  }
+  const icon = item.components["minecraft:icon"];
+  const iconAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
+  const iconFile = iconAtlas[typeof icon === "string" ? icon : icon?.textures?.default]?.textures;
+  if (iconFile && attachable.textures?.held !== iconFile) fail(`${id}: the held texture should be the item's icon ${iconFile}`);
 }
 
 // Every gear kind shows on every animal that can wear it: a synced property on the entity, and

@@ -182,20 +182,80 @@ def build(item):
     return bones, size, painter
 
 
+# --- In the hand ------------------------------------------------------------------
+#
+# An attachable replaces the item everywhere it is equipped, the hands included, so the
+# clothes are drawn only in their own armour slot. In a hand the item shows its icon as a
+# flat sprite one texel thick (like a vanilla held item): one row of cubes per run of opaque
+# icon pixels, each face sampling the icon, in a bone bound to whichever bone holds it.
+
+SLOT = {"wool_hat": "head", "wool_scarf": "chest", "leather_apron": "chest"}
+HELD = f"controller.render.{NS}.wearable_held"
+PIXEL = 0.5  # model units per icon pixel: 16 pixels make an 8-unit sprite
+
+
+def icon_image(item):
+    """The icon the game will show: the picked RetroDiffusion art (tools/art/rd_icons.py
+    applies it later in `npm run generate`), else the one already in the pack."""
+    from PIL import Image
+    picked = RP.parents[1] / "art" / "icons" / f"{item}.png"
+    path = picked if picked.exists() else RP / "textures" / "items" / "ranching" / f"{item}.png"
+    return Image.open(path).convert("RGBA").resize((16, 16), Image.NEAREST)
+
+
+def held_geometry(item):
+    icon = icon_image(item)
+    w, h = icon.size
+    cubes = []
+    for y in range(h):
+        x = 0
+        while x < w:
+            if icon.getpixel((x, y))[3] < 128:
+                x += 1
+                continue
+            start = x
+            while x < w and icon.getpixel((x, y))[3] >= 128:
+                x += 1
+            n = x - start
+            # The sprite stands upright facing -z; icon row 0 is its top. As in box UV, the
+            # first texel column of north, up and down lies at the smallest x, so icon column c
+            # sits at x = c - 8 and north shows the icon as drawn; south shows its mirror. The
+            # smallest-x side face ("east" in Bedrock's naming) takes the run's first pixel.
+            cubes.append({
+                "origin": [(start - w / 2) * PIXEL, (h - 1 - y) * PIXEL, -PIXEL / 2],
+                "size": [n * PIXEL, PIXEL, PIXEL],
+                "uv": {
+                    "north": {"uv": [start, y], "uv_size": [n, 1]},
+                    "south": {"uv": [x, y], "uv_size": [-n, 1]},
+                    "up": {"uv": [start, y], "uv_size": [n, 1]},
+                    "down": {"uv": [start, y + 1], "uv_size": [n, -1]},
+                    "east": {"uv": [start, y], "uv_size": [1, 1]},
+                    "west": {"uv": [x - 1, y], "uv_size": [1, 1]},
+                },
+            })
+    return {"format_version": "1.16.0", "minecraft:geometry": [{
+        "description": {"identifier": f"geometry.{NS}.wearable.{item}.held", "texture_width": w, "texture_height": h,
+                        "visible_bounds_width": 1, "visible_bounds_height": 1, "visible_bounds_offset": [0, 0.25, 0]},
+        "bones": [{"name": "held", "binding": "q.item_slot_to_bone_name(c.item_slot)", "pivot": [0, 0, 0], "cubes": cubes}]}]}
+
+
 def main():
     for item in WEARABLES:
         bones, size, painter = build(item)
         dump(RP / "models" / "entity" / f"wearable_{item}.geo.json", geo(f"wearable.{item}", size, size, bones, bounds=(2, 3)))
+        dump(RP / "models" / "entity" / f"wearable_{item}_held.geo.json", held_geometry(item))
         painter.save(RP / "textures" / "entity" / "ranching" / "wearables" / f"{item}.png")
+        slot = SLOT[item]
         dump(RP / "attachables" / f"{item}.json", {"format_version": "1.10.0", "minecraft:attachable": {"description": {
             "identifier": f"{NS}:{item}",
-            "materials": {"default": "armor"},
-            "textures": {"default": f"textures/entity/ranching/wearables/{item}"},
-            "geometry": {"default": f"geometry.{NS}.wearable.{item}"},
-            "render_controllers": [CONTROLLER],
+            "materials": {"default": "armor", "held": "entity_alphatest"},
+            "textures": {"default": f"textures/entity/ranching/wearables/{item}", "held": f"textures/items/ranching/{item}"},
+            "geometry": {"default": f"geometry.{NS}.wearable.{item}", "held": f"geometry.{NS}.wearable.{item}.held"},
+            "render_controllers": [{CONTROLLER: f"c.item_slot == '{slot}'"}, {HELD: f"c.item_slot != '{slot}'"}],
         }}})
     dump(RP / "render_controllers" / "wearable.render_controllers.json", {"format_version": "1.8.0", "render_controllers": {
-        CONTROLLER: {"geometry": "Geometry.default", "materials": [{"*": "Material.default"}], "textures": ["Texture.default"]}}})
+        CONTROLLER: {"geometry": "Geometry.default", "materials": [{"*": "Material.default"}], "textures": ["Texture.default"]},
+        HELD: {"geometry": "Geometry.held", "materials": [{"*": "Material.held"}], "textures": ["Texture.held"]}}})
     print("wearables:", ", ".join(WEARABLES))
 
 

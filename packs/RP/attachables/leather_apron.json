@@ -4,16 +4,24 @@
     "description": {
       "identifier": "kaleidoscope_ranching:leather_apron",
       "materials": {
-        "default": "armor"
+        "default": "armor",
+        "held": "entity_alphatest"
       },
       "textures": {
-        "default": "textures/entity/ranching/wearables/leather_apron"
+        "default": "textures/entity/ranching/wearables/leather_apron",
+        "held": "textures/items/ranching/leather_apron"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.wearable.leather_apron"
+        "default": "geometry.kaleidoscope_ranching.wearable.leather_apron",
+        "held": "geometry.kaleidoscope_ranching.wearable.leather_apron.held"
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.wearable"
+        {
+          "controller.render.kaleidoscope_ranching.wearable": "c.item_slot == 'chest'"
+        },
+        {
+          "controller.render.kaleidoscope_ranching.wearable_held": "c.item_slot != 'chest'"
+        }
       ]
     }
   }
