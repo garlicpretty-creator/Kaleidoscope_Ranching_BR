@@ -28,8 +28,11 @@
 //   world runs (jobs shorter than a clock pass too), every station on the ranch
 //   clock, and on every use. A save from before stages loads as stage 1 (the
 //   state's first value) until the clock or a use brings it up to date.
+// - The meat grinder and the ice cream churn only have instant recipes here
+//   (ticks 0), so they are not on the clock and show stages only for timed
+//   recipes other add-ons register (timers and uses keep those up to date).
 
-import { AUTO_STATIONS, SMOKING, STATIONS } from "../data/processing.js";
+import { AUTO_STATIONS, PROCESSING_RECIPES, SMOKING, STATIONS } from "../data/processing.js";
 import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
@@ -246,6 +249,8 @@ function takeInputsFrom(container, recipe) {
 /** One clock pass of an automated station: unload a finished batch below, then load a new one from above. */
 export function tickAutoStation(block) {
   let data = getBlockData(block);
+  // First, so a finished batch that cannot be unloaded (no container below, or a full one) still shows stage 3.
+  if (data) setStage(block, stageOf(data));
   if (data && nowTick() >= data.start + ticksOf(data)) {
     const below = containerOf(block.below());
     if (!below) return;
@@ -262,7 +267,7 @@ export function tickAutoStation(block) {
     setStage(block, 0);
     data = null;
   }
-  if (data) return setStage(block, stageOf(data));
+  if (data) return;
   const above = containerOf(block.above());
   if (!above) return;
   const recipes = [...recipesForStation(shortId(block.typeId))].filter((r) => r.ticks > 0).sort((a, b) => b.inputs.length - a.inputs.length);
@@ -281,5 +286,7 @@ export const autoStationComponent = clockBlockEvents(stationEvents);
 
 export function startAutoStations() {
   for (const id of AUTO_STATIONS) defineClockBlock(rid(id), `auto_${id}`, tickAutoStation);
-  for (const id of STATIONS) defineClockBlock(rid(id), `station_${id}`, refreshStage);
+  // Only stations with timed recipes of their own (not the cranked meat grinder and ice cream churn).
+  const timed = new Set(PROCESSING_RECIPES.filter((recipe) => recipe.ticks > 0).map((recipe) => recipe.station));
+  for (const id of STATIONS.filter((id) => timed.has(id))) defineClockBlock(rid(id), `station_${id}`, refreshStage);
 }
