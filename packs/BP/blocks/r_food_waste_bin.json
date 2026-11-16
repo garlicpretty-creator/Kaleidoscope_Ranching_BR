@@ -34,6 +34,7 @@
           "fill_4": "q.block_state('kaleidoscope_ranching:fill') == 4"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:food_waste_bin.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_food_waste_bin",

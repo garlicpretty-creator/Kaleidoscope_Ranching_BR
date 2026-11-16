@@ -8,6 +8,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:auto_waterer.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.water_trough"
       },

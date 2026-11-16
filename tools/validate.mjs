@@ -333,6 +333,25 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
   }
 }
 
+// ## Every item and block names its language key (minecraft:display_name), and the
+// ## key exists in each language: without it, catalog-grouped items showed raw keys.
+{
+  const langs = Object.fromEntries(["en_US", "zh_TW", "zh_CN"].map((l) => [l, new Set(
+    readFileSync(join(rp, "texts", `${l}.lang`), "utf8").split("\n").map((line) => line.split("=")[0])
+  )]));
+  for (const [folder, key] of [["items", "minecraft:item"], ["blocks", "minecraft:block"]]) {
+    for (const path of walk(join(bp, folder)).filter((p) => p.endsWith(".json"))) {
+      const data = readJson(path)[key];
+      if (!data || data.description?.identifier?.split(":")[0] !== "kaleidoscope_ranching") continue;
+      if (data.description.menu_category?.category === "none") continue;
+      const name = data.components?.["minecraft:display_name"];
+      const langKey = typeof name === "string" ? name : name?.value;
+      if (!langKey) fail(`${relative(root, path)}: no minecraft:display_name`);
+      else for (const [l, keys] of Object.entries(langs)) if (!keys.has(langKey)) fail(`${relative(root, path)}: "${langKey}" missing from ${l}.lang`);
+    }
+  }
+}
+
 // --- 4b. Every item has somewhere to go --------------------------------------
 
 // ## A player who gets an item must be able to do something with it: eat or

@@ -8,6 +8,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:manure.name",
       "minecraft:geometry": "geometry.kaleidoscope_ranching.manure",
       "minecraft:material_instances": {
         "*": {

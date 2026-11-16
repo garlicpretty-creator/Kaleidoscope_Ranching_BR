@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_goose_egg_fine",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:goose_egg_fine.name"
+      },
       "minecraft:max_stack_size": 16,
       "minecraft:tags": {
         "tags": [

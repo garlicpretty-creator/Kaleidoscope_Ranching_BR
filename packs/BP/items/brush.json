@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_brush",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:brush.name"
+      },
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
       "minecraft:durability": {

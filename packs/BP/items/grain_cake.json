@@ -8,7 +8,10 @@
       }
     },
     "components": {
-      "minecraft:icon": "kr_grain_cake"
+      "minecraft:icon": "kr_grain_cake",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:grain_cake.name"
+      }
     }
   }
 }

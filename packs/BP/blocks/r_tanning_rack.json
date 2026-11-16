@@ -28,6 +28,7 @@
           "busy": "q.block_state('kaleidoscope_ranching:busy')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:tanning_rack.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_tanning_rack",

@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_chicken_frame",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:chicken_frame.name"
+      },
       "minecraft:max_stack_size": 64
     }
   }

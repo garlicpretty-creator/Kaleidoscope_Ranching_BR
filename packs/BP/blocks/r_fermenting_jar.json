@@ -28,6 +28,7 @@
           "busy": "q.block_state('kaleidoscope_ranching:busy')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:fermenting_jar.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_fermenting_jar",

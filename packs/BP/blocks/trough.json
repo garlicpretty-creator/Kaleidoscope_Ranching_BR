@@ -22,6 +22,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:trough.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.trough",
         "bone_visibility": {

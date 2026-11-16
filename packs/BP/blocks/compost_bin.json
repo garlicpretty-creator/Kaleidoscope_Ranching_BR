@@ -22,6 +22,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:compost_bin.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.compost_bin",
         "bone_visibility": {

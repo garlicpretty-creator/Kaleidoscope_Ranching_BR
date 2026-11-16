@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_buffalo_milk_fine",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:buffalo_milk_fine.name"
+      },
       "minecraft:max_stack_size": 16,
       "minecraft:food": {
         "nutrition": 3,

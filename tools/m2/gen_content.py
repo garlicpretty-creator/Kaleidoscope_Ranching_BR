@@ -630,7 +630,8 @@ def main():
             desc["menu_category"] = {"category": "none"}
         if d.get("states"):
             desc["states"] = d["states"]
-        body = {"description": desc, "components": d["components"]}
+        comps = {"minecraft:display_name": f"tile.{NS}:{name}.name", **d["components"]}
+        body = {"description": desc, "components": comps}
         if d.get("permutations"):
             body["permutations"] = d["permutations"]
         write_json(BP / "blocks" / f"{name}.json", {"format_version": FMT, "minecraft:block": body})
@@ -640,7 +641,9 @@ def main():
         category = "equipment" if name in TOOLS else "items"
         write_json(BP / "items" / f"{name}.json", {"format_version": FMT, "minecraft:item": {
             "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": category}},
-            "components": {"minecraft:icon": f"kr_{name}", **comps}}})
+            # The explicit key keeps the name working inside a creative catalog group (gen_catalog.mjs).
+            "components": {"minecraft:icon": f"kr_{name}",
+                           "minecraft:display_name": {"value": f"item.{NS}:{name}.name"}, **comps}}})
 
     recipes()
     for name, data in R:

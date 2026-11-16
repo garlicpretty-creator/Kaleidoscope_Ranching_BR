@@ -8,6 +8,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:chaff_cutter.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.chaff_cutter"
       },

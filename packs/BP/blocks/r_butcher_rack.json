@@ -74,6 +74,7 @@
           "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')"
         }
       },
+      "minecraft:display_name": "tile.kaleidoscope_ranching:butcher_rack.name",
       "minecraft:material_instances": {
         "*": {
           "texture": "kr_butcher_rack",

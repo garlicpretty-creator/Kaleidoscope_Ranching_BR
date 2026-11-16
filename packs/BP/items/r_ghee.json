@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_ghee",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:ghee.name"
+      },
       "minecraft:max_stack_size": 16
     }
   }

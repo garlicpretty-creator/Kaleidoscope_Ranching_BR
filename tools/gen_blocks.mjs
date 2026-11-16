@@ -118,6 +118,8 @@ const ROTATION = { north: 0, east: 270, south: 180, west: 90 };
 function blockJson(id, def) {
   const components = {
     "minecraft:geometry": { identifier: `geometry.${NS}.${id}`, bone_visibility: def.bones },
+    // Explicit name key, as for the items (gen_items.mjs).
+    "minecraft:display_name": `tile.${S(id)}.name`,
     "minecraft:material_instances": {
       "*": { texture: `kr_${id}`, render_method: "alpha_test" },
       // Faces tagged with a material instance in the model use their own texture (the rack's carcasses).

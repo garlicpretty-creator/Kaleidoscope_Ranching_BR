@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_pig_skin",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:pig_skin.name"
+      },
       "minecraft:max_stack_size": 64
     }
   }

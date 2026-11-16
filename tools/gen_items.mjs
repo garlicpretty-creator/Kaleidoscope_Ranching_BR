@@ -105,6 +105,9 @@ function componentsFor(item) {
 
   return {
     "minecraft:icon": `kr_${item.id}`,
+    // Name the language key outright: items in a creative catalog group are otherwise looked up
+    // as item.<id> (no .name) and showed their raw key in game.
+    "minecraft:display_name": { value: `item.${rid(item.id)}.name` },
     "minecraft:max_stack_size": stack,
     ...c,
     ...(tags.length ? { "minecraft:tags": { tags } } : {}),

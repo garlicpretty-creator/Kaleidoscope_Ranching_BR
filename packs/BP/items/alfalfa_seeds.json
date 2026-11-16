@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_alfalfa_seeds",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:alfalfa_seeds.name"
+      },
       "minecraft:block_placer": {
         "block": "kaleidoscope_ranching:alfalfa_crop",
         "use_on": [

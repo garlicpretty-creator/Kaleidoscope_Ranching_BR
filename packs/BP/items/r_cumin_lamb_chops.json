@@ -10,6 +10,9 @@
     },
     "components": {
       "minecraft:icon": "kr_cumin_lamb_chops",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:cumin_lamb_chops.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 10,

@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_aged_cheese_wheel",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:aged_cheese_wheel.name"
+      },
       "minecraft:max_stack_size": 16,
       "minecraft:block_placer": {
         "block": "kaleidoscope_ranching:cheese_wheel"

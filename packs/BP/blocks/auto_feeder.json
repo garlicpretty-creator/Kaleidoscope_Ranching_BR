@@ -8,6 +8,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:auto_feeder.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.auto_feeder"
       },

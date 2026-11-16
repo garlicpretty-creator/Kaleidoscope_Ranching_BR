@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_duck_leg",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:duck_leg.name"
+      },
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
         "nutrition": 2,

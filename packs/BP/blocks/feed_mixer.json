@@ -8,6 +8,7 @@
       }
     },
     "components": {
+      "minecraft:display_name": "tile.kaleidoscope_ranching:feed_mixer.name",
       "minecraft:geometry": {
         "identifier": "geometry.kaleidoscope_ranching.feed_mixer"
       },

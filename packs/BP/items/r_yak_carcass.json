@@ -9,6 +9,9 @@
     },
     "components": {
       "minecraft:icon": "kr_yak_carcass",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:yak_carcass.name"
+      },
       "minecraft:max_stack_size": 1,
       "minecraft:tags": {
         "tags": [
