@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:leather_apron",
+      "materials": {
+        "default": "armor"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/wearables/leather_apron"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.wearable.leather_apron"
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.wearable"
+      ]
+    }
+  }
+}

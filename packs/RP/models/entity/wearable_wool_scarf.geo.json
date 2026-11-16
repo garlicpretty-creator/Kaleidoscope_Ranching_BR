@@ -1,0 +1,113 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.wearable.wool_scarf",
+        "texture_width": 32,
+        "texture_height": 32,
+        "visible_bounds_width": 2,
+        "visible_bounds_height": 3,
+        "visible_bounds_offset": [
+          0,
+          1.0,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "waist",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "parent": "root"
+        },
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            24,
+            0
+          ],
+          "parent": "waist",
+          "cubes": [
+            {
+              "origin": [
+                -4.5,
+                21.75,
+                -3
+              ],
+              "size": [
+                9,
+                2,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                0.75,
+                21.25,
+                -3.6
+              ],
+              "size": [
+                3,
+                3,
+                1
+              ],
+              "uv": [
+                0,
+                9
+              ]
+            },
+            {
+              "origin": [
+                1.25,
+                14.5,
+                -3.4
+              ],
+              "size": [
+                2,
+                7,
+                1
+              ],
+              "uv": [
+                9,
+                9
+              ]
+            },
+            {
+              "origin": [
+                -3.25,
+                15.75,
+                2.4
+              ],
+              "size": [
+                2,
+                6,
+                1
+              ],
+              "uv": [
+                16,
+                9
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

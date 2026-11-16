@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:wool_scarf",
+      "materials": {
+        "default": "armor"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/wearables/wool_scarf"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.wearable.wool_scarf"
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.wearable"
+      ]
+    }
+  }
+}
