@@ -100,6 +100,18 @@
           "a_leg_br": "!q.is_baby"
         },
         {
+          "wool_leg_fl": "!q.is_sheared"
+        },
+        {
+          "wool_leg_fr": "!q.is_sheared"
+        },
+        {
+          "wool_leg_bl": "!q.is_sheared"
+        },
+        {
+          "wool_leg_br": "!q.is_sheared"
+        },
+        {
           "b_torso": "q.is_baby"
         },
         {

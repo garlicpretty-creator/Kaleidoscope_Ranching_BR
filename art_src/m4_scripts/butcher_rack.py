@@ -157,6 +157,12 @@ def face_uvs(c, at, tex_scale):
     """Per-face UVs equal to the cube's box UV, moved to the cube's place in the atlas."""
     ox, oy = at
     sx, sy = tex_scale
+    if isinstance(c["uv"], dict):
+        # tools/fix_zfight.py has already rewritten this cube with per-face UVs: move them as they are
+        names = {"up": "top", "down": "bottom"}
+        return {names.get(f, f): {"uv": [round(ox + d["uv"][0] * sx, 4), round(oy + d["uv"][1] * sy, 4)],
+                                  "uv_size": [round(d["uv_size"][0] * sx, 4), round(d["uv_size"][1] * sy, 4)]}
+                for f, d in c["uv"].items()}
     rects = faces(c["uv"], c["size"])
     if c["mirror"]:
         rects["east"], rects["west"] = rects["west"], rects["east"]

@@ -37,6 +37,9 @@
           "a_head": "!q.is_baby"
         },
         {
+          "fa_horns": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
           "m_horns": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         },
         {

@@ -3,7 +3,7 @@ Usage: python client.py duck"""
 import json, sys
 from pathlib import Path
 
-RP = Path(r"D:\Kaleidoscope\KR\packs\RP")
+RP = Path(__file__).resolve().parents[2] / "packs" / "RP"
 NS = "kaleidoscope_ranching"
 MALE = f"q.property('{NS}:sex') == 'male'"
 RULES = [
