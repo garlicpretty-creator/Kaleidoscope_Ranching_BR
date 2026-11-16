@@ -257,8 +257,8 @@
      "name": "a_leg_bl",
      "pivot": [
       2,
-      2,
-      2
+      5,
+      1.5
      ],
      "parent": "body",
      "cubes": [
@@ -284,8 +284,8 @@
      "name": "a_leg_br",
      "pivot": [
       -2,
-      2,
-      2
+      5,
+      1.5
      ],
      "parent": "body",
      "cubes": [
