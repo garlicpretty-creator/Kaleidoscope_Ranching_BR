@@ -98,5 +98,14 @@
   },
   "kaleidoscope_ranching:down_quilt": {
     "sound": "cloth"
+  },
+  "kaleidoscope_ranching:pen_gate": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:pen_gate_top": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:horn_decor": {
+    "sound": "bone"
   }
 }

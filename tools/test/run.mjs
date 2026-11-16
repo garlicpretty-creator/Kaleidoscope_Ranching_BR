@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 // Behaviour tests for Ranching's scripts, run against the mock API.
 // Run with: node --import ./tools/test/register.mjs tools/test/run.mjs
 
@@ -425,6 +426,7 @@ test("M2: one click with a brush is handled once, by M2 only", () => {
 // --- M3: carcasses and the butcher rack -----------------------------------
 
 const butcherData = await import("../../packs/BP/scripts/data/butcher.js");
+const animalsData = await import("../../packs/BP/scripts/data/animals.js");
 const await_species = await import("../../packs/BP/scripts/data/species.js");
 const RACK = COMPONENTS["kaleidoscope_ranching:butcher_rack"];
 const NEST = COMPONENTS["kaleidoscope_ranching:nest_box"];
@@ -2126,6 +2128,203 @@ test("M9: a leather apron sometimes spares the blade", () => {
   player.getComponent("minecraft:equippable").setEquipment("Chest", undefined);
   use(RACK, rack, player);
   equal(wear(), 1, "without it the stroke costs durability");
+});
+
+// --- 1.1 M10: work animals, management and the night routine -----------------------
+
+const sleep = await import("../../packs/BP/scripts/systems/sleep.js");
+const work = await import("../../packs/BP/scripts/systems/workAnimals.js");
+const PEN_GATE = COMPONENTS["kaleidoscope_ranching:pen_gate"];
+const PEN_GATE_TOP = COMPONENTS["kaleidoscope_ranching:pen_gate_top"];
+const asleep = (animal) => animal.getProperty("kaleidoscope_ranching:sleeping") === true;
+
+test("M10: animals lie down at night, stay up on a lead, and get up at dawn", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -10));
+  const cow = ranch("cow", 2, "female");
+  const led = ranch("sheep", 4, "female");
+  led.getComponent("minecraft:leashable").leashTo(player);
+  toTimeOfDay(14000);
+  sleep.settleSleep();
+  assert(asleep(cow), "the cow sleeps");
+  assert(cow.hasComponent("minecraft:movement") && cow.getComponent("minecraft:movement").value === 0, "and stops moving");
+  assert(!asleep(led), "not while led");
+  toTimeOfDay(23100);
+  sleep.settleSleep();
+  __advance(sleep.WAKE_SPREAD + 1);
+  assert(!asleep(cow), "up at dawn");
+});
+
+test("M10: a hurt or pushed animal wakes and lies down again after a quiet while", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -10));
+  const cow = ranch("cow", 2, "female");
+  toTimeOfDay(15000);
+  sleep.settleSleep();
+  world.afterEvents.entityHurt.fire({ hurtEntity: cow });
+  assert(!asleep(cow), "hurt wakes it");
+  sleep.settleSleep();
+  assert(!asleep(cow), "not straight back to sleep");
+  __advance(sleep.RESLEEP_TICKS + 1);
+  sleep.settleSleep();
+  assert(asleep(cow), "asleep again after the quiet");
+  player.location = { ...cow.location };
+  sleep.checkSleepers();
+  assert(!asleep(cow), "pushed by the player");
+});
+
+test("M10: sheltered by a hay rack the cow sleeps well; out in the snow it is cold, unless blanketed or a yak", () => {
+  clearWorld();
+  __newPlayer(at(0, -10));
+  const cosy = ranch("cow", 2, "female");
+  __place(overworld, { x: 2, y: 67, z: 0 }, "minecraft:oak_planks");
+  place("hay_rack", at(3), { hay: 0 });
+  care.setAffection(cosy, 40);
+  const cold = ranch("cow", 10, "female");
+  __place(overworld, { x: 11, y: 64, z: 0 }, "minecraft:snow_layer");
+  care.setAffection(cold, 40);
+  const warm = ranch("sheep", 12, "female", 2);
+  __place(overworld, { x: 12, y: 64, z: 3 }, "minecraft:snow_layer");
+  warm.setDynamicProperty(sleep.BLANKET, true);
+  care.setAffection(warm, 40);
+  const yak = ranch("yak", 14, "female");
+  __place(overworld, { x: 14, y: 64, z: 1 }, "minecraft:snow_layer");
+  care.setAffection(yak, 40);
+  toTimeOfDay(14000);
+  sleep.settleSleep();
+  equal(care.getAffection(cosy), 40 + sleep.SLEPT_WELL_POINTS, "slept well");
+  equal(care.getAffection(cold), 40 - sleep.COLD_NIGHT_POINTS, "a cold night");
+  equal(care.getAffection(warm), 40, "the blanket keeps it warm");
+  equal(care.getAffection(yak), 40, "yaks do not feel the cold");
+  sleep.settleSleep();
+  equal(care.getAffection(cosy), 40 + sleep.SLEPT_WELL_POINTS, "once a night");
+});
+
+test("M10: milking a sleeping cow wakes her and lowers the milk a tier, unless you wear gloves", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -10));
+  toTimeOfDay(14000);
+  const day = Math.floor(world.getAbsoluteTime() / 24000);
+  const cows = [ranch("cow", 2, "female"), ranch("cow", 4, "female")];
+  for (const cow of cows) {
+    care.setAffection(cow, 60);
+    careFor(cow, 3);
+  }
+  sleep.settleSleep();
+  equal(husbandry.production(cows[0], Math.floor(world.getAbsoluteTime() / 24000)).quality, "fine", "fine milk when awake");
+  player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 2));
+  hold(player, "kaleidoscope_ranching:milking_pail");
+  __interact(player, cows[0]);
+  __advance(1);
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 1, "a tier lower: plain");
+  assert(!asleep(cows[0]), "she woke");
+  player.getComponent("minecraft:equippable").setEquipment("Offhand", new ItemStack("kaleidoscope_ranching:leather_gloves", 1));
+  hold(player, "kaleidoscope_ranching:milking_pail");
+  __interact(player, cows[1]);
+  __advance(1);
+  equal(player.inventory.count("kaleidoscope_ranching:cow_milk_fine"), 1, "gloves: still fine");
+  assert(asleep(cows[1]), "and she sleeps on");
+  void day;
+});
+
+test("M10: the routine can be switched off", () => {
+  clearWorld();
+  __newPlayer(at(0, -10));
+  const cow = ranch("cow", 2, "female");
+  toTimeOfDay(14000);
+  system.afterEvents.scriptEventReceive.fire({ id: "kaleidoscope_ranching:config", message: "sleep off", sourceType: "Server" });
+  sleep.settleSleep();
+  assert(!asleep(cow), "nobody sleeps");
+  system.afterEvents.scriptEventReceive.fire({ id: "kaleidoscope_ranching:config", message: "sleep on", sourceType: "Server" });
+  sleep.settleSleep();
+  assert(asleep(cow), "back on");
+});
+
+test("M10: a harnessed buffalo with a plough tills three blocks wide while led", () => {
+  clearWorld();
+  toTimeOfDay(6000);
+  const player = __newPlayer(at(0, -6));
+  const buffalo = ranch("buffalo", 0, "female");
+  care.setAffection(buffalo, 40);
+  hold(player, "kaleidoscope_ranching:harness", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(player.actionBar.at(-1).translate.endsWith("harness.shy"), "needs three hearts");
+  care.setAffection(buffalo, 60);
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(player.actionBar.at(-1).translate.endsWith("plough.need_harness"), "harness first");
+  hold(player, "kaleidoscope_ranching:harness", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(buffalo.getDynamicProperty(work.PLOUGHING), "plough on");
+  for (const x of [-1, 0, 1]) __place(overworld, { x, y: 63, z: 0 }, "minecraft:grass_block");
+  equal(work.plough(buffalo), 0, "not without a lead");
+  buffalo.getComponent("minecraft:leashable").leashTo(player);
+  buffalo.viewDirection = { x: 0, y: 0, z: 1 };
+  equal(work.plough(buffalo), 3, "three blocks wide");
+  equal(overworld.getBlock({ x: 1, y: 63, z: 0 }).typeId, "minecraft:farmland", "farmland");
+});
+
+test("M10: a sheepdog drives the animals to the rally point when the horn is blown", () => {
+  clearWorld();
+  toTimeOfDay(6000);
+  const player = __newPlayer(at(0, -6));
+  const wolf = overworld.spawnEntity("minecraft:wolf", at(8));
+  hold(player, "kaleidoscope_ranching:herding_horn", 1);
+  __interact(player, wolf);
+  __advance(1);
+  assert(player.actionBar.at(-1).translate.endsWith("sheepdog.not_yours"), "an untamed wolf will not do");
+  wolf.tamedTo = player.id;
+  __interact(player, wolf);
+  __advance(1);
+  equal(wolf.getDynamicProperty(work.SHEEPDOG_OF), player.id, "a sheepdog now");
+  const post = place("hitching_post", at(0), {});
+  work.setRally(player, post);
+  const stray = [ranch("sheep", 12, "female"), ranch("goat", 14, "male", 3)];
+  work.blowHorn(player);
+  let left = 0;
+  for (let i = 0; i < 200 && (left = work.herdStep(player)) > 0; i++);
+  for (const animal of stray) {
+    const d = Math.hypot(animal.location.x - 0.5, animal.location.z - 0.5);
+    assert(d <= work.RALLY_RADIUS + 0.5, `${animal.typeId} brought within the rally radius`);
+  }
+  assert(player.actionBar.at(-1).translate.endsWith("horn.done"), "reports the herd done");
+});
+
+test("M10: the pen gate opens for a player close by and shuts behind them", () => {
+  clearWorld();
+  const gate = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:pen_gate", { "kaleidoscope_ranching:open": false });
+  PEN_GATE.onPlace({ block: gate });
+  const top = overworld.getBlock({ x: 0, y: 65, z: 0 });
+  equal(top.typeId, "kaleidoscope_ranching:pen_gate_top", "the top half is placed");
+  const player = __newPlayer(at(10));
+  work.tendGates();
+  equal(gate.permutation.getState("kaleidoscope_ranching:open"), false, "shut while nobody is near");
+  player.location = { x: 1.5, y: 64, z: 0.5 };
+  work.tendGates();
+  equal(gate.permutation.getState("kaleidoscope_ranching:open"), true, "opens for the player");
+  equal(overworld.getBlock({ x: 0, y: 65, z: 0 }).permutation.getState("kaleidoscope_ranching:open"), true, "top opens too");
+  player.location = { x: 9, y: 64, z: 0 };
+  work.tendGates();
+  equal(gate.permutation.getState("kaleidoscope_ranching:open"), false, "shuts behind them");
+  PEN_GATE_TOP.onPlayerBreak({ block: overworld.getBlock({ x: 0, y: 65, z: 0 }) });
+  equal(overworld.getBlock({ x: 0, y: 64, z: 0 }).typeId, "minecraft:air", "breaking the top takes the gate");
+  equal(dropsOf("kaleidoscope_ranching:pen_gate").length, 1, "and drops it once");
+});
+
+test("M10: every animal's client entity plays its sleep pose while asleep", () => {
+  for (const { id } of animalsData.ANIMALS) {
+    const entity = JSON.parse(readFileSync(new URL(`../../packs/RP/entity/${id}.entity.json`, import.meta.url), "utf8"))["minecraft:client_entity"].description;
+    assert(entity.animations.sleep === `animation.kaleidoscope_ranching.${id}.sleep`, `${id} has a sleep animation`);
+    assert(entity.scripts.animate.some((e) => e.sleep === "q.property('kaleidoscope_ranching:sleeping')"), `${id} plays it asleep`);
+    const behaviour = JSON.parse(readFileSync(new URL(`../../packs/BP/entities/${id}.json`, import.meta.url), "utf8"))["minecraft:entity"];
+    assert(behaviour.events["kaleidoscope_ranching:fall_asleep"], `${id} can fall asleep`);
+  }
 });
 
 // --- Report ---------------------------------------------------------------

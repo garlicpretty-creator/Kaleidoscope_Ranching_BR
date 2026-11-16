@@ -53,6 +53,7 @@ kaleidoscope_ranching.ui.roster.empty=还没有挂上耳标的动物。
 kaleidoscope_ranching.ui.roster.last_seen=最后位置：%s, %s, %s
 kaleidoscope_ranching.ui.settings.title=牧场设定
 kaleidoscope_ranching.ui.settings.clean_need=启用“清洁”需求（粪便）
+kaleidoscope_ranching.ui.settings.sleep=动物作息（晚上睡觉）
 kaleidoscope_ranching.ui.trough.status=饲槽：%s %s/%s
 kaleidoscope_ranching.ui.trough.other_kind=饲槽里还有别种饲料
 kaleidoscope_ranching.ui.trough.full=饲槽已满

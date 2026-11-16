@@ -407,6 +407,21 @@
     "kr_silage": {
       "textures": "textures/items/ranching/silage"
     },
+    "kr_harness": {
+      "textures": "textures/items/ranching/harness"
+    },
+    "kr_plough": {
+      "textures": "textures/items/ranching/plough"
+    },
+    "kr_animal_blanket": {
+      "textures": "textures/items/ranching/animal_blanket"
+    },
+    "kr_leather_gloves": {
+      "textures": "textures/items/ranching/leather_gloves"
+    },
+    "kr_herding_horn": {
+      "textures": "textures/items/ranching/herding_horn"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },

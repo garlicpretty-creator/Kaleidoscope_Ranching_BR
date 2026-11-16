@@ -210,6 +210,8 @@ export class Entity {
     return this.componentMap().has(id);
   }
   getComponent(id) {
+    // Vanilla wolves in tests: tamed by setting `tamedTo` to a player id.
+    if (id === "minecraft:tameable" && this.typeId === "minecraft:wolf") return { isTamed: Boolean(this.tamedTo), tamedToPlayerId: this.tamedTo };
     const data = this.componentMap().get(id);
     if (data === undefined) return undefined;
     if (id === "minecraft:color" || id === "minecraft:variant") return { value: data.value };
@@ -255,6 +257,13 @@ export class Entity {
   }
   getRotation() {
     return { ...this.rotation };
+  }
+  /** Tests move the entity by the impulse at once (no physics). */
+  applyImpulse(vector) {
+    this.location = { x: this.location.x + vector.x, y: this.location.y + vector.y, z: this.location.z + vector.z };
+  }
+  getViewDirection() {
+    return this.viewDirection ?? { x: 0, y: 0, z: 1 };
   }
   setRotation(rotation) {
     this.rotation = { ...rotation };

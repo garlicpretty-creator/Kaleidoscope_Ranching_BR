@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "pen_gate",
+    "metalness_emissive_roughness_subsurface": "pen_gate_mers",
+    "normal": "pen_gate_normal"
+  }
+}

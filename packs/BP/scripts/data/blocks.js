@@ -43,4 +43,8 @@ export const BLOCKS = [
   ["rug", "毛毯", "Rug", "decoration"],
   ["down_pillow", "羽絨枕", "Down Pillow", "decoration"],
   ["down_quilt", "羽絨被", "Down Quilt", "decoration"],
+  // 1.1 役用與牧場管理: a two-block gate that opens for players only (systems/workAnimals.js), and horn decor.
+  ["pen_gate", "畜欄門", "Pen Gate", "husbandry"],
+  ["pen_gate_top", "畜欄門（上半）", "Pen Gate (top)", "husbandry"],
+  ["horn_decor", "角製掛飾", "Horn Decoration", "decoration"],
 ].map(([id, zh, en, group, owner = "ranching"]) => ({ id, zh, en, group, owner }));

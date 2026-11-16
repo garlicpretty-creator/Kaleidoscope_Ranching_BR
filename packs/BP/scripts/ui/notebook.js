@@ -1,6 +1,7 @@
 // 牧場記事本: inspect / rename an animal; use in the air to browse the ear-tag roster.
 
 import { world, PlayerPermissionLevel } from "@minecraft/server";
+import { CFG_SLEEP } from "../systems/sleep.js";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { FAMILY_MALE, DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
 import { CFG_CLEAN_NEED } from "../data/care_config.js";
@@ -117,10 +118,13 @@ function showSettings(player) {
   new ModalFormData()
     .title(T("settings.title"))
     .toggle(T("settings.clean_need"), { defaultValue: cleanNeedEnabled() })
+    // 1.1 動物作息 (systems/sleep.js)
+    .toggle(T("settings.sleep"), { defaultValue: world.getDynamicProperty(CFG_SLEEP) !== false })
     .show(player)
     .then((r) => {
       if (r.canceled) return;
       world.setDynamicProperty(CFG_CLEAN_NEED, !!r.formValues?.[0]);
+      world.setDynamicProperty(CFG_SLEEP, !!r.formValues?.[1]);
     })
     .catch(() => {});
 }

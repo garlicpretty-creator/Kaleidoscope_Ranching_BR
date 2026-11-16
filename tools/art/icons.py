@@ -527,6 +527,22 @@ def draw(item_id):
         sack(c, (220, 220, 200))
     elif base == "silage":
         bundle(c, (150, 160, 70))
+    # --- 1.1 役用與牧場管理 ---
+    elif base == "harness":
+        c.fill(ellipse(8, 8, 5.5, 5) - ellipse(8, 8, 3.5, 3), (120, 74, 42))
+        c.fill(rect(7, 2, 8, 4), (160, 164, 170))
+    elif base == "plough":
+        c.fill(rect(2, 4, 11, 5), (140, 100, 60))
+        c.fill({(x, y) for x in range(9, 15) for y in range(6, 14) if x - 9 >= (y - 6) * 0.4}, (160, 164, 170))
+    elif base == "animal_blanket":
+        sheet(c, (190, 60, 50), (240, 200, 80))
+    elif base == "leather_gloves":
+        c.fill(rect(4, 6, 10, 13), (130, 80, 46))
+        c.fill(rect(4, 2, 5, 6), (130, 80, 46))
+        c.fill(rect(7, 2, 8, 6), (130, 80, 46))
+        c.fill(rect(10, 4, 11, 7), (130, 80, 46))
+    elif base == "herding_horn":
+        horn(c, (220, 206, 176))
     else:
         raise KeyError(f"no icon template for {item_id}")
 
