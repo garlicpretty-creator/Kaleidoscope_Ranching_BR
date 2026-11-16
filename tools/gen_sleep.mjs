@@ -95,8 +95,9 @@ function subtree(bones, name) {
 /**
  * The steepest pitch up to `want` (degrees, nose down) at which nothing on the head, turned `yaw`
  * to either side, dips under the ground once the body has dropped by `drop`: a long muzzle, a
- * beard or a pair of horns reaches further down than the skull does. Bedrock turns Z, then Y,
- * then X, so the pitch comes last.
+ * beard or a pair of horns reaches further down than the skull does. Each corner is tried with
+ * the turn applied before the pitch and after it, so the bound holds whichever order the
+ * game composes the two in.
  */
 function headPitch(bones, name, drop, want, yaw) {
   const head = bones.find((b) => b.name === name);
@@ -109,7 +110,7 @@ function headPitch(bones, name, drop, want, yaw) {
     .flatMap(({ origin: [x, y, z], size: [w, h, d] }) => [x, x + w].flatMap((cx) => [y, y + h].flatMap((cy) => [z, z + d].map((cz) => [cx - head.pivot[0], cy - py, cz - pz]))));
   for (let pitch = want; pitch > 0; pitch -= 2) {
     const [ps, pc] = [Math.sin((pitch * Math.PI) / 180), Math.cos((pitch * Math.PI) / 180)];
-    const lowest = Math.min(...corners.flatMap(([x, y, z]) => [1, -1].map((turn) => py + y * pc + (z * cos + turn * x * sin) * ps)));
+    const lowest = Math.min(...corners.flatMap(([x, y, z]) => [py + y * pc + z * ps, ...[1, -1].map((turn) => py + y * pc + (z * cos + turn * x * sin) * ps)]));
     if (lowest - drop >= 0.25) return pitch;
   }
   return 0;
@@ -122,11 +123,15 @@ function lie(bones, A, B, anim) {
   for (const R of [A, B]) {
     for (const leg of R.legs) {
       anim[leg.name] = { rotation: [front(leg.name) ? 90 : -90, 0, 8 * sideOf(leg.name)] };
-      // Anything worn round a leg and thicker than it (a sheep's wool cuffs) is pressed
-      // nearly flush, or it would sink into the ground under the folded leg.
+      // Anything worn round a leg and thicker than it (a sheep's wool cuffs) is pressed to a
+      // hair thicker than the leg, then lifted by that hair so it rests on the ground with the
+      // leg instead of sinking under it. The folded leg's own z axis points up (front legs,
+      // turned +90°) or down (hind legs, -90°), so the lift goes along it.
       for (const cuff of bones.filter((b) => b.parent === leg.name && !b.name.startsWith("lids_"))) {
         const thick = Math.max(...(cuff.cubes ?? []).map((c) => Math.min(c.size[0], c.size[2])), 0);
-        if (thick > R.legThick) anim[cuff.name] = { scale: [round((R.legThick + 0.4) / thick), 1, round((R.legThick + 0.4) / thick)] };
+        if (thick <= R.legThick) continue;
+        const k = round((R.legThick + 0.4) / thick);
+        anim[cuff.name] = { scale: [k, 1, k], position: [0, 0, front(leg.name) ? 0.25 : -0.25] };
       }
     }
   }
@@ -162,9 +167,11 @@ function roost(bones, A, B, anim) {
   anim.body = { position: [0, pick(-(A.torsoBottom - 0.5), -(B.torsoBottom - 0.5)), 0] };
   for (const R of [A, B]) for (const leg of R.legs) anim[leg.name] = { scale: [1, 0.05, 1] };
   // A long neck (the goose's head bone stands taller than the torso) folds back
-  // along the back; a short one turns round and rests the head on the back.
+  // along the back; a short one turns round and rests the head on the back. Combs and
+  // wattles are not neck: a rooster's comb must not make him fold like a goose.
   const head = bones.find((b) => b.name === headBone(bones, "a"));
-  const top = Math.max(...bones.filter((b) => b.parent === head?.name || b.name === head?.name).flatMap((b) => (b.cubes ?? []).map((c) => c.origin[1] + c.size[1])));
+  const neckBones = bones.filter((b) => (b.parent === head?.name || b.name === head?.name) && !/comb|wattle|lids_/.test(b.name));
+  const top = Math.max(...neckBones.flatMap((b) => (b.cubes ?? []).map((c) => c.origin[1] + c.size[1])));
   const long = top - (head?.pivot?.[1] ?? 0) > 6;
   anim[head.name] = long ? { rotation: [-105, 0, 0], position: [0, -1, 0] } : { rotation: [0, 155, 0], position: [0, -2.5, 0] };
   const baby = headBone(bones, "b");
@@ -174,7 +181,17 @@ function roost(bones, A, B, anim) {
 
 function curl(bones, A, B, anim) {
   anim.body = { position: [0, pick(-(A.torsoBottom - 0.5), -(B.torsoBottom - 0.5)), 0] };
-  for (const R of [A, B]) for (const leg of R.legs) anim[leg.name] = { scale: [1, 0.3, 1] };
+  // Legs squashed to 0.3 about their own pivots, then moved so their soles rest on the ground
+  // again (the body sinks by torsoBottom - 0.5; a pivot high in the haunch would otherwise
+  // leave the foot hanging inside the body).
+  const SQUASH = 0.3;
+  for (const R of [A, B]) {
+    for (const leg of R.legs) {
+      const sole = Math.min(...(leg.cubes ?? []).map((c) => c.origin[1]));
+      const lift = R.torsoBottom - 0.5 - (leg.pivot[1] + (sole - leg.pivot[1]) * SQUASH);
+      anim[leg.name] = { scale: [1, SQUASH, 1], ...(Math.abs(lift) > 0.01 ? { position: [0, round(lift), 0] } : {}) };
+    }
+  }
   anim[headBone(bones, "a")] = { rotation: [16, 0, 0], position: [0, -0.5, 0] };
   if (bones.some((b) => b.name === "a_ears")) anim.a_ears = { rotation: [70, 0, 0] };
   const baby = headBone(bones, "b");
