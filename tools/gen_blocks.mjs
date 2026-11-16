@@ -72,6 +72,19 @@ const DEFS = {
     selection: box(-8, 0, -6, 16, 16, 12),
     seconds: 1,
   },
+  // Placed by the aged_cheese_wheel item (block_placer in gen_items.mjs) and cut like a cake;
+  // systems/cheeseWheel.js drops the wheel or the slices left, so the block itself drops nothing.
+  cheese_wheel: {
+    component: "cheese_wheel",
+    states: { [S("cut")]: [0, 1, 2, 3] },
+    bones: Object.fromEntries([1, 2, 3, 4].map((n) => [`piece_${n}`, `${state("cut")} <= ${4 - n}`])),
+    collision: box(-6, 0, -6, 12, 5, 12),
+    selection: box(-6, 0, -6, 12, 5, 12),
+    seconds: 0.5,
+    hidden: true,
+    loot: "loot_tables/kaleidoscope_ranching/empty.json",
+    mapColor: "#e2b45a",
+  },
   ...Object.fromEntries(
     STATIONS.map((id) => [
       id,
@@ -98,7 +111,8 @@ function blockJson(id, def) {
     "minecraft:destructible_by_mining": { seconds_to_destroy: def.seconds },
     "minecraft:destructible_by_explosion": { explosion_resistance: 3 },
     "minecraft:light_dampening": 0,
-    "minecraft:map_color": "#8a6a44",
+    "minecraft:map_color": def.mapColor ?? "#8a6a44",
+    ...(def.loot ? { "minecraft:loot": def.loot } : {}),
     [S(def.component)]: {},
   };
   return {
@@ -106,7 +120,7 @@ function blockJson(id, def) {
     "minecraft:block": {
       description: {
         identifier: S(id),
-        menu_category: { category: "items" },
+        menu_category: { category: def.hidden ? "none" : "items" },
         traits: {
           "minecraft:placement_direction": { enabled_states: ["minecraft:cardinal_direction"], y_rotation_offset: 180 },
         },

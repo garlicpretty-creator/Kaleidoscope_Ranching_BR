@@ -4,8 +4,8 @@ A rounded wheel made of four quarter pieces, piece_1..piece_4, so the block can 
 piece per slice cut (piece_4 first). Faces that point into the wheel are painted as cut
 paste, so every partly eaten state shows a clean cheese interior.
 
-Writes art/blocks/aged_cheese_wheel.{geo.json,png}; the behaviour-pack block that places
-it is not part of the art work.
+Writes art/blocks/cheese_wheel.{geo.json,png} for the kaleidoscope_ranching:cheese_wheel block
+(tools/gen_blocks.mjs, packs/BP/scripts/systems/cheeseWheel.js).
 """
 import json
 from pathlib import Path
@@ -83,7 +83,7 @@ def geo():
             b["cubes"] = [{"origin": o, "size": s, "uv": uv} for _, o, s, uv in cubes]
         bones.append(b)
     return {"format_version": "1.12.0", "minecraft:geometry": [{
-        "description": {"identifier": f"geometry.{NS}.aged_cheese_wheel", "texture_width": 64, "texture_height": 64,
+        "description": {"identifier": f"geometry.{NS}.cheese_wheel", "texture_width": 64, "texture_height": 64,
                         "visible_bounds_width": 1.5, "visible_bounds_height": 1.0, "visible_bounds_offset": [0, 0.25, 0]},
         "bones": bones}]}
 
@@ -91,8 +91,8 @@ def geo():
 def main():
     out = ROOT / "art" / "blocks"
     out.mkdir(parents=True, exist_ok=True)
-    (out / "aged_cheese_wheel.geo.json").write_text(json.dumps(geo(), indent=2) + "\n", encoding="utf8")
-    paint().save(out / "aged_cheese_wheel.png")
+    (out / "cheese_wheel.geo.json").write_text(json.dumps(geo(), indent=2) + "\n", encoding="utf8")
+    paint().save(out / "cheese_wheel.png")
     print("cheese_wheel: ok")
 
 

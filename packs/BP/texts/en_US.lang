@@ -169,6 +169,7 @@ tile.kaleidoscope_ranching:butter_churn.name=Butter Churn
 tile.kaleidoscope_ranching:cheese_press.name=Cheese Press
 tile.kaleidoscope_ranching:aging_rack.name=Aging Rack
 tile.kaleidoscope_ranching:fermenting_jar.name=Fermenting Jar
+tile.kaleidoscope_ranching:cheese_wheel.name=Aged Cheese Wheel
 tile.kaleidoscope_ranching:pickling_vat.name=Pickling Vat
 
 ## m2

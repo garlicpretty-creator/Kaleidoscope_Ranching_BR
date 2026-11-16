@@ -435,8 +435,8 @@ const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_
 function breakBlock(component, block) {
   const brokenBlockPermutation = block.permutation;
   block.setType("minecraft:air");
-  component.onPlayerBreak({ block, dimension: block.dimension, brokenBlockPermutation });
-  component.onBreak({ block, dimension: block.dimension, brokenBlockPermutation });
+  component.onPlayerBreak?.({ block, dimension: block.dimension, brokenBlockPermutation });
+  component.onBreak?.({ block, dimension: block.dimension, brokenBlockPermutation });
 }
 const use = (component, block, player) => component.onPlayerInteract({ block, player, dimension: block.dimension });
 const dropsOf = (typeId) => overworld.items.filter((drop) => drop.item.typeId === typeId);
@@ -579,6 +579,49 @@ test("the rack cannot be placed without room above it", () => {
   const event = { block: below, cancel: false };
   RACK.beforeOnPlayerPlace(event);
   assert(event.cancel, "cancelled");
+});
+
+const WHEEL = COMPONENTS["kaleidoscope_ranching:cheese_wheel"];
+const wheelAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:cheese_wheel", { "kaleidoscope_ranching:cut": 0 });
+const slicesHeld = (player) => {
+  let n = 0;
+  for (let i = 0; i < player.inventory.size; i++) {
+    const item = player.inventory.getItem(i);
+    if (item?.typeId === "kaleidoscope_ranching:cheese_slice") n += item.amount;
+  }
+  return n;
+};
+
+test("a placed cheese wheel is cut with a blade into four slices, then is gone", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const wheel = wheelAt();
+  use(WHEEL, wheel, player);
+  equal(slicesHeld(player), 0, "no slice without a blade");
+  for (let n = 1; n <= 4; n++) {
+    hold(player, "minecraft:iron_sword");
+    use(WHEEL, wheel, player);
+    equal(slicesHeld(player), n, `slice ${n}`);
+    if (n < 4) equal(state(wheel, "cut"), n, `cut state ${n}`);
+  }
+  equal(wheel.permutation.type.id, "minecraft:air", "the last cut takes the wheel");
+});
+
+test("breaking a cheese wheel gives back the whole wheel, or the slices left", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  let wheel = wheelAt();
+  breakBlock(WHEEL, wheel);
+  equal(dropsOf("kaleidoscope_ranching:aged_cheese_wheel").length, 1, "uncut wheel back");
+
+  overworld.items = [];
+  wheel = wheelAt(12);
+  hold(player, "minecraft:iron_sword");
+  use(WHEEL, wheel, player);
+  breakBlock(WHEEL, wheel);
+  equal(dropsOf("kaleidoscope_ranching:aged_cheese_wheel").length, 0, "no wheel once cut");
+  const atWheel = dropsOf("kaleidoscope_ranching:cheese_slice").filter((d) => Math.floor(d.location.x) === 12);
+  equal(atWheel.reduce((n, d) => n + d.item.amount, 0), 3, "three slices left");
 });
 
 // --- M3: milking and nursing ----------------------------------------------

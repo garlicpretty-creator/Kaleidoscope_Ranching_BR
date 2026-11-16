@@ -24,5 +24,6 @@ export const BLOCKS = [
   ["cheese_press", "乳酪壓模", "Cheese Press", "processing"],
   ["aging_rack", "熟成架", "Aging Rack", "processing"],
   ["fermenting_jar", "發酵罐", "Fermenting Jar", "processing"],
+  ["cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],
 ].map(([id, zh, en, group, owner = "ranching"]) => ({ id, zh, en, group, owner }));

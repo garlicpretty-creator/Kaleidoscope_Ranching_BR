@@ -37,6 +37,7 @@ SOUNDS = {
     "cheese_press": "wood", "aging_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
     "hay_rack": "wood",
     "hitching_post": "wood",
+    "cheese_wheel": "cloth",
 }
 
 
@@ -93,10 +94,14 @@ def main():
 
     # Blocks
     block_dir = RP / "textures" / "blocks" / "ranching"
-    clean(block_dir, set(block_art.ALL))
+    # Hand-made blocks with no procedural version (the placed cheese wheel) install the same way.
+    blocks = dict(block_art.ALL)
+    for geo in sorted(HANDMADE.glob("*.geo.json")):
+        blocks.setdefault(geo.name.removesuffix(".geo.json"), None)
+    clean(block_dir, set(blocks))
     terrain = {}
     previews = []
-    for block_id, build in block_art.ALL.items():
+    for block_id, build in blocks.items():
         terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
         handmade = HANDMADE / f"{block_id}.geo.json"
         if handmade.exists():
@@ -130,7 +135,7 @@ def main():
             board.paste(image, (x, y + 20))
             draw.text((x + 8, y + 4), block_id, fill=(60, 70, 56))
         board.save(ROOT / "docs" / "art" / "m3_blocks_preview.png")
-    print(f"gen_m3_art: {len(ids)} icons, {len(block_art.ALL)} blocks")
+    print(f"gen_m3_art: {len(ids)} icons, {len(blocks)} blocks")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,10 @@
     },
     "components": {
       "minecraft:icon": "kr_aged_cheese_wheel",
-      "minecraft:max_stack_size": 16
+      "minecraft:max_stack_size": 16,
+      "minecraft:block_placer": {
+        "block": "kaleidoscope_ranching:cheese_wheel"
+      }
     }
   }
 }
