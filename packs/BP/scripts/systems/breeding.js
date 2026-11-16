@@ -138,6 +138,15 @@ function giveBirth(mother) {
   notifyBorn(baby, mother, inherited);
 }
 
+/**
+ * An animal that left the world and came back as a new entity (the animal
+ * crate) keeps its pregnancy: track the new id instead of the old one.
+ */
+export function adoptPregnancy(oldId, entity) {
+  pregnancies.remove(oldId);
+  if (numberProperty(entity, PREGNANT_DUE) > 0) pregnancies.add(entity.id);
+}
+
 function checkPregnancy(entity) {
   if (!entity?.isValid) return;
   const due = numberProperty(entity, PREGNANT_DUE);

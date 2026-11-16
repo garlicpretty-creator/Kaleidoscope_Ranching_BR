@@ -13,6 +13,7 @@ Run with: python3 tools/gen_m3_art.py
 """
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -28,11 +29,14 @@ from model import geometry_json, pack, render_texture, render_view  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 RP = ROOT / "packs" / "RP"
 FRAGMENT = ROOT / "tools" / "fragments" / "m3"
+HANDMADE = ROOT / "art" / "blocks"  # blocks with a hand-made model replace the procedural one
 NS = "kaleidoscope_ranching"
 
 SOUNDS = {
     "butcher_rack": "wood", "nest_box": "wood", "incubator": "glass", "butter_churn": "wood",
     "cheese_press": "wood", "aging_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
+    "hay_rack": "wood",
+    "hitching_post": "wood",
 }
 
 
@@ -45,6 +49,18 @@ def registry_items():
     url = (ROOT / "packs/BP/scripts/data/items.js").as_uri()
     out = subprocess.run(["node", "-e", script, url], check=True, capture_output=True, text=True)
     return json.loads(out.stdout)
+
+
+def dish_looks():
+    """{dish id: (shape, colour)} for M5 dishes and their uncooked steps."""
+    script = (
+        "import(process.argv[1]).then(m => console.log(JSON.stringify(Object.fromEntries(["
+        "...m.DISHES.map(d => [d.id, d.look]),"
+        "...m.DISH_PREPS.map(p => [p.id, ['bowl', p.id === 'egg_custard' ? [250, 210, 90] : [236, 220, 170]]])]))))"
+    )
+    url = (ROOT / "packs/BP/scripts/data/dishes.js").as_uri()
+    out = subprocess.run(["node", "-e", script, url], check=True, capture_output=True, text=True)
+    return {k: (v[0], tuple(v[1])) for k, v in json.loads(out.stdout).items()}
 
 
 def write_json(path, data):
@@ -62,6 +78,7 @@ def clean(directory, keep):
 def main():
     # Item icons
     ids = registry_items()
+    icons.DISH_LOOKS.update(dish_looks())
     icon_dir = RP / "textures" / "items" / "ranching"
     clean(icon_dir, set(ids))
     item_atlas = {}
@@ -80,12 +97,18 @@ def main():
     terrain = {}
     previews = []
     for block_id, build in block_art.ALL.items():
+        terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
+        handmade = HANDMADE / f"{block_id}.geo.json"
+        if handmade.exists():
+            # Hand-made in Blockbench (art_src/m4_scripts/blocks_m4.py): install it as is.
+            shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
+            shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
+            continue
         model = build()
         pack(model)
         write_json(RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json", geometry_json(model))
         texture = render_texture(model, block_art.paint)
         texture.save(block_dir / f"{block_id}.png")
-        terrain[f"kr_{block_id}"] = {"textures": f"textures/blocks/ranching/{block_id}"}
         # Preview with every optional bone shown except the extra carcasses.
         def visible(cube, block_id=block_id):
             if block_id == "butcher_rack":
@@ -97,7 +120,7 @@ def main():
     write_json(FRAGMENT / "terrain_texture.json", {"resource_pack_name": NS, "texture_name": "atlas.terrain", "texture_data": terrain})
     write_json(FRAGMENT / "blocks.json", {"format_version": "1.21.40", **{f"{NS}:{k}": {"sound": v} for k, v in SOUNDS.items()}})
 
-    board = Image.new("RGB", (220 * 4, 260 * 2), (232, 238, 226))
+    board = Image.new("RGB", (220 * 4, 260 * ((len(previews) + 3) // 4)), (232, 238, 226))
     draw = ImageDraw.Draw(board)
     for index, (block_id, image) in enumerate(previews):
         x, y = (index % 4) * 220, (index // 4) * 260

@@ -2,7 +2,9 @@
 
 import { BlockStates } from "@minecraft/server";
 import { CARE } from "../data/care_config.js";
-import { MANURE_BLOCK, MANURE_ITEM } from "../custom_components/manure.js";
+import { DRIED_YAK_DUNG, MANURE_BLOCK, MANURE_ITEM } from "../custom_components/manure.js";
+import { takeBlockData } from "../core/blockStore.js";
+import { today } from "../core/time.js";
 import { consumeMainhand, damageMainhand, dropAt, center } from "../utils/world_util.js";
 
 /** Find an integer growth-like state on any crop (vanilla, Cookery, Ranching). */
@@ -41,19 +43,24 @@ export const manureForkComponent = {
     const dim = block.dimension;
     const { x, y, z } = block.location;
     let n = 0;
+    let dried = 0;
+    const day = today();
     for (let dx = -1; dx <= 1; dx++)
       for (let dz = -1; dz <= 1; dz++)
         for (let dy = -1; dy <= 1; dy++) {
           const loc = { x: x + dx, y: y + dy, z: z + dz };
           try {
             if (dim.getBlock(loc)?.typeId === MANURE_BLOCK) {
+              const yakDay = takeBlockData(dim, loc, null, MANURE_BLOCK)?.yak_day;
               dim.setBlockType(loc, "minecraft:air");
-              n++;
+              if (yakDay !== undefined && day > yakDay) dried++;
+              else n++;
             }
           } catch {}
         }
-    if (n === 0) return;
-    dropAt(dim, center(block), MANURE_ITEM, n);
+    if (n + dried === 0) return;
+    if (n) dropAt(dim, center(block), MANURE_ITEM, n);
+    if (dried) dropAt(dim, center(block), DRIED_YAK_DUNG, dried);
     dim.playSound("dig.gravel", block.location);
     damageMainhand(source);
   },

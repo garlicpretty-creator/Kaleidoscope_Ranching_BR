@@ -26,10 +26,12 @@ const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar"
 const DEFS = {
   butcher_rack: {
     component: "butcher_rack",
-    states: { [S("carcass")]: ["none", ...CARCASSES], [S("cut")]: [false, true] },
+    // carcass_X: the animal as it was, skinned_X: hide off, cut_X: partly cut
+    states: { [S("carcass")]: ["none", ...CARCASSES], [S("skinned")]: [false, true], [S("cut")]: [false, true] },
     bones: Object.fromEntries(
       CARCASSES.flatMap((id) => [
-        [`carcass_${id}`, `${state("carcass")} == '${id}' && !${state("cut")}`],
+        [`carcass_${id}`, `${state("carcass")} == '${id}' && !${state("skinned")}`],
+        [`skinned_${id}`, `${state("carcass")} == '${id}' && ${state("skinned")} && !${state("cut")}`],
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
       ])
     ),
@@ -53,6 +55,22 @@ const DEFS = {
     selection: box(-7, 0, -7, 14, 12, 14),
     seconds: 1,
     light: true,
+  },
+  hitching_post: {
+    component: "hitching_post",
+    states: {},
+    bones: {},
+    collision: box(-3, 0, -3, 6, 16, 6),
+    selection: box(-3, 0, -3, 6, 16, 6),
+    seconds: 1,
+  },
+  hay_rack: {
+    component: "hay_rack",
+    states: { [S("hay")]: [0, 1, 2, 3] },
+    bones: Object.fromEntries([1, 2, 3].map((n) => [`hay_${n}`, `${state("hay")} >= ${n}`])),
+    collision: box(-8, 0, -6, 16, 16, 12),
+    selection: box(-8, 0, -6, 16, 16, 12),
+    seconds: 1,
   },
   ...Object.fromEntries(
     STATIONS.map((id) => [

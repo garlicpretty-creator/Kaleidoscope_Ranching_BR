@@ -5,6 +5,7 @@
 ## 文件
 
 - [企劃書（正式版）](docs/PROPOSAL.zh-TW.md)
+- [專案架構](docs/ARCHITECTURE.md)：接手前先讀
 - [腳本架構](packs/BP/scripts/ARCHITECTURE.md)
 - [里程碑之間的介面](docs/INTERFACES.md)
 - [M2 照顧核心交接說明](docs/M2_交接.md)
@@ -15,13 +16,14 @@
 
 | 里程碑 | 狀態 |
 | --- | --- |
-| M0 規格與骨架 | 完成，待合併 |
+| M0 規格與骨架 | 完成 |
 | M1 自有動物與性別 | 完成，待實測 |
 | M2 照顧核心 | 由另一位開發者完成，已整合，待實測 |
 | M3 屠宰與乳蛋加工 | 完成，待實測；規則見 [M3 說明](docs/M3_說明.md) |
 | M5 對外 API | 完成，待實測；規格見 [API 文件](docs/API.md) |
-| 光影（Vibrant Visuals） | 資源包已宣告 `pbr`，並為金屬、陶缸、玻璃瓶、水面、木料、乳脂等貼圖附上均一數值的材質檔；逐像素的 MER 與法線圖留待 M6 |
-| M4、M5 廚房料理、M6 | 已分派，見外包工作包 |
+| M4 新動物與搬運道具 | 程式與美術完成，待實測；十種動物、乾草架、拴畜樁、屠宰掛架已換正式模型；見 [M4 說明](docs/M4_說明.md) |
+| M5 廚房料理與手冊 | 完成，待實測；見 [M5 說明](docs/M5_說明.md) |
+| M6 光影、平衡、三語 | 簡體中文名稱完成；光影：金屬、陶缸、玻璃瓶、水面、木料、乳脂等貼圖已有均一數值的材質檔（`tools/gen_pbr.mjs`），逐像素的 MER、法線圖與動物毛皮屬工作包 D；數值平衡屬工作包 E，伺服器實測屬工作包 A |
 
 ![M1 動物預覽](docs/art/m1_animals_preview.png)
 
@@ -38,15 +40,19 @@
 | `tools/` | 驗證、語言檔生成、美術生成、打包腳本 |
 | `docs/` | 企劃書與美術預覽 |
 
+## 物品圖示（RetroDiffusion）
+
+物品圖示可以用 RetroDiffusion 重畫：提示詞在 `tools/art/icon_prompts.json`，流程寫在 `tools/art/rd_icons.py` 開頭。要在連得到 RetroDiffusion 的環境執行，金鑰放在環境變數 `RETRODIFFUSION_API_KEY`，不要寫進檔案或貼到任何地方。選定的圖示存在 `art/icons/`，`npm run generate` 會套用；還沒選的維持程式畫的版本。
+
 ## 開發指令
 
 需要 Node.js 與 Python 3（含 Pillow）。
 
 | 指令 | 作用 |
 | --- | --- |
-| `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引，最後生成光影材質檔 |
+| `npm run generate` | 重新生成動物美術、M2 內容、實體檔，再組合語言檔與貼圖索引、套用挑好的圖示，最後生成光影材質檔 |
 | `npm run validate` | 檢查 JSON 語法、交叉比對資料表與資源包連結，以及光影材質檔是否和 `tools/gen_pbr.mjs` 一致 |
-| `npm test` | 以模擬的腳本 API 執行行為測試（M1 到 M3、M5 API 與範例附加包） |
+| `npm test` | 以模擬的腳本 API 執行行為測試（M1 到 M5、對外 API 與範例附加包） |
 | `npm run build` | 驗證、測試，然後打包成 `dist/` 下的 `.mcaddon` |
 
 生成的檔案（動物模型、貼圖、實體 JSON、語言檔、`*.texture_set.json` 光影材質檔）請改生成器，不要手改。哪張貼圖用哪種材質寫在 `tools/gen_pbr.mjs` 的 `RULES`。行為測試用的 `tools/test/mock-server.mjs` 只模擬腳本 API 的一小部分，通過測試不代表遊戲內一定正常。

@@ -13,6 +13,8 @@ const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", 
 const { ITEMS, NAMESPACE } = await load("items.js");
 const { ANIMALS } = await load("animals.js");
 const { VANILLA_COOKING } = await load("processing.js");
+const { DISHES, DISH_PREPS } = await load("dishes.js");
+const DISH_BY_ID = new Map(DISHES.map((dish) => [dish.id, dish]));
 
 const rid = (id) => (id.includes(":") ? id : `${NAMESPACE}:${id}`);
 const FORMAT = "1.21.60";
@@ -39,10 +41,16 @@ const OVERRIDES = {
   whey: { stack: 16, ...food(1, 0.2, { drink: true, converts: "minecraft:glass_bottle", always: true }) },
   salted_duck_egg: food(4, 0.6),
   century_egg: food(5, 0.6),
-  lard: { stack: 16 },
+  // Lard is a Cookery oil container (api/cookeryRecipes.js): its oil count is an
+  // item dynamic property, so it cannot stack.
+  lard: { stack: 1 },
+  // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
+  dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
+  // Item custom components (systems/m4.js); they need item format 1.21.90.
+  cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
+  animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
   milking_pail: { stack: 1, components: { "minecraft:durability": { max_durability: 128 }, "minecraft:hand_equipped": true } },
   nursing_bottle: { stack: 1, components: { "minecraft:durability": { max_durability: 32 } } },
-  cowbell: { stack: 1 },
 };
 
 function componentsFor(item) {
@@ -73,13 +81,23 @@ function componentsFor(item) {
       Object.assign(c, item.id.startsWith("cooked_") ? food(8, 0.8) : food(3, 0.3));
       tags.push("minecraft:is_meat");
       break;
+    case "dish": {
+      // M5 dishes stack like Cookery's own dishes; eating gives the carrier back.
+      const dish = DISH_BY_ID.get(item.id);
+      const converts = dish.carrier || undefined;
+      Object.assign(c, food(dish.food[0], dish.food[1], { converts, drink: dish.look[0] === "bottle" }));
+      break;
+    }
+    case "prep":
+      stack = 16;
+      break;
     case "cut":
       Object.assign(c, food(2, 0.3));
       tags.push("minecraft:is_meat");
       break;
   }
   const override = OVERRIDES[item.id] ?? {};
-  const { stack: overrideStack, components = {}, ...overrideComponents } = override;
+  const { stack: overrideStack, format: _format, components = {}, ...overrideComponents } = override;
   Object.assign(c, overrideComponents, components);
   if (overrideStack) stack = overrideStack;
   if (c["minecraft:food"] && !tags.includes("minecraft:is_food")) tags.push("minecraft:is_food");
@@ -127,17 +145,51 @@ const shapeless = (id, ingredients, result, count = 1) => [
 
 const RECIPES = [
   shaped("butcher_rack", ["SIS", "P P", "P P"], { S: { item: "minecraft:stick" }, I: { item: "minecraft:iron_ingot" }, P: planks }, "butcher_rack"),
+  shaped("animal_crate", ["PBP", "B B", "PBP"], { P: planks, B: { item: "minecraft:iron_bars" } }, "animal_crate"),
+  shaped("cowbell", [" L ", "C C", "CCC"], { L: { item: "minecraft:leather" }, C: { item: "minecraft:copper_ingot" } }, "cowbell"),
+  shaped("hitching_post", ["N", "F", "F"], { N: { item: "minecraft:iron_nugget" }, F: { item: "minecraft:oak_fence" } }, "hitching_post"),
   shaped("nest_box", ["P P", "PHP"], { P: planks, H: { item: "minecraft:hay_block" } }, "nest_box"),
   shaped("incubator", ["GGG", "P P", "PIP"], { G: { item: "minecraft:glass" }, P: planks, I: { item: "minecraft:iron_ingot" } }, "incubator"),
   shaped("butter_churn", [" S ", "P P", "PPP"], { S: { item: "minecraft:stick" }, P: planks }, "butter_churn"),
   shaped("cheese_press", ["PIP", "P P", "PPP"], { I: { item: "minecraft:iron_ingot" }, P: planks }, "cheese_press"),
   shaped("aging_rack", ["PPP", "S S", "PPP"], { S: { item: "minecraft:stick" }, P: planks }, "aging_rack"),
   shaped("fermenting_jar", [" P ", "G G", "GGG"], { G: { item: "minecraft:glass" }, P: planks }, "fermenting_jar"),
+  shaped("hay_rack", ["S S", "SHS", "PPP"], { S: { item: "minecraft:stick" }, H: { item: "minecraft:hay_block" }, P: planks }, "hay_rack"),
   shaped("pickling_vat", ["T T", "TTT"], { T: { item: "minecraft:hardened_clay" } }, "pickling_vat"),
   shapeless("milking_pail", [{ item: "minecraft:bucket" }, { item: "minecraft:stick" }], "milking_pail"),
   shapeless("nursing_bottle", [{ item: "minecraft:glass_bottle" }, { item: "minecraft:slime_ball" }], "nursing_bottle"),
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),
 ];
+
+// --- M5 dish recipes made outside Cookery ---------------------------------------
+
+const ingredient = (slot) => (typeof slot === "string" ? { item: rid(slot) } : { tag: slot.tag });
+const m5 = (recipe) => {
+  const [id, data] = recipe;
+  const key = Object.keys(data).find((k) => k.startsWith("minecraft:recipe_"));
+  data[key].description.identifier = rid(`m5_${id}`);
+  return [`m5_${id}`, data];
+};
+for (const dish of DISHES.filter((d) => d.station === "crafting")) {
+  RECIPES.push(m5(shapeless(dish.id, dish.slots.map((slot) => ingredient(slot[0])), dish.id)));
+}
+for (const prep of DISH_PREPS) {
+  prep.makes.forEach((slots, i) => RECIPES.push(m5(shapeless(`${prep.id}_${i}`, slots.map(ingredient), prep.id))));
+}
+for (const dish of DISHES.filter((d) => d.station === "furnace")) {
+  RECIPES.push([
+    `m5_furnace_${dish.id}`,
+    {
+      format_version: "1.20.10",
+      "minecraft:recipe_furnace": {
+        description: { identifier: rid(`m5_furnace_${dish.id}`) },
+        tags: ["furnace", "smoker"],
+        input: rid(dish.input),
+        output: rid(dish.id),
+      },
+    },
+  ]);
+}
 
 for (const cook of VANILLA_COOKING) {
   if (cook.note) continue; // needs a source tag on manure first; see processing.js
@@ -171,9 +223,16 @@ writeFresh(
   items.map((item) => [
     item.id,
     {
-      format_version: FORMAT,
+      format_version: OVERRIDES[item.id]?.format ?? FORMAT,
       "minecraft:item": {
-        description: { identifier: rid(item.id), menu_category: { category: MENU[item.category] ?? "items" } },
+        description: {
+          identifier: rid(item.id),
+          // Dishes sit with Cookery's foods in the creative inventory.
+          menu_category:
+            item.category === "dish"
+              ? { category: "equipment", group: "kaleidoscope_cookery:itemGroup.name.foods" }
+              : { category: MENU[item.category] ?? "items" },
+        },
         components: componentsFor(item),
       },
     },

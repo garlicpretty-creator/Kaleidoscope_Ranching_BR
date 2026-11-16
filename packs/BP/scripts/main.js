@@ -2,6 +2,7 @@
 // Keep this file small: bootstrap integrations, components and events only.
 
 import { connectToCookery } from "./api/cookery.js";
+import { startCookeryContent } from "./api/cookeryRecipes.js";
 import { startRanchingApi } from "./api/ranchingApi.js";
 import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
@@ -10,8 +11,10 @@ import { startVanillaParity } from "./systems/vanillaParity.js";
 import "./care_init.js";
 import { connectCareCore } from "./systems/careBridge.js";
 import { startM3 } from "./systems/m3.js";
+import { startM4 } from "./systems/m4.js";
 
 connectToCookery();
+startCookeryContent();
 
 // M5: Ranching's own public API for other add-ons (docs/API.md)
 startRanchingApi();
@@ -26,3 +29,4 @@ connectCareCore();
 
 // M3: carcasses, butcher rack, milking, nests, processing
 startM3();
+startM4();

@@ -9,6 +9,8 @@
 // by tools/gen_items.mjs. The registry still lists M2 items so every table can
 // be checked against one list of identifiers.
 
+import { DISHES, DISH_PREPS } from "./dishes.js";
+
 export const NAMESPACE = "kaleidoscope_ranching";
 
 /** Quality tiers. The plain tier has no suffix so recipes can name it directly. */
@@ -142,6 +144,8 @@ const TOOLS = [
   ["milking_pail", "擠奶桶", "Milking Pail", "tool"],
   ["nursing_bottle", "奶瓶", "Nursing Bottle", "tool"],
   ["cowbell", "牧鈴", "Cowbell", "tool"],
+  // A hand-held item, not a block: it carries one animal (systems/crate.js).
+  ["animal_crate", "運畜籠", "Animal Crate", "tool"],
   ["brush", "毛刷", "Brush", "tool", "m2"],
   ["ranch_notebook", "牧場記事本", "Ranch Notebook", "tool", "m2"],
   ["ear_tag", "耳標", "Ear Tag", "tool", "m2"],
@@ -161,6 +165,9 @@ export const ITEMS = [
   ...FEED,
   ...TREATS,
   ...TOOLS,
+  // M5 dishes and their uncooked steps (data/dishes.js).
+  ...DISHES.map((dish) => [dish.id, dish.zh, dish.en, "dish", "m5"]),
+  ...DISH_PREPS.map((prep) => [prep.id, prep.zh, prep.en, "prep", "m5"]),
 ].map(([id, zh, en, category, owner = "ranching"]) => ({ id, zh, en, category, owner }));
 
 /** All three tier identifiers for a tiered base item, plain tier first. */

@@ -53,5 +53,11 @@
   },
   "kaleidoscope_ranching:pickling_vat": {
     "sound": "stone"
+  },
+  "kaleidoscope_ranching:hay_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:hitching_post": {
+    "sound": "wood"
   }
 }

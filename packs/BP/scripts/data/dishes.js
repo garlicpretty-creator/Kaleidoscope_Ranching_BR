@@ -1,0 +1,157 @@
+// M5 dishes: Ranching foods cooked on Cookery's stations, plus a few made with
+// vanilla crafting or the furnace. One row per dish; the items, recipes,
+// Cookery registrations (api/cookeryRecipes.js) and the guidebook chapter all
+// come from this table.
+//
+// station:
+//   stockpot  Cookery stockpot, exact recipe. `slots`: each slot lists the
+//             items that may fill it (any one).
+//   wok       Cookery wok. `slots` as above (Cookery 1.6.6 accepts alternatives).
+//   steamer   Cookery steamer: one `input` item becomes the dish.
+//   furnace   vanilla furnace and smoker: one `input` item becomes the dish.
+//   crafting  shapeless crafting table recipe from `slots` (one item each).
+// carrier: what the player holds to take the dish out of a Cookery station;
+//   eating the dish gives it back. "" = taken by hand, nothing given back.
+// look: placeholder icon until the RetroDiffusion icons are picked.
+
+const NS = "kaleidoscope_ranching";
+const r = (id) => (id.includes(":") ? id : `${NS}:${id}`);
+const tiers = (base) => [r(base), r(`${base}_fine`), r(`${base}_superb`)];
+const KC = (id) => `kaleidoscope_cookery:${id}`;
+
+/** Any Ranching milk, any quality. */
+export const ANY_MILK = ["cow_milk", "goat_milk", "buffalo_milk", "yak_milk"].flatMap(tiers);
+/** Any duck egg, any quality. */
+export const ANY_DUCK_EGG = tiers("duck_egg");
+
+const BOWL = "minecraft:bowl";
+
+export const DISHES = [
+  // --- Stockpot ---------------------------------------------------------------
+  {
+    id: "cream_stew", zh: "奶油燉菜", en: "Cream Stew", food: [8, 0.75], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("cream")], ["minecraft:potato"], ["minecraft:carrot"], ["minecraft:beef", r("beef_brisket"), "minecraft:chicken", r("chicken_leg"), "minecraft:mutton"]],
+    look: ["bowl", [240, 232, 210]],
+  },
+  {
+    id: "bone_broth", zh: "大骨高湯", en: "Bone Broth", food: [6, 0.6], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("large_bone")], [r("large_bone")], ["minecraft:carrot", "minecraft:potato"]],
+    look: ["bowl", [226, 206, 160]],
+  },
+  {
+    id: "old_duck_soup", zh: "老鴨湯", en: "Old Duck Soup", food: [10, 0.8], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("duck_meat"), r("duck_leg")], [r("duck_meat"), r("duck_leg")], ["minecraft:bamboo"]],
+    look: ["bowl", [214, 186, 120]],
+  },
+  {
+    id: "braised_brisket", zh: "燉牛腩", en: "Braised Beef Brisket", food: [12, 0.8], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("beef_brisket")], [r("beef_brisket")], ["minecraft:potato"], ["minecraft:carrot"]],
+    look: ["bowl", [150, 80, 50]],
+  },
+  {
+    id: "yak_stew", zh: "氂牛肉燉菜", en: "Yak Meat Stew", food: [11, 0.8], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("yak_meat")], [r("yak_meat")], ["minecraft:potato"], ["minecraft:beetroot", "minecraft:carrot"]],
+    look: ["bowl", [130, 70, 50]],
+  },
+  {
+    id: "goose_stew", zh: "鐵鍋燉大鵝", en: "Iron Pot Goose Stew", food: [12, 0.8], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("goose_meat"), r("goose_leg")], [r("goose_meat"), r("goose_leg")], ["minecraft:potato"], [KC("red_chili"), KC("green_chili")]],
+    look: ["bowl", [170, 110, 60]],
+  },
+  {
+    id: "trotter_soup", zh: "豬蹄湯", en: "Pork Trotter Soup", food: [9, 0.7], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("pork_trotter")], [r("pork_trotter")], [r("large_bone")]],
+    look: ["bowl", [236, 224, 200]],
+  },
+  {
+    id: "century_egg_congee", zh: "皮蛋瘦肉粥", en: "Century Egg and Pork Congee", food: [9, 0.7], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[KC("rice")], [r("century_egg")], ["minecraft:porkchop", r("pork_belly")]],
+    look: ["bowl", [236, 232, 220]],
+  },
+  {
+    id: "milk_tea", zh: "奶茶", en: "Milk Tea", food: [4, 0.5], station: "stockpot", carrier: "minecraft:glass_bottle", time: 300,
+    slots: [[KC("dried_tea_leaves")], ANY_MILK, ["minecraft:sugar"]],
+    look: ["bottle", [200, 160, 110]],
+  },
+
+  // --- Wok ---------------------------------------------------------------------
+  {
+    id: "salted_egg_yolk_greens", zh: "鹹蛋黃炒菜", en: "Salted Egg Yolk Greens", food: [6, 0.6], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("salted_duck_egg")], [KC("lettuce")]],
+    look: ["bowl", [120, 170, 70]],
+  },
+  {
+    id: "braised_pork_belly", zh: "紅燒五花肉", en: "Braised Pork Belly", food: [10, 0.8], station: "wok", carrier: BOWL, time: 300,
+    slots: [[r("pork_belly")], [r("pork_belly")], ["minecraft:sugar"]],
+    look: ["bowl", [150, 60, 40]],
+  },
+  {
+    id: "tomato_duck_egg", zh: "番茄炒鴨蛋", en: "Tomato and Duck Egg Stir-fry", food: [6, 0.6], station: "wok", carrier: BOWL, time: 200,
+    slots: [ANY_DUCK_EGG, [KC("tomato")]],
+    look: ["bowl", [230, 110, 70]],
+  },
+  {
+    id: "butter_steak", zh: "奶油煎牛排", en: "Butter-seared Steak", food: [10, 0.85], station: "wok", carrier: "", time: 200,
+    slots: [[r("beef_sirloin")], [r("butter")]],
+    look: ["plate", [120, 64, 40]],
+  },
+  {
+    id: "cumin_lamb_chops", zh: "孜然羊排", en: "Spiced Lamb Chops", food: [10, 0.8], station: "wok", carrier: "", time: 200,
+    slots: [[r("lamb_chop")], [r("lamb_chop")], [KC("red_chili")]],
+    look: ["plate", [160, 80, 40]],
+  },
+  {
+    id: "spicy_chicken_legs", zh: "辣子雞腿", en: "Spicy Chicken Legs", food: [9, 0.75], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("chicken_leg")], [r("chicken_leg")], [KC("red_chili")], [KC("green_chili")]],
+    look: ["bowl", [200, 60, 40]],
+  },
+  {
+    id: "ghee_rice", zh: "酥油飯", en: "Ghee Rice", food: [8, 0.7], station: "wok", carrier: BOWL, time: 200,
+    slots: [[KC("cooked_rice")], [r("ghee")]],
+    look: ["bowl", [244, 222, 140]],
+  },
+
+  // --- Steamer, furnace, crafting ---------------------------------------------------
+  {
+    id: "steamed_egg", zh: "蒸蛋", en: "Steamed Egg Custard", food: [6, 0.6], station: "steamer", carrier: BOWL, time: 300,
+    input: r("egg_custard"),
+    look: ["bowl", [250, 220, 110]],
+  },
+  {
+    id: "cheese_gratin", zh: "乳酪焗烤", en: "Cheese Gratin", food: [10, 0.8], station: "furnace", carrier: BOWL,
+    input: r("raw_cheese_gratin"),
+    look: ["bowl", [240, 180, 70]],
+  },
+  {
+    id: "cheese_toast", zh: "乳酪吐司", en: "Cheese Toast", food: [7, 0.7], station: "crafting", carrier: "",
+    slots: [["minecraft:bread"], [r("cheese_slice")]],
+    look: ["plate", [236, 196, 100]],
+  },
+  {
+    id: "berry_yogurt", zh: "莓果優格", en: "Berry Yogurt", food: [5, 0.6], station: "crafting", carrier: BOWL,
+    slots: [[r("yogurt")], ["minecraft:sweet_berries"], [BOWL]],
+    look: ["bowl", [230, 150, 180]],
+  },
+];
+
+/**
+ * Uncooked steps some dishes need first (crafting recipes), each made with any
+ * quality of milk or egg. `with` lists one slot per ingredient; a slot that is
+ * a tag string accepts every item carrying that tag.
+ */
+export const DISH_PREPS = [
+  {
+    id: "egg_custard", zh: "生蛋液", en: "Egg Custard Mix",
+    makes: [
+      ["minecraft:egg", { tag: `${NS}:milk` }, BOWL],
+      [{ tag: `${NS}:egg` }, { tag: `${NS}:milk` }, BOWL],
+    ],
+  },
+  {
+    id: "raw_cheese_gratin", zh: "焗烤生料", en: "Unbaked Cheese Gratin",
+    makes: [["minecraft:potato", r("cheese_slice"), r("cream"), BOWL]],
+  },
+];
+
+/** Dairy and egg products shown in the guidebook's dairy chapter. */
+export const DAIRY_PRODUCTS = ["butter", "cream", "ghee", "yogurt", "fresh_cheese", "aged_cheese_wheel", "cheese_slice", "whey", "salted_duck_egg", "century_egg"];

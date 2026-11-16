@@ -17,7 +17,6 @@ export const BLOCKS = [
   ["incubator", "孵化器", "Incubator", "husbandry"],
   ["salt_lick", "鹽磚", "Salt Lick", "husbandry", "m2"],
   ["hitching_post", "拴畜樁", "Hitching Post", "husbandry"],
-  ["animal_crate", "運畜籠", "Animal Crate", "husbandry"],
   ["compost_bin", "堆肥槽", "Compost Bin", "husbandry", "m2"],
   // Processing
   ["butcher_rack", "屠宰掛架", "Butcher Rack", "processing"],

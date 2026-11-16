@@ -4,31 +4,66 @@
     "animation.kaleidoscope_ranching.goat.walk": {
       "loop": true,
       "bones": {
-        "leg_fl": {
+        "a_leg_fl": {
           "rotation": [
             "math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
-        "leg_br": {
+        "b_leg_fl": {
           "rotation": [
             "math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
-        "leg_fr": {
+        "a_leg_br": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            0,
+            0
+          ]
+        },
+        "b_leg_br": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * 70",
+            0,
+            0
+          ]
+        },
+        "a_leg_fr": {
           "rotation": [
             "-math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
             0
           ]
         },
-        "leg_bl": {
+        "b_leg_fr": {
           "rotation": [
             "-math.cos(q.modified_distance_moved * 38.17) * 70",
             0,
+            0
+          ]
+        },
+        "a_leg_bl": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            0,
+            0
+          ]
+        },
+        "b_leg_bl": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * 70",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "q.target_x_rotation",
+            "q.target_y_rotation",
             0
           ]
         }

@@ -114,9 +114,16 @@ export class ItemStack {
     if (value === undefined) this.dynamic.delete(key);
     else this.dynamic.set(key, value);
   }
+  getLore() {
+    return [...(this.lore ?? [])];
+  }
+  setLore(lines) {
+    this.lore = lines ? [...lines] : [];
+  }
   clone() {
     const copy = new ItemStack(this.typeId, this.amount);
     copy.dynamic = new Map(this.dynamic);
+    copy.lore = this.lore ? [...this.lore] : undefined;
     if (this.durability) copy.durability = { ...this.durability };
     return copy;
   }
@@ -204,7 +211,23 @@ export class Entity {
     const data = this.componentMap().get(id);
     if (data === undefined) return undefined;
     if (id === "minecraft:color" || id === "minecraft:variant") return { value: data.value };
-    if (id === "minecraft:leashable") return { leashHolder: data.leashHolder, leashTo: (holder) => (this.leashedTo = holder) };
+    if (id === "minecraft:leashable") {
+      const entity = this;
+      return {
+        get leashHolder() {
+          return entity.leashedTo?.isValid ? entity.leashedTo : undefined;
+        },
+        get isLeashed() {
+          return Boolean(entity.leashedTo?.isValid);
+        },
+        leashTo: (holder) => (entity.leashedTo = holder),
+        unleash: () => {
+          if (entity.leashedTo) entity.dimension.spawnItem(new ItemStack("minecraft:lead", 1), entity.location);
+          entity.leashedTo = undefined;
+        },
+      };
+    }
+    if (id === "minecraft:rideable") return { ...data, getRiders: () => this.riders ?? [] };
     return data;
   }
   getProperty(key) {
@@ -220,6 +243,9 @@ export class Entity {
   }
   getDynamicProperty(key) {
     return this.dynamic.get(key);
+  }
+  getDynamicPropertyIds() {
+    return [...this.dynamic.keys()];
   }
   setDynamicProperty(key, value) {
     if (value === undefined) this.dynamic.delete(key);
@@ -347,6 +373,9 @@ export class Block {
   }
   get isAir() {
     return this.typeId === "minecraft:air";
+  }
+  get isLiquid() {
+    return this.typeId === "minecraft:water" || this.typeId === "minecraft:lava";
   }
   get isValid() {
     return true;

@@ -46,7 +46,6 @@ export const PROCESSING_RECIPES = [
 // Recipes that use vanilla workstations rather than a Ranching block.
 export const VANILLA_COOKING = [
   { id: "furnace/lard", kind: "furnace", input: "pork_fat", output: "lard" },
-  { id: "furnace/dried_yak_dung", kind: "furnace", input: "manure_item", output: "dried_yak_dung", note: "yak manure only; resolved when manure gains a source tag" },
   { id: "furnace/cooked_buffalo_meat", kind: "furnace", input: "buffalo_meat", output: "cooked_buffalo_meat" },
   { id: "furnace/cooked_yak_meat", kind: "furnace", input: "yak_meat", output: "cooked_yak_meat" },
   { id: "furnace/cooked_duck_meat", kind: "furnace", input: "duck_meat", output: "cooked_duck_meat" },
