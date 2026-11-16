@@ -237,19 +237,33 @@ def block_defs():
             "*": {"texture": side}, "up": {"texture": top}, "down": {"texture": bottom or top},
         },
     }
+
+    # A hand-made model in art/blocks/<id>.geo.json (art_src/m4_scripts/blocks_m2.py, installed by
+    # tools/gen_m3_art.py with the terrain key kr_<id>) replaces the textured full cube. The model
+    # fills the block, so collision stays the default full cube.
+    def handmade(bid, bones=None):
+        if not (ROOT / "art" / "blocks" / f"{bid}.geo.json").exists():
+            return None
+        geo = {"identifier": f"geometry.{NS}.{bid}"}
+        if bones:
+            geo["bone_visibility"] = bones
+        return {"minecraft:geometry": geo, "minecraft:material_instances": mats(f"kr_{bid}"),
+                "minecraft:light_dampening": 0}
+
+    look = lambda bid, *textures: handmade(bid) or full(*textures)
     B["auto_feeder"] = dict(components={
-        **full("kr_auto_feeder_top", "kr_auto_feeder_side"),
+        **look("auto_feeder", "kr_auto_feeder_top", "kr_auto_feeder_side"),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#5b5b5b",
         f"{NS}:auto_feeder": {},
     })
     B["chaff_cutter"] = dict(components={
-        **full("kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks"),
+        **look("chaff_cutter", "kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks"),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#8a5a32",
         "minecraft:crafting_table": {"table_name": f"tile.{NS}:chaff_cutter.name",
                                      "crafting_tags": [f"{NS}_chaff_cutter"]},
     })
     B["feed_mixer"] = dict(components={
-        **full("kr_feed_mixer_top", "kr_feed_mixer_side", "kr_planks"),
+        **look("feed_mixer", "kr_feed_mixer_top", "kr_feed_mixer_side", "kr_planks"),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#9a6a3a",
         "minecraft:crafting_table": {"table_name": f"tile.{NS}:feed_mixer.name",
                                      "crafting_tags": [f"{NS}_feed_mixer"]},
@@ -268,14 +282,21 @@ def block_defs():
         },
     )
     comp = lambda top: full(top, "kr_compost_bin_side", "kr_planks")
+    # Hand-made bin: the contents are bones (manure_1..4 by load, fermenting, ready) instead of
+    # per-state top textures.
+    bin_model = handmade("compost_bin", {
+        **{f"manure_{n}": f"{q('stage')} == 0 && {q('manure')} == {n}" for n in (1, 2, 3, 4)},
+        "fermenting": f"{q('stage')} == 1",
+        "ready": f"{q('stage')} == 2",
+    })
     B["compost_bin"] = dict(
         states={**state("stage", 0, 2), **state("manure", 0, 4)},
         components={
-            **comp("kr_compost_bin_top_empty"),
+            **(bin_model or comp("kr_compost_bin_top_empty")),
             "minecraft:destructible_by_mining": {"seconds_to_destroy": 1.5}, "minecraft:map_color": "#6b4a2a",
             f"{NS}:compost_bin": {},
         },
-        permutations=[
+        permutations=[] if bin_model else [
             {"condition": f"{q('stage')} == 0 && {q('manure')} > 0",
              "components": {"minecraft:material_instances": comp("kr_compost_bin_top_manure")["minecraft:material_instances"]}},
             {"condition": f"{q('stage')} == 1",

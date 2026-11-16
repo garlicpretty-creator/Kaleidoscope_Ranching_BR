@@ -41,7 +41,7 @@ export const RULES = [
   [/^blocks\/ranching\/(fermenting_jar|pickling_vat)$/, "glazed"],
   [/^blocks\/ranching\/incubator$/, "stone"],
   [/^blocks\/ranching\/(aging_rack|butcher_rack|butter_churn|cheese_press|nest_box|hay_rack|hitching_post)$/, "wood"],
-  [/^blocks\/ranching\/aged_cheese_wheel$/, "fat"],
+  [/^blocks\/ranching\/cheese_wheel$/, "fat"],
   // Items
   [/^items\/ranching\/(milking_pail|cowbell)$/, "metal"],
   [/^items\/ranching\/(nursing_bottle|\w+_milk(_fine|_superb)?|cream|whey|yogurt)$/, "glass"],

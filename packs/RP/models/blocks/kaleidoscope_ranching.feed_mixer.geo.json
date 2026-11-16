@@ -1,0 +1,159 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.feed_mixer",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "mixer",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -7,
+                0,
+                -7
+              ],
+              "size": [
+                14,
+                1,
+                14
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                1,
+                -6
+              ],
+              "size": [
+                12,
+                12,
+                12
+              ],
+              "uv": [
+                0,
+                15
+              ]
+            },
+            {
+              "origin": [
+                -6.5,
+                3,
+                -6.5
+              ],
+              "size": [
+                13,
+                1,
+                13
+              ],
+              "uv": [
+                0,
+                39
+              ]
+            },
+            {
+              "origin": [
+                -6.5,
+                10,
+                -6.5
+              ],
+              "size": [
+                13,
+                1,
+                13
+              ],
+              "uv": [
+                0,
+                39
+              ]
+            },
+            {
+              "origin": [
+                -0.5,
+                13,
+                -0.5
+              ],
+              "size": [
+                1,
+                3,
+                1
+              ],
+              "uv": [
+                52,
+                39
+              ]
+            },
+            {
+              "origin": [
+                -4,
+                13,
+                -0.5
+              ],
+              "size": [
+                8,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                53
+              ]
+            },
+            {
+              "origin": [
+                -0.5,
+                15,
+                -0.5
+              ],
+              "size": [
+                5,
+                1,
+                1
+              ],
+              "uv": [
+                18,
+                53
+              ]
+            },
+            {
+              "origin": [
+                4,
+                16,
+                -0.5
+              ],
+              "size": [
+                1,
+                2,
+                1
+              ],
+              "uv": [
+                30,
+                53
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

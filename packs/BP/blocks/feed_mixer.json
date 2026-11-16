@@ -8,18 +8,16 @@
       }
     },
     "components": {
-      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:geometry": {
+        "identifier": "geometry.kaleidoscope_ranching.feed_mixer"
+      },
       "minecraft:material_instances": {
         "*": {
-          "texture": "kr_feed_mixer_side"
-        },
-        "up": {
-          "texture": "kr_feed_mixer_top"
-        },
-        "down": {
-          "texture": "kr_planks"
+          "texture": "kr_feed_mixer",
+          "render_method": "alpha_test"
         }
       },
+      "minecraft:light_dampening": 0,
       "minecraft:destructible_by_mining": {
         "seconds_to_destroy": 2.0
       },

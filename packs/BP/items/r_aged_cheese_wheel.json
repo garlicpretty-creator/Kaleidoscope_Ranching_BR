@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.90",
+  "format_version": "1.21.60",
   "minecraft:item": {
     "description": {
       "identifier": "kaleidoscope_ranching:aged_cheese_wheel",
@@ -11,8 +11,7 @@
       "minecraft:icon": "kr_aged_cheese_wheel",
       "minecraft:max_stack_size": 16,
       "minecraft:block_placer": {
-        "block": "kaleidoscope_ranching:aged_cheese_wheel",
-        "replace_block_item": true
+        "block": "kaleidoscope_ranching:cheese_wheel"
       }
     }
   }
