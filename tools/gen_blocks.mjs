@@ -1,5 +1,5 @@
 // Generates the behaviour-pack block files for the M3 blocks. Geometry and
-// textures come from tools/gen_m3_art.py; bone names follow tools/art/blocks.py.
+// textures come from tools/gen_m3_art.py; bone names follow the models in art/blocks/ (and tools/art/blocks.py for the tanning rack).
 //
 // Run with: node tools/gen_blocks.mjs
 

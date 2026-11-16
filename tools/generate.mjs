@@ -5,7 +5,6 @@ import { spawnSync } from "node:child_process";
 
 const STEPS = [
   ["py", "tools/gen_art.py"],
-  ["py", "tools/gen_placeholder_animals.py"],
   ["py", "tools/m2/gen_content.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
