@@ -65,7 +65,7 @@ const PLACED_SHAPES = {
   crock: both(-3, 0, -3, 6, 8, 6),
   mug: both(-3, 0, -3, 8, 9, 6),
   bottle: both(-3, 0, -3, 6, 14, 6),
-  tea_bowl: both(-4, 0, -4, 8, 5, 8),
+  tumbler: both(-3, 0, -3, 6, 10, 6),
   saucer_bowl: both(-4, 0, -4, 8, 7, 8),
 };
 const PLACED_COLORS = {

@@ -1,7 +1,7 @@
 """Drinks that can be put down and drunk in place (data/placedFoods.js rows with one portion):
 the two milk wines in horn cups, the cream cocoa in a glass mug, the yogurt berry drink in a
-milk bottle with a straw, yogurt in its crock with a spoon, milk tea in a lacquered wooden bowl
-and milk-skin tea in a porcelain bowl on its saucer.
+milk bottle with a straw, yogurt in its crock with a spoon, milk tea in a tall glass and milk-skin tea in a porcelain
+bowl on its saucer.
 
 Each is a container bone and a piece_1 bone with the drink, whose top shows inside the rim
 (tools/validate.mjs wants piece_1 for every placed food). The drink is drunk in one go, so the
@@ -175,21 +175,21 @@ def yogurt():
     m.save()
 
 
-# --- milk teas: two tea bowls ------------------------------------------------------------
+# --- milk teas: a glass of milk tea and a bowl of milk-skin tea --------------------------
 
 TEA, TEA_DK = (200, 158, 108), (176, 132, 86)
 
 
 def milk_tea():
-    """A wide wooden tea bowl lacquered red-brown, lined with a silver rim, full of milk tea."""
+    """A tall straight glass of milk tea, a pale band of milk foam on top; no handle, no straw."""
     m = Model("placed_milk_tea")
-    wood = horn((140, 64, 44), (98, 42, 30), (168, 88, 62), band=(SILVER, SILVER_DK), band_at=(4,))
+    g = glass(TEA, 8, streak=1)
     m.bone("cup")
-    m.box("cup", [-2, 0, -2], [4, 1, 4], wood)  # foot
-    m.box("cup", [-3, 1, -3], [6, 1, 6], wood)
-    ring(m, "cup", -4, 4, -4, 4, 2, 5, wood)
+    m.box("cup", [-3, 0, -3], [6, 1, 6], g)
+    ring(m, "cup", -3, 3, -3, 3, 1, 10, g)
     m.bone("piece_1", "cup")
-    m.box("piece_1", [-3, 2, -3], [6, 2, 6], surface(TEA, mix(TEA, (250, 240, 220), 0.4), 8, 12))
+    m.box("piece_1", [-2, 1, -2], [4, 7, 4], plain(TEA, TEA_DK))
+    m.box("piece_1", [-2, 8, -2], [4, 1, 4], surface(mix(TEA, (250, 240, 220), 0.55), mix(TEA, (250, 240, 220), 0.8), 8, 24))
     m.save()
 
 
