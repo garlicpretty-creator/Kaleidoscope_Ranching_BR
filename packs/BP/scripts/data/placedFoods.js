@@ -12,7 +12,7 @@
 // gives:    handed back with the last portion (the dish's bowl)
 // drink:    drunk rather than eaten (the item's drink animation): the drinking sound
 // shape:    which boxes the block uses (tools/gen_blocks.mjs PLACED_SHAPES): wheel, pizza, pot, fondue,
-//           claypot, dish, and the drinks' goblet, beaker, crock, mug, bottle, tea_bowl, saucer_bowl;
+//           claypot, dish, and the drinks' goblet, beaker, crock, mug, bottle, tumbler, saucer_bowl;
 //           every dish and drink has its own model
 //           (tools/gen_blocks.mjs; art_src/m4_scripts/placed_food.py)
 //
@@ -51,7 +51,7 @@ export const PLACED_FOODS = [
   drink("yak_milk_wine", "beaker", 4, { gives: "kaleidoscope_ranching:horn_cup" }),
   drink("cream_cocoa", "mug", 4, { gives: "minecraft:glass_bottle" }),
   drink("yogurt_berry_drink", "bottle", 4, { gives: "minecraft:glass_bottle" }),
-  drink("milk_tea", "tea_bowl", 4, { gives: "minecraft:glass_bottle" }),
+  drink("milk_tea", "tumbler", 4, { gives: "minecraft:glass_bottle" }),
   drink("milk_skin_tea", "saucer_bowl", 5, { gives: "minecraft:glass_bottle" }),
   // Yogurt is eaten with a spoon from its crock, as from the hand.
   drink("yogurt", "crock", 4, { drink: false }),
