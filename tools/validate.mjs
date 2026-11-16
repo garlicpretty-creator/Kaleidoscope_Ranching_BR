@@ -160,6 +160,11 @@ PROCESSING_RECIPES.forEach((recipe) => {
 });
 VANILLA_COOKING.forEach((recipe) => [recipe.input, recipe.output].forEach(note));
 WOK_MEATS.forEach((pair) => [pair.raw, pair.cooked].forEach(note));
+{
+  // 1.1: butcher-rack air-drying and water-trough washing (input → output).
+  const { DRYING = {}, WASHING = {} } = await load("processing.js");
+  for (const table of [DRYING, WASHING]) for (const [from, to] of Object.entries(table)) [from, to].forEach(note);
+}
 
 // M5 dishes (data/dishes.js): every ingredient is a Ranching item, a vanilla
 // item or a Cookery item; Ranching ones must be registered.
@@ -333,6 +338,12 @@ for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(ter
   }
   for (const recipe of PROCESSING_RECIPES) for (const input of recipe.inputs) (input.anyOf ?? [input.item]).forEach(take);
   for (const recipe of VANILLA_COOKING) take(recipe.input);
+  // 1.1: air-dried on the butcher rack, washed at the water trough.
+  {
+    const { DRYING, WASHING } = await load("processing.js");
+    Object.keys(DRYING ?? {}).forEach(take);
+    Object.keys(WASHING ?? {}).forEach(take);
+  }
   const walkSlots = (value) => {
     if (typeof value === "string") take(value);
     else if (Array.isArray(value)) value.forEach(walkSlots);

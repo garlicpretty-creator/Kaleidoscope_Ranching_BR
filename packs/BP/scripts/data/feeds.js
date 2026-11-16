@@ -39,6 +39,12 @@ export const FEEDS = {
   // 廚餘 (proposal: 豬吃廚餘): scraps from the food waste bin.
   "kaleidoscope_ranching:food_waste": { kind: KIND.VEG, units: 1 },
 
+  // 1.1 內臟線: offal nobody cooked is pig feed (企劃書: 沒用完的生內臟可以餵豬).
+  ...Object.fromEntries(
+    ["pork_liver", "pig_intestine", "chicken_gizzard", "duck_blood", "goose_liver", "beef_tripe", "cleaned_intestine", "cleaned_tripe"]
+      .map((id) => [`kaleidoscope_ranching:${id}`, { kind: KIND.VEG, units: 1 }])
+  ),
+
   "kaleidoscope_ranching:mixed_feed": { kind: KIND.MIXED, units: 1 },
   // 乳清餵豬 (proposal, by-products line): whey from the cheese press fills a
   // trough as mixed feed, so pigs and cattle drink it.

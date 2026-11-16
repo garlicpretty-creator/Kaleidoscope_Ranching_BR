@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "pate_toast",
+    "metalness_emissive_roughness_subsurface": "pate_toast_mers",
+    "normal": "pate_toast_normal"
+  }
+}

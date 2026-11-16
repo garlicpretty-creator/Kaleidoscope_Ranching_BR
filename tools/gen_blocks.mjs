@@ -21,7 +21,7 @@ const CARCASSES = ANIMALS.map((animal) => animal.id);
 const FULL = { origin: [-8, 0, -8], size: [16, 16, 16] };
 const box = (x, y, z, w, h, d) => ({ origin: [x, y, z], size: [w, h, d] });
 
-const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack"];
+const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder"];
 
 const DEFS = {
   butcher_rack: {

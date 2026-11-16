@@ -107,6 +107,34 @@ const CUTS = [
   ["rabbit_leg", "兔腿", "Rabbit Leg", "cut"],
 ];
 
+// 1.1 肉類線 (企劃書 1.1 一、肉類線): the meat grinder's mince and sausages, and
+// what the butcher rack air-dries (data/processing.js DRYING).
+const MEAT_LINE = [
+  ["pork_mince", "豬絞肉", "Ground Pork", "mince"],
+  ["beef_mince", "牛絞肉", "Ground Beef", "mince"],
+  ["mutton_mince", "羊絞肉", "Ground Mutton", "mince"],
+  ["raw_sausage", "生香腸", "Raw Sausage", "mince"],
+  ["cured_sausage", "臘腸", "Cured Sausage", "cured"],
+  ["cured_pork_belly", "臘肉", "Cured Pork Belly", "cured"],
+  ["cured_duck_leg", "臘鴨腿", "Cured Duck Leg", "cured"],
+  ["beef_jerky", "牛肉乾", "Beef Jerky", "cured"],
+];
+
+// 1.1 內臟線 (企劃書 1.1 二、內臟線): offal from the butcher rack's offal stroke
+// (data/butcher.js), washed at the water trough (data/processing.js WASHING).
+const OFFAL_LINE = [
+  ["pork_liver", "豬肝", "Pork Liver", "offal"],
+  ["pig_intestine", "豬腸", "Pig Intestine", "offal"],
+  ["chicken_gizzard", "雞胗", "Chicken Gizzard", "offal"],
+  ["duck_blood", "鴨血", "Duck Blood", "offal"],
+  ["goose_liver", "鵝肝", "Goose Liver", "offal"],
+  ["beef_tripe", "牛肚", "Beef Tripe", "offal"],
+  ["cleaned_intestine", "洗淨的大腸", "Cleaned Intestine", "offal"],
+  ["cleaned_tripe", "洗淨的牛肚", "Cleaned Tripe", "offal"],
+  ["sausage_casing", "腸衣", "Sausage Casing", "byproduct"],
+  ["foie_gras_pate", "鵝肝醬", "Goose Liver Pâté", "dairy"],
+];
+
 const BYPRODUCTS = [
   ["large_bone", "大骨", "Large Bone", "byproduct"],
   ["chicken_frame", "雞骨架", "Chicken Frame", "byproduct"],
@@ -163,6 +191,8 @@ export const ITEMS = [
   ...CARCASSES,
   ...MEAT,
   ...CUTS,
+  ...MEAT_LINE,
+  ...OFFAL_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,

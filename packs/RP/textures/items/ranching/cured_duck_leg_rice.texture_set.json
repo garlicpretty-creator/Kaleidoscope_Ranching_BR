@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cured_duck_leg_rice",
+    "metalness_emissive_roughness_subsurface": "cured_duck_leg_rice_mers",
+    "normal": "cured_duck_leg_rice_normal"
+  }
+}

@@ -132,6 +132,80 @@ export const DISHES = [
     slots: [[r("yogurt")], ["minecraft:sweet_berries"], [BOWL]],
     look: ["bowl", [230, 150, 180]],
   },
+
+  // --- 1.1 肉類線 ----------------------------------------------------------------
+  {
+    id: "claypot_rice", zh: "臘味煲仔飯", en: "Cured Meat Claypot Rice", food: [12, 0.85], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[KC("rice")], [r("cured_sausage")], [r("cured_pork_belly")]],
+    look: ["bowl", [180, 80, 60]],
+  },
+  {
+    id: "cured_pork_peppers", zh: "臘肉炒青椒", en: "Cured Pork with Peppers", food: [9, 0.75], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("cured_pork_belly")], [KC("green_chili")]],
+    look: ["bowl", [150, 120, 60]],
+  },
+  {
+    id: "pan_fried_sausage", zh: "香煎香腸", en: "Pan-fried Sausages", food: [8, 0.7], station: "wok", carrier: "", time: 200,
+    slots: [[r("raw_sausage")], [r("raw_sausage")]],
+    look: ["plate", [170, 70, 50]],
+  },
+  {
+    id: "cured_duck_leg_rice", zh: "臘鴨腿飯", en: "Cured Duck Leg Rice", food: [11, 0.8], station: "wok", carrier: BOWL, time: 200,
+    slots: [[KC("cooked_rice")], [r("cured_duck_leg")]],
+    look: ["bowl", [160, 90, 50]],
+  },
+  {
+    id: "lion_head_meatballs", zh: "紅燒獅子頭", en: "Braised Lion's Head Meatballs", food: [11, 0.8], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("pork_mince")], [r("pork_mince")], ["minecraft:egg", r("egg_fine"), r("egg_superb")]],
+    look: ["bowl", [150, 80, 50]],
+  },
+  {
+    id: "hamburg_steak", zh: "漢堡排", en: "Hamburg Steak", food: [10, 0.8], station: "wok", carrier: "", time: 200,
+    slots: [[r("beef_mince")], [r("beef_mince")], ["minecraft:bread"]],
+    look: ["plate", [120, 70, 45]],
+  },
+  {
+    id: "lamb_meatball_soup", zh: "羊肉丸湯", en: "Lamb Meatball Soup", food: [9, 0.7], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("mutton_mince")], [r("mutton_mince")], ["minecraft:carrot"]],
+    look: ["bowl", [220, 200, 160]],
+  },
+
+  // --- 1.1 內臟線 ----------------------------------------------------------------
+  {
+    id: "pork_liver_soup", zh: "豬肝湯", en: "Pork Liver Soup", food: [7, 0.7], station: "stockpot", carrier: BOWL, time: 300,
+    slots: [[r("pork_liver")], [KC("lettuce")]],
+    look: ["bowl", [170, 110, 80]],
+  },
+  {
+    id: "sesame_oil_pork_liver", zh: "麻油豬肝", en: "Sesame Oil Pork Liver", food: [8, 0.75], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("pork_liver")], [r("pork_liver")]],
+    look: ["bowl", [120, 60, 40]],
+  },
+  {
+    id: "braised_intestine", zh: "滷大腸", en: "Braised Pork Intestine", food: [8, 0.7], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("cleaned_intestine")], [r("cleaned_intestine")], ["minecraft:sugar"]],
+    look: ["bowl", [150, 90, 50]],
+  },
+  {
+    id: "duck_blood_noodle_soup", zh: "鴨血粉絲湯", en: "Duck Blood Vermicelli Soup", food: [9, 0.7], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("duck_blood")], [KC("raw_noodles")], [r("large_bone"), r("chicken_frame")]],
+    look: ["bowl", [200, 170, 130]],
+  },
+  {
+    id: "spicy_tripe", zh: "麻辣牛肚", en: "Spicy Beef Tripe", food: [8, 0.7], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("cleaned_tripe")], [KC("red_chili")], [KC("green_chili")]],
+    look: ["bowl", [200, 70, 40]],
+  },
+  {
+    id: "braised_gizzard", zh: "滷雞胗", en: "Braised Chicken Gizzards", food: [7, 0.7], station: "stockpot", carrier: BOWL, time: 400,
+    slots: [[r("chicken_gizzard")], [r("chicken_gizzard")], ["minecraft:sugar"]],
+    look: ["bowl", [130, 80, 50]],
+  },
+  {
+    id: "pate_toast", zh: "鵝肝醬吐司", en: "Pâté Toast", food: [8, 0.8], station: "crafting", carrier: "",
+    slots: [["minecraft:bread"], [r("foie_gras_pate")]],
+    look: ["plate", [214, 170, 120]],
+  },
 ];
 
 /**
@@ -155,3 +229,10 @@ export const DISH_PREPS = [
 
 /** Dairy and egg products shown in the guidebook's dairy chapter. */
 export const DAIRY_PRODUCTS = ["butter", "cream", "ghee", "yogurt", "fresh_cheese", "aged_cheese_wheel", "cheese_slice", "whey", "salted_duck_egg", "century_egg"];
+
+/** 1.1 meat and offal products shown in the guidebook's butchery chapter. */
+export const MEAT_PRODUCTS = [
+  "pork_mince", "beef_mince", "mutton_mince", "raw_sausage", "cured_sausage", "cured_pork_belly", "cured_duck_leg", "beef_jerky",
+  "pork_liver", "pig_intestine", "chicken_gizzard", "duck_blood", "goose_liver", "beef_tripe", "cleaned_intestine", "cleaned_tripe",
+  "sausage_casing", "foie_gras_pate",
+];

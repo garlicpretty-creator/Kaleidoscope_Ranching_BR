@@ -10,6 +10,7 @@
 // - ifUnshorn: only when the sheep still had its wool.
 // - skin:      hide, wool, hair or feathers. The rack shows the animal as it
 //              was until every skin stroke is done, then the skinned carcass.
+// - offal:     the offal stroke (1.1 內臟線), taken right after the skin.
 //
 // Every carcass yields vanilla raw meat where a vanilla meat exists, so
 // Cookery's existing recipes keep working. Identifiers without a namespace
@@ -123,3 +124,22 @@ export const BUTCHER_TABLE = {
     ],
   },
 };
+
+// 1.1 內臟線: one offal stroke per animal, right after its skin strokes.
+// Sheep, goats and rabbits give no offal (企劃書 1.1 二、內臟線).
+export const OFFAL_CUTS = {
+  cow_carcass: [{ item: "beef_tripe", count: [1, 1] }],
+  buffalo_carcass: [{ item: "beef_tripe", count: [1, 1] }],
+  yak_carcass: [{ item: "beef_tripe", count: [1, 1] }],
+  pig_carcass: [{ item: "pork_liver", count: [1, 1] }, { item: "pig_intestine", count: [1, 2] }],
+  chicken_carcass: [{ item: "chicken_gizzard", count: [1, 1] }],
+  duck_carcass: [{ item: "duck_blood", count: [1, 1] }],
+  goose_carcass: [{ item: "goose_liver", count: [1, 1] }],
+};
+
+for (const [carcass, offal] of Object.entries(OFFAL_CUTS)) {
+  const cuts = BUTCHER_TABLE[carcass].cuts;
+  let after = -1;
+  cuts.forEach((cut, i) => { if (cut.skin) after = i; });
+  cuts.splice(after + 1, 0, ...offal.map((cut) => ({ ...cut, offal: true })));
+}

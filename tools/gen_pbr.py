@@ -73,6 +73,7 @@ RULES = [
     (r"^blocks/kaleidoscope_ranching/", "wood"),
     # Hand-made blocks (box-UV atlases)
     (r"^blocks/ranching/auto_feeder$", "metal"),
+    (r"^blocks/ranching/meat_grinder$", "metal"),
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
     (r"^blocks/ranching/cheese_wheel$", "fat"),
     (r"^blocks/ranching/", "wood"),
@@ -85,6 +86,7 @@ RULES = [
     (r"^items/.*/(down|yak_hair|pig_bristle|raw_hide|sheep_skin|rabbit_hide|brush)$", "fur"),
     (r"^items/.*/pig_skin$", "skin"),
     (r"^items/.*/cooked_\w+$", "food"),
+    (r"^items/.*/(\w+_mince|\w+_sausage|sausage_casing|pig_intestine|cleaned_\w+|chicken_gizzard|duck_blood|goose_liver|cured_\w+|beef_jerky)$", "meat"),
     (r"^items/.*/(\w+_meat|beef_\w+|pork_\w+|lamb_\w+|\w+_leg|\w+_wing|\w+_carcass|\w+_trotter)$", "meat"),
     (r"^items/.*/(manure|dried_yak_dung|food_waste|fertilizer)$", "dung"),
     (r"^items/.*/(forage|alfalfa\w*|mixed_feed|concentrate_feed|\w+_cake|carrot_chips|beet_sugar_cube)$", "plant"),

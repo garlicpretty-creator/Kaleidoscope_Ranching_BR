@@ -40,6 +40,7 @@ SOUNDS = {
     "hitching_post": "wood",
     "cheese_wheel": "cloth",
     "food_waste_bin": "wood",
+    "meat_grinder": "metal",
 }
 
 
