@@ -48,6 +48,8 @@ export const CFG_SLEEP = "kr:cfg:sleep";
 const WOKE_AT = dp("woke_at");
 const NIGHT_DONE = dp("sleep_night");
 export const BLANKET = dp("blanket");
+/** How the last settled night went: "slept_well", "cold" or "plain" (observation journal). */
+export const LAST_NIGHT = dp("last_night");
 
 const COZY_BLOCKS = [rid("hay_rack"), rid("rug")];
 const COLD_BLOCKS = ["minecraft:snow_layer", "minecraft:snow", "minecraft:powder_snow", "minecraft:ice", "minecraft:packed_ice", "minecraft:blue_ice"];
@@ -117,6 +119,12 @@ export function settleNight(animal) {
   const night = nightOf();
   if (animal.getDynamicProperty(NIGHT_DONE) === night) return null;
   animal.setDynamicProperty(NIGHT_DONE, night);
+  const result = nightResult(animal);
+  animal.setDynamicProperty(LAST_NIGHT, result ?? "plain");
+  return result;
+}
+
+function nightResult(animal) {
   const sheltered = isSheltered(animal);
   if (sheltered && near(animal, COZY_BLOCKS, 4)) {
     addAffection(animal, SLEPT_WELL_POINTS);

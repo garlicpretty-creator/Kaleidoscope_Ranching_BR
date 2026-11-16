@@ -2659,6 +2659,44 @@ test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", ()
   assert(!packBag.wearsPackBag(cow), "only yaks");
 });
 
+const notebookUi = await import("../../packs/BP/scripts/ui/notebook.js");
+test("1.1: the observation journal reads an animal's health, rest, produce, family and gear", () => {
+  clearWorld();
+  const keysOf = (parts) => {
+    const out = [];
+    const walk = (p) => {
+      if (!p || typeof p !== "object") return;
+      if (p.translate) out.push(p.translate.replace("kaleidoscope_ranching.ui.", ""));
+      for (const v of Object.values(p)) if (Array.isArray(v)) v.forEach(walk);
+        else if (v && typeof v === "object") walk(v);
+    };
+    parts.forEach(walk);
+    return out;
+  };
+  const cow = ranch("cow", 0, "female");
+  let keys = keysOf(notebookUi.observe(cow));
+  for (const key of ["observe.who", "observe.hearts", "observe.section.health", "observe.health.well", "observe.section.produce", "observe.section.family"])
+    assert(keys.includes(key), `shows ${key}`);
+  assert(keys.some((k) => /^observe\.produce\.(milk_ready|no_milk)$/.test(k)), "says whether she gives milk");
+  cow.setDynamicProperty("kaleidoscope_ranching:sick", true);
+  keys = keysOf(notebookUi.observe(cow));
+  assert(keys.includes("observe.health.sick"), "sick");
+  assert(keys.includes("observe.produce.no_milk"), "no milk when sick");
+  const bull = ranch("cow", 3, "male");
+  keys = keysOf(notebookUi.observe(bull));
+  assert(!keys.includes("observe.section.produce"), "a bull gives nothing");
+  const yak = ranch("yak", 6, "female");
+  const player = __newPlayer(at(6, -3));
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, yak);
+  __advance(1);
+  keys = keysOf(notebookUi.observe(yak));
+  assert(keys.includes("observe.gear.pack_bag"), "pack bag shown");
+  const duck = ranch("duck", 9, "female");
+  keys = keysOf(notebookUi.observe(duck));
+  assert(keys.includes("observe.produce.moult_shy"), "moulting needs hearts");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

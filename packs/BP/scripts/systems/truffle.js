@@ -46,7 +46,7 @@ function inForest(dimension, location) {
 
 /** One pig's daily try. Returns true when it found a truffle. */
 /** What a type digs up: the pig's truffle, or a registered `forage` (1.1 API). */
-const forageOf = (typeId) =>
+export const forageOf = (typeId) =>
   typeId === rid("pig") ? { item: rid("truffle"), chance: TRUFFLE_CHANCE, minHearts: TRUFFLE_MIN_HEARTS } : animalByType(typeId)?.forage;
 
 export function rootForTruffle(pig, roll = Math.random()) {

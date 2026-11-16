@@ -1,53 +1,124 @@
-// 牧場記事本: inspect / rename an animal; use in the air to browse the ear-tag roster.
+// 觀察手冊 (item id ranch_notebook, formerly 牧場記事本): use it on an animal to
+// observe it in detail and rename it; use it in the air to browse the ear-tag
+// roster and, for operators, the settings.
 
 import { world, PlayerPermissionLevel } from "@minecraft/server";
 import { CFG_SLEEP } from "../systems/sleep.js";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { FAMILY_MALE, DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
 import { CFG_CLEAN_NEED } from "../data/care_config.js";
-import { getHearts, needsToday, cleanNeedEnabled } from "../care/state.js";
+import { getAffection, getHearts, needsToday, cleanNeedEnabled } from "../care/state.js";
 import { updateRoster, rosterEntries } from "./roster.js";
 import { today } from "../utils/world_util.js";
 import { T, L, lines, heartBar } from "./text.js";
+import { CARE } from "../data/care_config.js";
+import { isBaby, isFemale, speciesOf } from "../core/animal.js";
+import { canBreed, production } from "../core/husbandry.js";
+import { diseaseEnabled, isSick, riskOf } from "../systems/disease.js";
+import { BLANKET, LAST_NIGHT, isAsleep, isSheltered, sleepEnabled } from "../systems/sleep.js";
+import { LAST_MILKED_DAY, NURSING_FEEDS } from "../systems/milking.js";
+import { NURSING_FEEDS_TO_GROW } from "../data/animals.js";
+import { daysToBirth, isResting } from "../systems/breeding.js";
+import { HARNESSED, PLOUGHING } from "../systems/workAnimals.js";
+import { PACKED, bagContents, bagOf } from "../systems/packBag.js";
+import { MOULT_MIN_HEARTS, moultOf } from "../systems/moult.js";
+import { forageOf } from "../systems/truffle.js";
 
-function genderOf(e) {
-  return e.matches({ families: [FAMILY_MALE] }) ? "male" : "female";
-}
 function mark(ok) {
   return ok ? "§a✔§r" : "§c✘§r";
 }
 
-export function showAnimal(player, e) {
-  const gender = genderOf(e);
-  const n = needsToday(e);
-  const due = e.getDynamicProperty(DP_PREGNANT_UNTIL_DAY);
+const O = (key, args) => T(`observe.${key}`, args);
+const section = (key) => ({ rawtext: [{ text: "\n§l" }, T(`observe.section.${key}`), { text: "§r" }] });
+
+/** Every line of the observation page, as rawtext parts. Exported for tests. */
+export function observe(e) {
+  const day = today();
+  const species = speciesOf(e);
+  const baby = isBaby(e);
+  const female = isFemale(e);
   const tag = e.getDynamicProperty("kr:ear_tag");
-  const preg =
-    gender === "male"
-      ? T("info.pregnant_na")
-      : typeof due === "number" && due >= today()
-        ? T("info.pregnant", [`${due - today()}`])
-        : T("info.not_pregnant");
+  const out = [];
 
-  const needParts = [T("need.fed"), ` ${mark(n.fed)}  `, T("need.water"), ` ${mark(n.water)}  `,
-    T("need.groom"), ` ${mark(n.groom)}`];
+  // Who it is.
+  out.push(T("info.name", [e.nameTag ? e.nameTag : T("info.unnamed")]));
+  out.push(O("who", [L(`entity.${e.typeId}.name`), T(`gender.${female ? "female" : "male"}`), O(baby ? "age.baby" : "age.adult")]));
+  if (tag !== undefined) out.push(T("info.ear_tag", [`#${String(tag).padStart(3, "0")}`]));
+
+  // Affection.
+  const points = getAffection(e);
+  out.push(O("hearts", [heartBar(getHearts(e)), `${points}`, `${CARE.MAX_POINTS}`]));
+
+  // Today's care.
+  out.push(section("today"));
+  const n = needsToday(e);
+  const needParts = [T("need.fed"), ` ${mark(n.fed)}  `, T("need.water"), ` ${mark(n.water)}  `, T("need.groom"), ` ${mark(n.groom)}`];
   if (cleanNeedEnabled()) needParts.push("  ", T("need.clean"), ` ${mark(n.clean)}`);
+  out.push({ rawtext: needParts.map((p) => (typeof p === "string" ? { text: p } : p)) });
+  out.push(O(n.all ? "needs.all" : "needs.some"));
 
-  const body = lines(
-    T("info.name", [e.nameTag ? e.nameTag : T("info.unnamed")]),
-    T("info.species", [L(`entity.${e.typeId}.name`)]),
-    T("info.gender", [T(`gender.${gender}`)]),
-    T("info.hearts", [heartBar(getHearts(e))]),
-    preg,
-    T("info.ear_tag", [tag !== undefined ? `#${String(tag).padStart(3, "0")}` : T("info.none")]),
-    // 1.1: sick (systems/disease.js) and asleep (systems/sleep.js).
-    ...(e.getDynamicProperty("kaleidoscope_ranching:sick") === true ? [T("info.sick")] : []),
-    ...(e.getProperty?.("kaleidoscope_ranching:sleeping") === true ? [T("info.asleep")] : []),
-    "",
-    T("info.needs"),
-    { rawtext: needParts.map((p) => (typeof p === "string" ? { text: p } : p)) },
-  );
+  // Health.
+  out.push(section("health"));
+  if (isSick(e)) out.push(O("health.sick"));
+  else {
+    const risk = diseaseEnabled() ? riskOf(e, day) : null;
+    out.push(O(risk ? `health.risk_${risk}` : "health.well"));
+  }
 
+  // Rest.
+  if (sleepEnabled()) {
+    out.push(section("rest"));
+    out.push(O(isAsleep(e) ? "rest.asleep" : "rest.awake"));
+    const night = e.getDynamicProperty(LAST_NIGHT);
+    if (typeof night === "string") out.push(O(`rest.night_${night}`));
+    out.push(O(isSheltered(e) ? "rest.sheltered" : "rest.open_sky"));
+    if (e.getDynamicProperty(BLANKET) === true) out.push(O("rest.blanket"));
+  }
+
+  // Produce.
+  const product = species?.dailyProduct;
+  const produce = [];
+  if (product && female && !baby) {
+    const { produces } = production(e, day);
+    if (product.via === "milking_pail") {
+      produce.push(O(e.getDynamicProperty(LAST_MILKED_DAY) === day ? "produce.milked" : produces ? "produce.milk_ready" : "produce.no_milk"));
+    } else {
+      produce.push(O(produces ? "produce.lays" : "produce.no_eggs"));
+    }
+  }
+  const moult = moultOf(e.typeId);
+  if (moult && !baby) produce.push(O(getHearts(e) >= MOULT_MIN_HEARTS ? "produce.moults" : "produce.moult_shy", [`${MOULT_MIN_HEARTS}`]));
+  const forage = forageOf(e.typeId);
+  if (forage && !baby) {
+    const need = forage.minHearts ?? 0;
+    produce.push(O(getHearts(e) >= need ? "produce.forages" : "produce.forage_shy", [`${need}`]));
+  }
+  if (produce.length) out.push(section("produce"), ...produce);
+
+  // Family.
+  out.push(section("family"));
+  if (baby) {
+    if (species?.reproduction === "gestation") {
+      const feeds = e.getDynamicProperty(NURSING_FEEDS) ?? 0;
+      out.push(O("family.nursed", [`${feeds}`, `${NURSING_FEEDS_TO_GROW}`]));
+    } else out.push(O("family.growing"));
+  } else if (female && daysToBirth(e) > 0) {
+    out.push(O("family.pregnant", [`${daysToBirth(e)}`]));
+  } else if (isResting(e)) {
+    out.push(O("family.resting"));
+  } else {
+    out.push(O(canBreed(e) && n.all ? "family.ready" : "family.not_ready"));
+  }
+
+  // Gear.
+  const gear = [];
+  if (e.getDynamicProperty(HARNESSED) === true) gear.push(O(e.getDynamicProperty(PLOUGHING) === true ? "gear.plough" : "gear.harness"));
+  if (e.getDynamicProperty(PACKED) === true) gear.push(O("gear.pack_bag", [`${bagContents(e).length}`, `${bagOf(e)?.size ?? 0}`]));
+  if (gear.length) out.push(section("gear"), ...gear);
+  return out;
+}
+
+export function showAnimal(player, e) {
+  const body = lines(...observe(e));
   new ActionFormData()
     .title(T("notebook.title"))
     .body(body)

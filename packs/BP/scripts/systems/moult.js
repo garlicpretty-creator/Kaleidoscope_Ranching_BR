@@ -21,7 +21,7 @@ const MOULT_RANGE = 64;
 const LAST_MOULT_DAY = dp("moult_day");
 const BUILT_IN = { [rid("duck")]: [rid("down"), MOULT_CHANCE], [rid("goose")]: [rid("down"), MOULT_CHANCE] };
 /** [item, chance] a type sheds, built-in or registered with `moult` (1.1 API). */
-const moultOf = (typeId) => BUILT_IN[typeId] ?? animalByType(typeId)?.moult;
+export const moultOf = (typeId) => BUILT_IN[typeId] ?? animalByType(typeId)?.moult;
 
 /** One bird's daily try. Returns true when it shed a down. */
 export function tryMoult(bird, roll = Math.random()) {
