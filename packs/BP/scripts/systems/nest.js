@@ -18,13 +18,18 @@
 // - Every egg that hatches leaves an eggshell: in the nest box it joins the
 //   stored eggs (collected by hand or by the hopper); the incubator keeps its
 //   shells until it is used or a hopper sits under it.
-// - The egg candler (照蛋燈) shows how long the eggs in either block still need.
+// - The eggs show how far along they are, each by its own progress: plain,
+//   small cracks, big cracks just before hatching. The incubator's lamp is lit
+//   while it is warm and incubating, dark while it is cold and paused.
+// - The egg candler (照蛋燈) lights the eggs being brooded for a few seconds:
+//   the shell glows and shows the chick inside, bigger the nearer it is to
+//   hatching. Nothing is written on screen. (See "How the eggs look" below.)
 //
 // ## Both blocks keep their contents in the block store and are visited by the
 // ## ranch clock through a bounded registry, so eggs are laid, pushed into
 // ## hoppers and hatched without a player standing next to the box.
 
-import { ItemStack } from "@minecraft/server";
+import { ItemStack, system } from "@minecraft/server";
 import { INCUBATION_DAYS } from "../data/animals.js";
 import { allAnimals, animalByFertilizedEgg } from "../core/content.js";
 import { animalsNear, isAdultFemale, isBaby, sexOf } from "../core/animal.js";
@@ -50,6 +55,11 @@ export const MAX_BACKLOG_DAYS = 3;
 const LAST_LAID_DAY = dp("last_laid_day");
 const EGGS_STATE = "kaleidoscope_ranching:eggs";
 const BUSY_STATE = "kaleidoscope_ranching:busy";
+const CRACKS_STATE = "kaleidoscope_ranching:cracks";
+const READY_STATE = "kaleidoscope_ranching:ready";
+const CANDLED_STATE = "kaleidoscope_ranching:candled";
+/** Eggs a block can show (bones egg_1..egg_4, tools/gen_blocks.mjs). */
+export const EGG_SLOTS = 4;
 
 /** Laying species, built-in and registered (core/content.js), read each time. */
 const layers = () => allAnimals().filter((animal) => animal.reproduction === "egg" && animal.dailyProduct?.via === "nest_box");
@@ -99,6 +109,66 @@ function hatch(dimension, location, speciesId, mother) {
   }
   notifyBorn(baby, mother, inheritedAffection(mother));
   return true;
+}
+
+// --- How the eggs look ----------------------------------------------------
+//
+// ## Each egg looks as far along as it is: plain, small cracks from
+// ## SMALL_CRACKS_AT of its incubation, big cracks from BIG_CRACKS_AT (and while
+// ## a due egg waits for a hen to brood it). Progress is read from the egg's own
+// ## `due` and its species' incubation time, so eggs put in at different times
+// ## look different, a cold incubator's eggs (whose `due` is pushed back) stay
+// ## as they are, and eggs saved before the stages existed show theirs on the
+// ## next clock pass.
+// ##
+// ## Block states (tools/gen_blocks.mjs), filling the slots egg_1..egg_4 with the
+// ## most advanced egg first:
+// ##   eggs    0..4  eggs shown
+// ##   cracks  0..4  the first `cracks` of them have cracks (small or big)
+// ##   ready   0..4  the first `ready` of those have big cracks
+// ##                 (ready <= cracks <= eggs)
+// ##   candled       the candler's glow: in the nest box 0..4, how many of the
+// ##                 first eggs are lit (the brooded ones, which come before the
+// ##                 stored eggs; stored eggs do not develop and are not lit); in
+// ##                 the incubator a bool, since every egg in it is brooded.
+// ## Counting stages instead of keeping one per slot keeps the permutations
+// ## small: nest box 5·5·5·5 = 625, incubator 5·5·5·2·2 (busy) = 500, times
+// ## four facings.
+// ##
+// ## The glow is stamped in the block data with the tick it started and shown
+// ## only while 0 <= now - stamp < CANDLE_GLOW_TICKS. A timeout redraws the
+// ## block when it ends; if the chunk unloaded first, the next clock pass (or
+// ## use) redraws it from its data and the stale glow goes.
+
+export const SMALL_CRACKS_AT = 0.5;
+export const BIG_CRACKS_AT = 0.85;
+export const CANDLE_GLOW_TICKS = 100; // five seconds
+
+/** 0 plain, 1 small cracks, 2 big cracks, for a brooded egg { egg, due } at tick `now`. */
+export function eggStage(egg, now) {
+  const total = hatchTicks(egg.egg);
+  const progress = total > 0 ? 1 - (egg.due - now) / total : 1;
+  return progress >= BIG_CRACKS_AT ? 2 : progress >= SMALL_CRACKS_AT ? 1 : 0;
+}
+
+function isGlowing(data, now) {
+  if (typeof data.candled !== "number") return false;
+  const age = now - data.candled;
+  return age >= 0 && age < CANDLE_GLOW_TICKS;
+}
+
+function forgetStaleGlow(data, now) {
+  if (data.candled !== undefined && !isGlowing(data, now)) delete data.candled;
+}
+
+/** States showing the brooded eggs, most advanced first, followed by `plain` more eggs. */
+function eggStates(brooded, plain, now) {
+  const stages = brooded.map((egg) => eggStage(egg, now)).sort((a, b) => b - a).slice(0, EGG_SLOTS);
+  return {
+    [EGGS_STATE]: Math.min(EGG_SLOTS, stages.length + plain),
+    [CRACKS_STATE]: stages.filter((stage) => stage >= 1).length,
+    [READY_STATE]: stages.filter((stage) => stage >= 2).length,
+  };
 }
 
 // --- Nest box -------------------------------------------------------------
@@ -183,7 +253,9 @@ function pushToHopper(block, data) {
 }
 
 function showNest(block, data) {
-  setStates(block, { [EGGS_STATE]: Math.min(4, storedCount(data) + data.hatching.length) });
+  const now = nowTick();
+  const lit = isGlowing(data, now) ? Math.min(EGG_SLOTS, data.hatching.length) : 0;
+  setStates(block, { ...eggStates(data.hatching, storedCount(data), now), [CANDLED_STATE]: lit });
 }
 
 export function settleNest(block) {
@@ -191,6 +263,7 @@ export function settleNest(block) {
   lay(block, data);
   hatchInNest(block, data);
   pushToHopper(block, data);
+  forgetStaleGlow(data, nowTick());
   setBlockData(block, data);
   showNest(block, data);
   return data;
@@ -246,8 +319,14 @@ export function isHeated(block) {
   return neighbours.some((other) => other && HEAT.has(other.typeId));
 }
 
+/** The lamp is lit while the incubator is warm and has eggs in it: dark means paused. */
 function showIncubator(block, data, heated) {
-  setStates(block, { [EGGS_STATE]: data.eggs.length, [BUSY_STATE]: heated && data.eggs.length > 0 });
+  const now = nowTick();
+  setStates(block, {
+    ...eggStates(data.eggs, 0, now),
+    [BUSY_STATE]: heated && data.eggs.length > 0,
+    [CANDLED_STATE]: data.eggs.length > 0 && isGlowing(data, now),
+  });
 }
 
 /** Moves the incubator's eggshells into a hopper under it. */
@@ -279,6 +358,7 @@ export function settleIncubator(block, elapsed = 0) {
     });
   }
   pushShells(block, data);
+  forgetStaleGlow(data, nowTick());
   setBlockData(block, data);
   showIncubator(block, data, heated);
   return data;
@@ -337,28 +417,48 @@ export function startNests() {
 
 // --- 1.1 照蛋燈 -----------------------------------------------------------------
 
-const TICKS_PER_MINUTE = 1200;
+// ## The candler shows nothing on screen: it lights the brooded eggs for
+// ## CANDLE_GLOW_TICKS (see "How the eggs look").
 
-/** What the candler reports for a nest box or incubator: { count, soonest (minutes), paused }, or null. */
+/** For a nest box or incubator: how to settle it, redraw it and find its brooded eggs. */
+function eggBlock(block) {
+  if (block?.typeId === rid("nest_box")) return { settle: settleNest, show: showNest, brooded: (data) => data.hatching };
+  if (block?.typeId === rid("incubator")) {
+    return { settle: (b) => settleIncubator(b), show: (b, data) => showIncubator(b, data, isHeated(b)), brooded: (data) => data.eggs };
+  }
+  return undefined;
+}
+
+/** Redraws a candled block once its glow is over, if its chunk is still loaded. */
+function endGlow(dimension, location, typeId) {
+  let block;
+  try {
+    block = dimension.getBlock(location);
+  } catch {
+    return; // unloaded: the clock redraws it when it is back
+  }
+  if (block?.typeId === typeId) eggBlock(block)?.settle(block);
+}
+
+/** Lights the brooded eggs of a nest box or incubator. Returns how many glow, or null for any other block. */
 export function candle(block) {
-  let eggs;
-  let paused = false;
-  if (block.typeId === rid("nest_box")) eggs = settleNest(block).hatching;
-  else if (block.typeId === rid("incubator")) {
-    eggs = settleIncubator(block).eggs;
-    paused = !isHeated(block);
-  } else return null;
-  const now = nowTick();
-  const minutes = eggs.map((egg) => Math.max(0, Math.ceil((egg.due - now) / TICKS_PER_MINUTE)));
-  return { count: eggs.length, soonest: minutes.length ? Math.min(...minutes) : 0, paused };
+  const kind = eggBlock(block);
+  if (!kind) return null;
+  trackBlock(block);
+  const data = kind.settle(block);
+  const count = Math.min(EGG_SLOTS, kind.brooded(data).length);
+  if (!count) return 0;
+  data.candled = nowTick();
+  setBlockData(block, data);
+  kind.show(block, data);
+  const { dimension, location, typeId } = block;
+  system.runTimeout(() => endGlow(dimension, { ...location }, typeId), CANDLE_GLOW_TICKS + 1);
+  return count;
 }
 
 export const candlerItemComponent = {
   onUseOn({ source, block }) {
     if (source?.typeId !== "minecraft:player") return;
-    const report = candle(block);
-    if (!report) return;
-    const key = !report.count ? "candler.none" : report.paused ? "candler.paused" : "candler.status";
-    showActionBar(source, { translate: `kaleidoscope_ranching.message.${key}`, with: [`${report.count}`, `${report.soonest}`] });
+    candle(block);
   },
 };

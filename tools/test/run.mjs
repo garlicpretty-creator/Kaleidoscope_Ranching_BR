@@ -2180,7 +2180,6 @@ test("M8: the nursing bottle uses skim milk before whole milk", () => {
 
 const textiles = await import("../../packs/BP/scripts/systems/textiles.js");
 const { tryMoult } = await import("../../packs/BP/scripts/systems/moult.js");
-const { candle } = await import("../../packs/BP/scripts/systems/nest.js");
 const RUG = COMPONENTS["kaleidoscope_ranching:rug"];
 
 test("M9: the tanning rack takes four rabbit hides, and oils leather with tallow", () => {
@@ -2268,7 +2267,7 @@ test("M9: well-kept ducks shed down once a day; goats and rabbits brush out fine
   assert(SPECIES["kaleidoscope_ranching:rabbit"].brushDrops.some(([id]) => id === "kaleidoscope_ranching:rabbit_fur"), "rabbit fur");
 });
 
-test("M9: a hatched egg leaves an eggshell; the candler tells how long the rest need", () => {
+test("M9: a hatched egg leaves an eggshell", () => {
   clearWorld();
   const player = __newPlayer(at(0));
   const nest = nestAt();
@@ -2278,19 +2277,137 @@ test("M9: a hatched egg leaves an eggshell; the candler tells how long the rest 
   __skipTime(DAY);
   hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
   use(NEST, nest, player);
-  const report = candle(nest);
-  equal(report.count, 2, "two eggs hatching");
-  assert(report.soonest > 0 && report.soonest <= 20, "the first is about a day away");
   ranch("chicken", 1, "female");
   __skipTime(DAY);
   __advance(700);
   hold(player, "minecraft:stick", 1);
   use(NEST, nest, player);
   equal(player.inventory.count("kaleidoscope_ranching:eggshell"), 1, "one shell from the hatched egg");
-  const incubator = __place(overworld, { x: 4, y: 64, z: 0 }, "kaleidoscope_ranching:incubator", { "kaleidoscope_ranching:eggs": 0, "kaleidoscope_ranching:busy": false });
-  hold(player, "kaleidoscope_ranching:fertilized_duck_egg", 1);
+});
+
+// --- 1.1 Eggs show how far along they are (no text: see core/actionBar.js) --------------------
+
+const CANDLER = COMPONENTS["kaleidoscope_ranching:egg_candler"];
+/** [eggs, cracks, ready, candled] as the block shows them (systems/nest.js: how the eggs look). */
+const eggLook = (block) => ["eggs", "cracks", "ready", "candled"].map((s) => block.permutation.getState(`kaleidoscope_ranching:${s}`));
+const lamp = (block) => block.permutation.getState("kaleidoscope_ranching:busy");
+const incubatorAt = (x = 0, z = 0) =>
+  __place(overworld, { x, y: 64, z }, "kaleidoscope_ranching:incubator", { "kaleidoscope_ranching:eggs": 0, "kaleidoscope_ranching:busy": false });
+const sameLook = (actual, expected, message) => equal(JSON.stringify(actual), JSON.stringify(expected), message);
+const { CANDLE_GLOW_TICKS } = await import("../../packs/BP/scripts/systems/nest.js");
+
+test("1.1: each egg in the nest box shows its own progress: plain, small cracks, big cracks", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  NEST.onPlace({ block: nest, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(NEST, nest, player);
+  sameLook(eggLook(nest), [1, 0, 0, 0], "a new egg is plain");
+  __skipTime(DAY + 1200); // the first egg is just past half way (a chick takes two days)
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(NEST, nest, player);
+  sameLook(eggLook(nest), [2, 1, 0, 0], "the older egg has small cracks, the new one is plain");
+  __skipTime(DAY * 0.75);
+  __advance(600); // a clock pass
+  sameLook(eggLook(nest), [2, 1, 1, 0], "the older egg is about to hatch: big cracks; the newer still plain");
+  __skipTime(DAY * 0.5);
+  __advance(600);
+  sameLook(eggLook(nest), [2, 2, 1, 0], "the older waits for a hen with big cracks; the newer has small cracks");
+  noText(player, "no read-out");
+});
+
+test("1.1: a cold incubator pauses with its lamp off; warm again, the eggs go on where they were", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const incubator = incubatorAt();
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
   use(INCUBATOR, incubator, player);
-  assert(candle(incubator).paused, "cold incubator: paused");
+  equal(lamp(incubator), false, "cold: lamp off");
+  __advance(DAY);
+  sameLook(eggLook(incubator), [1, 0, 0, false], "a day in the cold: still plain");
+  const fire = { x: 0, y: 63, z: 0 };
+  __place(overworld, fire, "minecraft:campfire");
+  __advance(600);
+  equal(lamp(incubator), true, "heat under it: lamp on");
+  __advance(DAY * 1.1);
+  sameLook(eggLook(incubator), [1, 1, 0, false], "warm for a day: small cracks");
+  __place(overworld, fire, "minecraft:air");
+  __advance(600);
+  equal(lamp(incubator), false, "heat gone: lamp off");
+  __advance(DAY * 2);
+  sameLook(eggLook(incubator), [1, 1, 0, false], "paused: no further along");
+  equal(overworld.getEntities({ type: "kaleidoscope_ranching:chicken" }).length, 0, "nothing hatched in the cold");
+  __place(overworld, fire, "minecraft:campfire");
+  __advance(DAY * 0.8);
+  sameLook(eggLook(incubator), [1, 1, 1, false], "warm again: big cracks before it hatches");
+  noText(player, "no read-out");
+});
+
+test("1.1: the candler lights the eggs for a few seconds and puts no text on screen", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  NEST.onPlace({ block: nest, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:egg_candler", 1);
+  CANDLER.onUseOn({ source: player, block: nest });
+  sameLook(eggLook(nest), [0, 0, 0, 0], "an empty nest: nothing to light");
+  blockStore.setBlockData(nest, { eggs: { "minecraft:egg": 2 }, hatching: [] });
+  hold(player, "kaleidoscope_ranching:fertilized_chicken_egg", 1);
+  use(NEST, nest, player);
+  hold(player, "kaleidoscope_ranching:egg_candler", 1);
+  CANDLER.onUseOn({ source: player, block: nest });
+  sameLook(eggLook(nest), [3, 0, 0, 1], "the brooded egg glows; the two stored eggs do not");
+  __advance(CANDLE_GLOW_TICKS / 2);
+  equal(eggLook(nest)[3], 1, "still glowing");
+  __advance(CANDLE_GLOW_TICKS);
+  equal(eggLook(nest)[3], 0, "the glow has gone");
+
+  const incubator = incubatorAt(4);
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  hold(player, "kaleidoscope_ranching:fertilized_duck_egg", 2);
+  use(INCUBATOR, incubator, player);
+  use(INCUBATOR, incubator, player);
+  hold(player, "kaleidoscope_ranching:egg_candler", 1);
+  CANDLER.onUseOn({ source: player, block: incubator });
+  sameLook(eggLook(incubator), [2, 0, 0, true], "the incubator's eggs glow");
+  __advance(CANDLE_GLOW_TICKS + 1);
+  equal(eggLook(incubator)[3], false, "and stop");
+  noText(player, "the candler used to print how many eggs and how long");
+});
+
+test("1.1: a glow left on when its chunk unloaded clears on the clock's next visit", () => {
+  clearWorld();
+  const incubator = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:incubator", {
+    "kaleidoscope_ranching:eggs": 1, "kaleidoscope_ranching:busy": false, "kaleidoscope_ranching:candled": true,
+  });
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  const now = world.getAbsoluteTime();
+  const egg = { egg: "kaleidoscope_ranching:fertilized_chicken_egg", species: "kaleidoscope_ranching:chicken", due: now + DAY };
+  blockStore.setBlockData(incubator, { eggs: [egg], candled: now - DAY }); // its timeout never ran
+  const nest = __place(overworld, { x: 3, y: 64, z: 0 }, "kaleidoscope_ranching:nest_box", { "kaleidoscope_ranching:eggs": 1, "kaleidoscope_ranching:candled": 1 });
+  NEST.onPlace({ block: nest, dimension: overworld });
+  blockStore.setBlockData(nest, { eggs: {}, hatching: [{ ...egg }], candled: now + DAY * 3 }); // stamped before the time was set back
+  runBlockClock();
+  equal(eggLook(incubator)[3], false, "incubator no longer glows");
+  equal(eggLook(nest)[3], 0, "nest box no longer glows");
+});
+
+test("1.1: eggs already incubating in a saved world show their stage once the world loads", () => {
+  clearWorld();
+  const incubator = incubatorAt(); // a block saved before the stages existed: only eggs and busy
+  INCUBATOR.onPlace({ block: incubator, dimension: overworld });
+  __place(overworld, { x: 0, y: 63, z: 0 }, "minecraft:campfire");
+  const now = world.getAbsoluteTime();
+  blockStore.setBlockData(incubator, { eggs: [
+    { egg: "kaleidoscope_ranching:fertilized_chicken_egg", species: "kaleidoscope_ranching:chicken", due: now + DAY * 2 - 2000 },
+    { egg: "kaleidoscope_ranching:fertilized_chicken_egg", species: "kaleidoscope_ranching:chicken", due: now + 2000 },
+    { egg: "kaleidoscope_ranching:fertilized_chicken_egg", species: "kaleidoscope_ranching:chicken", due: now + DAY * 0.8 },
+  ] });
+  runBlockClock();
+  sameLook(eggLook(incubator), [3, 2, 1, false], "one about to hatch, one past half way, one just laid");
+  equal(lamp(incubator), true, "warm: lamp on");
 });
 
 test("M9: the lasso leads a ranch animal; the duster clears a patch of cobweb; dye colours a rug", () => {
