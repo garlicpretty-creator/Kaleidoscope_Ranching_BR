@@ -48,6 +48,30 @@
   "kaleidoscope_ranching:placed_fondue": {
     "sound": "metal"
   },
+  "kaleidoscope_ranching:placed_old_duck_soup": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_braised_brisket": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_yak_stew": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_goose_stew": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_lion_head_meatballs": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_claypot_rice": {
+    "sound": "stone"
+  },
+  "kaleidoscope_ranching:placed_cheese_gratin": {
+    "sound": "stone"
+  },
+  "kaleidoscope_ranching:placed_truffle_gratin": {
+    "sound": "stone"
+  },
   "kaleidoscope_ranching:food_waste_bin": {
     "sound": "wood"
   },

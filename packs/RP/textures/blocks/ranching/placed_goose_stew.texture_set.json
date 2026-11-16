@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "placed_goose_stew",
+    "metalness_emissive_roughness_subsurface": "placed_goose_stew_mers",
+    "normal": "placed_goose_stew_normal"
+  }
+}

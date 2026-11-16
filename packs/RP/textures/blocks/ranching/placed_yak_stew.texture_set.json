@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "placed_yak_stew",
+    "metalness_emissive_roughness_subsurface": "placed_yak_stew_mers",
+    "normal": "placed_yak_stew_normal"
+  }
+}

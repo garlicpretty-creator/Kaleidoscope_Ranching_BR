@@ -190,11 +190,35 @@
     "kr_pickling_vat": {
       "textures": "textures/blocks/ranching/pickling_vat"
     },
+    "kr_placed_braised_brisket": {
+      "textures": "textures/blocks/ranching/placed_braised_brisket"
+    },
+    "kr_placed_cheese_gratin": {
+      "textures": "textures/blocks/ranching/placed_cheese_gratin"
+    },
+    "kr_placed_claypot_rice": {
+      "textures": "textures/blocks/ranching/placed_claypot_rice"
+    },
     "kr_placed_fondue": {
       "textures": "textures/blocks/ranching/placed_fondue"
     },
+    "kr_placed_goose_stew": {
+      "textures": "textures/blocks/ranching/placed_goose_stew"
+    },
+    "kr_placed_lion_head_meatballs": {
+      "textures": "textures/blocks/ranching/placed_lion_head_meatballs"
+    },
+    "kr_placed_old_duck_soup": {
+      "textures": "textures/blocks/ranching/placed_old_duck_soup"
+    },
     "kr_placed_pizza": {
       "textures": "textures/blocks/ranching/placed_pizza"
+    },
+    "kr_placed_truffle_gratin": {
+      "textures": "textures/blocks/ranching/placed_truffle_gratin"
+    },
+    "kr_placed_yak_stew": {
+      "textures": "textures/blocks/ranching/placed_yak_stew"
     },
     "kr_rug": {
       "textures": "textures/blocks/ranching/rug"

@@ -40,6 +40,7 @@ SOUNDS = {
     "hitching_post": "wood",
     "cheese_wheel": "cloth", "vintage_cheese_wheel": "cloth", "smoked_cheese_wheel": "cloth",
     "placed_pizza": "cloth", "placed_fondue": "metal",
+    "placed_old_duck_soup": "metal", "placed_braised_brisket": "metal", "placed_yak_stew": "metal", "placed_goose_stew": "metal", "placed_lion_head_meatballs": "metal", "placed_claypot_rice": "stone", "placed_cheese_gratin": "stone", "placed_truffle_gratin": "stone",
     "food_waste_bin": "wood",
     "meat_grinder": "metal",
     "milking_rack": "wood",

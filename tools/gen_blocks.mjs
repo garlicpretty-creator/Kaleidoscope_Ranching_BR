@@ -31,13 +31,17 @@ const RUG_COLORS = [
   "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
 ];
 
-const WHEEL_SHAPE = { collision: box(-6, 0, -6, 12, 5, 12), selection: box(-6, 0, -6, 12, 5, 12) };
+// Boxes per placed-food shape (data/placedFoods.js `shape`), and the map colours that differ from the default.
+const both = (x, y, z, w, h, d) => ({ collision: box(x, y, z, w, h, d), selection: box(x, y, z, w, h, d) });
 const PLACED_SHAPES = {
-  cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#e2b45a" },
-  vintage_cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#c98a3c" },
-  smoked_cheese_wheel: { ...WHEEL_SHAPE, mapColor: "#8a5a32" },
-  placed_pizza: { collision: box(-8, 0, -8, 16, 3, 16), selection: box(-8, 0, -8, 16, 3, 16), mapColor: "#d86a3c" },
-  placed_fondue: { collision: box(-6, 0, -6, 12, 9, 12), selection: box(-6, 0, -6, 12, 9, 12), mapColor: "#3c3c44" },
+  wheel: both(-6, 0, -6, 12, 5, 12),
+  pizza: both(-8, 0, -8, 16, 3, 16),
+  pot: both(-6, 0, -6, 12, 9, 12),
+  dish: both(-7, 0, -5, 14, 4, 10),
+};
+const PLACED_COLORS = {
+  cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
+  placed_pizza: "#d86a3c", placed_fondue: "#3c3c44",
 };
 
 const DEFS = {
@@ -147,7 +151,8 @@ const DEFS = {
         bones: Object.fromEntries(
           Array.from({ length: food.portions }, (_, n) => [`piece_${n + 1}`, `${state("cut")} <= ${food.portions - 1 - n}`])
         ),
-        ...PLACED_SHAPES[food.block],
+        ...PLACED_SHAPES[food.shape],
+        mapColor: PLACED_COLORS[food.block],
         seconds: 0.5,
         hidden: true,
         loot: "loot_tables/kaleidoscope_ranching/empty.json",
