@@ -62,21 +62,24 @@ def face_point(cube, face, a, b):
     }[face]
 
 
-def visible(name, bones, baby, asleep, rules):
+def visible(name, bones, baby, asleep, rules, male=False, sheared=False):
     while name:
         for rule in rules:
             key, expr = next(iter(rule.items()))
             if key == name and isinstance(expr, str):
                 env = expr.replace("q.is_baby", str(baby)).replace(f"q.property('{NS}:sleeping')", str(asleep))
-                env = env.replace("q.is_saddled", "False").replace("q.is_sheared", "False").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-                env = re.sub(r"q\.property\('[^']+'\)\s*==\s*'male'", "False", env)
+                env = env.replace("q.is_saddled", "False").replace("q.is_sheared", str(sheared)).replace("&&", " and ").replace("||", " or ").replace("!", " not ")
+                env = re.sub(r"q\.property\('[^']+'\)\s*==\s*'male'", str(male), env)
                 if not eval(env):
                     return False
         name = bones[name].get("parent")
     return True
 
 
-def render(animal, baby, asleep):
+def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=TILE, scale=SCALE, model_scale=1.0):
+    """One tile. The defaults draw the female (or first) skin; `texture` names another skin,
+    `model_scale` is the entity's own scale (males are larger)."""
+    TILE, SCALE = tile, scale * model_scale
     geo = json.loads((RP / "models" / "entity" / f"{animal}.geo.json").read_text())["minecraft:geometry"][0]
     entity = json.loads((RP / "entity" / f"{animal}.entity.json").read_text())["minecraft:client_entity"]["description"]
     rc = json.loads((RP / "render_controllers" / f"{animal}.render_controllers.json").read_text())
@@ -85,6 +88,7 @@ def render(animal, baby, asleep):
     key = "baby" if baby and "baby" in textures else ("female" if "female" in textures else next(iter(textures)))
     if animal == "sheep":
         key = "baby_white" if baby else "female_white"
+    key = texture or key
     tex = Image.open(RP / f"{textures[key]}.png").convert("RGBA")
     tw, th = geo["description"]["texture_width"], geo["description"]["texture_height"]
     tex = tex.resize((tw, th), Image.NEAREST).load() if tex.size != (tw, th) else tex.load()
@@ -102,7 +106,7 @@ def render(animal, baby, asleep):
         s = np.diag([molang(v, baby) for v in st.get("scale", [1, 1, 1])]) if not isinstance(st.get("scale"), (int, float)) else np.eye(3) * st["scale"]
         t = np.array([molang(v, baby) for v in st.get("position", [0, 0, 0])])
         M = r @ s
-        local = lambda p: piv + t + M @ (np.asarray(p) - piv)
+        local = lambda p: piv + t + (np.asarray(p, float) - piv) @ M.T  # points as rows
         parent = b.get("parent")
         if parent:
             pw = world(parent)
@@ -111,10 +115,13 @@ def render(animal, baby, asleep):
 
     color = np.zeros((TILE, TILE, 3), np.uint8)
     color[:] = (196, 214, 176) if asleep else (214, 224, 208)
-    depth = np.full((TILE, TILE), -1e9)
+    depth = np.full(TILE * TILE, -1e9)
+    flat = color.reshape(-1, 3)
+    pixels = np.array([[tex[x, y] for x in range(tw)] for y in range(th)], np.uint8)  # [v][u] -> rgba
     cy, sy, cp, sp = math.cos(YAW), math.sin(YAW), math.cos(PITCH), math.sin(PITCH)
+    ss = max(SS, int(SCALE * 1.7) + 1)  # samples per texel edge: enough to leave no holes
     for name, b in bones.items():
-        if not visible(name, bones, baby, asleep, rules):
+        if not visible(name, bones, baby, asleep, rules, male, sheared):
             continue
         f = world(name)
         for cube in b.get("cubes", []):
@@ -122,24 +129,30 @@ def render(animal, baby, asleep):
                 nw, nh = max(1, round(abs(uw))), max(1, round(abs(uh)))
                 if not uw or not uh:
                     continue
-                for j in range(nh * SS):
-                    for i in range(nw * SS):
-                        ti, tj = (i // SS), (j // SS)
-                        px = u + (ti if uw > 0 else -ti - 1)
-                        py = v + (tj if uh > 0 else -tj - 1)
-                        if not (0 <= px < tw and 0 <= py < th):
-                            continue
-                        r_, g_, b_, a_ = tex[int(px), int(py)]
-                        if a_ < 128:
-                            continue
-                        x, y, z = f(face_point(cube, face, (i + 0.5) / (nw * SS), (j + 0.5) / (nh * SS)))
-                        x2, z2 = x * cy - z * sy, x * sy + z * cy
-                        y2, z3 = y * cp - z2 * sp, y * sp + z2 * cp
-                        sxp, syp = int(TILE / 2 + x2 * SCALE), int(TILE * 0.72 - y2 * SCALE)
-                        if 0 <= sxp < TILE and 0 <= syp < TILE and -z3 > depth[syp, sxp]:
-                            depth[syp, sxp] = -z3
-                            k = SHADE[face]
-                            color[syp, sxp] = (int(r_ * k), int(g_ * k), int(b_ * k))
+                i, j = np.meshgrid(np.arange(nw * ss), np.arange(nh * ss))
+                i, j = i.ravel(), j.ravel()
+                ti, tj = i // ss, j // ss
+                px = (u + np.where(uw > 0, ti, -ti - 1)).astype(int)
+                py = (v + np.where(uh > 0, tj, -tj - 1)).astype(int)
+                ok = (px >= 0) & (px < tw) & (py >= 0) & (py < th)
+                i, j, px, py = i[ok], j[ok], px[ok], py[ok]
+                rgba = pixels[py, px]
+                ok = rgba[:, 3] >= 128
+                i, j, rgba = i[ok], j[ok], rgba[ok]
+                if not len(i):
+                    continue
+                pts = np.stack(face_point(cube, face, (i + 0.5) / (nw * ss), (j + 0.5) / (nh * ss)), axis=1)
+                w = f(pts)
+                x, y, z = w[:, 0], w[:, 1], w[:, 2]
+                x2, z2 = x * cy - z * sy, x * sy + z * cy
+                y2, z3 = y * cp - z2 * sp, y * sp + z2 * cp
+                sxp = (TILE / 2 + x2 * SCALE).astype(int)
+                syp = (TILE * 0.72 - y2 * SCALE).astype(int)
+                ok = (sxp >= 0) & (sxp < TILE) & (syp >= 0) & (syp < TILE)
+                idx, d, rgba = (syp * TILE + sxp)[ok], -z3[ok], rgba[ok]
+                np.maximum.at(depth, idx, d)
+                win = d >= depth[idx]
+                flat[idx[win]] = (rgba[win, :3] * SHADE[face]).astype(np.uint8)
     img = Image.fromarray(color)
     d = ImageDraw.Draw(img)
     gy = int(TILE * 0.72)
