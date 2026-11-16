@@ -29,7 +29,7 @@ MARGIN = 1  # room for the outline
 
 # Bones never drawn on a carcass: the baby's parts, the male's extras, wool (a carcass is
 # shown shorn), the udder and the saddle.
-HIDDEN_PREFIXES = ("b_", "m_", "wool_")
+HIDDEN_PREFIXES = ("b_", "m_", "wool_", "lids_")
 HIDDEN = {"saddle", "fa_udder"}
 
 # Texture used for each animal; the rest use female.png.

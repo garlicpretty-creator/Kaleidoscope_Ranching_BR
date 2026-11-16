@@ -43,7 +43,7 @@ SPECIES = {
     "goose": ("goose/female", "bird", (246, 220, 190)),
     "rabbit": ("rabbit/brown", "red", (204, 108, 100)),
 }
-SKIP_PREFIX = ("m_", "b_", "wool_")  # males' extras, baby rigs, sheep wool (taken as its own cut)
+SKIP_PREFIX = ("m_", "b_", "wool_", "lids_")  # sleeping eyelids (tools/gen_sleep.mjs), males' extras, baby rigs, sheep wool (taken as its own cut)
 SKIP = {"saddle"}
 
 FAT, BONE = (248, 236, 214), (240, 234, 220)

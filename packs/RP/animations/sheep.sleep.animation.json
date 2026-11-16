@@ -7,70 +7,77 @@
         "body": {
           "position": [
             0,
-            "q.is_baby ? -8 : -12",
+            "q.is_baby ? -7 : -10.5",
             0
           ]
         },
         "a_leg_fl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            90,
+            0,
+            8
           ]
         },
         "a_leg_fr": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            90,
+            0,
+            -8
           ]
         },
         "a_leg_bl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -90,
+            0,
+            8
           ]
         },
         "a_leg_br": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -90,
+            0,
+            -8
           ]
         },
         "b_leg_fl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            90,
+            0,
+            8
           ]
         },
         "b_leg_fr": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            90,
+            0,
+            -8
           ]
         },
         "b_leg_bl": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -90,
+            0,
+            8
           ]
         },
         "b_leg_br": {
-          "scale": [
-            1,
-            0.05,
-            1
+          "rotation": [
+            -90,
+            0,
+            -8
           ]
         },
         "head": {
           "rotation": [
+            32,
             18,
-            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            28,
+            18,
             0
           ]
         },

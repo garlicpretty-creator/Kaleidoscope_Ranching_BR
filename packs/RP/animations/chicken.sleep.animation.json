@@ -7,7 +7,7 @@
         "body": {
           "position": [
             0,
-            "q.is_baby ? -1 : -4",
+            "q.is_baby ? -0.5 : -3.5",
             0
           ]
         },
@@ -41,7 +41,52 @@
         },
         "head": {
           "rotation": [
-            18,
+            -105,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -1,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            0,
+            155,
+            0
+          ],
+          "position": [
+            0,
+            -1.5,
+            0
+          ]
+        },
+        "a_wing_left": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "a_wing_right": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "b_wing_left": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "b_wing_right": {
+          "rotation": [
+            0,
             0,
             0
           ]
