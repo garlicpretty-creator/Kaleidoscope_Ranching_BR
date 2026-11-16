@@ -10,6 +10,11 @@
 //
 // Breaking an untouched dish gives the item back. A started dish gives nothing
 // but its bowl: the portions left cannot be picked up again.
+//
+// Drinks (rows with one portion) are drunk in one go: the item's hunger, its
+// container back, and the block is gone, so a drink standing there is always
+// untouched; like every dish, even with a full hunger bar. (The effect's saturation is 2 x hunger, a little more than the item's own
+// 2 x hunger x saturation_modifier.)
 
 import { ItemStack } from "@minecraft/server";
 import { rid } from "../core/ids.js";
@@ -35,7 +40,7 @@ export const placedFoodComponent = {
     const food = EATEN[block.typeId];
     if (!player || !food) return;
     player.addEffect("saturation", 1, { amplifier: food.eat - 1, showParticles: false });
-    block.dimension.playSound("random.eat", block.location);
+    block.dimension.playSound(food.drink ? "random.drink" : "random.eat", block.location);
     const eaten = eatenOf(block.permutation) + 1;
     if (eaten < food.portions) return block.setPermutation(block.permutation.withState(STATE_CUT, eaten));
     block.setType("minecraft:air");

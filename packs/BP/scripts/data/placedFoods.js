@@ -10,7 +10,9 @@
 // eat:      an empty-handed or any-handed use eats one portion: hunger points
 //           per portion (the saturation effect gives twice that as saturation)
 // gives:    handed back with the last portion (the dish's bowl)
-// shape:    which boxes the block uses: wheel, pizza, pot, claypot, dish; every dish has its own model
+// drink:    drunk rather than eaten (the item's drink animation): the drinking sound
+// shape:    which boxes the block uses: wheel, pizza, pot, claypot, dish, and the drinks' cup, glass,
+//           bottle, bowl; every dish and drink has its own model
 //           (tools/gen_blocks.mjs; art_src/m4_scripts/placed_food.py)
 //
 // Plain data: no @minecraft imports (scripts/ARCHITECTURE.md).
@@ -19,6 +21,10 @@ export const PORTIONS = 4;
 
 /** Hearty dishes served from a shared pot or baking dish: four portions of 3 hunger, the bowl comes back. */
 const shared = (item, shape) => ({ item, block: `placed_${item}`, shape, portions: PORTIONS, eat: 3, gives: "minecraft:bowl" });
+
+/** A drink in its cup: one serving of `eat` hunger, drunk (or with drink: false, eaten) in one go. */
+const drink = (item, shape, eat, { gives, drink = true } = {}) =>
+  ({ item, block: `placed_${item}`, shape, portions: 1, eat, drink, ...(gives ? { gives } : {}) });
 
 export const PLACED_FOODS = [
   { item: "aged_cheese_wheel", block: "cheese_wheel", shape: "wheel", portions: PORTIONS, cut: "cheese_slice" },
@@ -38,4 +44,14 @@ export const PLACED_FOODS = [
   // Baked in a dish and cut into four.
   shared("cheese_gratin", "dish"),
   shared("truffle_gratin", "dish"),
+  // Drinks put down in their cup, glass or bottle: one serving, drunk in one go for the item's own
+  // hunger, and the item's container comes back (tools/test/run.mjs checks both against the item).
+  drink("milk_wine", "cup", 3, { gives: "kaleidoscope_ranching:horn_cup" }),
+  drink("yak_milk_wine", "cup", 4, { gives: "kaleidoscope_ranching:horn_cup" }),
+  drink("cream_cocoa", "glass", 4, { gives: "minecraft:glass_bottle" }),
+  drink("yogurt_berry_drink", "bottle", 4, { gives: "minecraft:glass_bottle" }),
+  drink("milk_tea", "bowl", 4, { gives: "minecraft:glass_bottle" }),
+  drink("milk_skin_tea", "bowl", 5, { gives: "minecraft:glass_bottle" }),
+  // Yogurt is eaten with a spoon from its crock, as from the hand.
+  drink("yogurt", "cup", 4, { drink: false }),
 ];
