@@ -11,6 +11,7 @@
 - [M2 照顧核心交接說明](docs/M2_交接.md)
 - 1.0 各階段說明：[M3 屠宰與乳蛋加工](docs/M3_說明.md)、[M4 新動物](docs/M4_說明.md)、[M5 廚房料理與整合](docs/M5_說明.md)
 - 1.1 各階段說明：[M7 肉類與內臟](docs/M7_說明.md)、[M8 蛋奶與起司](docs/M8_說明.md)、[M9 皮革、絨毛、布料與孵化飼料](docs/M9_說明.md)、[M10 役用、管理與作息](docs/M10_說明.md)、[M11 健康、API 與握手](docs/M11_說明.md)
+- 1.1 發佈文件：[1.1 更新說明](docs/RELEASE_NOTES_1.1.md)、[1.1 發佈頁文字](docs/RELEASE_PAGE_1.1.md)
 - [對外擴充 API](docs/API.md)（範例附加包在 `examples/api-example/`）
 
 ## 目前進度
