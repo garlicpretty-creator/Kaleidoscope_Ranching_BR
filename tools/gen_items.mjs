@@ -28,7 +28,7 @@ const LARGE_CARCASSES = new Set(ANIMALS.filter((a) => a.largeCarcass).map((a) =>
 
 function food(nutrition, saturation, extra = {}) {
   return {
-    "minecraft:food": { nutrition, saturation_modifier: saturation, can_always_eat: extra.always ?? false, ...(extra.converts ? { using_converts_to: extra.converts } : {}) },
+    "minecraft:food": { nutrition, saturation_modifier: saturation, can_always_eat: true, ...(extra.converts ? { using_converts_to: extra.converts } : {}) },
     "minecraft:use_animation": extra.drink ? "drink" : "eat",
     "minecraft:use_modifiers": { use_duration: 1.6, movement_modifier: 0.33 },
   };

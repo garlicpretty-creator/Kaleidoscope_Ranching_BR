@@ -1,7 +1,8 @@
 // Dishes put down to share (data/placedFoods.js rows with `eat`): the dish item
 // places the block, and each use eats one portion, whoever uses it. The `cut`
 // state hides one portion (piece_4 first); the last portion leaves air and
-// hands back the dish's bowl, if it has one.
+// hands back the dish's bowl, if it has one. Like every Ranching food, it can be
+// eaten even with a full hunger bar.
 //
 // ## A portion is eaten with a one-tick saturation effect: level n restores n
 // ## hunger points (and 2n saturation), which is how the item's own food value
@@ -21,12 +22,6 @@ export const EATEN = Object.fromEntries(PLACED_FOODS.filter((food) => food.eat).
 
 const eatenOf = (permutation) => Number(permutation?.getState(STATE_CUT) ?? 0);
 
-/** True when the player's hunger bar is full; unknown (no hunger attribute) counts as hungry. */
-function isFull(player) {
-  const hunger = player.getComponent?.("minecraft:player.hunger");
-  return hunger ? hunger.currentValue >= hunger.effectiveMax : false;
-}
-
 /** What breaking the dish gives back, given how many portions were already eaten. */
 export function leftovers(eaten, blockId) {
   const food = EATEN[blockId];
@@ -39,7 +34,6 @@ export const placedFoodComponent = {
   onPlayerInteract({ block, player }) {
     const food = EATEN[block.typeId];
     if (!player || !food) return;
-    if (isFull(player)) return; // nothing happens: no text on screen (immersion)
     player.addEffect("saturation", 1, { amplifier: food.eat - 1, showParticles: false });
     block.dimension.playSound("random.eat", block.location);
     const eaten = eatenOf(block.permutation) + 1;

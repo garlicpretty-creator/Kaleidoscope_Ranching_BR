@@ -494,6 +494,12 @@ const blockFiles = fileIds(join(bp, "blocks"), "minecraft:block");
 const itemAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
 const terrainAtlas = exists(join(rp, "textures/terrain_texture.json")) ? readJson(join(rp, "textures/terrain_texture.json")).texture_data : {};
 
+// Every Ranching food can be eaten with a full hunger bar (the player's choice).
+for (const { path, data } of itemFiles) {
+  const food = data.components?.["minecraft:food"];
+  if (food && food.can_always_eat !== true) fail(`${relative(root, path)}: food must have can_always_eat: true`);
+}
+
 const fileItemIds = new Set();
 for (const { path, data } of itemFiles) {
   const id = local(data.description.identifier);

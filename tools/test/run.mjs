@@ -661,7 +661,7 @@ test("vintage and smoked wheels are placed and cut into their own slices", () =>
 
 const PLACED = COMPONENTS["kaleidoscope_ranching:placed_food"];
 
-test("a placed pizza is eaten in four slices of three hunger, and not when full", () => {
+test("a placed pizza is eaten in four slices of three hunger, even when full", () => {
   clearWorld();
   overworld.items = [];
   const player = __newPlayer(at(0));
@@ -676,11 +676,13 @@ test("a placed pizza is eaten in four slices of three hunger, and not when full"
 
   const second = __place(overworld, { x: 32, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
   player.hunger = 20;
-  const shown = player.actionBar.length;
   use(PLACED, second, player);
-  equal(state(second, "cut"), 0, "nothing eaten when full");
-  equal(player.actionBar.length, shown, "no message when full: the dish just stays");
-  breakBlock(PLACED, second);
+  equal(state(second, "cut"), 1, "eaten even when full (can always eat)");
+  noText(player, "nothing is said when eating while full");
+
+  overworld.items = [];
+  const untouched = __place(overworld, { x: 36, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
+  breakBlock(PLACED, untouched);
   equal(dropsOf("kaleidoscope_ranching:margherita_pizza").length, 1, "an untouched pizza is picked up whole");
 
   overworld.items = [];
