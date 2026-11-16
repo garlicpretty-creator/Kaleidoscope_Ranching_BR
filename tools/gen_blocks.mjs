@@ -12,6 +12,7 @@ const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", 
 const { ANIMALS } = await load("animals.js");
 const { BLOCKS } = await load("blocks.js");
 const { PLACED_FOODS } = await load("placedFoods.js");
+const { DRYING_SLOTS } = await load("processing.js");
 
 const NS = "kaleidoscope_ranching";
 const S = (name) => `${NS}:${name}`;
@@ -37,25 +38,35 @@ const PLACED_SHAPES = {
   wheel: both(-6, 0, -6, 12, 5, 12),
   pizza: both(-8, 0, -8, 16, 3, 16),
   pot: both(-6, 0, -6, 12, 9, 12),
+  claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
-  placed_pizza: "#d86a3c", placed_fondue: "#3c3c44",
+  placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
 };
 
 const DEFS = {
   butcher_rack: {
     component: "butcher_rack",
     // carcass_X: the animal as it was, skinned_X: hide off, cut_X: partly cut
-    states: { [S("carcass")]: ["none", ...CARCASSES], [S("skinned")]: [false, true], [S("cut")]: [false, true] },
-    bones: Object.fromEntries(
-      CARCASSES.flatMap((id) => [
+    // 1.1 掛架風乾: `drying` counts the pieces hanging to dry, one dry_<n> bone per slot
+    // (art_src/m4_scripts/rack_drying.py). One count rather than a kind per slot: four slots of
+    // four kinds would multiply the rack's permutations past what a block may have.
+    states: {
+      [S("carcass")]: ["none", ...CARCASSES],
+      [S("skinned")]: [false, true],
+      [S("cut")]: [false, true],
+      [S("drying")]: Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => n),
+    },
+    bones: Object.fromEntries([
+      ...CARCASSES.flatMap((id) => [
         [`carcass_${id}`, `${state("carcass")} == '${id}' && !${state("skinned")}`],
         [`skinned_${id}`, `${state("carcass")} == '${id}' && ${state("skinned")} && !${state("cut")}`],
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
-      ])
-    ),
+      ]),
+      ...Array.from({ length: DRYING_SLOTS }, (_, n) => [`dry_${n + 1}`, `${state("drying")} >= ${n + 1}`]),
+    ]),
     // Each animal has its own texture (art/blocks/butcher_rack_<id>.png, see tools/art/split_rack_texture.py).
     materials: CARCASSES,
     collision: FULL,

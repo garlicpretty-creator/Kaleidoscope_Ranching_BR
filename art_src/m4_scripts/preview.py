@@ -3,7 +3,8 @@ texture from a three-quarter view, one tile per block (and per bone set, e.g. `b
 
 Only axis-aligned box-UV cubes are drawn, which is all these block models use.
 
-Run with: python art_src/m4_scripts/preview.py out.png id[+bone+bone] ...
+Run with: python art_src/m4_scripts/preview.py out.png id[+bone+-bone] ...
+(+bone shows a bone that is hidden by default, +-bone hides one, e.g. an eaten portion)
 """
 import json
 import math
@@ -27,12 +28,13 @@ def faces(cube):
     tw, th, td = [max(1, round(s)) for s in (w, h, d)]
     x1, y1, z1 = x + w, y + h, z + d
     return [
-        ("up", (u + td, v, tw, td), lambda a, b: (x1 - a * w, y1, z1 - b * d)),
-        ("down", (u + td + tw, v, tw, td), lambda a, b: (x1 - a * w, y, z1 - b * d)),
-        ("north", (u + td, v + td, tw, th), lambda a, b: (x1 - a * w, y1 - b * h, z)),
-        ("south", (u + 2 * td + tw, v + td, tw, th), lambda a, b: (x + a * w, y1 - b * h, z1)),
-        ("east", (u, v + td, td, th), lambda a, b: (x1, y1 - b * h, z1 - a * d)),
-        ("west", (u + td + tw, v + td, td, th), lambda a, b: (x, y1 - b * h, z + a * d)),
+        # The left strip is the face at the smallest x, as in Bedrock and Blockbench (test_foodkit.py).
+        ("up", (u + td, v, tw, td), lambda a, b: (x + a * w, y1, z1 - b * d)),
+        ("down", (u + td + tw, v, tw, td), lambda a, b: (x + a * w, y, z1 - b * d)),
+        ("north", (u + td, v + td, tw, th), lambda a, b: (x + a * w, y1 - b * h, z)),
+        ("south", (u + 2 * td + tw, v + td, tw, th), lambda a, b: (x1 - a * w, y1 - b * h, z1)),
+        ("east", (u, v + td, td, th), lambda a, b: (x, y1 - b * h, z1 - a * d)),
+        ("west", (u + td + tw, v + td, td, th), lambda a, b: (x1, y1 - b * h, z + a * d)),
     ]
 
 
@@ -43,6 +45,7 @@ def render(block, shown=()):
     if "open" in shown:
         hidden.add("closed")
     hidden -= set(shown)
+    hidden |= {s[1:] for s in shown if s.startswith("-")}  # "-piece_4" hides a bone
     color = np.zeros((TILE, TILE, 3), np.uint8)
     color[:] = (214, 224, 208)
     depth = np.full((TILE, TILE), -1e9)

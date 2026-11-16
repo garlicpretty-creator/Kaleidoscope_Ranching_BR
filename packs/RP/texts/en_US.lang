@@ -121,6 +121,7 @@ kaleidoscope_ranching.message.crate.leashed=Take the lead off before crating it.
 kaleidoscope_ranching.message.crate.ridden=Someone is riding it.
 kaleidoscope_ranching.message.crate.no_room=No room to let it out here.
 kaleidoscope_ranching.message.crate.missing=The add-on that adds %s is not loaded.
+kaleidoscope_ranching.message.crate.bag_not_empty=Empty the pack bag before crating it.
 kaleidoscope_ranching.message.hitching_post.tied=Tied %s animal(s) to the post.
 kaleidoscope_ranching.message.hitching_post.untied=Took %s animal(s) off the post.
 kaleidoscope_ranching.message.hitching_post.empty=Lead animals here to tie them to the post.

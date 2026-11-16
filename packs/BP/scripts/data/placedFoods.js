@@ -10,7 +10,7 @@
 // eat:      an empty-handed or any-handed use eats one portion: hunger points
 //           per portion (the saturation effect gives twice that as saturation)
 // gives:    handed back with the last portion (the dish's bowl)
-// shape:    which model and boxes the block uses: wheel, pizza, pot, dish
+// shape:    which boxes the block uses: wheel, pizza, pot, claypot, dish; every dish has its own model
 //           (tools/gen_blocks.mjs; art_src/m4_scripts/placed_food.py)
 //
 // Plain data: no @minecraft imports (scripts/ARCHITECTURE.md).
@@ -28,13 +28,13 @@ export const PLACED_FOODS = [
   { item: "margherita_pizza", block: "placed_pizza", shape: "pizza", portions: PORTIONS, eat: 3 },
   // 11 hunger as an item; four dips of 3, so sharing the pot is worth one point more.
   { item: "cheese_fondue", block: "placed_fondue", shape: "pot", portions: PORTIONS, eat: 3, gives: "minecraft:bowl" },
-  // The big stews (10 to 12 hunger as an item) in the same pot.
+  // The big stews (10 to 12 hunger as an item), each in its own pot; the rice in a wide clay pot.
   shared("old_duck_soup", "pot"),
   shared("braised_brisket", "pot"),
   shared("yak_stew", "pot"),
   shared("goose_stew", "pot"),
   shared("lion_head_meatballs", "pot"),
-  shared("claypot_rice", "pot"),
+  shared("claypot_rice", "claypot"),
   // Baked in a dish and cut into four.
   shared("cheese_gratin", "dish"),
   shared("truffle_gratin", "dish"),

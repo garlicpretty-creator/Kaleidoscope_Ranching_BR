@@ -9,10 +9,12 @@
       "textures": {
         "female": "textures/entity/ranching/yak/female",
         "male": "textures/entity/ranching/yak/male",
-        "baby": "textures/entity/ranching/yak/baby"
+        "baby": "textures/entity/ranching/yak/baby",
+        "gear": "textures/entity/ranching/gear/yak"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.yak"
+        "default": "geometry.kaleidoscope_ranching.yak",
+        "gear": "geometry.kaleidoscope_ranching.yak.gear"
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.yak.walk",
@@ -32,7 +34,10 @@
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.yak"
+        "controller.render.kaleidoscope_ranching.yak",
+        {
+          "controller.render.kaleidoscope_ranching.yak.gear": "q.property('kaleidoscope_ranching:gear_pack_bag')"
+        }
       ],
       "spawn_egg": {
         "base_color": "#3A2E26",

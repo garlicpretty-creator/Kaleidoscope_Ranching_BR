@@ -174,7 +174,7 @@ def main():
 
         if hand:
             print(f"{species.id}: hand-made, {len(species.textures)} textures")
-            continue  # previews of hand-made animals come from Blockbench (docs/art/m1_animals_preview.png)
+            continue  # previews of hand-made animals: art_src/m4_scripts/m1_preview.py (docs/art/m1_animals_preview.png)
         sheet = preview_sheet(species, textures)
         sheet.save(ROOT / "docs" / "art" / f"{species.id}_preview.png")
         previews.append(sheet)

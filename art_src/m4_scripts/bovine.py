@@ -188,7 +188,7 @@ def buffalo_adult(p, sex):
             return mix(hide, (220, 214, 208), 0.45)  # pale brow above the eye
         return hide_fn(hide, back)(f, i, j, w, h, fi)
     p.paint("skull", skull_fn)
-    p.paint("muzzle", muzzle_fn((48, 46, 50), (132, 126, 128), (16, 14, 16)))
+    p.paint("muzzle", muzzle_fn((48, 46, 50), (132, 126, 128), (10, 8, 10)))  # nostrils kept clear of the eye's black: gen_sleep.mjs lids whatever matches it
     p.paint("ear", ear_fn(hide, (164, 132, 132)))
     p.paint("horn1", horn_fn((134, 124, 108), (112, 102, 90)))
     p.paint("horn2", horn_fn((134, 124, 108), (112, 102, 90)))
@@ -205,7 +205,7 @@ def buffalo_calf(p):
     p.paint("b_torso", hide_fn(coat, mix(coat, (0, 0, 0), 0.12), mix(coat, (240, 230, 220), 0.4), 0.05))
     p.paint("b_tail", lambda f, i, j, w, h, fi: (90, 76, 68) if j >= h - 2 else coat)
     p.paint("b_head", hide_fn(coat, mix(coat, (0, 0, 0), 0.1), streak=0.04))
-    p.paint("b_muzzle", muzzle_fn((214, 168, 158), (232, 196, 186), (120, 80, 76)))
+    p.paint("b_muzzle", muzzle_fn((78, 72, 76), (150, 140, 140), (48, 40, 42)))  # slate like its mother's, a shade lighter
     p.paint("b_ear", ear_fn(coat, (226, 170, 166)))
     p.paint("b_leg", leg_fn(coat, (206, 196, 186), (64, 56, 52)))
     plain_eyes(p, "b_head", 2)
@@ -229,7 +229,7 @@ def yak_adult(p, sex):
     p.paint("skull", skull_fn)
     p.paint("forelock", strands(hair, light, ragged=True))
     p.paint("beard", strands(hair, coat, ragged=True))
-    p.paint("muzzle", muzzle_fn((190, 170, 152) if sex == "female" else (164, 144, 126), (214, 200, 186), (40, 30, 26)))
+    p.paint("muzzle", muzzle_fn((190, 170, 152) if sex == "female" else (164, 144, 126), (214, 200, 186), (56, 40, 34)))  # nostrils clear of the eye's black (gen_sleep.mjs)
     p.paint("ear", ear_fn(coat, (176, 140, 124)))
     cream, tip = (232, 222, 200), (96, 86, 74)
     p.paint("horn1", flat(cream))
@@ -248,7 +248,7 @@ def yak_calf(p):
     p.paint("b_torso", woolly)
     p.paint("b_tail", flat(mix(coat, (0, 0, 0), 0.2)))
     p.paint("b_head", woolly)
-    p.paint("b_muzzle", muzzle_fn((222, 184, 166), (236, 206, 190), (110, 76, 64)))
+    p.paint("b_muzzle", muzzle_fn((200, 178, 158), (222, 208, 192), (72, 54, 46)))  # pale tan like the adults', not pink
     p.paint("b_ear", ear_fn(coat, (226, 172, 160)))
     p.paint("b_leg", leg_fn(mix(coat, (0, 0, 0), 0.15), None, (52, 42, 36)))
     plain_eyes(p, "b_head", 2)

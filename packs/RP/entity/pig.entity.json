@@ -9,10 +9,12 @@
       "textures": {
         "female": "textures/entity/ranching/pig/female",
         "male": "textures/entity/ranching/pig/male",
-        "baby": "textures/entity/ranching/pig/baby"
+        "baby": "textures/entity/ranching/pig/baby",
+        "gear": "textures/entity/ranching/gear/pig"
       },
       "geometry": {
-        "default": "geometry.kaleidoscope_ranching.pig"
+        "default": "geometry.kaleidoscope_ranching.pig",
+        "gear": "geometry.kaleidoscope_ranching.pig.gear"
       },
       "animations": {
         "walk": "animation.kaleidoscope_ranching.pig.walk",
@@ -32,7 +34,10 @@
         ]
       },
       "render_controllers": [
-        "controller.render.kaleidoscope_ranching.pig"
+        "controller.render.kaleidoscope_ranching.pig",
+        {
+          "controller.render.kaleidoscope_ranching.pig.gear": "q.property('kaleidoscope_ranching:gear_blanket')"
+        }
       ],
       "spawn_egg": {
         "base_color": "#F0A8A4",

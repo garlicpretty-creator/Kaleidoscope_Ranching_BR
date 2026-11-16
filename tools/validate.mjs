@@ -278,6 +278,183 @@ for (const path of walk(join(bp, "entities")).filter((p) => p.endsWith(".json"))
   }
 }
 
+// --- 3a. Things worn: player wearables, animal gear, the drying rack -----------
+
+// Every item worn in an armour slot shows on the player: an attachable with the item's id,
+// whose geometry binds only to the player's own bones and whose texture exists.
+const PLAYER_BONES = new Set(["root", "waist", "body", "head", "leftArm", "rightArm", "leftLeg", "rightLeg"]);
+const sameJson = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+const geometryById = new Map();
+for (const path of walk(join(rp, "models")).filter((p) => p.endsWith(".json"))) {
+  for (const geo of readJson(path)["minecraft:geometry"] ?? []) geometryById.set(geo.description.identifier, geo);
+}
+const attachables = new Map();
+if (exists(join(rp, "attachables"))) {
+  for (const path of walk(join(rp, "attachables")).filter((p) => p.endsWith(".json"))) {
+    const description = readJson(path)["minecraft:attachable"].description;
+    attachables.set(description.identifier, description);
+  }
+}
+for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
+  const item = readJson(path)["minecraft:item"];
+  if (!item.components?.["minecraft:wearable"]?.slot?.startsWith("slot.armor.")) continue;
+  const id = item.description.identifier;
+  const attachable = attachables.get(id);
+  if (!attachable) {
+    fail(`${id}: worn in an armour slot but has no attachable (art_src/m4_scripts/wearables.py)`);
+    continue;
+  }
+  const geo = geometryById.get(attachable.geometry?.default);
+  if (!geo) fail(`${id}: attachable geometry ${attachable.geometry?.default} does not exist`);
+  else {
+    if (!geo.bones.some((bone) => bone.cubes?.length)) fail(`${id}: attachable geometry has no cubes`);
+    for (const bone of geo.bones) if (!PLAYER_BONES.has(bone.name)) fail(`${id}: attachable bone "${bone.name}" is not a player bone`);
+  }
+  for (const key of ["default", "held"]) {
+    const texture = attachable.textures?.[key];
+    if (!texture || !exists(join(rp, texture + ".png"))) fail(`${id}: attachable texture "${key}" (${texture}.png) is missing`);
+  }
+  // Worn: the clothes, only in their own armour slot. Anywhere else (in a hand): the item's
+  // icon as a flat sprite bound to the holding bone, with the icon as its texture.
+  const slot = { "slot.armor.head": "head", "slot.armor.chest": "chest", "slot.armor.legs": "legs", "slot.armor.feet": "feet" }[item.components["minecraft:wearable"].slot];
+  const entries = (attachable.render_controllers ?? []).map((entry) => (typeof entry === "string" ? [entry, null] : Object.entries(entry)[0]));
+  for (const [rcId] of entries) if (!renderControllers.has(rcId)) fail(`${id}: attachable uses unknown render controller ${rcId}`);
+  const worn = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.default");
+  const held = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.held");
+  const squash = (text) => String(text ?? "").replace(/\s+/g, "").replace(/\bcontext\./g, "c.");
+  if (!worn || squash(worn[1]) !== `c.item_slot=='${slot}'`) fail(`${id}: the worn render controller must be gated on c.item_slot == '${slot}'`);
+  if (!held || squash(held[1]) !== `c.item_slot!='${slot}'`) fail(`${id}: no render controller draws the held icon when c.item_slot != '${slot}'`);
+  else if (!JSON.stringify(renderControllers.get(held[0]).textures ?? []).includes("Texture.held")) fail(`${id}: the held render controller does not use Texture.held`);
+  const heldGeo = geometryById.get(attachable.geometry?.held);
+  if (!heldGeo) fail(`${id}: attachable geometry "held" ${attachable.geometry?.held} does not exist`);
+  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && /item_slot_to_bone_name\(c(ontext)?\.item_slot\)/.test(bone.binding ?? ""))) {
+    fail(`${id}: the held geometry has no bone bound to the holding slot`);
+  }
+  const icon = item.components["minecraft:icon"];
+  const iconAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
+  const iconFile = iconAtlas[typeof icon === "string" ? icon : icon?.textures?.default]?.textures;
+  if (iconFile && attachable.textures?.held !== iconFile) fail(`${id}: the held texture should be the item's icon ${iconFile}`);
+}
+
+// Every gear kind shows on every animal that can wear it: a synced property on the entity, and
+// on the client a gear geometry layered over the animal by its own render controller. The gear
+// geometry repeats the animal's skeleton (same names, parents and pivots, no cubes) so the
+// walk and sleep animations carry the gear along.
+{
+  const { GEAR, gearProperty } = await load("gear.js");
+  for (const gear of GEAR) {
+    if (!itemIds.has(gear.item)) fail(`gear.js ${gear.id}: item "${gear.item}" is not declared in items.js`);
+    for (const animalId of gear.animals) {
+      const where = `gear ${gear.id} on ${animalId}`;
+      const property = gearProperty(gear.id);
+      if (!ANIMALS.some((animal) => animal.id === animalId)) {
+        fail(`${where}: not in animals.js`);
+        continue;
+      }
+      const declared = readJson(join(bp, "entities", `${animalId}.json`))["minecraft:entity"].description.properties?.[property];
+      if (declared?.type !== "bool" || declared.client_sync !== true) fail(`${where}: the entity has no synced bool property ${property}`);
+      const description = clientEntities.get(`kaleidoscope_ranching:${animalId}`)?.description;
+      const geo = geometryById.get(description?.geometry?.gear);
+      const base = geometryById.get(description?.geometry?.default);
+      if (!geo || !base) {
+        fail(`${where}: the client entity has no gear geometry`);
+        continue;
+      }
+      if (!description.textures?.gear) fail(`${where}: the client entity has no gear texture`);
+      const controller = (description.render_controllers ?? [])
+        .map((rcId) => renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]))
+        .find((rc) => rc?.geometry === "Geometry.gear");
+      if (!controller) fail(`${where}: no render controller draws Geometry.gear`);
+      else if (!JSON.stringify(controller.textures ?? []).includes("Texture.gear")) fail(`${where}: the gear render controller does not use Texture.gear`);
+      const baseBones = new Map(base.bones.map((bone) => [bone.name, bone]));
+      const gearBones = new Map(geo.bones.map((bone) => [bone.name, bone]));
+      for (const bone of geo.bones) {
+        if (bone.name.startsWith("gear_")) {
+          // A gear bone with no parent stands on the ground by itself (the plough).
+          if (bone.parent && !gearBones.has(bone.parent)) fail(`${where}: bone ${bone.name} hangs on missing bone "${bone.parent}"`);
+          continue;
+        }
+        const own = baseBones.get(bone.name);
+        if (!own) fail(`${where}: skeleton bone "${bone.name}" is not in the animal's model`);
+        else if (!sameJson(own.parent, bone.parent) || !sameJson(own.pivot, bone.pivot) || !sameJson(own.rotation, bone.rotation)) fail(`${where}: skeleton bone "${bone.name}" differs from the animal's model (run npm run generate)`);
+        if (bone.cubes?.length) fail(`${where}: skeleton bone "${bone.name}" must not carry cubes`);
+      }
+      for (const name of [`gear_${gear.id}`, ...(gear.babies ? [`gear_${gear.id}_baby`] : [])]) {
+        if (!gearBones.get(name)?.cubes?.length) fail(`${where}: the gear geometry has no bone ${name} with cubes`);
+        const rule = (controller?.part_visibility ?? []).find((entry) => name in entry)?.[name];
+        if (typeof rule !== "string" || !rule.includes(`'${property}'`)) fail(`${where}: bone ${name} is not shown by ${property}`);
+      }
+    }
+  }
+}
+
+// The butcher rack shows what is air-drying on it: a `drying` state counting the pieces and
+// one `dry_<n>` bone per slot (the bones' existence is checked with the other blocks below).
+{
+  const { DRYING_SLOTS } = await load("processing.js");
+  const rack = readJson(join(bp, "blocks", "r_butcher_rack.json"))["minecraft:block"];
+  const counts = rack.description.states?.["kaleidoscope_ranching:drying"];
+  if (!sameJson(counts, Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => n))) fail(`butcher rack: state kaleidoscope_ranching:drying must count 0..${DRYING_SLOTS}`);
+  const shown = rack.components["minecraft:geometry"].bone_visibility ?? {};
+  for (let n = 1; n <= DRYING_SLOTS; n++) {
+    if (!String(shown[`dry_${n}`] ?? "").includes("kaleidoscope_ranching:drying")) fail(`butcher rack: no bone dry_${n} shown by the drying state`);
+  }
+}
+
+// --- 3c. Animal rigs: the bones everything else is written against ---------------
+// The walk animation (tools/gen_art.py drops a bone it cannot find without a word), the sleep
+// poses and eyelids (tools/gen_sleep.mjs), the render controllers and the butcher rack all go by
+// bone name. A reshaped model has to keep them.
+{
+  const QUAD = ["leg_fl", "leg_fr", "leg_bl", "leg_br"];
+  const BIRD = ["leg_left", "leg_right", "wing_left", "wing_right"];
+  const LIMBS = { cow: QUAD, buffalo: QUAD, yak: QUAD, sheep: QUAD, goat: QUAD, pig: QUAD, rabbit: QUAD, chicken: BIRD, duck: BIRD, goose: BIRD };
+  const geoBones = new Map();
+  for (const path of walk(join(rp, "models", "entity")).filter((p) => p.endsWith(".json"))) {
+    for (const geo of readJson(path)["minecraft:geometry"] ?? []) geoBones.set(geo.description.identifier, geo.bones ?? []);
+  }
+  for (const animal of ANIMALS) {
+    const client = clientEntities.get(`kaleidoscope_ranching:${animal.id}`);
+    if (!client) continue; // reported above
+    const { description } = client;
+    const bones = geoBones.get(description.geometry?.default) ?? [];
+    const names = new Set(bones.map((bone) => bone.name));
+    const where = `${animal.id} model`;
+    const need = (bone, why) => names.has(bone) || fail(`${where}: missing bone "${bone}" (${why})`);
+
+    for (const bone of ["body", "head", "a_head", "b_head", "a_torso", "b_torso"]) need(bone, "rig");
+    for (const limb of LIMBS[animal.id] ?? []) for (const age of ["a", "b"]) need(`${age}_${limb}`, "walk animation and sleep pose");
+    for (const bone of ["lids_a", "lids_b"]) need(bone, "closed eyes while asleep: tools/gen_sleep.mjs found no eye on the head's front face");
+    for (const bone of bones) {
+      if (bone.parent && !names.has(bone.parent)) fail(`${where}: bone "${bone.name}" hangs from missing bone "${bone.parent}"`);
+    }
+
+    // Every bone an animation moves or a render controller shows and hides must exist.
+    const animationFiles = walk(join(rp, "animations")).filter((p) => p.endsWith(".json")).map(readJson);
+    for (const [key, animId] of Object.entries(description.animations ?? {})) {
+      if (animId.startsWith("animation.common.")) continue;
+      const anim = animationFiles.map((file) => file.animations?.[animId]).find(Boolean);
+      for (const bone of Object.keys(anim?.bones ?? {})) need(bone, `animation "${key}"`);
+      if (key === "walk") {
+        for (const limb of LIMBS[animal.id] ?? []) {
+          for (const age of ["a", "b"]) if (!anim?.bones?.[`${age}_${limb}`]) fail(`${where}: walk animation does not move "${age}_${limb}"`);
+        }
+      }
+    }
+    for (const rcId of description.render_controllers ?? []) {
+      const rc = renderControllers.get(typeof rcId === "string" ? rcId : Object.keys(rcId)[0]);
+      if (rc?.geometry === "Geometry.gear") continue; // the gear layer: its bones are in its own geometry, checked with the gear
+      for (const entry of rc?.part_visibility ?? []) {
+        const bone = Object.keys(entry)[0];
+        if (bone !== "*") need(bone, "render controller part_visibility");
+      }
+    }
+    // Sexed, aged and shearable parts are switched by bone-name prefix (tools/art/animals.py).
+    if (animal.id === "sheep" && !bones.some((bone) => bone.name.startsWith("wool_"))) fail(`${where}: no wool_ bone to hide when sheared`);
+    if (animal.id === "pig") need("saddle", "shown when saddled");
+  }
+}
+
 // --- 4. Registries against generated item and block files ----------------
 
 const fileIds = (dir, key) =>
@@ -373,6 +550,29 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
     if (existsSync(png)) {
       const [pw, ph] = pngSize(png);
       if (pw !== ph || pw % w) fail(`${relative(root, png)}: ${pw}x${ph} does not match its model's ${w}x${h}`);
+    }
+  }
+  // Placed food (data/placedFoods.js): one bone per portion, inside the block's cell, and every
+  // shared pot and baking dish is its own model, not one shape in another colour.
+  {
+    const { PLACED_FOODS } = await load("placedFoods.js");
+    const shapes = new Map();
+    for (const food of PLACED_FOODS) {
+      const path = join(rp, "models", "blocks", `kaleidoscope_ranching.${food.block}.geo.json`);
+      if (!existsSync(path)) { fail(`placed food ${food.block}: no model`); continue; }
+      const bones = readJson(path)["minecraft:geometry"][0].bones;
+      for (let n = 1; n <= food.portions; n++) {
+        if (!bones.find((b) => b.name === `piece_${n}`)?.cubes?.length) fail(`placed food ${food.block}: bone piece_${n} is missing or empty`);
+      }
+      const cubes = bones.flatMap((b) => b.cubes ?? []);
+      for (const { origin: [x, y, z], size: [w, h, d] } of cubes) {
+        if (x < -8 || z < -8 || y < 0 || x + w > 8 || z + d > 8 || y + h > 16) fail(`placed food ${food.block}: cube at ${[x, y, z]} size ${[w, h, d]} leaves the block's cell`);
+      }
+      if (food.shape !== "wheel") {
+        const key = JSON.stringify(cubes.map((c) => [c.origin, c.size]).sort());
+        if (shapes.has(key)) fail(`placed food ${food.block}: same model as ${shapes.get(key)}; each dish needs its own`);
+        else shapes.set(key, food.block);
+      }
     }
   }
   for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) {

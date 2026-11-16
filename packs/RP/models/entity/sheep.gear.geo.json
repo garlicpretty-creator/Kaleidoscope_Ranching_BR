@@ -1,0 +1,309 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.sheep.gear",
+        "texture_width": 128,
+        "texture_height": 128,
+        "visible_bounds_width": 5,
+        "visible_bounds_height": 3,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "a_torso",
+          "parent": "body",
+          "pivot": [
+            0,
+            16,
+            0
+          ]
+        },
+        {
+          "name": "b_torso",
+          "parent": "body",
+          "pivot": [
+            0,
+            10,
+            0
+          ]
+        },
+        {
+          "name": "gear_blanket_sheared",
+          "parent": "a_torso",
+          "pivot": [
+            0,
+            16,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                14,
+                -5
+              ],
+              "size": [
+                8,
+                4,
+                12
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "inflate": 0.45
+            }
+          ]
+        },
+        {
+          "name": "gear_blanket",
+          "parent": "a_torso",
+          "pivot": [
+            0,
+            16,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                14,
+                -5
+              ],
+              "size": [
+                12,
+                6,
+                12
+              ],
+              "uv": [
+                41,
+                0
+              ],
+              "inflate": 0.45
+            },
+            {
+              "origin": [
+                -5,
+                20,
+                -4.95
+              ],
+              "size": [
+                10,
+                1,
+                11.9
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    12,
+                    31
+                  ],
+                  "uv_size": [
+                    10,
+                    1
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    31
+                  ],
+                  "uv_size": [
+                    12,
+                    1
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    34,
+                    31
+                  ],
+                  "uv_size": [
+                    10,
+                    1
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    22,
+                    31
+                  ],
+                  "uv_size": [
+                    12,
+                    1
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    12,
+                    19
+                  ],
+                  "uv_size": [
+                    10,
+                    12
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    22,
+                    31
+                  ],
+                  "uv_size": [
+                    10,
+                    -12
+                  ]
+                }
+              },
+              "inflate": 0.45
+            }
+          ]
+        },
+        {
+          "name": "gear_blanket_baby_sheared",
+          "parent": "b_torso",
+          "pivot": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                10,
+                -2
+              ],
+              "size": [
+                6,
+                2,
+                6
+              ],
+              "uv": [
+                45,
+                19
+              ],
+              "inflate": 0.45
+            }
+          ]
+        },
+        {
+          "name": "gear_blanket_baby",
+          "parent": "b_torso",
+          "pivot": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                10,
+                -2
+              ],
+              "size": [
+                8,
+                3,
+                6
+              ],
+              "uv": [
+                70,
+                19
+              ],
+              "inflate": 0.45
+            },
+            {
+              "origin": [
+                -3,
+                13,
+                -1.95
+              ],
+              "size": [
+                6,
+                1,
+                5.9
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    105,
+                    25
+                  ],
+                  "uv_size": [
+                    6,
+                    1
+                  ]
+                },
+                "east": {
+                  "uv": [
+                    99,
+                    25
+                  ],
+                  "uv_size": [
+                    6,
+                    1
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    117,
+                    25
+                  ],
+                  "uv_size": [
+                    6,
+                    1
+                  ]
+                },
+                "west": {
+                  "uv": [
+                    111,
+                    25
+                  ],
+                  "uv_size": [
+                    6,
+                    1
+                  ]
+                },
+                "up": {
+                  "uv": [
+                    105,
+                    19
+                  ],
+                  "uv_size": [
+                    6,
+                    6
+                  ]
+                },
+                "down": {
+                  "uv": [
+                    111,
+                    25
+                  ],
+                  "uv_size": [
+                    6,
+                    -6
+                  ]
+                }
+              },
+              "inflate": 0.45
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

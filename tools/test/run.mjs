@@ -434,6 +434,7 @@ const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
 const STATION = COMPONENTS["kaleidoscope_ranching:station"];
 const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:butcher_rack", {
   "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:skinned": false, "kaleidoscope_ranching:cut": false,
+  "kaleidoscope_ranching:drying": 0,
 });
 /** Breaks a block the way the game does: both hooks fire, the block is air by then. */
 function breakBlock(component, block) {
@@ -2695,6 +2696,159 @@ test("1.1: the observation journal reads an animal's health, rest, produce, fami
   const duck = ranch("duck", 9, "female");
   keys = keysOf(notebookUi.observe(duck));
   assert(keys.includes("observe.produce.moult_shy"), "moulting needs hearts");
+});
+
+// --- 1.1 美術: what is worn or hung can be seen ---------------------------------
+
+test("1.1: gear put on an animal sets its synced property, and taking it off clears it", () => {
+  clearWorld();
+  toTimeOfDay(6000);
+  const player = __newPlayer(at(0, -6));
+  const on = (animal, id) => animal.getProperty(`kaleidoscope_ranching:gear_${id}`) === true;
+  const buffalo = ranch("buffalo", 0, "female");
+  care.setAffection(buffalo, 60);
+  for (const item of ["harness", "plough"]) {
+    hold(player, `kaleidoscope_ranching:${item}`, 1);
+    __interact(player, buffalo);
+    __advance(1);
+  }
+  assert(on(buffalo, "harness") && on(buffalo, "plough"), "harness and plough show");
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(on(buffalo, "harness") && !on(buffalo, "plough"), "plough unhitched");
+  hold(player, "kaleidoscope_ranching:plough", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  hold(player, "minecraft:shears", 1);
+  __interact(player, buffalo);
+  __advance(1);
+  assert(!on(buffalo, "harness") && !on(buffalo, "plough"), "shears take both off");
+
+  const sheep = ranch("sheep", 4, "female");
+  hold(player, "kaleidoscope_ranching:animal_blanket", 1);
+  __interact(player, sheep);
+  __advance(1);
+  assert(on(sheep, "blanket"), "blanket shows");
+
+  const yak = ranch("yak", 8, "female");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, yak);
+  __advance(1);
+  assert(on(yak, "pack_bag"), "pack bag shows");
+  assert(packBag.takeOffPackBag(player, yak), "bag off");
+  assert(!on(yak, "pack_bag"), "pack bag gone");
+});
+
+test("1.1: an animal saved before gear was drawn shows its gear once it loads", () => {
+  clearWorld();
+  const cow = ranch("cow", 0, "female");
+  cow.setDynamicProperty(sleep.BLANKET, true);
+  world.afterEvents.entityLoad.fire({ entity: cow });
+  equal(cow.getProperty("kaleidoscope_ranching:gear_blanket"), true, "blanket shown after loading");
+});
+
+/** Crates `animal` with the player's crate and lets it out at x = 6; returns the new animal. */
+function crateAndRelease(player, animal) {
+  hold(player, "kaleidoscope_ranching:animal_crate");
+  __interact(player, animal);
+  __advance(1);
+  assert(!animal.isValid, "crated");
+  const ground = __place(overworld, { x: 6, y: 63, z: 0 }, "minecraft:grass_block");
+  CRATE_ITEM.onUseOn({ source: player, block: ground, blockFace: "Up" });
+  __advance(1);
+  return overworld.getEntities({ type: animal.typeId }).find((e) => e.isValid && e !== animal && e.id !== animal.id);
+}
+
+test("1.1: a crated ploughing buffalo still ploughs when let out", () => {
+  clearWorld();
+  toTimeOfDay(6000);
+  const player = __newPlayer(at(0, -6));
+  const buffalo = ranch("buffalo", 0, "female");
+  care.setAffection(buffalo, 60);
+  for (const item of ["harness", "plough"]) {
+    hold(player, `kaleidoscope_ranching:${item}`, 1);
+    __interact(player, buffalo);
+    __advance(1);
+  }
+  const back = crateAndRelease(player, buffalo);
+  assert(back, "released");
+  equal(back.getProperty("kaleidoscope_ranching:gear_plough"), true, "the plough shows");
+  const list = JSON.parse(world.getDynamicProperty("kaleidoscope_ranching:ploughing_buffalo") ?? "[]");
+  assert(list.includes(back.id), "back on the ploughing list");
+  assert(!list.includes(buffalo.id), "the crated one is off it");
+  const { x, y, z } = back.location;
+  for (const dx of [-1, 0, 1]) __place(overworld, { x: Math.floor(x) + dx, y: Math.floor(y) - 1, z: Math.floor(z) }, "minecraft:grass_block");
+  back.getComponent("minecraft:leashable").leashTo(player);
+  back.viewDirection = { x: 0, y: 0, z: 1 };
+  __advance(20);
+  equal(overworld.getBlock({ x: Math.floor(x), y: Math.floor(y) - 1, z: Math.floor(z) }).typeId, "minecraft:farmland", "it tills");
+});
+
+test("1.1: a crated yak keeps its pack bag; a bag with things in it must be emptied first", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const yak = ranch("yak", 0, "female");
+  hold(player, "kaleidoscope_ranching:pack_bag", 1);
+  __interact(player, yak);
+  __advance(1);
+  hold(player, "minecraft:wheat", 5);
+  player.isSneaking = true;
+  __interact(player, yak);
+  __advance(1);
+  player.isSneaking = false;
+  hold(player, "kaleidoscope_ranching:animal_crate");
+  __interact(player, yak);
+  __advance(1);
+  assert(yak.isValid, "not crated while the bag holds things");
+  assert(player.actionBar.at(-1).translate.endsWith("crate.bag_not_empty"), "told why");
+  assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "emptied");
+  const back = crateAndRelease(player, yak);
+  assert(back, "released");
+  assert(packBag.wearsPackBag(back), "still wears the bag");
+  equal(back.getProperty("kaleidoscope_ranching:gear_pack_bag"), true, "the bag shows");
+  assert(packBag.bagOf(back), "the bag has room again");
+  equal(packBag.bagOf(back).size, 15, "15 slots");
+});
+
+const rackSystem = await import("../../packs/BP/scripts/systems/butcherRack.js");
+
+test("1.1: a rack saved with pieces drying before they were drawn shows them once the world loads", () => {
+  clearWorld();
+  const rack = rackAt(12);
+  const now = world.getAbsoluteTime();
+  world.setDynamicProperty(
+    "kaleidoscope_ranching:block:minecraft:overworld:12,64,0",
+    JSON.stringify({ type: "kaleidoscope_ranching:butcher_rack", data: { drying: [{ item: "kaleidoscope_ranching:raw_sausage", start: now }, { item: "kaleidoscope_ranching:pork_belly", start: now }] } })
+  );
+  equal(rackSystem.showSavedDrying(), 0, "nothing left to show");
+  equal(rack.permutation.getState("kaleidoscope_ranching:drying"), 2, "two pieces shown");
+});
+
+test("1.1: the butcher rack shows how many pieces are air-drying", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  const shown = () => rack.permutation.getState("kaleidoscope_ranching:drying");
+  equal(shown(), 0, "nothing hangs on a new rack");
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  equal(shown(), 1, "one piece");
+  __skipTime(24000 * 2);
+  hold(player, "kaleidoscope_ranching:beef_shank", 2);
+  use(RACK, rack, player);
+  use(RACK, rack, player);
+  equal(shown(), 3, "three pieces");
+  __skipTime(24000);
+  use(RACK, rack, player);
+  equal(shown(), 2, "the finished belly came down");
+  __skipTime(24000 * 3);
+  use(RACK, rack, player);
+  equal(shown(), 0, "all down");
+  player.inventory.setItem(8, carcassFrom("chicken", "female"));
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  equal(shown(), 0, "a carcass is not a drying piece");
 });
 
 // --- Report ---------------------------------------------------------------

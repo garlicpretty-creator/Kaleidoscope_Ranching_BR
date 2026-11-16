@@ -2,14 +2,25 @@
 // Python is found by trying each candidate with --version, because on Windows `python3` is often
 // the Microsoft Store shortcut, which exists on PATH but only opens the Store.
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+// Windows only: tools/pyfix/sitecustomize.py makes file writes wait out a virus scanner.
+const PYTHONPATH = process.platform === "win32"
+  ? [fileURLToPath(new URL("./pyfix", import.meta.url)), process.env.PYTHONPATH].filter(Boolean).join(";")
+  : process.env.PYTHONPATH;
 
 const STEPS = [
   ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
   ["py", "tools/m2/gen_content.py"],
+  // 1.1 掛架風乾: the drying pieces on the hand-made rack, before gen_m3_art installs it.
+  ["py", "art_src/m4_scripts/rack_drying.py"],
   ["py", "tools/gen_m3_art.py"],
   ["node", "tools/gen_entities.mjs"],
   ["node", "tools/gen_sleep.mjs"],
+  // 1.1 美術: gear layered on the animals (fitted to the models as they are now), worn items.
+  ["py", "art_src/m4_scripts/gear.py"],
+  ["py", "art_src/m4_scripts/wearables.py"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
   ["node", "tools/gen_catalog.mjs"],
@@ -44,7 +55,9 @@ if (!python) {
 
 for (const [kind, script, ...args] of STEPS) {
   const cmd = kind === "py" ? [...python, script, ...args] : [process.execPath, script, ...args];
-  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env: { ...process.env, PYTHONUTF8: "1" } });
+  const env = { ...process.env, PYTHONUTF8: "1" };
+  if (PYTHONPATH) env.PYTHONPATH = PYTHONPATH;
+  const r = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit", env });
   if (r.status !== 0) {
     console.error(`generate: ${script} failed` + (r.error ? ` (${r.error.message})` : ""));
     process.exit(r.status || 1);

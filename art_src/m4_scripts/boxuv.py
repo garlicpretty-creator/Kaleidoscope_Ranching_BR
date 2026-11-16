@@ -3,7 +3,7 @@ import json, random
 from pathlib import Path
 from PIL import Image
 
-RP = Path(r"D:\Kaleidoscope\KR\packs\RP")
+RP = Path(__file__).resolve().parents[2] / "packs" / "RP"
 
 
 def extras(c):

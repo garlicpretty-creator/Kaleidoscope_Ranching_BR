@@ -43,6 +43,7 @@
 - **點擊動物**：所有「手拿某物點動物」的玩法都經 `core/interact.js` 的路由，依優先度只處理一次，避免同一下點擊同時觸發繁殖和照顧。
 - **照顧資料**：M1、M3 不直接讀 M2 的資料，只透過 `core/husbandry.js` 取得心數、能否繁殖、當天是否產出；M2 換實作不影響其他系統。
 - **執行期內容表**：物種、分切表、加工配方在 `core/content.js` 合併內建與外部附加包註冊的內容，系統每次使用時查詢，不在啟動時自建對照表。
+- **動物裝備的外觀**：穿戴狀態仍存在動態屬性，`core/gear.js` 把它同步到實體屬性 `kaleidoscope_ranching:gear_<種類>`，資源包用這個屬性顯示裝備；裝備是疊在動物上的另一個模型，不改動物自己的模型。
 - **性別**：存在實體列舉屬性 `kaleidoscope_ranching:sex`，資源包用同一個屬性切換外觀與骨骼顯示。
 - **屠體資料**：大型屠體不可堆疊，才能在物品動態屬性上記住公母與羊毛顏色。
 
@@ -56,6 +57,7 @@
 | `tools/m2/gen_content.py` | M2 的方塊、物品、配方、模型、貼圖，與 `fragments/m2` |
 | `tools/gen_m3_art.py` | 物品圖示（`tools/art/icons.py`）、M3 方塊模型與貼圖（`tools/art/blocks.py`），與 `fragments/m3`。`art/blocks/` 裡有手做模型的方塊（由 `art_src/m4_scripts/blocks_m2.py`、`blocks_m3.py`、`blocks_m4.py`、`butcher_rack.py`、`cheese_wheel.py` 產生）直接安裝手做版；M2 的自動餵食器、鍘草機、飼料攪拌桶、堆肥槽有手做模型時，`gen_content.py` 也改用它 |
 | `tools/gen_entities.mjs` | 動物的行為包實體檔 |
+| `art_src/m4_scripts/gear.py`、`wearables.py` | 動物身上的裝備（挽具、犁、披毯、馱袋；依 `data/gear.js`，照當下的動物模型量身產生另一層模型、貼圖與渲染控制器）與玩家穿戴物（毛帽、圍巾、皮圍裙）的附件模型 |
 | `tools/gen_items.mjs` | 物品檔與合成、熔爐配方 |
 | `tools/gen_blocks.mjs` | M3 方塊的方塊檔 |
 | `tools/gen_shared.mjs` | 合併語言檔、貼圖索引、`blocks.json`；同一個鍵出現兩次就報錯 |

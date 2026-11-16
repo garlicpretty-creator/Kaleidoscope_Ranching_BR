@@ -77,7 +77,7 @@ RULES = [
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
     (r"^blocks/ranching/(vintage_|smoked_)?cheese_wheel$", "fat"),
     (r"^blocks/ranching/placed_pizza$", "food"),
-    (r"^blocks/ranching/placed_(cheese_gratin|truffle_gratin|claypot_rice)$", "glazed"),
+    (r"^blocks/ranching/placed_(cheese_gratin|truffle_gratin|claypot_rice|old_duck_soup|fondue)$", "glazed"),
     (r"^blocks/ranching/placed_", "metal"),
     (r"^blocks/ranching/(rug|down_pillow|down_quilt)", "feather"),
     (r"^blocks/ranching/horn_decor$", "bone"),
@@ -103,6 +103,8 @@ RULES = [
     (r"^items/.*/(forage|alfalfa\w*|mixed_feed|concentrate_feed|\w+_cake|carrot_chips|beet_sugar_cube)$", "plant"),
     (r"^items/", "food"),
     # Animals
+    (r"^entity/ranching/wearables/leather_apron$", "skin"),
+    (r"^entity/ranching/(wearables|gear)/", "cloth"),  # gear: per piece, see gear_materials
     (r"^entity/ranching/(chicken|duck|goose)/", "feather"),
     (r"^entity/ranching/pig/", "skin"),
     (r"^entity/ranching/", "fur"),
@@ -113,6 +115,7 @@ RULES = [(re.compile(p), m) for p, m in RULES]
 # Textures whose neutral greys are iron fittings (hoops, hinges, blades, pans).
 METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$)")
 GLASS_TEXTURES = re.compile(r"^blocks/ranching/incubator$")
+PLACED_FOOD = re.compile(r"^blocks/ranching/placed_")
 EYE = (26, 22, 26)  # boxuv.plain_eyes
 EYE_WHITE = (238, 236, 232)
 
@@ -151,6 +154,30 @@ def glow_mask(key, size):
     return mask
 
 
+# Animal gear (art_src/m4_scripts/gear.py): the material of every face rectangle, written
+# beside the other generator fragments.
+GEAR_FRAGMENTS = ROOT / "tools" / "fragments" / "gear"
+
+
+def gear_materials(key):
+    """{(x, y): material} for a gear texture, or {} for any other texture."""
+    path = GEAR_FRAGMENTS / f"{key.rsplit('/', 1)[-1]}.materials.json"
+    if not key.startswith("entity/ranching/gear/") or not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf8"))
+    out = {}
+    for material, rects in data["materials"].items():
+        for x0, y0, w, h in rects:
+            out.update(((x, y), material) for x in range(x0, x0 + w) for y in range(y0, y0 + h))
+    return out
+
+
+def fitting(rgb):
+    """Iron (neutral grey) or brass (strong yellow) painted on leather: buckles, trace ends."""
+    h, s, v = hsv(rgb)
+    return (s < 0.12 and v > 0.3) or (38 <= h < 60 and s > 0.5 and v > 0.6)
+
+
 def classify(key, base, rgb, neighbours):
     h, s, v = hsv(rgb)
     if key.startswith("entity/"):
@@ -164,6 +191,9 @@ def classify(key, base, rgb, neighbours):
     if GLASS_TEXTURES.search(key):
         if 175 < rgb[2] and rgb[2] >= rgb[0] + 10 and s < 0.25:
             return "glass"
+    if PLACED_FOOD.search(key) and s < 0.3 and v > 0.3 and rgb[0] >= rgb[2] - 3:
+        # pale, warm food (radish, rice, egg white) and white ceramic; iron and steel are cool greys
+        return "food" if base == "metal" else base
     if METAL_ACCENTS.search(key) and s < 0.09 and 0.42 < v:
         return "metal"
     if base == "metal" and s > 0.25:
@@ -194,6 +224,7 @@ def build(path, key, base):
 
     lum = [[luminance(px[x, y][:3]) for x in range(w)] for y in range(h)]
     glowing = glow_mask(key, (w, h))
+    pieces = gear_materials(key)
 
     def height(x, y, fallback):
         p = at(x, y)
@@ -210,7 +241,14 @@ def build(path, key, base):
             if p[3] < 16:
                 continue
             around = [q[:3] for q in (at(x - 1, y), at(x + 1, y), at(x, y - 1), at(x, y + 1)) if q and q[3] >= 16]
-            material = "glow" if (x, y) in glowing else classify(key, base, p[:3], around)
+            if (x, y) in glowing:
+                material = "glow"
+            elif (x, y) in pieces:
+                material = pieces[(x, y)]
+                if material == "skin" and fitting(p[:3]):
+                    material = "metal"
+            else:
+                material = classify(key, base, p[:3], around)
             m, e, r, sss, strength = MATERIALS[material]
             c = lum[y][x]
             mean = sum(luminance(q) for q in around) / len(around) if around else c

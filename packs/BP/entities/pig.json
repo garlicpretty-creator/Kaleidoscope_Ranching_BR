@@ -20,6 +20,11 @@
           "type": "bool",
           "default": false,
           "client_sync": true
+        },
+        "kaleidoscope_ranching:gear_blanket": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
         }
       }
     },

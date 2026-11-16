@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:wool_hat",
+      "materials": {
+        "default": "armor",
+        "held": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ranching/wearables/wool_hat",
+        "held": "textures/items/ranching/wool_hat"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.wearable.wool_hat",
+        "held": "geometry.kaleidoscope_ranching.wearable.wool_hat.held"
+      },
+      "render_controllers": [
+        {
+          "controller.render.kaleidoscope_ranching.wearable": "c.item_slot == 'head'"
+        },
+        {
+          "controller.render.kaleidoscope_ranching.wearable_held": "c.item_slot != 'head'"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.kaleidoscope_ranching.wearable": {
+      "geometry": "Geometry.default",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.default"
+      ]
+    },
+    "controller.render.kaleidoscope_ranching.wearable_held": {
+      "geometry": "Geometry.held",
+      "materials": [
+        {
+          "*": "Material.held"
+        }
+      ],
+      "textures": [
+        "Texture.held"
+      ]
+    }
+  }
+}
