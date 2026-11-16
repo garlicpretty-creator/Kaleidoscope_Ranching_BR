@@ -152,7 +152,7 @@ def main():
         texture_dir = RP / "textures" / "entity" / "ranching" / species.id
         texture_dir.mkdir(parents=True, exist_ok=True)
         for stale in texture_dir.glob("*.png"):
-            if stale.stem not in species.textures:
+            if stale.stem not in species.textures and not stale.stem.endswith(("_mers", "_normal")):
                 stale.unlink()
 
         if hand:

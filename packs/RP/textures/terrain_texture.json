@@ -85,44 +85,23 @@
     "kr_alfalfa_stage3": {
       "textures": "textures/blocks/kaleidoscope_ranching/kr_alfalfa_stage3"
     },
-    "kr_butcher_rack": {
-      "textures": "textures/blocks/ranching/butcher_rack"
-    },
-    "kr_nest_box": {
-      "textures": "textures/blocks/ranching/nest_box"
-    },
-    "kr_incubator": {
-      "textures": "textures/blocks/ranching/incubator"
-    },
-    "kr_butter_churn": {
-      "textures": "textures/blocks/ranching/butter_churn"
-    },
-    "kr_cheese_press": {
-      "textures": "textures/blocks/ranching/cheese_press"
-    },
     "kr_aging_rack": {
       "textures": "textures/blocks/ranching/aging_rack"
-    },
-    "kr_tanning_rack": {
-      "textures": "textures/blocks/ranching/tanning_rack"
-    },
-    "kr_fermenting_jar": {
-      "textures": "textures/blocks/ranching/fermenting_jar"
-    },
-    "kr_pickling_vat": {
-      "textures": "textures/blocks/ranching/pickling_vat"
-    },
-    "kr_hay_rack": {
-      "textures": "textures/blocks/ranching/hay_rack"
-    },
-    "kr_hitching_post": {
-      "textures": "textures/blocks/ranching/hitching_post"
     },
     "kr_auto_feeder": {
       "textures": "textures/blocks/ranching/auto_feeder"
     },
+    "kr_butcher_rack": {
+      "textures": "textures/blocks/ranching/butcher_rack"
+    },
+    "kr_butter_churn": {
+      "textures": "textures/blocks/ranching/butter_churn"
+    },
     "kr_chaff_cutter": {
       "textures": "textures/blocks/ranching/chaff_cutter"
+    },
+    "kr_cheese_press": {
+      "textures": "textures/blocks/ranching/cheese_press"
     },
     "kr_cheese_wheel": {
       "textures": "textures/blocks/ranching/cheese_wheel"
@@ -133,8 +112,29 @@
     "kr_feed_mixer": {
       "textures": "textures/blocks/ranching/feed_mixer"
     },
+    "kr_fermenting_jar": {
+      "textures": "textures/blocks/ranching/fermenting_jar"
+    },
     "kr_food_waste_bin": {
       "textures": "textures/blocks/ranching/food_waste_bin"
+    },
+    "kr_hay_rack": {
+      "textures": "textures/blocks/ranching/hay_rack"
+    },
+    "kr_hitching_post": {
+      "textures": "textures/blocks/ranching/hitching_post"
+    },
+    "kr_incubator": {
+      "textures": "textures/blocks/ranching/incubator"
+    },
+    "kr_nest_box": {
+      "textures": "textures/blocks/ranching/nest_box"
+    },
+    "kr_pickling_vat": {
+      "textures": "textures/blocks/ranching/pickling_vat"
+    },
+    "kr_tanning_rack": {
+      "textures": "textures/blocks/ranching/tanning_rack"
     }
   }
 }
