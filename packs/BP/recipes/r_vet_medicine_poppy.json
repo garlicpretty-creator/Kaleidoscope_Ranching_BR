@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m11_vet_medicine_poppy"
+    },
+    "tags": [
+      "kaleidoscope_ranching_feed_mixer"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:alfalfa"
+      },
+      {
+        "item": "minecraft:poppy"
+      },
+      {
+        "item": "minecraft:potion",
+        "data": 0
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:vet_medicine",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:alfalfa"
+      }
+    ]
+  }
+}

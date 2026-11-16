@@ -40,6 +40,9 @@ export function showAnimal(player, e) {
     T("info.hearts", [heartBar(getHearts(e))]),
     preg,
     T("info.ear_tag", [tag !== undefined ? `#${String(tag).padStart(3, "0")}` : T("info.none")]),
+    // 1.1: sick (systems/disease.js) and asleep (systems/sleep.js).
+    ...(e.getDynamicProperty("kaleidoscope_ranching:sick") === true ? [T("info.sick")] : []),
+    ...(e.getProperty?.("kaleidoscope_ranching:sleeping") === true ? [T("info.asleep")] : []),
     "",
     T("info.needs"),
     { rawtext: needParts.map((p) => (typeof p === "string" ? { text: p } : p)) },
@@ -120,11 +123,13 @@ function showSettings(player) {
     .toggle(T("settings.clean_need"), { defaultValue: cleanNeedEnabled() })
     // 1.1 動物作息 (systems/sleep.js)
     .toggle(T("settings.sleep"), { defaultValue: world.getDynamicProperty(CFG_SLEEP) !== false })
+    .toggle(T("settings.disease"), { defaultValue: world.getDynamicProperty("kr:cfg:disease") !== false })
     .show(player)
     .then((r) => {
       if (r.canceled) return;
       world.setDynamicProperty(CFG_CLEAN_NEED, !!r.formValues?.[0]);
       world.setDynamicProperty(CFG_SLEEP, !!r.formValues?.[1]);
+      world.setDynamicProperty("kr:cfg:disease", !!r.formValues?.[2]);
     })
     .catch(() => {});
 }

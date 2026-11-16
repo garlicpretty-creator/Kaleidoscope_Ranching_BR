@@ -36,6 +36,8 @@ import { dp, rid } from "../core/ids.js";
 import { consumeMainHand, dropItems, give, mainHand, stacksOf } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
+import { KIND } from "../data/feeds.js";
+import { isMarkedToday } from "../care/state.js";
 import { showActionBar } from "../core/actionBar.js";
 
 export const NEST_RADIUS = 8;
@@ -133,12 +135,20 @@ function lay(block, data) {
         const { produces } = production(hen, d);
         if (!produces) continue;
         const egg = rid(hasMale && Math.random() < fertilizedChance(hen) ? species.fertilizedEgg : species.dailyProduct.item);
-        if (storedCount(data) < NEST_CAPACITY) data.eggs[egg] = (data.eggs[egg] ?? 0) + 1;
-        else block.dimension.spawnItem(new ItemStack(egg, 1), at);
+        // 1.1 鈣質飼料: a hen that ate calcium feed today may lay one more plain egg.
+        const extra = d === day && ateCalciumToday(hen) && Math.random() < CALCIUM_EXTRA_EGG_CHANCE ? 1 : 0;
+        for (const one of extra ? [egg, rid(species.dailyProduct.item)] : [egg]) {
+          if (storedCount(data) < NEST_CAPACITY) data.eggs[one] = (data.eggs[one] ?? 0) + 1;
+          else block.dimension.spawnItem(new ItemStack(one, 1), at);
+        }
       }
     }
   }
 }
+
+/** 1.1: chance that a hen fed calcium feed today lays a second egg. */
+export const CALCIUM_EXTRA_EGG_CHANCE = 0.3;
+const ateCalciumToday = (hen) => isMarkedToday(hen, "fed") && hen.getDynamicProperty("kr:fed_kind") === KIND.CALCIUM;
 
 export const EGGSHELL = rid("eggshell");
 

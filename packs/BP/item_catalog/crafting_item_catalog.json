@@ -120,7 +120,9 @@
               "kaleidoscope_ranching:smoked_cheese_wheel",
               "kaleidoscope_ranching:smoked_cheese_slice",
               "kaleidoscope_ranching:ricotta",
-              "kaleidoscope_ranching:milk_tofu"
+              "kaleidoscope_ranching:milk_tofu",
+              "kaleidoscope_ranching:cream_cocoa",
+              "kaleidoscope_ranching:yogurt_berry_drink"
             ]
           },
           {
@@ -255,6 +257,8 @@
               "kaleidoscope_ranching:animal_blanket",
               "kaleidoscope_ranching:leather_gloves",
               "kaleidoscope_ranching:herding_horn",
+              "kaleidoscope_ranching:vet_medicine",
+              "kaleidoscope_ranching:soap",
               "kaleidoscope_ranching:milking_pail",
               "kaleidoscope_ranching:nursing_bottle",
               "kaleidoscope_ranching:cowbell",

@@ -181,6 +181,15 @@ const WORK_LINE = [
   ["herding_horn", "牧笛", "Herding Horn", "tool"],
 ];
 
+// 1.1 健康與系列整合 (企劃書 1.1 十): systems/disease.js, api/tavern.js. The two
+// drinks are made in the Tavern's shaker, so they exist only when it is installed.
+const HEALTH_LINE = [
+  ["vet_medicine", "獸藥", "Veterinary Medicine", "tool"],
+  ["soap", "肥皂", "Soap", "tool"],
+  ["cream_cocoa", "鮮奶油可可飲", "Cream Cocoa", "drink"],
+  ["yogurt_berry_drink", "優格莓果飲", "Yogurt Berry Drink", "drink"],
+];
+
 // 1.1 孵化與飼料線 (企劃書 1.1 八).
 const HATCH_FEED_LINE = [
   ["egg_candler", "照蛋燈", "Egg Candler", "tool"],
@@ -255,6 +264,7 @@ export const ITEMS = [
   ...CLOTH_LINE,
   ...HATCH_FEED_LINE,
   ...WORK_LINE,
+  ...HEALTH_LINE,
   ...BYPRODUCTS,
   ...FEED,
   ...TREATS,

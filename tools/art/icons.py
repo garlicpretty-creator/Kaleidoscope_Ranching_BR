@@ -543,6 +543,15 @@ def draw(item_id):
         c.fill(rect(10, 4, 11, 7), (130, 80, 46))
     elif base == "herding_horn":
         horn(c, (220, 206, 176))
+    # --- 1.1 健康與系列整合 ---
+    elif base == "vet_medicine":
+        bottle(c, (120, 190, 110))
+    elif base == "soap":
+        block(c, (236, 226, 190))
+    elif base == "cream_cocoa":
+        bottle(c, (150, 100, 70))
+    elif base == "yogurt_berry_drink":
+        bottle(c, (232, 150, 180))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

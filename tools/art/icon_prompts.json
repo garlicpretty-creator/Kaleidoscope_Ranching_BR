@@ -211,6 +211,10 @@
     "plough": { "prompt": "wooden ox plough with an iron blade" },
     "animal_blanket": { "prompt": "folded red wool horse blanket with yellow trim" },
     "leather_gloves": { "prompt": "pair of brown leather work gloves" },
-    "herding_horn": { "prompt": "carved cattle horn shepherd horn with a leather strap" }
+    "herding_horn": { "prompt": "carved cattle horn shepherd horn with a leather strap" },
+    "vet_medicine": { "prompt": "small glass bottle of green herbal veterinary medicine with a cork" },
+    "soap": { "prompt": "bar of pale cream tallow soap" },
+    "cream_cocoa": { "prompt": "glass of brown cocoa drink topped with whipped cream" },
+    "yogurt_berry_drink": { "prompt": "glass of pink berry yogurt drink" }
   }
 }

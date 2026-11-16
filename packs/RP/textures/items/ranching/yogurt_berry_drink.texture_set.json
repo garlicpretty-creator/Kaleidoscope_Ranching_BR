@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "yogurt_berry_drink",
+    "metalness_emissive_roughness_subsurface": "yogurt_berry_drink_mers",
+    "normal": "yogurt_berry_drink_normal"
+  }
+}

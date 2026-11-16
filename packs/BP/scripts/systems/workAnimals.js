@@ -27,6 +27,10 @@ import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, dropItems, give } from "../core/inventory.js";
 import { BLANKET, wakeNear } from "./sleep.js";
+import { animalByType } from "../core/content.js";
+
+/** The buffalo, or an animal another add-on registered with `harness: true`. */
+const takesHarness = (entity) => entity.typeId === BUFFALO || animalByType(entity.typeId)?.harness === true;
 import { showActionBar } from "../core/actionBar.js";
 
 export const HARNESS_HEARTS = 3;
@@ -349,12 +353,12 @@ export const penGateTopComponent = {
 
 export function startWorkAnimals() {
   const held = (id) => (ctx) => ctx.item?.typeId === rid(id);
-  registerEntityInteraction({ id: "m10:harness", priority: 40, match: (c) => held("harness")(c) && c.entity.typeId === BUFFALO, handle: ({ player, entity }) => harness(player, entity) });
-  registerEntityInteraction({ id: "m10:plough", priority: 40, match: (c) => held("plough")(c) && c.entity.typeId === BUFFALO, handle: ({ player, entity }) => hitchPlough(player, entity) });
+  registerEntityInteraction({ id: "m10:harness", priority: 40, match: (c) => held("harness")(c) && takesHarness(c.entity), handle: ({ player, entity }) => harness(player, entity) });
+  registerEntityInteraction({ id: "m10:plough", priority: 40, match: (c) => held("plough")(c) && takesHarness(c.entity), handle: ({ player, entity }) => hitchPlough(player, entity) });
   registerEntityInteraction({
     id: "m10:unharness",
     priority: 40,
-    match: (c) => c.item?.typeId === "minecraft:shears" && c.entity.typeId === BUFFALO && c.entity.getDynamicProperty(HARNESSED) === true,
+    match: (c) => c.item?.typeId === "minecraft:shears" && takesHarness(c.entity) && c.entity.getDynamicProperty(HARNESSED) === true,
     handle: ({ player, entity }) => unharness(player, entity),
   });
   registerEntityInteraction({ id: "m10:blanket", priority: 40, match: (c) => held("animal_blanket")(c) && BLANKETED.includes(c.entity.typeId), handle: ({ player, entity }) => putBlanket(player, entity) });

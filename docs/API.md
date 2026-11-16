@@ -168,6 +168,42 @@
 - 物品標籤 `kaleidoscope_ranching:milk`、`kaleidoscope_ranching:fertilized_egg`、`kaleidoscope_ranching:feed`、`kaleidoscope_ranching:brush`：讓別的附加包認得這是奶、受精蛋、飼料或毛刷。擠奶和孵化實際用到哪些物品，以 `register_animal` 註冊的內容為準。
 - 實體族群 `ranching_livestock`、`ranching_male`、`ranching_female`：可以用來篩選樂牧的動物，也是你的動物被樂牧認得的方式。
 
+1.1 起（能力 `tag_contract`）：在**你自己的物品**掛上這些標籤，就會直接進樂牧的流程，不用送任何事件。樂牧在世界載入約 2 秒後掃描一次所有物品的標籤。
+
+| 標籤 | 效果 |
+| --- | --- |
+| `kaleidoscope_ranching:offal` | 算蔬菜類飼料，可以放進飼槽餵豬 |
+| `kaleidoscope_ranching:mince` | 兩份加一份腸衣，在絞肉機做成 2 條生香腸 |
+| `kaleidoscope_ranching:fleece` | 兩份在紡車紡成 2 份毛線 |
+| `kaleidoscope_ranching:fine_fleece` | 兩份在紡車紡成 2 份絨線 |
+| `kaleidoscope_ranching:hide` | 一張在鞣皮架一天換 1 張皮革 |
+| `kaleidoscope_ranching:tallow` | 和皮革一起在鞣皮架做油鞣皮革；在工作台和木炭、水桶做肥皂 |
+
+## 1.1 新增
+
+先確認 `api_ready` 的能力清單裡有對應的名稱再使用；沒有的能力，舊版樂牧會照 v1 規則回 `api_result` 錯誤，不會出事。
+
+| 能力 | 內容 |
+| --- | --- |
+| `recipes_1_1` | `register_recipe` 的 `station` 可以是 1.1 的方塊：`meat_grinder`、`cream_separator`、`ice_cream_churn`、`spinning_wheel`、`weaving_loom`、`silage_barrel`。`ticks` 為 0 時，使用一次就立刻產出（例如絞肉機）。奶油分離器、紡車、織布機、青貯桶會自己從上方容器拿料、把成品放進下方容器，註冊的配方也一樣 |
+| `butcher_offal` | `register_butcher` 的分切可以標 `skin: true`（剝皮的刀，掛架顯示去皮的時機）與 `offal: true`（內臟那一刀） |
+| `animal_1_1` | `register_animal` 多了五個選填欄位，見下表 |
+| `feed_1_1` | `register_feed` 與 `care.eats` 多了 `"ruminant"`（只有反芻動物吃，像青貯料）與 `"calcium"`（只有家禽吃，吃了的母禽隔天有 30% 機率多下一顆蛋） |
+| `remedy` | 新事件 `kaleidoscope_ranching:register_remedy`，`{ "item": "你的命名空間:物品" }`：拿它點生病的動物就會痊癒，用掉一個 |
+| `events_1_1` | `animal_event` 多了 `fell_asleep`、`woke`（附 `reason`）、`slept_well`、`fell_ill`（附 `cause`：`thirst` 或 `dirt`）、`cured`、`moulted`、`foraged`、`herded`（附 `player`） |
+| `query_1_1` | `animal_info` 多了 `sleeping`、`sick`、`blanket`、`harness`（都是布林值） |
+| `tag_contract` | 見上方「標籤契約」 |
+
+`register_animal` 的 1.1 欄位：
+
+| 欄位 | 內容 |
+| --- | --- |
+| `sleep` | `"lie"`、`"side"`、`"roost"`、`"curl"` 之一。你的動物要定義 `kaleidoscope_ranching:fall_asleep` 與 `kaleidoscope_ranching:wake_up` 兩個事件（設定一個同步屬性並讓牠停下），樂牧在夜裡觸發它們；沒有這兩個事件的動物不睡覺 |
+| `moult` | `[物品, 機率]`：好感 4 心以上的成年動物，每天以這個機率掉一個 |
+| `harness` | `true`：可以裝挽具、拉犁，像水牛 |
+| `coldHardy` | `true`：不怕冷，像氂牛 |
+| `forage` | `{ "item": ..., "chance": 0.25, "minHearts": 5 }`：好感夠的成年動物，在森林的草地或灰化土上每天有機率拱出這個物品，像豬拱松露 |
+
 ## 伺服器設定指令
 
 這不是給附加包用的註冊介面，而是管理員可以在聊天欄或指令方塊下的指令：
@@ -185,3 +221,9 @@
 ```
 
 關閉或開啟動物作息（晚上睡覺）。牧場記事本的設定頁也能切換。
+
+```
+/scriptevent kaleidoscope_ranching:config disease off
+```
+
+關閉或開啟疾病。關閉後不會再有動物生病，已經生病的會在下一次每日檢查時痊癒。牧場記事本的設定頁也能切換。

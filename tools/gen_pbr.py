@@ -88,6 +88,7 @@ RULES = [
     (r"^items/.*/(down|yak_hair|pig_bristle|raw_hide|sheep_skin|rabbit_hide|brush|goat_cashmere|rabbit_fur|\w*yarn|felt|\w+_cloth|wool_\w+|feather_duster)$", "fur"),
     (r"^items/.*/(oiled_leather|leather_apron|lasso|harness|leather_gloves)$", "skin"),
     (r"^items/.*/herding_horn$", "bone"),
+    (r"^items/.*/(soap|vet_medicine|cream_cocoa|yogurt_berry_drink)$", "glass"),
     (r"^items/.*/animal_blanket$", "fur"),
     (r"^items/.*/(eggshell|calcium_\w+)$", "shell"),
     (r"^items/.*/egg_candler$", "metal"),

@@ -9,6 +9,7 @@
 //   in   kaleidoscope_ranching:register_feed      a feed item for troughs
 //   in   kaleidoscope_ranching:register_recipe    a recipe for one of the five processing stations
 //   in   kaleidoscope_ranching:register_butcher   the butcher-rack cuts of a carcass
+//   in   kaleidoscope_ranching:register_remedy    1.1: an item that cures a sick animal
 //   out  kaleidoscope_ranching:animal_event       born / hatched / harvested / butchered / mated / cared
 //   in   kaleidoscope_ranching:query_animal       { entity, ref? }: ask about one animal
 //   out  kaleidoscope_ranching:animal_info        the answer: sex, hearts, needs, pregnancy
@@ -30,6 +31,9 @@ import { getAffection } from "../core/husbandry.js";
 import { today } from "../core/time.js";
 import { needsToday } from "../care/state.js";
 import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
+import { isSick, registerRemedy as addRemedy } from "../systems/disease.js";
+import { BLANKET, isAsleep, SLEEP_POSES } from "../systems/sleep.js";
+import { HARNESSED } from "../systems/workAnimals.js";
 
 export const API_VERSION = 1;
 export const PACK_VERSION = "0.5.0";
@@ -40,13 +44,16 @@ export const CAPABILITIES = [
   "register_animal", "register_feed", "register_recipe", "register_butcher", "animal_event", "api_result",
   // Added after the first v1 build; check for them before relying on them.
   "query_animal", "care_events",
+  // 1.1 (docs/API.md "1.1 新增")
+  "recipes_1_1", "butcher_offal", "animal_1_1", "feed_1_1", "remedy", "events_1_1", "query_1_1", "tag_contract",
 ];
 
 /** Most entries of each kind one world session accepts, so a broken add-on cannot grow memory forever. */
-export const LIMITS = { animal: 64, feed: 256, recipe: 256, butcher: 64 };
-const counts = { animal: new Set(), feed: new Set(), recipe: new Set(), butcher: new Set() };
+export const LIMITS = { animal: 64, feed: 256, recipe: 256, butcher: 64, remedy: 64 };
+const counts = { animal: new Set(), feed: new Set(), recipe: new Set(), butcher: new Set(), remedy: new Set() };
 
-const FEED_KINDS = { grass: KIND.GRASS, grain: KIND.GRAIN, veg: KIND.VEG, mixed: KIND.MIXED, concentrate: KIND.CONCENTRATE };
+// 1.1: "ruminant" (silage kind) and "calcium" (poultry calcium feed).
+const FEED_KINDS = { grass: KIND.GRASS, grain: KIND.GRAIN, veg: KIND.VEG, mixed: KIND.MIXED, concentrate: KIND.CONCENTRATE, ruminant: KIND.SILAGE, calcium: KIND.CALCIUM };
 const ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
 
 class ApiError extends Error {}
@@ -100,7 +107,14 @@ function room(kind, key) {
  *   dailyProduct?: { via: "milking_pail" | "nest_box", items: [itemId] },  (no quality grades; extra ids from
  *                                            the old three-tier form are accepted and ignored)
  *   fertilizedEgg?: "ns:..._egg",            egg animals: hatches into this animal
- *   care?: { eats: ["grass"|"grain"|"veg"|"mixed"|"concentrate"], treat?: itemId, brushDrops?: [[itemId, chance]] }
+ *   care?: { eats: ["grass"|"grain"|"veg"|"mixed"|"concentrate"|"ruminant"|"calcium"], treat?: itemId, brushDrops?: [[itemId, chance]] }
+ *   1.1 (capability animal_1_1), all optional:
+ *   sleep?: "lie"|"side"|"roost"|"curl"     the animal lies down at night (it must define the
+ *                                            kaleidoscope_ranching:fall_asleep / wake_up events)
+ *   moult?: [itemId, chance]                 a well-kept adult drops this once a day with chance
+ *   harness?: boolean                        takes the harness and the plough, like the buffalo
+ *   coldHardy?: boolean                      no cold nights, like the yak
+ *   forage?: { item, chance?, minHearts? }   digs this up in forests, like the pig's truffle
  * }
  */
 export function registerAnimal(data) {
@@ -133,7 +147,7 @@ export function registerAnimal(data) {
     row.fertilizedEgg = ownId(data.fertilizedEgg, "fertilizedEgg");
   }
   const care = data.care === undefined ? {} : object(data.care, "care");
-  const eats = list(care.eats ?? ["mixed", "concentrate"], "care.eats", 5).map((kind) => FEED_KINDS[kind] ?? fail(`unknown feed kind "${kind}"`));
+  const eats = list(care.eats ?? ["mixed", "concentrate"], "care.eats", 7).map((kind) => FEED_KINDS[kind] ?? fail(`unknown feed kind "${kind}"`));
   const treat = care.treat === undefined ? undefined : itemId(care.treat, "care.treat");
   const brushDrops = list(care.brushDrops ?? [], "care.brushDrops", 4).map((drop, i) => {
     if (!Array.isArray(drop)) fail(`care.brushDrops[${i}] must be [item, chance]`);
@@ -142,13 +156,31 @@ export function registerAnimal(data) {
     return [itemId(item, `care.brushDrops[${i}]`), chance];
   });
 
+  if (data.sleep !== undefined) {
+    if (!SLEEP_POSES.includes(data.sleep)) fail(`sleep must be one of ${SLEEP_POSES.join(", ")}`);
+    row.sleep = data.sleep;
+  }
+  if (data.moult !== undefined) {
+    const [item, chance] = Array.isArray(data.moult) ? data.moult : [];
+    if (!(typeof chance === "number" && chance > 0 && chance <= 1)) fail("moult must be [item, chance 0–1]");
+    row.moult = [itemId(item, "moult[0]"), chance];
+  }
+  if (data.harness !== undefined) row.harness = Boolean(data.harness);
+  if (data.coldHardy !== undefined) row.coldHardy = Boolean(data.coldHardy);
+  if (data.forage !== undefined) {
+    const forage = object(data.forage, "forage");
+    const chance = forage.chance ?? 0.25;
+    if (!(typeof chance === "number" && chance > 0 && chance <= 1)) fail("forage.chance must be 0–1");
+    row.forage = { item: itemId(forage.item, "forage.item"), chance, minHearts: int(forage.minHearts ?? 5, "forage.minHearts", 0, 5) };
+  }
+
   room("animal", id);
   if (!addAnimal(row)) fail("built-in animals cannot be replaced");
   registerSpecies(id, { key: id, eats, treat, brushDrops });
   return id;
 }
 
-/** register_feed { item: "ns:hay_cube", kind: "grass"|"grain"|"veg"|"mixed"|"concentrate", units?: 1–9 } */
+/** register_feed { item: "ns:hay_cube", kind: "grass"|"grain"|"veg"|"mixed"|"concentrate"|"ruminant"|"calcium", units?: 1–9 } */
 export function registerFeedItem(data) {
   const item = ownId(data.item, "item");
   const kind = FEED_KINDS[data.kind] ?? fail(`unknown feed kind "${data.kind}"`);
@@ -205,6 +237,9 @@ export function registerButcher(data) {
     const entry = { item: itemId(cut.item, `${where}.item`), count: [min, max] };
     if (cut.maleBonus !== undefined) entry.maleBonus = int(cut.maleBonus, `${where}.maleBonus`, 0, 16);
     if (cut.maleOnly !== undefined) entry.maleOnly = Boolean(cut.maleOnly);
+    // 1.1 (capability butcher_offal): mark the hide strokes and the offal stroke.
+    if (cut.skin !== undefined) entry.skin = Boolean(cut.skin);
+    if (cut.offal !== undefined) entry.offal = Boolean(cut.offal);
     if (cut.chance !== undefined) {
       if (!(typeof cut.chance === "number" && cut.chance >= 0 && cut.chance <= 1)) fail(`${where}.chance must be 0–1`);
       entry.chance = cut.chance;
@@ -217,6 +252,14 @@ export function registerButcher(data) {
     fail("built-in carcasses cannot be replaced");
   }
   return carcass;
+}
+
+/** register_remedy { item: "ns:herb_tonic" } (1.1, capability remedy): using it on a sick animal cures it, and uses one. */
+export function registerRemedyItem(data) {
+  const item = ownId(data.item, "item");
+  room("remedy", item);
+  addRemedy(item);
+  return item;
 }
 
 /**
@@ -246,6 +289,11 @@ export function queryAnimal(data) {
     hearts: getAffection(entity),
     needs: { fed: needs.fed, water: needs.water, groom: needs.groom, clean: needs.clean, all: needs.all },
     pregnant,
+    // 1.1 (capability query_1_1)
+    sleeping: isAsleep(entity),
+    sick: isSick(entity),
+    blanket: entity.getDynamicProperty(BLANKET) === true,
+    harness: entity.getDynamicProperty(HARNESSED) === true,
   });
   if (pregnant) info.dueInDays = due - day;
   const tag = entity.getDynamicProperty("kr:ear_tag");
@@ -259,6 +307,7 @@ const HANDLERS = {
   [EV("register_feed")]: registerFeedItem,
   [EV("register_recipe")]: registerRecipe,
   [EV("register_butcher")]: registerButcher,
+  [EV("register_remedy")]: registerRemedyItem,
 };
 
 // --- transport -----------------------------------------------------------------------

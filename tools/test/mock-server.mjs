@@ -37,6 +37,9 @@ class Signal {
 
 // --- Enums ----------------------------------------------------------------
 
+/** Item types: tests add other add-ons' items here (core/tags.js asks for them). */
+export const __itemTypes = [];
+export const ItemTypes = { getAll: () => __itemTypes.map((id) => ({ id })), get: (id) => ({ id }) };
 export const EquipmentSlot = { Mainhand: "Mainhand", Offhand: "Offhand", Head: "Head", Chest: "Chest", Legs: "Legs", Feet: "Feet" };
 export const GameMode = { Survival: "Survival", Creative: "Creative", Adventure: "Adventure", Spectator: "Spectator" };
 export const Direction = { Up: "Up", Down: "Down", North: "North", South: "South", East: "East", West: "West" };
