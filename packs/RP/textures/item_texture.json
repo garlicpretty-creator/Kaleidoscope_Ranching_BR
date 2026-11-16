@@ -302,6 +302,57 @@
     "kr_foie_gras_pate": {
       "textures": "textures/items/ranching/foie_gras_pate"
     },
+    "kr_skim_milk": {
+      "textures": "textures/items/ranching/skim_milk"
+    },
+    "kr_vanilla_ice_cream": {
+      "textures": "textures/items/ranching/vanilla_ice_cream"
+    },
+    "kr_berry_ice_cream": {
+      "textures": "textures/items/ranching/berry_ice_cream"
+    },
+    "kr_chocolate_ice_cream": {
+      "textures": "textures/items/ranching/chocolate_ice_cream"
+    },
+    "kr_custard": {
+      "textures": "textures/items/ranching/custard"
+    },
+    "kr_truffle": {
+      "textures": "textures/items/ranching/truffle"
+    },
+    "kr_goat_cheese": {
+      "textures": "textures/items/ranching/goat_cheese"
+    },
+    "kr_aged_goat_cheese": {
+      "textures": "textures/items/ranching/aged_goat_cheese"
+    },
+    "kr_mozzarella": {
+      "textures": "textures/items/ranching/mozzarella"
+    },
+    "kr_chhurpi": {
+      "textures": "textures/items/ranching/chhurpi"
+    },
+    "kr_chhurpi_block": {
+      "textures": "textures/items/ranching/chhurpi_block"
+    },
+    "kr_vintage_cheese_wheel": {
+      "textures": "textures/items/ranching/vintage_cheese_wheel"
+    },
+    "kr_vintage_cheese_slice": {
+      "textures": "textures/items/ranching/vintage_cheese_slice"
+    },
+    "kr_smoked_cheese_wheel": {
+      "textures": "textures/items/ranching/smoked_cheese_wheel"
+    },
+    "kr_smoked_cheese_slice": {
+      "textures": "textures/items/ranching/smoked_cheese_slice"
+    },
+    "kr_ricotta": {
+      "textures": "textures/items/ranching/ricotta"
+    },
+    "kr_milk_tofu": {
+      "textures": "textures/items/ranching/milk_tofu"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },
@@ -458,11 +509,65 @@
     "kr_pate_toast": {
       "textures": "textures/items/ranching/pate_toast"
     },
+    "kr_condensed_milk": {
+      "textures": "textures/items/ranching/condensed_milk"
+    },
+    "kr_milk_skin": {
+      "textures": "textures/items/ranching/milk_skin"
+    },
+    "kr_condensed_milk_toast": {
+      "textures": "textures/items/ranching/condensed_milk_toast"
+    },
+    "kr_milk_skin_tea": {
+      "textures": "textures/items/ranching/milk_skin_tea"
+    },
+    "kr_double_skin_milk": {
+      "textures": "textures/items/ranching/double_skin_milk"
+    },
+    "kr_egg_pudding": {
+      "textures": "textures/items/ranching/egg_pudding"
+    },
+    "kr_egg_tart": {
+      "textures": "textures/items/ranching/egg_tart"
+    },
+    "kr_truffle_eggs": {
+      "textures": "textures/items/ranching/truffle_eggs"
+    },
+    "kr_cheese_fondue": {
+      "textures": "textures/items/ranching/cheese_fondue"
+    },
+    "kr_margherita_pizza": {
+      "textures": "textures/items/ranching/margherita_pizza"
+    },
+    "kr_ricotta_pancakes": {
+      "textures": "textures/items/ranching/ricotta_pancakes"
+    },
+    "kr_smoked_cheese_sandwich": {
+      "textures": "textures/items/ranching/smoked_cheese_sandwich"
+    },
+    "kr_goat_cheese_salad": {
+      "textures": "textures/items/ranching/goat_cheese_salad"
+    },
+    "kr_truffle_gratin": {
+      "textures": "textures/items/ranching/truffle_gratin"
+    },
+    "kr_chhurpi_butter_tea": {
+      "textures": "textures/items/ranching/chhurpi_butter_tea"
+    },
     "kr_egg_custard": {
       "textures": "textures/items/ranching/egg_custard"
     },
     "kr_raw_cheese_gratin": {
       "textures": "textures/items/ranching/raw_cheese_gratin"
+    },
+    "kr_raw_egg_tart": {
+      "textures": "textures/items/ranching/raw_egg_tart"
+    },
+    "kr_raw_pizza": {
+      "textures": "textures/items/ranching/raw_pizza"
+    },
+    "kr_raw_truffle_gratin": {
+      "textures": "textures/items/ranching/raw_truffle_gratin"
     }
   }
 }

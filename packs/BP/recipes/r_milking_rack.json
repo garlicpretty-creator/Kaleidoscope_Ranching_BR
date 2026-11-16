@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_milking_rack"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "F F",
+      "PBP",
+      "P P"
+    ],
+    "key": {
+      "F": {
+        "item": "minecraft:oak_fence"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      },
+      "B": {
+        "item": "minecraft:bucket"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:milking_rack",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:milking_rack"
+      }
+    ]
+  }
+}

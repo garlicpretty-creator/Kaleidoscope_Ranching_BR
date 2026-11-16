@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "goat_cheese_salad",
+    "metalness_emissive_roughness_subsurface": "goat_cheese_salad_mers",
+    "normal": "goat_cheese_salad_normal"
+  }
+}

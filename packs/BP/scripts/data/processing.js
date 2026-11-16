@@ -31,8 +31,17 @@ export const PROCESSING_RECIPES = [
   { id: "churn/ghee", station: "butter_churn", inputs: [{ anyOf: ANY_YAK_MILK, count: 2 }], outputs: [{ item: "ghee", count: 1 }], ticks: 600 },
 
   // Cheese press, then aging rack
-  { id: "press/fresh_cheese", station: "cheese_press", inputs: [{ anyOf: ANY_MILK, count: 3 }], outputs: [{ item: "fresh_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
-  { id: "aging/cheese_wheel", station: "aging_rack", inputs: [{ item: "fresh_cheese", count: 4 }], outputs: [{ item: "aged_cheese_wheel", count: 1 }], ticks: DAY * 3 },
+  // 1.1 起司線: the press makes a cheese per milk (1.0 made fresh cheese from any milk).
+  { id: "press/fresh_cheese", station: "cheese_press", inputs: [{ anyOf: tierIds("cow_milk"), count: 3 }], outputs: [{ item: "fresh_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/goat_cheese", station: "cheese_press", inputs: [{ anyOf: tierIds("goat_milk"), count: 3 }], outputs: [{ item: "goat_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/mozzarella", station: "cheese_press", inputs: [{ anyOf: tierIds("buffalo_milk"), count: 3 }], outputs: [{ item: "mozzarella", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/chhurpi", station: "cheese_press", inputs: [{ anyOf: ANY_YAK_MILK, count: 3 }], outputs: [{ item: "chhurpi", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  { id: "press/ricotta", station: "cheese_press", inputs: [{ item: "whey", count: 3 }], outputs: [{ item: "ricotta", count: 1 }], ticks: DAY / 4 },
+  { id: "press/milk_tofu", station: "cheese_press", inputs: [{ item: "skim_milk", count: 3 }], outputs: [{ item: "milk_tofu", count: 2 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
+  // 1.1: left 7 days the wheel comes out vintage; over a lit campfire, smoked (SMOKING).
+  { id: "aging/cheese_wheel", station: "aging_rack", inputs: [{ item: "fresh_cheese", count: 4 }], outputs: [{ item: "aged_cheese_wheel", count: 1 }], ticks: DAY * 3, aged: { ticks: DAY * 7, outputs: [{ item: "vintage_cheese_wheel", count: 1 }] } },
+  { id: "aging/goat_cheese", station: "aging_rack", inputs: [{ item: "goat_cheese", count: 2 }], outputs: [{ item: "aged_goat_cheese", count: 1 }], ticks: DAY * 3 },
+  { id: "aging/chhurpi", station: "aging_rack", inputs: [{ item: "chhurpi", count: 2 }], outputs: [{ item: "chhurpi_block", count: 2 }], ticks: DAY * 2 },
 
   // Tanning rack (企劃書 1.1, moved into 1.0): hides from the butcher rack become leather.
   { id: "tan/raw_hide", station: "tanning_rack", inputs: [{ item: "raw_hide", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
@@ -62,6 +71,30 @@ PROCESSING_RECIPES.push(
   { id: "grind/sausage", station: "meat_grinder", inputs: [{ anyOf: ANY_MINCE, count: 2 }, { item: "sausage_casing", count: 1 }], outputs: [{ item: "raw_sausage", count: 2 }], ticks: 0 },
   { id: "churn/foie_gras_pate", station: "butter_churn", inputs: [{ item: "goose_liver", count: 1 }, { item: "butter", count: 1 }], outputs: [{ item: "foie_gras_pate", count: 1 }], ticks: 600 },
 );
+
+// --- 1.1 蛋奶線 -----------------------------------------------------------------
+
+const ANY_CHICKEN_EGG = ["minecraft:egg", "egg_fine", "egg_superb"];
+
+PROCESSING_RECIPES.push(
+  // The separator is automated (AUTO_STATIONS): milk from the container above, cream and skim milk below.
+  { id: "separate/cow_like", station: "cream_separator", inputs: [{ anyOf: ANY_COW_LIKE_MILK, count: 1 }], outputs: [{ item: "cream", count: 1 }, { item: "skim_milk", count: 1 }], ticks: DAY / 2 },
+  { id: "separate/yak", station: "cream_separator", inputs: [{ anyOf: ANY_YAK_MILK, count: 1 }], outputs: [{ item: "cream", count: 1 }, { item: "skim_milk", count: 1 }], ticks: DAY / 2 },
+  // Ice cream is cranked (ticks 0). Flavoured recipes have more inputs, so they are tried first.
+  { id: "ice_cream/vanilla", station: "ice_cream_churn", inputs: [{ item: "cream", count: 1 }, { item: "minecraft:sugar", count: 1 }, { item: "minecraft:ice", count: 1 }], outputs: [{ item: "vanilla_ice_cream", count: 2 }], ticks: 0 },
+  { id: "ice_cream/berry", station: "ice_cream_churn", inputs: [{ item: "cream", count: 1 }, { item: "minecraft:sugar", count: 1 }, { item: "minecraft:ice", count: 1 }, { item: "minecraft:sweet_berries", count: 1 }], outputs: [{ item: "berry_ice_cream", count: 2 }], ticks: 0 },
+  { id: "ice_cream/chocolate", station: "ice_cream_churn", inputs: [{ item: "cream", count: 1 }, { item: "minecraft:sugar", count: 1 }, { item: "minecraft:ice", count: 1 }, { item: "minecraft:cocoa_beans", count: 1 }], outputs: [{ item: "chocolate_ice_cream", count: 2 }], ticks: 0 },
+  { id: "churn/custard", station: "butter_churn", inputs: [{ anyOf: ANY_CHICKEN_EGG, count: 2 }, { anyOf: ANY_MILK, count: 1 }, { item: "minecraft:sugar", count: 1 }], outputs: [{ item: "custard", count: 2 }], ticks: 300 },
+);
+
+/** Stations that also run on the ranch clock with containers above and below (systems/stations.js). */
+export const AUTO_STATIONS = ["cream_separator"];
+
+/** Aging-rack outputs that come out smoked over a lit campfire (企劃書 1.1 煙燻乳酪). */
+export const SMOKING = {
+  aged_cheese_wheel: "smoked_cheese_wheel",
+  vintage_cheese_wheel: "smoked_cheese_wheel",
+};
 
 /** Air-drying on an empty butcher rack (企劃書 1.1 掛架風乾): input → output. */
 export const DRYING = {

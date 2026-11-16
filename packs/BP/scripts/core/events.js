@@ -20,6 +20,7 @@ export function onRanchEvent(listener) {
  *   "mated"      a female became pregnant   { animal, mother, father }
  *   "cared"      a player cared for it      { animal, entity, player, kind }
  *                kind: "pet" | "brush" | "treat" | "ear_tag" | "nursing_bottle"
+ *   "foraged"    an animal dug something up { animal, entity, items: { itemId: count } } (1.1 松露)
  */
 export function emitRanchEvent(type, data) {
   for (const listener of listeners) {

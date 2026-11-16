@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "milk_tofu",
+    "metalness_emissive_roughness_subsurface": "milk_tofu_mers",
+    "normal": "milk_tofu_normal"
+  }
+}

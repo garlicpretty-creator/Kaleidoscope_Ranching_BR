@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cream_separator",
+    "metalness_emissive_roughness_subsurface": "cream_separator_mers",
+    "normal": "cream_separator_normal"
+  }
+}

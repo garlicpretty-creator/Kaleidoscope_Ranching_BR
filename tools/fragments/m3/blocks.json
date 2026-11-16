@@ -41,5 +41,14 @@
   },
   "kaleidoscope_ranching:meat_grinder": {
     "sound": "metal"
+  },
+  "kaleidoscope_ranching:milking_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:cream_separator": {
+    "sound": "metal"
+  },
+  "kaleidoscope_ranching:ice_cream_churn": {
+    "sound": "wood"
   }
 }

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "condensed_milk",
+    "metalness_emissive_roughness_subsurface": "condensed_milk_mers",
+    "normal": "condensed_milk_normal"
+  }
+}
