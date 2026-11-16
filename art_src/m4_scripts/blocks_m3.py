@@ -20,6 +20,8 @@ Run with: python art_src/m4_scripts/blocks_m3.py
 import json
 from pathlib import Path
 
+from PIL import Image
+
 from boxuv import Painter
 from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
@@ -42,6 +44,9 @@ def autouv(bones, tw=64):
     for name, parent, pivot, cubes in bones:
         new = []
         for cname, o, s in cubes:
+            if cname in LIT:
+                new.append((cname, o, s, None))  # laid out in <block>_candled.png (lit_uv)
+                continue
             key = (cname, tuple(s))
             if key not in seen:
                 w, h, d = [max(1, round(v)) for v in s]
@@ -59,24 +64,33 @@ def autouv(bones, tw=64):
     return out, tw, th
 
 
-def material_uv(uv, size, material):
-    """Per-face UVs sampling the same texels as the box UV (as tools/fix_zfight.py writes them),
-    each face tagged with a material instance so it is drawn from <block>_<material>.png."""
-    u, v = uv
-    w, h, d = [max(1, round(s)) for s in size]
-    faces = {
-        "north": ([u + d, v + d], [w, h]), "east": ([u, v + d], [d, h]),
-        "south": ([u + 2 * d + w, v + d], [w, h]), "west": ([u + d + w, v + d], [d, h]),
-        "up": ([u + d, v], [w, d]), "down": ([u + d + w, v + d], [w, -d]),
-    }
-    return {f: {"uv": a, "uv_size": b, "material_instance": material} for f, (a, b) in faces.items()}
+LIT_SCALE = 4  # texels per model pixel on the candled shells, so the chick's shadow has a shape
+
+
+def lit_rects(cname):
+    """Face rectangles (u, v, w, h) of a candled shell cube in <block>_candled.png: stage s on row
+    16*s, the 2-pixel shell at u 0 and its 1-pixel tip at u 32, laid out as a box UV at LIT_SCALE."""
+    stage, tip = int(cname[-1]), "tip" in cname
+    n = LIT_SCALE * (1 if tip else 2)
+    u, v = (32 if tip else 0), 16 * stage
+    return {"up": (u + n, v, n, n), "down": (u + 2 * n, v, n, n), "north": (u + n, v + n, n, n),
+            "east": (u, v + n, n, n), "south": (u + 3 * n, v + n, n, n), "west": (u + 2 * n, v + n, n, n)}
+
+
+def lit_uv(cname):
+    """Per-face UVs of a candled shell cube, drawn from <block>_candled.png (material `candled`)."""
+    out = {}
+    for f, (u, v, w, h) in lit_rects(cname).items():
+        uv, size = ([u, v + h], [w, -h]) if f == "down" else ([u, v], [w, h])
+        out[f] = {"uv": uv, "uv_size": size, "material_instance": "candled"}
+    return out
 
 
 def geo(bid, bones, tw, th):
     out = []
     for name, parent, pivot, cubes in bones:
         b = {"name": name, "pivot": pivot, "cubes": [
-            {"origin": o, "size": s, "uv": material_uv(uv, s, "candled") if c in LIT else uv} for c, o, s, uv in cubes]}
+            {"origin": o, "size": s, "uv": lit_uv(c) if c in LIT else uv} for c, o, s, uv in cubes]}
         if parent:
             b["parent"] = parent
         out.append(b)
@@ -94,29 +108,25 @@ def egg(x, y, z):
     return [("egg", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]
 
 
-# 1.1 蛋的進度: every egg slot also has a cracked look, a nearly hatched look and a candled
-# look (a glowing see-through shell with the chick's shadow inside, three sizes). Which one
-# shows is chosen by the block's eggs/cracks/ready/candled states (tools/gen_blocks.mjs).
-EMBRYO = [  # per stage: (cube name, offset from the egg's centre bottom, size)
-    [("embryo_s", [-0.3, 0.7, -0.3], [0.6, 0.6, 0.6])],
-    [("embryo_m", [-0.5, 0.4, -0.5], [1, 1, 1]), ("embryo_m_head", [-0.25, 1.45, -0.25], [0.5, 0.5, 0.5])],
-    [("embryo_l", [-0.7, 0.25, -0.7], [1.4, 1.4, 1.4]), ("embryo_l_head", [-0.4, 1.6, -0.4], [0.8, 0.8, 0.8])],
-]
-LIT = {"shell", "shell_tip"}  # cubes drawn from <block>_candled.png with the `candled` material
+# 1.1 蛋的進度: every egg slot also has a cracked look, a nearly hatched look and three candled
+# looks: the egg glowing amber-white with the chick's shadow painted on the shell, small, medium
+# or large by how far along it is. Which one shows is chosen by the block's
+# eggs/cracks/ready/candled states (tools/gen_blocks.mjs). The candled shells are opaque and drawn
+# with the same render method as the rest of the block (Bedrock wants one per block), from their
+# own texture <block>_candled.png (material instance `candled`), emissive in the PBR set.
+LIT = {f"lit_{part}_{stage}" for part in ("shell", "tip") for stage in range(3)}
 
 
 def egg_slot(n, parent, pivot, x, y, z):
-    """The bones of egg slot n: plain, cracked, hatching, candled shell and the three embryos."""
-    cx, cz = x + 1, z + 1
+    """The bones of egg slot n: plain, cracked, hatching, and candled at each of three stages."""
     return [
         (f"egg_{n}", parent, pivot, egg(x, y, z)),
         (f"egg_{n}_crack", parent, pivot, [("egg_crack", [x, y, z], [2, 2, 2]), ("egg_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
         # the cap is pushed up off the top, a dark gap where the chick is breaking out
         (f"egg_{n}_hatch", parent, pivot, [("egg_hatch", [x, y, z], [2, 2, 2]), ("egg_cap", [x + 0.5, y + 2.5, z + 0.5], [1, 1, 1])]),
-        (f"egg_{n}_lit", parent, pivot, [("shell", [x, y, z], [2, 2, 2]), ("shell_tip", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])]),
-        *[(f"egg_{n}_embryo_{s}", parent, pivot,
-           [(name, [cx + dx, y + dy, cz + dz], size) for name, (dx, dy, dz), size in cubes])
-          for s, cubes in enumerate(EMBRYO)],
+        *[(f"egg_{n}_lit_{s}", parent, pivot,
+           [(f"lit_shell_{s}", [x, y, z], [2, 2, 2]), (f"lit_tip_{s}", [x + 0.5, y + 2, z + 0.5], [1, 1, 1])])
+          for s in range(3)],
     ]
 
 
@@ -369,15 +379,55 @@ def egg_cap(f, i, j, w, h, fi):
     return mix(EGG, HOLE, 0.5) if f == "bottom" else egg_paint(f, i, j, w, h, fi)
 
 
-SHELL_ALPHA = 150  # the candled shell: light coming through, the chick's shadow seen inside
+# The candled egg: lamp light through the shell, the chick's shadow on it. Shapes are ellipses in
+# the texels of an 8 x 8 side face (x left to right, y down from the shell's top; the tip's side
+# faces are y -4..0, x 2..6): (centre x, centre y, radius x, radius y) for the body and the head.
+EMBRYO = [
+    [(4, 5.2, 1.2, 1.1)],
+    [(4, 5.4, 1.8, 1.6), (4, 3.0, 1.0, 1.0)],
+    [(4, 5.3, 2.4, 2.2), (4, 2.0, 1.4, 1.4)],
+]
+GLOW_HI, GLOW_LO, GLOW_UNDER = (255, 246, 214), (255, 200, 118), (236, 170, 96)
+SHADOW, SHADOW_EDGE, SHADOW_SOFT = (104, 46, 30), (150, 74, 42), (222, 142, 78)
 
 
-def shell(f, i, j, w, h, fi):
-    return (255, 214, 140) if (i + j) % 2 else (255, 190, 104)
+def shade(d, glow):
+    """Colour at distance d (1 = the shape's edge) from the chick's shadow, over the glow."""
+    if d < 0.75:
+        return SHADOW
+    if d < 1.0:
+        return SHADOW_EDGE
+    if d < 1.2:
+        return SHADOW_SOFT
+    return glow
 
 
-def embryo(f, i, j, w, h, fi):
-    return (104, 46, 34) if f != "top" else (124, 58, 40)
+def paint_lit(img, stage):
+    """Paints the candled shell and tip of `stage` into the candled texture."""
+    px = img.load()
+    shapes = EMBRYO[stage]
+
+    def dist(x, y):
+        return min(((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 for cx, cy, rx, ry in shapes) ** 0.5
+
+    for tip in (False, True):
+        for f, (u, v, w, h) in lit_rects(f"lit_{'tip' if tip else 'shell'}_{stage}").items():
+            for j in range(h):
+                for i in range(w):
+                    a, b = (i + 0.5) / w, (j + 0.5) / h  # 0..1 across the face
+                    glow = mix(GLOW_HI, GLOW_LO, min(1.0, 2 * ((a - 0.5) ** 2 + (b - 0.5) ** 2) ** 0.5))
+                    if f == "down":
+                        c = GLOW_UNDER
+                    elif f == "up":
+                        # seen from above, the shell's top shows the body as a round shadow; the
+                        # tip's top is clear glow (the head stays below it)
+                        r = shapes[0][2] / 8  # body radius as a fraction of the face
+                        c = glow if tip else shade((((a - 0.5) ** 2 + (b - 0.5) ** 2) ** 0.5) / r, glow)
+                    elif tip:
+                        c = shade(dist(2 + 4 * a, -4 + 4 * b), glow)
+                    else:
+                        c = shade(dist(8 * a, 8 * b), glow)
+                    px[u + i, v + j] = (*c, 255)
 
 
 def glass(f, i, j, w, h, fi):
@@ -462,12 +512,9 @@ PAINT["food_waste_bin"] = {
 }
 
 # 1.1 蛋的進度: painted after the old cubes, so the noise on everything else stays as it was.
-EGG_LOOKS = {"egg_crack": egg_crack, "egg_hatch": egg_hatch, "egg_cap": egg_cap,
-             "embryo_s": embryo, "embryo_m": embryo, "embryo_m_head": embryo, "embryo_l": embryo, "embryo_l_head": embryo}
+EGG_LOOKS = {"egg_crack": egg_crack, "egg_hatch": egg_hatch, "egg_cap": egg_cap}
 for _bid in ("nest_box", "incubator"):
     PAINT[_bid].update(EGG_LOOKS)
-# The candled shells are painted into <block>_candled.png (same size, so the UVs line up).
-CANDLED_PAINT = {"shell": shell, "shell_tip": shell}
 
 PAINT["tanning_rack"] = {
     "post": wood(WOOD_DK, rings=WOOD_LT), "foot": wood(WOOD_DK), "rail": wood(WOOD), "peg": wood(WOOD_LT),
@@ -492,17 +539,17 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     for bid, raw in BLOCKS.items():
         bones, tw, th = autouv(raw)
-        p = Painter(tw, th, bones, bid)
+        p = Painter(tw, th, [(n, pa, pv, [c for c in cubes if c[0] not in LIT]) for n, pa, pv, cubes in bones], bid)
         paints = {**PAINT[bid], **(stage_paints(bid) if bid in STAGE_PAINT else {})}
         for cube, fn in paints.items():
             p.paint(cube, fn)
         (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid, bones, tw, th), indent=2) + "\n", encoding="utf8")
         p.save(out / f"{bid}.png")
         if any(c in LIT for _, _, _, cubes in bones for c, *_ in cubes):
-            lit = Painter(tw, th, bones, f"{bid}_candled")
-            for cube, fn in CANDLED_PAINT.items():
-                lit.paint(cube, fn, light=False)
-            lit.img.putalpha(lit.img.getchannel("A").point(lambda a: SHELL_ALPHA if a else 0))
+            # Same size as the block's texture, so the per-face UVs line up with its texture size.
+            lit = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+            for stage in range(3):
+                paint_lit(lit, stage)
             lit.save(out / f"{bid}_candled.png")
         print(f"{bid}: {tw}x{th}")
 

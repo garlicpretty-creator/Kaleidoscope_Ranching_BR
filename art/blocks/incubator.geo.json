@@ -422,7 +422,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_1_lit",
+          "name": "egg_1_lit_0",
           "pivot": [
             0,
             4,
@@ -441,69 +441,69 @@
                 2
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    50,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    48,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    54,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    52,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    50,
-                    75
+                    8,
+                    0
                   ],
                   "uv_size": [
-                    2,
-                    2
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    52,
-                    77
+                    16,
+                    8
                   ],
                   "uv_size": [
-                    2,
-                    -2
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 }
@@ -521,69 +521,69 @@
                 1
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    57,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    56,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    59,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    58,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    57,
-                    75
+                    36,
+                    0
                   ],
                   "uv_size": [
-                    1,
-                    1
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    58,
-                    76
+                    40,
+                    4
                   ],
                   "uv_size": [
-                    1,
-                    -1
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 }
@@ -593,7 +593,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_1_embryo_0",
+          "name": "egg_1_lit_1",
           "pivot": [
             0,
             4,
@@ -602,35 +602,88 @@
           "cubes": [
             {
               "origin": [
-                -3.3,
-                4.7,
-                -3.3
+                -4,
+                4,
+                -4
               ],
               "size": [
-                0.6,
-                0.6,
-                0.6
+                2,
+                2,
+                2
               ],
-              "uv": [
-                60,
-                75
-              ]
-            }
-          ],
-          "parent": "base"
-        },
-        {
-          "name": "egg_1_embryo_1",
-          "pivot": [
-            0,
-            4,
-            0
-          ],
-          "cubes": [
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    16
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
+            },
             {
               "origin": [
                 -3.5,
-                4.4,
+                6,
                 -3.5
               ],
               "size": [
@@ -638,32 +691,80 @@
                 1,
                 1
               ],
-              "uv": [
-                0,
-                80
-              ]
-            },
-            {
-              "origin": [
-                -3.25,
-                5.45,
-                -3.25
-              ],
-              "size": [
-                0.5,
-                0.5,
-                0.5
-              ],
-              "uv": [
-                4,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    16
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
         },
         {
-          "name": "egg_1_embryo_2",
+          "name": "egg_1_lit_2",
           "pivot": [
             0,
             4,
@@ -672,35 +773,163 @@
           "cubes": [
             {
               "origin": [
-                -3.7,
-                4.25,
-                -3.7
+                -4,
+                4,
+                -4
               ],
               "size": [
-                1.4,
-                1.4,
-                1.4
+                2,
+                2,
+                2
               ],
-              "uv": [
-                8,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    32
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             },
             {
               "origin": [
-                -3.4,
-                5.6,
-                -3.4
+                -3.5,
+                6,
+                -3.5
               ],
               "size": [
-                0.8,
-                0.8,
-                0.8
+                1,
+                1,
+                1
               ],
-              "uv": [
-                12,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    32
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
@@ -835,7 +1064,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_2_lit",
+          "name": "egg_2_lit_0",
           "pivot": [
             0,
             4,
@@ -854,69 +1083,69 @@
                 2
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    50,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    48,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    54,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    52,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    50,
-                    75
+                    8,
+                    0
                   ],
                   "uv_size": [
-                    2,
-                    2
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    52,
-                    77
+                    16,
+                    8
                   ],
                   "uv_size": [
-                    2,
-                    -2
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 }
@@ -934,69 +1163,69 @@
                 1
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    57,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    56,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    59,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    58,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    57,
-                    75
+                    36,
+                    0
                   ],
                   "uv_size": [
-                    1,
-                    1
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    58,
-                    76
+                    40,
+                    4
                   ],
                   "uv_size": [
-                    1,
-                    -1
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 }
@@ -1006,7 +1235,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_2_embryo_0",
+          "name": "egg_2_lit_1",
           "pivot": [
             0,
             4,
@@ -1015,35 +1244,88 @@
           "cubes": [
             {
               "origin": [
-                2.7,
-                4.7,
-                -3.3
+                2,
+                4,
+                -4
               ],
               "size": [
-                0.6,
-                0.6,
-                0.6
+                2,
+                2,
+                2
               ],
-              "uv": [
-                60,
-                75
-              ]
-            }
-          ],
-          "parent": "base"
-        },
-        {
-          "name": "egg_2_embryo_1",
-          "pivot": [
-            0,
-            4,
-            0
-          ],
-          "cubes": [
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    16
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
+            },
             {
               "origin": [
                 2.5,
-                4.4,
+                6,
                 -3.5
               ],
               "size": [
@@ -1051,32 +1333,80 @@
                 1,
                 1
               ],
-              "uv": [
-                0,
-                80
-              ]
-            },
-            {
-              "origin": [
-                2.75,
-                5.45,
-                -3.25
-              ],
-              "size": [
-                0.5,
-                0.5,
-                0.5
-              ],
-              "uv": [
-                4,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    16
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
         },
         {
-          "name": "egg_2_embryo_2",
+          "name": "egg_2_lit_2",
           "pivot": [
             0,
             4,
@@ -1085,35 +1415,163 @@
           "cubes": [
             {
               "origin": [
-                2.3,
-                4.25,
-                -3.7
+                2,
+                4,
+                -4
               ],
               "size": [
-                1.4,
-                1.4,
-                1.4
+                2,
+                2,
+                2
               ],
-              "uv": [
-                8,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    32
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             },
             {
               "origin": [
-                2.6,
-                5.6,
-                -3.4
+                2.5,
+                6,
+                -3.5
               ],
               "size": [
-                0.8,
-                0.8,
-                0.8
+                1,
+                1,
+                1
               ],
-              "uv": [
-                12,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    32
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
@@ -1248,7 +1706,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_3_lit",
+          "name": "egg_3_lit_0",
           "pivot": [
             0,
             4,
@@ -1267,69 +1725,69 @@
                 2
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    50,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    48,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    54,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    52,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    50,
-                    75
+                    8,
+                    0
                   ],
                   "uv_size": [
-                    2,
-                    2
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    52,
-                    77
+                    16,
+                    8
                   ],
                   "uv_size": [
-                    2,
-                    -2
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 }
@@ -1347,69 +1805,69 @@
                 1
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    57,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    56,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    59,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    58,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    57,
-                    75
+                    36,
+                    0
                   ],
                   "uv_size": [
-                    1,
-                    1
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    58,
-                    76
+                    40,
+                    4
                   ],
                   "uv_size": [
-                    1,
-                    -1
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 }
@@ -1419,7 +1877,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_3_embryo_0",
+          "name": "egg_3_lit_1",
           "pivot": [
             0,
             4,
@@ -1428,35 +1886,88 @@
           "cubes": [
             {
               "origin": [
-                -3.3,
-                4.7,
-                1.7
+                -4,
+                4,
+                1
               ],
               "size": [
-                0.6,
-                0.6,
-                0.6
+                2,
+                2,
+                2
               ],
-              "uv": [
-                60,
-                75
-              ]
-            }
-          ],
-          "parent": "base"
-        },
-        {
-          "name": "egg_3_embryo_1",
-          "pivot": [
-            0,
-            4,
-            0
-          ],
-          "cubes": [
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    16
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
+            },
             {
               "origin": [
                 -3.5,
-                4.4,
+                6,
                 1.5
               ],
               "size": [
@@ -1464,32 +1975,80 @@
                 1,
                 1
               ],
-              "uv": [
-                0,
-                80
-              ]
-            },
-            {
-              "origin": [
-                -3.25,
-                5.45,
-                1.75
-              ],
-              "size": [
-                0.5,
-                0.5,
-                0.5
-              ],
-              "uv": [
-                4,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    16
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
         },
         {
-          "name": "egg_3_embryo_2",
+          "name": "egg_3_lit_2",
           "pivot": [
             0,
             4,
@@ -1498,35 +2057,163 @@
           "cubes": [
             {
               "origin": [
-                -3.7,
-                4.25,
-                1.3
+                -4,
+                4,
+                1
               ],
               "size": [
-                1.4,
-                1.4,
-                1.4
+                2,
+                2,
+                2
               ],
-              "uv": [
-                8,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    32
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             },
             {
               "origin": [
-                -3.4,
-                5.6,
-                1.6
+                -3.5,
+                6,
+                1.5
               ],
               "size": [
-                0.8,
-                0.8,
-                0.8
+                1,
+                1,
+                1
               ],
-              "uv": [
-                12,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    32
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
@@ -1661,7 +2348,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_4_lit",
+          "name": "egg_4_lit_0",
           "pivot": [
             0,
             4,
@@ -1680,69 +2367,69 @@
                 2
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    50,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    48,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    54,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    52,
-                    77
-                  ],
-                  "uv_size": [
-                    2,
-                    2
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    50,
-                    75
+                    8,
+                    0
                   ],
                   "uv_size": [
-                    2,
-                    2
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    52,
-                    77
+                    16,
+                    8
                   ],
                   "uv_size": [
-                    2,
-                    -2
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    8
+                  ],
+                  "uv_size": [
+                    8,
+                    8
                   ],
                   "material_instance": "candled"
                 }
@@ -1760,69 +2447,69 @@
                 1
               ],
               "uv": {
-                "north": {
-                  "uv": [
-                    57,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "east": {
-                  "uv": [
-                    56,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "south": {
-                  "uv": [
-                    59,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
-                "west": {
-                  "uv": [
-                    58,
-                    76
-                  ],
-                  "uv_size": [
-                    1,
-                    1
-                  ],
-                  "material_instance": "candled"
-                },
                 "up": {
                   "uv": [
-                    57,
-                    75
+                    36,
+                    0
                   ],
                   "uv_size": [
-                    1,
-                    1
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 },
                 "down": {
                   "uv": [
-                    58,
-                    76
+                    40,
+                    4
                   ],
                   "uv_size": [
-                    1,
-                    -1
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    4
+                  ],
+                  "uv_size": [
+                    4,
+                    4
                   ],
                   "material_instance": "candled"
                 }
@@ -1832,7 +2519,7 @@
           "parent": "base"
         },
         {
-          "name": "egg_4_embryo_0",
+          "name": "egg_4_lit_1",
           "pivot": [
             0,
             4,
@@ -1841,35 +2528,88 @@
           "cubes": [
             {
               "origin": [
-                2.7,
-                4.7,
-                1.7
+                2,
+                4,
+                1
               ],
               "size": [
-                0.6,
-                0.6,
-                0.6
+                2,
+                2,
+                2
               ],
-              "uv": [
-                60,
-                75
-              ]
-            }
-          ],
-          "parent": "base"
-        },
-        {
-          "name": "egg_4_embryo_1",
-          "pivot": [
-            0,
-            4,
-            0
-          ],
-          "cubes": [
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    16
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    24
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
+            },
             {
               "origin": [
                 2.5,
-                4.4,
+                6,
                 1.5
               ],
               "size": [
@@ -1877,32 +2617,80 @@
                 1,
                 1
               ],
-              "uv": [
-                0,
-                80
-              ]
-            },
-            {
-              "origin": [
-                2.75,
-                5.45,
-                1.75
-              ],
-              "size": [
-                0.5,
-                0.5,
-                0.5
-              ],
-              "uv": [
-                4,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    16
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    20
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"
         },
         {
-          "name": "egg_4_embryo_2",
+          "name": "egg_4_lit_2",
           "pivot": [
             0,
             4,
@@ -1911,35 +2699,163 @@
           "cubes": [
             {
               "origin": [
-                2.3,
-                4.25,
-                1.3
+                2,
+                4,
+                1
               ],
               "size": [
-                1.4,
-                1.4,
-                1.4
+                2,
+                2,
+                2
               ],
-              "uv": [
-                8,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    8,
+                    32
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    -8
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    8,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    0,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    24,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    16,
+                    40
+                  ],
+                  "uv_size": [
+                    8,
+                    8
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             },
             {
               "origin": [
-                2.6,
-                5.6,
-                1.6
+                2.5,
+                6,
+                1.5
               ],
               "size": [
-                0.8,
-                0.8,
-                0.8
+                1,
+                1,
+                1
               ],
-              "uv": [
-                12,
-                80
-              ]
+              "uv": {
+                "up": {
+                  "uv": [
+                    36,
+                    32
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "down": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    -4
+                  ],
+                  "material_instance": "candled"
+                },
+                "north": {
+                  "uv": [
+                    36,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "east": {
+                  "uv": [
+                    32,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "south": {
+                  "uv": [
+                    44,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                },
+                "west": {
+                  "uv": [
+                    40,
+                    36
+                  ],
+                  "uv_size": [
+                    4,
+                    4
+                  ],
+                  "material_instance": "candled"
+                }
+              }
             }
           ],
           "parent": "base"

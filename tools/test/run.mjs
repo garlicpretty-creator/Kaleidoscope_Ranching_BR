@@ -2949,6 +2949,10 @@ test("1.1: the generated egg bones show one look per egg, the one its states mea
     const lights = block.permutations
       .filter((p) => p.components["minecraft:light_emission"] !== undefined)
       .map((p) => [eggMolang(p.condition), p.components["minecraft:light_emission"]]);
+    const LOOKS = ["", "_crack", "_hatch", "_lit_0", "_lit_1", "_lit_2"];
+    const eggBones = Object.keys(rules).filter((bone) => bone.startsWith("egg_")).sort();
+    const expected = [1, 2, 3, 4].flatMap((n) => LOOKS.map((suffix) => `egg_${n}${suffix}`)).sort();
+    equal(JSON.stringify(eggBones), JSON.stringify(expected), `${id}: the egg bones are the six looks per slot`);
     const all = stateCombos(block.description.states);
     equal(all.length, id === "nest_box" ? 625 : 500, `${id} state combinations`);
     for (const s of all) {
@@ -2957,15 +2961,15 @@ test("1.1: the generated egg bones show one look per egg, the one its states mea
       const where = `${id} ${JSON.stringify(s)}`;
       for (let n = 1; n <= 4; n++) {
         const lit = typeof candled === "boolean" ? candled && eggs >= n : candled >= n;
-        const looks = ["", "_crack", "_hatch", "_lit"].filter((suffix) => rules[`egg_${n}${suffix}`](s));
-        const embryos = [0, 1, 2].filter((stage) => rules[`egg_${n}_embryo_${stage}`](s));
+        // one look per egg: plain, cracked, hatching, or candled at its stage (the chick's shadow
+        // is painted on the lit shell, small / medium / large)
+        const looks = LOOKS.filter((suffix) => rules[`egg_${n}${suffix}`](s));
         const stage = ready >= n ? 2 : cracks >= n ? 1 : 0;
         if (n <= eggs) {
-          const want = lit ? "_lit" : ["", "_crack", "_hatch"][stage];
+          const want = lit ? `_lit_${stage}` : ["", "_crack", "_hatch"][stage];
           equal(JSON.stringify(looks), JSON.stringify([want]), `${where} slot ${n} look`);
-          equal(JSON.stringify(embryos), JSON.stringify(lit ? [stage] : []), `${where} slot ${n} embryo`);
         } else if (valid) {
-          equal(looks.length + embryos.length, 0, `${where} slot ${n} is empty`);
+          equal(looks.length, 0, `${where} slot ${n} is empty`);
         }
       }
       let light = 0;
