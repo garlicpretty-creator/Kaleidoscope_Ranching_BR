@@ -70,10 +70,16 @@
           "*": true
         },
         {
+          "a_torso": "!q.is_baby"
+        },
+        {
           "wool_body": "!q.is_sheared"
         },
         {
           "wool_tail": "!q.is_sheared"
+        },
+        {
+          "a_head": "!q.is_baby"
         },
         {
           "wool_head": "!q.is_sheared"
@@ -82,16 +88,37 @@
           "m_horns": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         },
         {
-          "wool_leg_fl": "!q.is_sheared"
+          "a_leg_fl": "!q.is_baby"
         },
         {
-          "wool_leg_fr": "!q.is_sheared"
+          "a_leg_fr": "!q.is_baby"
         },
         {
-          "wool_leg_bl": "!q.is_sheared"
+          "a_leg_bl": "!q.is_baby"
         },
         {
-          "wool_leg_br": "!q.is_sheared"
+          "a_leg_br": "!q.is_baby"
+        },
+        {
+          "b_torso": "q.is_baby"
+        },
+        {
+          "wool_lamb": "!q.is_sheared"
+        },
+        {
+          "b_head": "q.is_baby"
+        },
+        {
+          "b_leg_fl": "q.is_baby"
+        },
+        {
+          "b_leg_fr": "q.is_baby"
+        },
+        {
+          "b_leg_bl": "q.is_baby"
+        },
+        {
+          "b_leg_br": "q.is_baby"
         }
       ]
     }

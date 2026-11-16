@@ -25,7 +25,7 @@ from blocks_m4 import wood, mix, WOOD, WOOD_DK
 ROOT = Path(__file__).resolve().parents[2]
 RP = ROOT / "packs" / "RP"
 NS = "kaleidoscope_ranching"
-TW, TH = 512, 512
+TW, TH = 512, 1024
 HANG = 25  # where the hind legs meet the gambrel
 TURN = 90  # bone rotation about x that swings the lying animal head down
 MAX_DROP = 23  # longest a carcass may hang (pixels), so big ones clear the floor

@@ -3,7 +3,11 @@
 Bone-name prefixes decide visibility (mirrored by each render controller):
   m_   adult males only          fa_  adult females only
   f_   females and babies        a_   adults only
-  wool_ hidden once sheared      saddle  shown when saddled
+  b_   babies only (own rig)     wool_ hidden once sheared
+  saddle  shown when saddled
+
+Hand-built models in art/animals/<id>/ (art_src/m4_scripts/m1_animals.py) replace the
+procedural geometry and textures below; tools/gen_art.py then only writes the client files.
 """
 
 from __future__ import annotations
@@ -19,6 +23,7 @@ VISIBILITY_RULES = [
     ("fa_", f"!q.is_baby && !({SEX_IS_MALE})", lambda s: not s["baby"] and s["sex"] == "female"),
     ("f_", f"q.is_baby || !({SEX_IS_MALE})", lambda s: s["baby"] or s["sex"] == "female"),
     ("a_", "!q.is_baby", lambda s: not s["baby"]),
+    ("b_", "q.is_baby", lambda s: s["baby"]),
     ("wool_", "!q.is_sheared", lambda s: not s.get("sheared", False)),
     ("saddle", "q.is_saddled", lambda s: s.get("saddled", False)),
 ]
