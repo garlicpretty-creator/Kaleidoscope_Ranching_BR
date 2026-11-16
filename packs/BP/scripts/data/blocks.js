@@ -24,6 +24,8 @@ export const BLOCKS = [
   ["butter_churn", "攪乳桶", "Butter Churn", "processing"],
   ["cheese_press", "乳酪壓模", "Cheese Press", "processing"],
   ["aging_rack", "熟成架", "Aging Rack", "processing"],
+  // 企劃書 1.1 鞣皮架, moved into 1.0: without it no animal gives leather (Ranching replaces the vanilla cow).
+  ["tanning_rack", "鞣皮架", "Tanning Rack", "processing"],
   ["fermenting_jar", "發酵罐", "Fermenting Jar", "processing"],
   ["cheese_wheel", "熟成乳酪輪", "Aged Cheese Wheel", "processing"],
   ["pickling_vat", "醃製缸", "Pickling Vat", "processing"],

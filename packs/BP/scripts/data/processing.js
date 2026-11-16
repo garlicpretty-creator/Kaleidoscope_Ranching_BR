@@ -34,6 +34,12 @@ export const PROCESSING_RECIPES = [
   { id: "press/fresh_cheese", station: "cheese_press", inputs: [{ anyOf: ANY_MILK, count: 3 }], outputs: [{ item: "fresh_cheese", count: 1 }, { item: "whey", count: 1 }], ticks: DAY / 2 },
   { id: "aging/cheese_wheel", station: "aging_rack", inputs: [{ item: "fresh_cheese", count: 4 }], outputs: [{ item: "aged_cheese_wheel", count: 1 }], ticks: DAY * 3 },
 
+  // Tanning rack (企劃書 1.1, moved into 1.0): hides from the butcher rack become leather.
+  { id: "tan/raw_hide", station: "tanning_rack", inputs: [{ item: "raw_hide", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
+  { id: "tan/pig_skin", station: "tanning_rack", inputs: [{ item: "pig_skin", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }], ticks: DAY },
+  // Sheepskin keeps its fleece: leather plus a little wool.
+  { id: "tan/sheep_skin", station: "tanning_rack", inputs: [{ item: "sheep_skin", count: 1 }], outputs: [{ item: "minecraft:leather", count: 1 }, { item: "minecraft:white_wool", count: 1 }], ticks: DAY },
+
   // Fermenting jar
   { id: "ferment/yogurt", station: "fermenting_jar", inputs: [{ anyOf: ANY_MILK, count: 1 }], outputs: [{ item: "yogurt", count: 1 }], ticks: DAY },
 

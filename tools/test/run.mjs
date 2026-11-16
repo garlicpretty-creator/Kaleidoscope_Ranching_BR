@@ -810,6 +810,26 @@ test("mixed quality uses the lowest tier, and plain milk is spent before better 
   equal(player.inventory.count("kaleidoscope_ranching:goat_milk_fine"), 1, "fine milk kept");
 });
 
+test("the tanning rack turns hides into leather in a day; sheepskin also gives wool", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:raw_hide", 1));
+  use(STATION, rack, player);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 0, "not cured yet");
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 1, "leather from a cow's hide");
+  player.inventory.setItem(8, new ItemStack("kaleidoscope_ranching:sheep_skin", 1));
+  player.selectedSlotIndex = 8;
+  use(STATION, rack, player);
+  __skipTime(24000);
+  use(STATION, rack, player);
+  equal(player.inventory.count("minecraft:leather"), 2, "leather from sheepskin");
+  equal(player.inventory.count("minecraft:white_wool"), 1, "and its fleece");
+});
+
 test("a block replaced without its break hook ignores the old block's data", () => {
   clearWorld();
   const player = __newPlayer(at(0));
@@ -1557,31 +1577,30 @@ test("Fishing Voyage: Ranching pings it, and its fish offal and bones become pou
   assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
 });
 
-// --- Roosters crow at dawn ------------------------------------------------------
+// --- Roosters crow at dawn ----------------------------------------------------
 
-const { crowAtDawn, CROW_SOUND } = await import("../../packs/BP/scripts/systems/rooster.js");
+const { crowAtDawn } = await import("../../packs/BP/scripts/systems/rooster.js");
 
-test("adult roosters crow once at dawn; hens, chicks and the rest of the day stay quiet", () => {
+test("roosters near a player crow once at dawn; hens and chicks do not", () => {
   clearWorld();
-  overworld.sounds = [];
   __newPlayer(at(0));
-  ranch("chicken", 2, "male");
-  ranch("chicken", 3, "female");
-  const chick = ranch("chicken", 4, "male");
-  chick.triggerEvent("kaleidoscope_ranching:become_baby");
-  const crows = () => overworld.sounds.filter((s) => s.id === CROW_SOUND).length;
-
+  const rooster = ranch("chicken", 3, "male");
+  ranch("chicken", 4, "female");
+  const chick = ranch("chicken", 5, "male");
+  chick.triggerEvent(`${NS}:become_baby`);
+  ranch("chicken", 200, "male"); // too far from any player
   toTimeOfDay(12000);
   equal(crowAtDawn(), 0, "no crowing at noon");
-  toTimeOfDay(23500);
-  equal(crowAtDawn(), 1, "one adult rooster crows");
-  __advance(80);
-  equal(crows(), 1, "the crow is heard");
-  equal(crowAtDawn(), 0, "not twice in the same dawn");
-  toTimeOfDay(600);
-  equal(crowAtDawn(), 0, "sunrise is still the same dawn");
-  toTimeOfDay(23200);
-  equal(crowAtDawn(), 1, "the next dawn crows again");
+  toTimeOfDay(23100);
+  overworld.sounds.length = 0;
+  equal(crowAtDawn(), 1, "one adult rooster in earshot");
+  __advance(260);
+  const calls = overworld.sounds.filter((s) => s.id === "mob.chicken.say");
+  equal(calls.length, 3, "a three-note crow");
+  assert(calls.every((s) => Math.abs(s.location.x - rooster.location.x) < 1), "from the rooster");
+  equal(crowAtDawn(), 0, "only once per morning");
+  toTimeOfDay(23100);
+  equal(crowAtDawn(), 1, "and again the next dawn");
 });
 
 // --- Food waste bin ---------------------------------------------------------------

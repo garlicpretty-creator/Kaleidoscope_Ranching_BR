@@ -527,7 +527,7 @@ export const world = {
   getDimension: (id) => dimensions.get(id.includes(":") ? id : `minecraft:${id}`),
   getAbsoluteTime: () => absoluteTime,
   getTimeOfDay: () => absoluteTime % 24000,
-  getAllPlayers: () => [...dimensions.values()].flatMap((dimension) => dimension.entities.filter((entity) => entity instanceof Player)),
+  getAllPlayers: () => [...dimensions.values()].flatMap((dimension) => dimension.entities.filter((entity) => entity instanceof Player && entity.isValid !== false)),
   getDay: () => Math.floor(absoluteTime / 24000),
   getDynamicProperty: (key) => worldDynamic.get(key),
   setDynamicProperty: (key, value) => (value === undefined ? worldDynamic.delete(key) : worldDynamic.set(key, value)),

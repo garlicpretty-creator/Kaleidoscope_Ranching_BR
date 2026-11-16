@@ -22,6 +22,7 @@ EGG = (234, 216, 184)
 GLASS = (206, 228, 236)
 MILK = (246, 244, 236)
 CHEESE = (242, 206, 102)
+HIDE = (176, 120, 78)
 TERRACOTTA = (164, 92, 62)
 CLOTH = (232, 222, 200)
 FAT = (244, 232, 218)
@@ -84,6 +85,9 @@ def paint(t):
         return light(t, MILK)
     if p == "cheese":
         return light(t, CHEESE)
+    if p == "hide":
+        # Cured hide: tan with a few darker blotches.
+        return light(t, HIDE if hash01("h", t.point) > 0.2 else shade(HIDE, 0.85))
     if p == "terracotta":
         return light(t, TERRACOTTA)
     if p == "cloth":
@@ -195,6 +199,21 @@ def aging_rack():
     return Model("geometry.kaleidoscope_ranching.aging_rack", bones, cubes, 64, 64)
 
 
+def tanning_rack():
+    # An upright frame; while busy a hide is laced across it to cure.
+    bones = [Bone("frame", None, (0, 0, 0)), Bone("busy", "frame", (0, 8, 0))]
+    cubes = [
+        Cube("frame", "dark_wood", (-8, 0, -1), (2, 16, 2), name="post"),
+        Cube("frame", "dark_wood", (6, 0, -1), (2, 16, 2), mirror_of="post"),
+        Cube("frame", "wood", (-6, 14, -1), (12, 2, 2), name="beam"),
+        Cube("frame", "wood", (-6, 2, -1), (12, 2, 2), mirror_of="beam"),
+        Cube("frame", "dark_wood", (-8, 0, -4), (2, 1, 8), name="foot"),
+        Cube("frame", "dark_wood", (6, 0, -4), (2, 1, 8), mirror_of="foot"),
+        Cube("busy", "hide", (-5, 4, 0), (10, 10, 1)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.tanning_rack", bones, cubes, 32, 32)
+
+
 def hitching_post():
     # A squared oak post with an iron tie ring near the top.
     bones = [Bone("post", None, (0, 0, 0))]
@@ -257,6 +276,7 @@ ALL = {
     "butter_churn": butter_churn,
     "cheese_press": cheese_press,
     "aging_rack": aging_rack,
+    "tanning_rack": tanning_rack,
     "fermenting_jar": fermenting_jar,
     "pickling_vat": pickling_vat,
     "hay_rack": hay_rack,

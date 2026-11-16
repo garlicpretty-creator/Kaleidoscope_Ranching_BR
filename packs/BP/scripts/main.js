@@ -28,7 +28,7 @@ connectToFishing();
 startConversion();
 startBreeding(ANIMALS);
 startVanillaParity();
-startRoosters(); // roosters crow at dawn
+startRoosters();
 
 // M2: care core (registers its own components and events on import)
 connectCareCore();

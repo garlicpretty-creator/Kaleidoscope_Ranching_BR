@@ -34,7 +34,7 @@ NS = "kaleidoscope_ranching"
 
 SOUNDS = {
     "butcher_rack": "wood", "nest_box": "wood", "incubator": "glass", "butter_churn": "wood",
-    "cheese_press": "wood", "aging_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
+    "cheese_press": "wood", "aging_rack": "wood", "tanning_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
     "hay_rack": "wood",
     "hitching_post": "wood",
     "cheese_wheel": "cloth",

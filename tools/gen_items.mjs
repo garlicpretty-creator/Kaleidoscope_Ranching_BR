@@ -139,7 +139,8 @@ const shapeless = (id, ingredients, result, count = 1) => [
       tags: ["crafting_table"],
       ingredients,
       result: { item: rid(result), count },
-      unlock: [{ item: rid(result) }],
+      // A vanilla result (egg, candle, wool…) unlocks with the Ranching item that makes it.
+      unlock: [{ item: result.startsWith("minecraft:") ? ingredients[0].item : rid(result) }],
     },
   },
 ];
@@ -161,6 +162,26 @@ const RECIPES = [
   shapeless("milking_pail", [{ item: "minecraft:bucket" }, { item: "minecraft:stick" }], "milking_pail"),
   shapeless("nursing_bottle", [{ item: "minecraft:glass_bottle" }, { item: "minecraft:slime_ball" }], "nursing_bottle"),
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),
+  shaped("tanning_rack", ["S S", "TTT", "P P"], { S: { item: "minecraft:stick" }, T: { item: "minecraft:string" }, P: planks }, "tanning_rack"),
+
+  // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
+  // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),
+  // ## these simple outlets keep the items useful until then.
+  // Quality chicken eggs and goose eggs work wherever a vanilla egg does
+  // (Cookery's egg dishes and the vanilla cake take only minecraft:egg).
+  ...["egg_fine", "egg_superb", "goose_egg", "goose_egg_fine", "goose_egg_superb"].map((id) =>
+    shapeless(`egg_from_${id}`, [{ item: rid(id) }], "minecraft:egg", id.startsWith("goose") ? 2 : 1)
+  ),
+  // Restores the vanilla goat horn, which Ranching's goats no longer drop by ramming.
+  shapeless("goat_horn", [{ item: rid("billy_goat_horn") }], "minecraft:goat_horn"),
+  shapeless("bone_meal_from_cattle_horn", [{ item: rid("cattle_horn") }], "minecraft:bone_meal", 3),
+  shapeless("bone_meal_from_chicken_frame", [{ item: rid("chicken_frame") }], "minecraft:bone_meal", 2),
+  // Tallow candles (企劃書 1.2 牛脂、羊脂製品：蠟燭), in their simplest form.
+  shapeless("candle_from_beef_tallow", [{ item: rid("beef_tallow") }, { item: "minecraft:string" }], "minecraft:candle"),
+  shapeless("candle_from_mutton_tallow", [{ item: rid("mutton_tallow") }, { item: "minecraft:string" }], "minecraft:candle"),
+  // Down and yak hair felted into wool until the 1.1 spinning wheel.
+  shapeless("wool_from_down", [{ item: rid("down"), count: 4 }], "minecraft:white_wool"),
+  shapeless("wool_from_yak_hair", [{ item: rid("yak_hair"), count: 4 }], "minecraft:brown_wool"),
 ];
 
 // --- M5 dish recipes made outside Cookery ---------------------------------------

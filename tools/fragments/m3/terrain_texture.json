@@ -20,6 +20,9 @@
     "kr_aging_rack": {
       "textures": "textures/blocks/ranching/aging_rack"
     },
+    "kr_tanning_rack": {
+      "textures": "textures/blocks/ranching/tanning_rack"
+    },
     "kr_fermenting_jar": {
       "textures": "textures/blocks/ranching/fermenting_jar"
     },
