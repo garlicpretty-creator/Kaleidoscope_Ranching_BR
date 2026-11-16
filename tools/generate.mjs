@@ -4,6 +4,7 @@
 import { spawnSync } from "node:child_process";
 
 const STEPS = [
+  ["py", "tools/png_snapshot.py", "save"],
   ["py", "tools/gen_art.py"],
   ["py", "tools/m2/gen_content.py"],
   ["py", "tools/gen_m3_art.py"],
@@ -18,6 +19,7 @@ const STEPS = [
   ["py", "tools/fix_zfight.py"],
   ["py", "tools/square_block_textures.py"],
   ["py", "tools/gen_pbr.py"],
+  ["py", "tools/png_snapshot.py", "restore"],
 ];
 
 const CANDIDATES = process.platform === "win32"
