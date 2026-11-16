@@ -392,17 +392,41 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
   }
 }
 
-// The butcher rack shows what is air-drying on it: a `drying` state counting the pieces and
-// one `dry_<n>` bone per slot (the bones' existence is checked with the other blocks below).
+// The butcher rack shows what is air-drying on it, each strip in the colour of its stage:
+// `drying` and `drying_mix` pick a look of data/processing.js DRYING_LOOKS, and per slot the
+// bones dry_<n> (twine) and dry_<n>_<stage> (the strip) show it. Every look must be there once,
+// every such bone must be drawn by the model and switched by those states, and no drying bone of
+// the model may be left without a rule (it would always show).
 {
-  const { DRYING_SLOTS } = await load("processing.js");
+  const { DRYING_LOOKS, DRYING_SLOTS, DRYING_STAGES } = await load("processing.js");
   const rack = readJson(join(bp, "blocks", "r_butcher_rack.json"))["minecraft:block"];
-  const counts = rack.description.states?.["kaleidoscope_ranching:drying"];
-  if (!sameJson(counts, Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => n))) fail(`butcher rack: state kaleidoscope_ranching:drying must count 0..${DRYING_SLOTS}`);
-  const shown = rack.components["minecraft:geometry"].bone_visibility ?? {};
-  for (let n = 1; n <= DRYING_SLOTS; n++) {
-    if (!String(shown[`dry_${n}`] ?? "").includes("kaleidoscope_ranching:drying")) fail(`butcher rack: no bone dry_${n} shown by the drying state`);
+  const states = rack.description.states ?? {};
+  if (!sameJson(states["kaleidoscope_ranching:drying"], DRYING_LOOKS.map((_, n) => n))) fail("butcher rack: state kaleidoscope_ranching:drying must number the rows of DRYING_LOOKS");
+  if (!sameJson(states["kaleidoscope_ranching:drying_mix"], DRYING_LOOKS[0].map((_, n) => n))) fail("butcher rack: state kaleidoscope_ranching:drying_mix must number the columns of DRYING_LOOKS");
+  for (const [name, values] of Object.entries(states)) if (values.length > 16) fail(`butcher rack: state ${name} has more than 16 values`);
+  const permutations = Object.values(states).reduce((n, values) => n * values.length, 4);
+  if (permutations > 8192) fail(`butcher rack: ${permutations} permutations (keep it to a few thousand)`);
+  const looks = DRYING_LOOKS.flat().map((look) => look.join());
+  const wanted = [];
+  for (let count = 0; count <= DRYING_SLOTS; count++) {
+    for (let dried = 0; dried <= count; dried++) for (let half = 0; dried + half <= count; half++) wanted.push([dried, half, count - dried - half].join());
   }
+  if (DRYING_LOOKS.some((row) => row.length !== DRYING_LOOKS[0].length) || !sameJson([...looks].sort(), wanted.sort())) {
+    fail("butcher rack: DRYING_LOOKS must hold every mix of strip stages exactly once");
+  }
+  const shown = rack.components["minecraft:geometry"].bone_visibility ?? {};
+  const modelBones = readJson(join(rp, "models", "blocks", "kaleidoscope_ranching.butcher_rack.geo.json"))["minecraft:geometry"][0].bones;
+  const drawn = new Map(modelBones.map((bone) => [bone.name, bone]));
+  for (let n = 1; n <= DRYING_SLOTS; n++) {
+    for (const name of [`dry_${n}`, ...DRYING_STAGES.map((stage) => `dry_${n}_${stage}`)]) {
+      if (!drawn.get(name)?.cubes?.length) fail(`butcher rack: the model has no bone ${name} with cubes`);
+      const rule = String(shown[name] ?? "");
+      if (!rule.includes("kaleidoscope_ranching:drying'") || !(rule.includes("kaleidoscope_ranching:drying_mix'") || name === `dry_${n}`)) {
+        fail(`butcher rack: bone ${name} is not switched by the drying states`);
+      }
+    }
+  }
+  for (const name of drawn.keys()) if (name.startsWith("dry_") && !(name in shown)) fail(`butcher rack: model bone ${name} has no bone_visibility rule`);
 }
 
 // --- 3c. Animal rigs: the bones everything else is written against ---------------

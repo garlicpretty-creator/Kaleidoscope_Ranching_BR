@@ -12,7 +12,7 @@ const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", 
 const { ANIMALS } = await load("animals.js");
 const { BLOCKS } = await load("blocks.js");
 const { PLACED_FOODS } = await load("placedFoods.js");
-const { DRYING_SLOTS } = await load("processing.js");
+const { DRYING_LOOKS, DRYING_SLOTS, DRYING_STAGES } = await load("processing.js");
 
 const NS = "kaleidoscope_ranching";
 const S = (name) => `${NS}:${name}`;
@@ -46,18 +46,41 @@ const PLACED_COLORS = {
   placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
 };
 
+// 1.1 掛架風乾: the rack packs its 35 mixes of strip stages into `drying` (row) and `drying_mix`
+// (column) of data/processing.js DRYING_LOOKS. Molang that is true for the listed looks.
+function whenLooks(test) {
+  const terms = DRYING_LOOKS.flatMap((cols, row) => {
+    const hit = cols.flatMap((look, col) => (test(look) ? [col] : []));
+    if (!hit.length) return [];
+    if (hit.length === cols.length) return [`${state("drying")} == ${row}`];
+    return [`(${state("drying")} == ${row} && (${hit.map((col) => `${state("drying_mix")} == ${col}`).join(" || ")}))`];
+  });
+  return terms.length ? terms.join(" || ") : "false";
+}
+/** The stage shown in slot `n` (1-based) for a look [dried, half, fresh], or undefined. */
+function stageInSlot(look, n) {
+  let upTo = 0;
+  for (let i = 0; i < DRYING_STAGES.length; i++) {
+    upTo += look[i];
+    if (n <= upTo) return DRYING_STAGES[i];
+  }
+  return undefined;
+}
+
 const DEFS = {
   butcher_rack: {
     component: "butcher_rack",
     // carcass_X: the animal as it was, skinned_X: hide off, cut_X: partly cut
-    // 1.1 掛架風乾: `drying` counts the pieces hanging to dry, one dry_<n> bone per slot
-    // (art_src/m4_scripts/rack_drying.py). One count rather than a kind per slot: four slots of
-    // four kinds would multiply the rack's permutations past what a block may have.
+    // 1.1 掛架風乾: `drying` and `drying_mix` say how many strips hang and how dry each is, driest
+    // first (whenLooks above). dry_<n> is slot n's twine, dry_<n>_<stage> its strip in that colour
+    // (art_src/m4_scripts/rack_drying.py). Stages rather than a kind per slot: four slots of four
+    // kinds would multiply the rack's permutations past what a block may have.
     states: {
       [S("carcass")]: ["none", ...CARCASSES],
       [S("skinned")]: [false, true],
       [S("cut")]: [false, true],
-      [S("drying")]: Array.from({ length: DRYING_SLOTS + 1 }, (_, n) => n),
+      [S("drying")]: DRYING_LOOKS.map((_, row) => row),
+      [S("drying_mix")]: DRYING_LOOKS[0].map((_, col) => col),
     },
     bones: Object.fromEntries([
       ...CARCASSES.flatMap((id) => [
@@ -65,7 +88,10 @@ const DEFS = {
         [`skinned_${id}`, `${state("carcass")} == '${id}' && ${state("skinned")} && !${state("cut")}`],
         [`cut_${id}`, `${state("carcass")} == '${id}' && ${state("cut")}`],
       ]),
-      ...Array.from({ length: DRYING_SLOTS }, (_, n) => [`dry_${n + 1}`, `${state("drying")} >= ${n + 1}`]),
+      ...Array.from({ length: DRYING_SLOTS }, (_, n) => [
+        [`dry_${n + 1}`, whenLooks((look) => stageInSlot(look, n + 1) !== undefined)],
+        ...DRYING_STAGES.map((stage) => [`dry_${n + 1}_${stage}`, whenLooks((look) => stageInSlot(look, n + 1) === stage)]),
+      ]).flat(),
     ]),
     // Each animal has its own texture (art/blocks/butcher_rack_<id>.png, see tools/art/split_rack_texture.py).
     materials: CARCASSES,

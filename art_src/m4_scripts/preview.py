@@ -3,9 +3,15 @@ texture from a three-quarter view, one tile per block (and per bone set, e.g. `b
 
 Only axis-aligned box-UV cubes are drawn, which is all these block models use.
 
-Run with: python art_src/m4_scripts/preview.py out.png id[+bone+-bone] ...
-(+bone shows a bone that is hidden by default, +-bone hides one, e.g. an eaten portion)
+Run with: python art_src/m4_scripts/preview.py out.png id[+bone+-bone][@facing] ...
+(+bone shows a bone that is hidden by default, +-bone hides one, e.g. an eaten portion; +-name
+may be a wildcard such as +-carcass_*, and a bone named with + is shown even if a wildcard hides
+it. @east, @south or @west turns the block as the game does for that facing; ^lo-hi after it
+frames the model's y band lo..hi in pixels, e.g. ^14-30 for the top of the two-block rack.)
+
+Cubes with box UV and cubes with per-face UV (as art_src/m4_scripts/rack_drying.py writes) are drawn.
 """
+import fnmatch
 import json
 import math
 import sys
@@ -18,15 +24,22 @@ ROOT = Path(__file__).resolve().parents[2]
 ART = ROOT / "art" / "blocks"
 TILE, SCALE, SUB = 260, 11, 3
 YAW, PITCH = math.radians(-35), math.radians(28)
+# The y rotation the block's minecraft:transformation gives each facing (tools/gen_blocks.mjs ROTATION).
+FACING = {"north": 0, "east": 270, "south": 180, "west": 90}
 SHADE = {"up": 1.0, "north": 0.86, "west": 0.7, "east": 0.74, "south": 0.8, "down": 0.55}
 
 
 def faces(cube):
-    """(name, texel rect, function from texel centre (a, b) in 0..1 to a model point)."""
+    """(name, texel rect, function from texel centre (a, b) in 0..1 to a model point). The rect is
+    (u, v, w, h) for box UV; per-face UV gives (u, v, w, h) as written, w or h negative when the
+    face is flipped (texel i of a flipped face is u - 1 - i)."""
     (x, y, z), (w, h, d) = cube["origin"], cube["size"]
-    u, v = cube["uv"]
     tw, th, td = [max(1, round(s)) for s in (w, h, d)]
     x1, y1, z1 = x + w, y + h, z + d
+    if isinstance(cube["uv"], dict):
+        box = {name: point for name, _, point in faces({**cube, "uv": [0, 0]})}
+        return [(name, (*f["uv"], *f["uv_size"]), box[name]) for name, f in cube["uv"].items() if name in box]
+    u, v = cube["uv"]
     return [
         # The left strip is the face at the smallest x, as in Bedrock and Blockbench (test_foodkit.py).
         ("up", (u + td, v, tw, td), lambda a, b: (x + a * w, y1, z1 - b * d)),
@@ -38,14 +51,18 @@ def faces(cube):
     ]
 
 
-def render(block, shown=()):
+def render(block, shown=(), facing="north", band=(0, 16)):
     model = json.loads((ART / f"{block}.geo.json").read_text(encoding="utf8"))["minecraft:geometry"][0]
     tex = Image.open(ART / f"{block}.png").convert("RGBA").load()
     hidden = {"busy", "open"} | {b["name"] for b in model["bones"] if b["name"].split("_")[0] in ("egg", "hay", "manure")}
     if "open" in shown:
         hidden.add("closed")
+    names = [b["name"] for b in model["bones"]]
+    hidden |= {n for s in shown if s.startswith("-") for n in fnmatch.filter(names, s[1:])}  # "-piece_4" hides a bone
     hidden -= set(shown)
-    hidden |= {s[1:] for s in shown if s.startswith("-")}  # "-piece_4" hides a bone
+    turn = math.radians(FACING[facing])
+    ct, st = math.cos(turn), math.sin(turn)
+    k = SCALE * 16 / (band[1] - band[0])  # screen pixels per model pixel
     color = np.zeros((TILE, TILE, 3), np.uint8)
     color[:] = (214, 224, 208)
     depth = np.full((TILE, TILE), -1e9)
@@ -54,22 +71,22 @@ def render(block, shown=()):
         if bone["name"] in hidden:
             continue
         for cube in bone.get("cubes", []):
-            if not isinstance(cube["uv"], list):
-                continue
-            for name, (u0, v0, fw, fh), point in faces(cube):
+            for name, (u0, v0, sw, sh), point in faces(cube):
+                fw, fh = abs(int(sw)), abs(int(sh))
                 for j in range(fh):
                     for i in range(fw):
-                        r, g, b, a = tex[u0 + i, v0 + j]
+                        r, g, b, a = tex[u0 + i if sw > 0 else u0 - 1 - i, v0 + j if sh > 0 else v0 - 1 - j]
                         if not a:
                             continue
                         rgb = tuple(int(c * SHADE[name]) for c in (r, g, b))
                         for sj in range(SCALE * SUB // 2):
                             for si in range(SCALE * SUB // 2):
-                                px, py, pz = point((i + (si + 0.5) / (SCALE * SUB // 2)) / fw,
+                                mx, py, mz = point((i + (si + 0.5) / (SCALE * SUB // 2)) / fw,
                                                    (j + (sj + 0.5) / (SCALE * SUB // 2)) / fh)
+                                px, pz = mx * ct + mz * st, mz * ct - mx * st
                                 rx, rz = px * cy - pz * sy, px * sy + pz * cy
                                 ry, near = py * cp + rz * sp, py * sp - rz * cp
-                                X, Y = int(TILE / 2 - rx * SCALE), int(TILE * 0.72 - ry * SCALE)
+                                X, Y = int(TILE / 2 - rx * k), int(TILE * 0.72 - (ry - band[0] * cp) * k)
                                 if 0 <= X < TILE and 0 <= Y < TILE and near > depth[Y, X]:
                                     depth[Y, X] = near
                                     color[Y, X] = rgb
@@ -82,10 +99,15 @@ def main():
     sheet = Image.new("RGB", (cols * TILE, ((len(tiles) + cols - 1) // cols) * (TILE + 18)), (232, 238, 226))
     draw = ImageDraw.Draw(sheet)
     for n, tile in enumerate(tiles):
+        tile, _, view = tile.partition("@")
+        facing, _, framed = view.partition("^")
+        band = tuple(float(v) for v in framed.split("-")) if framed else (0, 16)
         block, *bones = tile.split("+")
         x, y = (n % cols) * TILE, (n // cols) * (TILE + 18)
-        draw.text((x + 6, y + 3), block + (" / " + " ".join(bones) if bones else ""), fill=(50, 60, 50))
-        sheet.paste(render(block, bones), (x, y + 18))
+        label = " ".join([*(f"@{facing}" for _ in [0] if facing), *(b for b in bones if not b.startswith("-"))])
+        text = block + (" / " + label if label else "")
+        draw.text((x + 6, y + 3), text if len(text) < 44 else text[:42] + "..", fill=(50, 60, 50))
+        sheet.paste(render(block, bones, facing or "north", band), (x, y + 18))
     sheet.save(out)
 
 
