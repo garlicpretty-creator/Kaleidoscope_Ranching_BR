@@ -340,7 +340,11 @@ for (const dish of DISHES.filter((d) => d.station === "crafting")) {
   RECIPES.push(m5(shapeless(dish.id, dish.slots.map((slot) => ingredient(slot[0])), dish.id)));
 }
 for (const prep of DISH_PREPS) {
-  prep.makes.forEach((slots, i) => RECIPES.push(m5(shapeless(`${prep.id}_${i}`, slots.map(ingredient), prep.id))));
+  prep.makes.forEach((slots, i) => {
+    const recipe = m5(shapeless(`${prep.id}_${i}`, slots.map(ingredient), prep.id));
+    if (prep.unlock) recipe[1]["minecraft:recipe_shapeless"].unlock = [{ item: rid(prep.unlock) }];
+    RECIPES.push(recipe);
+  });
 }
 for (const dish of DISHES.filter((d) => d.station === "furnace")) {
   RECIPES.push([
