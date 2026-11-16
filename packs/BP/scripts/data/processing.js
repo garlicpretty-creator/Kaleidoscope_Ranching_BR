@@ -49,6 +49,37 @@ export const PROCESSING_RECIPES = [
 
 ];
 
+// --- 1.1 肉類線與內臟線 -----------------------------------------------------
+
+const ANY_MINCE = ["pork_mince", "beef_mince", "mutton_mince"];
+
+// The meat grinder is cranked: every use turns the held meat into one mince at
+// once (ticks 0), like one stroke on the butcher rack.
+PROCESSING_RECIPES.push(
+  { id: "grind/pork", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:porkchop"], count: 1 }], outputs: [{ item: "pork_mince", count: 1 }], ticks: 0 },
+  { id: "grind/beef", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:beef", "buffalo_meat", "yak_meat"], count: 1 }], outputs: [{ item: "beef_mince", count: 1 }], ticks: 0 },
+  { id: "grind/mutton", station: "meat_grinder", inputs: [{ anyOf: ["minecraft:mutton"], count: 1 }], outputs: [{ item: "mutton_mince", count: 1 }], ticks: 0 },
+  { id: "grind/sausage", station: "meat_grinder", inputs: [{ anyOf: ANY_MINCE, count: 2 }, { item: "sausage_casing", count: 1 }], outputs: [{ item: "raw_sausage", count: 2 }], ticks: 0 },
+  { id: "churn/foie_gras_pate", station: "butter_churn", inputs: [{ item: "goose_liver", count: 1 }, { item: "butter", count: 1 }], outputs: [{ item: "foie_gras_pate", count: 1 }], ticks: 600 },
+);
+
+/** Air-drying on an empty butcher rack (企劃書 1.1 掛架風乾): input → output. */
+export const DRYING = {
+  raw_sausage: "cured_sausage",
+  pork_belly: "cured_pork_belly",
+  duck_leg: "cured_duck_leg",
+  beef_shank: "beef_jerky",
+};
+/** Pieces one rack holds, and how long they hang. */
+export const DRYING_SLOTS = 4;
+export const DRYING_TICKS = DAY * 3;
+
+/** Washed at the water trough for one level of water (企劃書 1.1 清洗): input → output. */
+export const WASHING = {
+  pig_intestine: "cleaned_intestine",
+  beef_tripe: "cleaned_tripe",
+};
+
 // Recipes that use vanilla workstations rather than a Ranching block.
 export const VANILLA_COOKING = [
   { id: "furnace/lard", kind: "furnace", input: "pork_fat", output: "lard" },

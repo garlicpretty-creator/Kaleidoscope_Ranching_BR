@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "pig_intestine",
+    "metalness_emissive_roughness_subsurface": "pig_intestine_mers",
+    "normal": "pig_intestine_normal"
+  }
+}

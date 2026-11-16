@@ -11,6 +11,28 @@ import {
 import { ItemStack } from "@minecraft/server";
 import { T } from "../ui/text.js";
 import { clockBlockEvents } from "../core/blockClock.js";
+import { WASHING } from "../data/processing.js";
+import { consumeMainHand, give } from "../core/inventory.js";
+
+const NS = "kaleidoscope_ranching";
+
+/** 1.1 清洗: washes one held piece of offal for one level of water. Returns true if the held item was washable. */
+function wash(block, player, held) {
+  if (!held?.typeId.startsWith(`${NS}:`)) return false;
+  const out = WASHING[held.typeId.slice(NS.length + 1)];
+  if (!out) return false;
+  const level = getState(block, "water");
+  if (level <= 0) {
+    player.onScreenDisplay.setActionBar({ translate: `${NS}.message.wash.no_water` });
+    return true;
+  }
+  consumeMainHand(player);
+  give(player, `${NS}:${out}`, 1);
+  setStates(block, { water: level - 1 });
+  block.dimension.playSound("bucket.empty_water", block.location);
+  player.onScreenDisplay.setActionBar({ translate: `${NS}.message.wash.done`, with: [`${level - 1}`, `${CARE.WATER_LEVELS_PER_BUCKET}`] });
+  return true;
+}
 
 const NEIGHBOURS = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0, -1, 0], [0, 1, 0]];
 
@@ -59,6 +81,7 @@ export const waterTroughComponent = clockBlockEvents({
   onPlayerInteract({ block, player }) {
     if (!player) return;
     const held = mainhand(player);
+    if (wash(block, player, held)) return;
     if (held?.typeId === "minecraft:water_bucket") {
       setStates(block, { water: CARE.WATER_LEVELS_PER_BUCKET });
       if (!isCreative(player)) setMainhand(player, new ItemStack("minecraft:bucket", 1));

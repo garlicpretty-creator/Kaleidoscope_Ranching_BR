@@ -165,6 +165,32 @@ def pile(c, color):
     c.fill({(x, y) for x in range(2, 14) for y in range(6, 14) if y >= 13 - min(x - 2, 13 - x) * 1.4}, color)
 
 
+def sausage(c, color, links=2):
+    """Plump links on a diagonal, tied between."""
+    centres = [(5, 11), (8, 8), (11, 5)][:links] if links < 3 else [(4.5, 11.5), (8, 8), (11.5, 4.5)]
+    for cx, cy in centres:
+        c.fill({(x, y) for x in range(16) for y in range(16) if abs((x + .5 - cx) + (y + .5 - cy)) <= 3.2 and abs((x + .5 - cx) - (y + .5 - cy)) <= 2.2}, color)
+    for cx, cy in centres[:-1]:
+        c.put(int(cx + 1.5), int(cy - 1.5), darken(color, 0.6))
+
+
+def coil(c, color):
+    """A loop of intestine or casing."""
+    ring = ellipse(8, 8.5, 5.5, 4.5) - ellipse(8, 8.5, 3, 2.2)
+    c.fill(ring, color)
+    for (x, y) in ring:
+        if (x + y) % 4 == 0:
+            c.put(x, y, darken(color, 0.86))
+
+
+def tripe(c, color):
+    shape = ellipse(8, 8.5, 5.5, 4.5)
+    c.fill(shape, color)
+    for (x, y) in shape:
+        if x % 2 == 0 and y % 2 == 0:
+            c.put(x, y, darken(color, 0.82))
+
+
 def sack(c, color, tie=(150, 110, 70)):
     c.fill(ellipse(8, 10, 5.5, 4.5), color)
     c.fill(rect(6, 3, 9, 5), color)
@@ -411,6 +437,35 @@ def draw(item_id):
         sack(c, (170, 130, 80))
     elif base == "pitchfork":
         fork(c)
+    # --- 1.1 肉類線與內臟線 ---
+    elif base in ("pork_mince", "beef_mince", "mutton_mince"):
+        pile(c, {"pork_mince": (232, 150, 140), "beef_mince": (196, 82, 76), "mutton_mince": (190, 96, 88)}[base])
+    elif base == "raw_sausage":
+        sausage(c, (226, 132, 120))
+    elif base == "cured_sausage":
+        sausage(c, (150, 50, 40), links=3)
+    elif base == "cured_pork_belly":
+        meat(c, (150, 70, 50), fat=(236, 210, 170))
+    elif base == "cured_duck_leg":
+        drumstick(c, (150, 80, 46))
+    elif base == "beef_jerky":
+        sheet(c, (110, 50, 34), (80, 36, 24))
+    elif base == "pork_liver":
+        blob(c, (120, 46, 40), 5.5, 3.8)
+    elif base == "goose_liver":
+        blob(c, (226, 188, 150), 5.5, 4)
+    elif base == "chicken_gizzard":
+        blob(c, (150, 70, 60), 4, 3.5)
+    elif base == "duck_blood":
+        block(c, (110, 30, 30))
+    elif base in ("pig_intestine", "cleaned_intestine"):
+        coil(c, (230, 170, 160) if base == "pig_intestine" else (240, 214, 200))
+    elif base == "sausage_casing":
+        coil(c, (244, 236, 220))
+    elif base in ("beef_tripe", "cleaned_tripe"):
+        tripe(c, (200, 180, 150) if base == "beef_tripe" else (236, 228, 210))
+    elif base == "foie_gras_pate":
+        jar(c, (220, 180, 140))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

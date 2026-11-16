@@ -127,6 +127,9 @@
     "kr_incubator": {
       "textures": "textures/blocks/ranching/incubator"
     },
+    "kr_meat_grinder": {
+      "textures": "textures/blocks/ranching/meat_grinder"
+    },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
     },

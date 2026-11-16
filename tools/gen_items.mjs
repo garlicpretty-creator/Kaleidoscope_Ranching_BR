@@ -47,6 +47,10 @@ const OVERRIDES = {
   lard: { stack: 1 },
   // Dried yak dung burns like a stick-and-a-half of coal: 30 s, three smelts.
   dried_yak_dung: { components: { "minecraft:fuel": { duration: 30 } } },
+  // 1.1 肉類線與內臟線
+  beef_jerky: food(4, 0.6, { always: true }),
+  foie_gras_pate: { stack: 16, ...food(4, 0.8) },
+  sausage_casing: {},
   // Item custom components (systems/m4.js); they need item format 1.21.90.
   cowbell: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:cowbell": {}, "minecraft:cooldown": { category: "kr_cowbell", duration: 3 } } },
   animal_crate: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:animal_crate": {} } },
@@ -95,6 +99,20 @@ function componentsFor(item) {
     case "cut":
       Object.assign(c, food(2, 0.3));
       tags.push("minecraft:is_meat");
+      break;
+    // 1.1: grinder mince and raw sausage (raw meat), cured meats, offal.
+    case "mince":
+      Object.assign(c, food(2, 0.3));
+      tags.push("minecraft:is_meat");
+      if (item.id.endsWith("_mince")) tags.push(`${NAMESPACE}:mince`);
+      break;
+    case "cured":
+      Object.assign(c, food(5, 0.6));
+      tags.push("minecraft:is_meat");
+      break;
+    case "offal":
+      Object.assign(c, food(2, 0.2));
+      tags.push("minecraft:is_meat", `${NAMESPACE}:offal`);
       break;
   }
   const override = OVERRIDES[item.id] ?? {};
@@ -163,6 +181,9 @@ const RECIPES = [
   shapeless("nursing_bottle", [{ item: "minecraft:glass_bottle" }, { item: "minecraft:slime_ball" }], "nursing_bottle"),
   shapeless("cheese_slices", [{ item: rid("aged_cheese_wheel") }], "cheese_slice", 4),
   shaped("tanning_rack", ["S S", "TTT", "P P"], { S: { item: "minecraft:stick" }, T: { item: "minecraft:string" }, P: planks }, "tanning_rack"),
+  // 1.1 肉類線與內臟線
+  shaped("meat_grinder", ["III", "SIS", "PPP"], { I: { item: "minecraft:iron_ingot" }, S: { item: "minecraft:stick" }, P: planks }, "meat_grinder"),
+  shapeless("sausage_casing", [{ item: rid("cleaned_intestine") }], "sausage_casing", 2),
 
   // ## Every by-product has somewhere to go in 1.0. Where the proposal plans a
   // ## richer use later (1.1 spinning wheel, 1.2 candles, horns, down pillows),

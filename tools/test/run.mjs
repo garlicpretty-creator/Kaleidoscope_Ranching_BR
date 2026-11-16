@@ -424,6 +424,7 @@ test("M2: one click with a brush is handled once, by M2 only", () => {
 
 // --- M3: carcasses and the butcher rack -----------------------------------
 
+const butcherData = await import("../../packs/BP/scripts/data/butcher.js");
 const RACK = COMPONENTS["kaleidoscope_ranching:butcher_rack"];
 const NEST = COMPONENTS["kaleidoscope_ranching:nest_box"];
 const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
@@ -513,8 +514,12 @@ test("the rack shows the partly cut carcass after half the strokes", () => {
   equal(stage().join(), "false,false", "whole, skin on, at first");
   stroke();
   equal(stage().join(), "true,false", "skinned after the pig skin comes off");
-  for (let i = 0; i < 3; i++) stroke();
-  equal(stage().join(), "true,true", "partly cut after 4 of 7");
+  // Half the strokes, rounded up (1.1 adds the offal strokes to the pig's cuts).
+  const half = Math.ceil(butcherData.BUTCHER_TABLE.pig_carcass.cuts.length / 2);
+  for (let i = 1; i < half - 1; i++) stroke();
+  equal(stage().join(), "true,false", "still whole one stroke before half");
+  stroke();
+  equal(stage().join(), "true,true", `partly cut after ${half} strokes`);
 });
 
 test("feathered birds stay feathered until the down and feathers are both taken", () => {
@@ -1672,6 +1677,123 @@ test("scraps are vegetable feed: pigs eat them from a trough, cows do not", () =
   runBlockClock();
   assert(care.isMarkedToday(pig, "fed"), "the pig ate");
   assert(!care.isMarkedToday(cow, "fed"), "the cow did not");
+});
+
+// --- 1.1 M7: meat line and offal line -------------------------------------------
+
+test("M7: a pig is cut for liver and intestine right after its skin", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("pig", "female"));
+  use(RACK, rack, player);
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player); // skin
+  equal(rack.permutation.getState("kaleidoscope_ranching:skinned"), true, "skinned after the skin stroke");
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:pork_liver"), 1, "liver is the next stroke");
+  cutAll(player, rack);
+  assert(player.inventory.count("kaleidoscope_ranching:pig_intestine") >= 1, "and the intestine");
+});
+
+test("M7: each animal gives its offal; sheep, goats and rabbits give none", () => {
+  const { BUTCHER_TABLE } = butcherData;
+  const offalOf = (carcass) => BUTCHER_TABLE[carcass].cuts.filter((cut) => cut.offal).map((cut) => cut.item);
+  equal(offalOf("chicken_carcass").join(), "chicken_gizzard", "chicken");
+  equal(offalOf("duck_carcass").join(), "duck_blood", "duck");
+  equal(offalOf("goose_carcass").join(), "goose_liver", "goose");
+  for (const c of ["cow_carcass", "buffalo_carcass", "yak_carcass"]) equal(offalOf(c).join(), "beef_tripe", c);
+  for (const c of ["sheep_carcass", "goat_carcass", "rabbit_carcass"]) equal(offalOf(c).length, 0, c);
+});
+
+test("M7: intestine and tripe are washed at the water trough for one level of water", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const water = place("water_trough", at(0), { water: 1 });
+  hold(player, "kaleidoscope_ranching:pig_intestine", 2);
+  waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "one washed");
+  equal(player.inventory.count("kaleidoscope_ranching:pig_intestine"), 1, "one left");
+  equal(state(water, "water"), 0, "used one level");
+  waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "no water, no wash");
+  assert(player.actionBar.at(-1).translate.endsWith("wash.no_water"), "says it is dry");
+});
+
+test("M7: the meat grinder gives one mince per use and makes sausages from mince and casing", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const grinder = stationAt("meat_grinder");
+  hold(player, "minecraft:porkchop", 2);
+  use(STATION, grinder, player);
+  equal(player.inventory.count("kaleidoscope_ranching:pork_mince"), 1, "one mince at once");
+  equal(player.inventory.count("minecraft:porkchop"), 1, "one chop used");
+  equal(grinder.permutation.getState("kaleidoscope_ranching:busy"), false, "never busy");
+  player.inventory.setItem(8, new ItemStack("kaleidoscope_ranching:beef_mince", 1));
+  player.inventory.setItem(7, new ItemStack("kaleidoscope_ranching:sausage_casing", 1));
+  player.selectedSlotIndex = 7;
+  use(STATION, grinder, player);
+  equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 2, "two sausages");
+  equal(player.inventory.count("kaleidoscope_ranching:sausage_casing"), 0, "casing used");
+  equal(player.inventory.count("kaleidoscope_ranching:pork_mince") + player.inventory.count("kaleidoscope_ranching:beef_mince"), 0, "any two minces");
+});
+
+test("M7: an empty butcher rack air-dries up to four pieces for three days", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  hold(player, "kaleidoscope_ranching:raw_sausage", 5);
+  for (let i = 0; i < 5; i++) use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 1, "only four hang");
+  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_full"), "says it is full");
+  player.inventory.setItem(8, carcassFrom("chicken", "female"));
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  assert(player.actionBar.at(-1).translate.endsWith("rack.drying_busy"), "no carcass while drying");
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "none", "carcass not hung");
+  __skipTime(24000 * 2);
+  player.selectedSlotIndex = 6;
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_sausage"), 0, "not done after two days");
+  __skipTime(24000);
+  use(RACK, rack, player);
+  equal(player.inventory.count("kaleidoscope_ranching:cured_sausage"), 4, "four cured sausages");
+  player.selectedSlotIndex = 8;
+  use(RACK, rack, player);
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "chicken", "empty again: a carcass hangs");
+});
+
+test("M7: breaking a drying rack drops dried pieces dried and the rest raw", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  hold(player, "kaleidoscope_ranching:pork_belly", 1);
+  use(RACK, rack, player);
+  __skipTime(24000 * 2);
+  hold(player, "kaleidoscope_ranching:beef_shank", 1);
+  use(RACK, rack, player);
+  __skipTime(24000);
+  breakBlock(RACK, rack);
+  equal(dropsOf("kaleidoscope_ranching:cured_pork_belly").length, 1, "dried belly");
+  equal(dropsOf("kaleidoscope_ranching:beef_shank").length, 1, "raw shank back");
+  equal(dropsOf("kaleidoscope_ranching:beef_jerky").length, 0, "not jerky yet");
+});
+
+test("M7: goose liver and butter churn into pâté; raw offal is pig feed", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:goose_liver", 1));
+  player.inventory.setItem(1, new ItemStack("kaleidoscope_ranching:butter", 1));
+  use(STATION, churn, player);
+  __skipTime(600);
+  use(STATION, churn, player);
+  equal(player.inventory.count("kaleidoscope_ranching:foie_gras_pate"), 1, "pâté");
+  const trough = place("trough", at(0, 3), { fill: 0, kind: 0 });
+  hold(player, "kaleidoscope_ranching:pork_liver", 1);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(state(trough, "fill"), 1, "offal fills the trough");
 });
 
 // --- Report ---------------------------------------------------------------

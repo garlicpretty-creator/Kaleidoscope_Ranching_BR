@@ -248,6 +248,60 @@
     "kr_rabbit_leg": {
       "textures": "textures/items/ranching/rabbit_leg"
     },
+    "kr_pork_mince": {
+      "textures": "textures/items/ranching/pork_mince"
+    },
+    "kr_beef_mince": {
+      "textures": "textures/items/ranching/beef_mince"
+    },
+    "kr_mutton_mince": {
+      "textures": "textures/items/ranching/mutton_mince"
+    },
+    "kr_raw_sausage": {
+      "textures": "textures/items/ranching/raw_sausage"
+    },
+    "kr_cured_sausage": {
+      "textures": "textures/items/ranching/cured_sausage"
+    },
+    "kr_cured_pork_belly": {
+      "textures": "textures/items/ranching/cured_pork_belly"
+    },
+    "kr_cured_duck_leg": {
+      "textures": "textures/items/ranching/cured_duck_leg"
+    },
+    "kr_beef_jerky": {
+      "textures": "textures/items/ranching/beef_jerky"
+    },
+    "kr_pork_liver": {
+      "textures": "textures/items/ranching/pork_liver"
+    },
+    "kr_pig_intestine": {
+      "textures": "textures/items/ranching/pig_intestine"
+    },
+    "kr_chicken_gizzard": {
+      "textures": "textures/items/ranching/chicken_gizzard"
+    },
+    "kr_duck_blood": {
+      "textures": "textures/items/ranching/duck_blood"
+    },
+    "kr_goose_liver": {
+      "textures": "textures/items/ranching/goose_liver"
+    },
+    "kr_beef_tripe": {
+      "textures": "textures/items/ranching/beef_tripe"
+    },
+    "kr_cleaned_intestine": {
+      "textures": "textures/items/ranching/cleaned_intestine"
+    },
+    "kr_cleaned_tripe": {
+      "textures": "textures/items/ranching/cleaned_tripe"
+    },
+    "kr_sausage_casing": {
+      "textures": "textures/items/ranching/sausage_casing"
+    },
+    "kr_foie_gras_pate": {
+      "textures": "textures/items/ranching/foie_gras_pate"
+    },
     "kr_large_bone": {
       "textures": "textures/items/ranching/large_bone"
     },
@@ -361,6 +415,48 @@
     },
     "kr_berry_yogurt": {
       "textures": "textures/items/ranching/berry_yogurt"
+    },
+    "kr_claypot_rice": {
+      "textures": "textures/items/ranching/claypot_rice"
+    },
+    "kr_cured_pork_peppers": {
+      "textures": "textures/items/ranching/cured_pork_peppers"
+    },
+    "kr_pan_fried_sausage": {
+      "textures": "textures/items/ranching/pan_fried_sausage"
+    },
+    "kr_cured_duck_leg_rice": {
+      "textures": "textures/items/ranching/cured_duck_leg_rice"
+    },
+    "kr_lion_head_meatballs": {
+      "textures": "textures/items/ranching/lion_head_meatballs"
+    },
+    "kr_hamburg_steak": {
+      "textures": "textures/items/ranching/hamburg_steak"
+    },
+    "kr_lamb_meatball_soup": {
+      "textures": "textures/items/ranching/lamb_meatball_soup"
+    },
+    "kr_pork_liver_soup": {
+      "textures": "textures/items/ranching/pork_liver_soup"
+    },
+    "kr_sesame_oil_pork_liver": {
+      "textures": "textures/items/ranching/sesame_oil_pork_liver"
+    },
+    "kr_braised_intestine": {
+      "textures": "textures/items/ranching/braised_intestine"
+    },
+    "kr_duck_blood_noodle_soup": {
+      "textures": "textures/items/ranching/duck_blood_noodle_soup"
+    },
+    "kr_spicy_tripe": {
+      "textures": "textures/items/ranching/spicy_tripe"
+    },
+    "kr_braised_gizzard": {
+      "textures": "textures/items/ranching/braised_gizzard"
+    },
+    "kr_pate_toast": {
+      "textures": "textures/items/ranching/pate_toast"
     },
     "kr_egg_custard": {
       "textures": "textures/items/ranching/egg_custard"

@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "spicy_tripe",
+    "metalness_emissive_roughness_subsurface": "spicy_tripe_mers",
+    "normal": "spicy_tripe_normal"
+  }
+}
