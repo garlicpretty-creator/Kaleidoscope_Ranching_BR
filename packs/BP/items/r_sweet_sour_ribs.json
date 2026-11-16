@@ -1,0 +1,35 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:sweet_sour_ribs",
+      "menu_category": {
+        "category": "equipment",
+        "group": "kaleidoscope_cookery:itemGroup.name.foods"
+      }
+    },
+    "components": {
+      "minecraft:icon": "kr_sweet_sour_ribs",
+      "minecraft:display_name": {
+        "value": "item.kaleidoscope_ranching:sweet_sour_ribs.name"
+      },
+      "minecraft:max_stack_size": 64,
+      "minecraft:food": {
+        "nutrition": 10,
+        "saturation_modifier": 0.8,
+        "can_always_eat": true,
+        "using_converts_to": "minecraft:bowl"
+      },
+      "minecraft:use_animation": "eat",
+      "minecraft:use_modifiers": {
+        "use_duration": 1.6,
+        "movement_modifier": 0.33
+      },
+      "minecraft:tags": {
+        "tags": [
+          "minecraft:is_food"
+        ]
+      }
+    }
+  }
+}

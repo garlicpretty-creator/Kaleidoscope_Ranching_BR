@@ -1697,6 +1697,43 @@ test("every milk and the duck egg are accepted in the dishes that use them", () 
   assert(eggs.recipe.ingredients.some((slot) => slot.includes("kaleidoscope_ranching:duck_egg")), "the duck egg");
 });
 
+const { DISH_PREPS } = await import("../../packs/BP/scripts/data/dishes.js");
+const { ITEMS: ITEM_ROWS } = await import("../../packs/BP/scripts/data/items.js");
+
+test("pork ribs, chicken wings, lamb legs and rabbit legs each cook into a dish", () => {
+  const known = new Set(ITEM_ROWS.map((item) => `kaleidoscope_ranching:${item.id}`));
+  // Cookery 1.6.6 items these dishes use (checked against its installed pack).
+  const cookery = new Set(["kaleidoscope_cookery:red_chili", "kaleidoscope_cookery:tomato"]);
+  const valid = (id) => id.startsWith("minecraft:") || known.has(id) || cookery.has(id);
+  const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
+  const json = (path) => JSON.parse(readFileSync(new URL(`../../packs/BP/${path}`, import.meta.url), "utf8"));
+  const expected = { pork_ribs: "sweet_sour_ribs", chicken_wing: "honey_chicken_wings", lamb_leg: "roast_lamb_leg", rabbit_leg: "braised_rabbit_legs" };
+  for (const [cut, dishId] of Object.entries(expected)) {
+    const cutId = `kaleidoscope_ranching:${cut}`;
+    const dish = DISHES.find((d) => d.id === dishId);
+    assert(dish, `${dishId} exists`);
+    const food = json(`items/r_${dishId}.json`)["minecraft:item"].components["minecraft:food"];
+    equal(food.nutrition, dish.food[0], `${dishId} nutrition`);
+    equal(food.can_always_eat, true, `${dishId} can always be eaten`);
+    if (dish.station === "furnace") {
+      const prep = DISH_PREPS.find((p) => `kaleidoscope_ranching:${p.id}` === dish.input || p.id === dish.input);
+      assert(prep, `${dishId}: its uncooked step is a prep`);
+      const shapeless = json(`recipes/r_m5_${prep.id}_0.json`)["minecraft:recipe_shapeless"];
+      const ids = shapeless.ingredients.map((i) => i.item);
+      assert(ids.includes(cutId), `${prep.id} is made from ${cut}`);
+      for (const id of ids) assert(valid(id), `${prep.id}: ${id} exists`);
+      const furnace = json(`recipes/r_m5_furnace_${dishId}.json`)["minecraft:recipe_furnace"];
+      equal(furnace.input, `kaleidoscope_ranching:${prep.id}`, `${dishId} is roasted from ${prep.id}`);
+      equal(furnace.output, `kaleidoscope_ranching:${dishId}`, `${dishId} comes out of the furnace`);
+    } else {
+      const sent = recipes.find((r) => r.recipe.result === `kaleidoscope_ranching:${dishId}`);
+      assert(sent, `${dishId} registered with Cookery`);
+      assert(sent.recipe.ingredients.filter((slot) => slot.includes(cutId)).length >= 1, `${dishId} takes ${cut}`);
+      for (const slot of sent.recipe.ingredients) for (const id of slot) assert(valid(id), `${dishId}: ${id} exists`);
+    }
+  }
+});
+
 test("the guidebook chapter arrives in chunks under 2048 characters and parses back", () => {
   system.__scriptEvents.length = 0;
   system.sendScriptEvent("kaleidoscope_cookery:guidebook_ready", JSON.stringify({ api: 1 }));

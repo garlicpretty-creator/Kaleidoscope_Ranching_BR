@@ -560,6 +560,18 @@
     "kr_chhurpi_butter_tea": {
       "textures": "textures/items/ranching/chhurpi_butter_tea"
     },
+    "kr_sweet_sour_ribs": {
+      "textures": "textures/items/ranching/sweet_sour_ribs"
+    },
+    "kr_honey_chicken_wings": {
+      "textures": "textures/items/ranching/honey_chicken_wings"
+    },
+    "kr_roast_lamb_leg": {
+      "textures": "textures/items/ranching/roast_lamb_leg"
+    },
+    "kr_braised_rabbit_legs": {
+      "textures": "textures/items/ranching/braised_rabbit_legs"
+    },
     "kr_egg_custard": {
       "textures": "textures/items/ranching/egg_custard"
     },
@@ -574,6 +586,9 @@
     },
     "kr_raw_truffle_gratin": {
       "textures": "textures/items/ranching/raw_truffle_gratin"
+    },
+    "kr_seasoned_lamb_leg": {
+      "textures": "textures/items/ranching/seasoned_lamb_leg"
     }
   }
 }
