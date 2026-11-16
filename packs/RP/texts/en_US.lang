@@ -8,7 +8,6 @@ kaleidoscope_ranching.message.breed.not_cared=This animal has not been cared for
 kaleidoscope_ranching.message.rack.empty=Hang a carcass on the rack, or something to air-dry.
 kaleidoscope_ranching.message.rack.occupied=A carcass is already hanging here.
 kaleidoscope_ranching.message.rack.need_blade=Cut it with a kitchen knife, a sword or an axe.
-kaleidoscope_ranching.message.food.full=You are too full to eat.
 kaleidoscope_ranching.message.medicine.not_sick=This animal is not sick.
 kaleidoscope_ranching.message.harness.on=Harnessed. Use a plough on it to hitch the plough.
 kaleidoscope_ranching.message.harness.off=Harness taken off.

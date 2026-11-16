@@ -13,7 +13,6 @@
 import { ItemStack } from "@minecraft/server";
 import { rid } from "../core/ids.js";
 import { give } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
 import { PLACED_FOODS } from "../data/placedFoods.js";
 import { STATE_CUT } from "./cheeseWheel.js";
 
@@ -40,7 +39,7 @@ export const placedFoodComponent = {
   onPlayerInteract({ block, player }) {
     const food = EATEN[block.typeId];
     if (!player || !food) return;
-    if (isFull(player)) return showActionBar(player, { translate: "kaleidoscope_ranching.message.food.full" });
+    if (isFull(player)) return; // nothing happens: no text on screen (immersion)
     player.addEffect("saturation", 1, { amplifier: food.eat - 1, showParticles: false });
     block.dimension.playSound("random.eat", block.location);
     const eaten = eatenOf(block.permutation) + 1;

@@ -671,9 +671,10 @@ test("a placed pizza is eaten in four slices of three hunger, and not when full"
 
   const second = __place(overworld, { x: 32, y: 64, z: 0 }, "kaleidoscope_ranching:placed_pizza", { "kaleidoscope_ranching:cut": 0 });
   player.hunger = 20;
+  const shown = player.actionBar.length;
   use(PLACED, second, player);
   equal(state(second, "cut"), 0, "nothing eaten when full");
-  assert(player.actionBar.at(-1).translate.endsWith("food.full"), "told they are full");
+  equal(player.actionBar.length, shown, "no message when full: the dish just stays");
   breakBlock(PLACED, second);
   equal(dropsOf("kaleidoscope_ranching:margherita_pizza").length, 1, "an untouched pizza is picked up whole");
 
