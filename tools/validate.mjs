@@ -510,6 +510,38 @@ for (const { path, data } of blockFiles) {
   }
 }
 
+// Station stages (systems/stations.js): every station shows its contents in three colours, one
+// bone per stage with the same cubes, shown by the `stage` state.
+{
+  const { STATIONS, AUTO_STATIONS } = await load("processing.js");
+  const cubesOf = new Map();
+  for (const path of walk(join(rp, "models")).filter((p) => p.endsWith(".json"))) {
+    for (const geo of readJson(path)["minecraft:geometry"] ?? []) cubesOf.set(geo.description.identifier, geo.bones ?? []);
+  }
+  for (const id of [...STATIONS, ...AUTO_STATIONS]) {
+    const block = blockFiles.find(({ data }) => local(data.description.identifier) === id);
+    if (!block) {
+      fail(`station ${id}: no block file`);
+      continue;
+    }
+    const where = relative(root, block.path);
+    const stage = block.data.description.states?.["kaleidoscope_ranching:stage"];
+    if (JSON.stringify(stage) !== "[1,2,3]") fail(`${where}: state kaleidoscope_ranching:stage must be [1, 2, 3]`);
+    const geometry = block.data.components["minecraft:geometry"];
+    const bones = cubesOf.get(geometry.identifier) ?? [];
+    const shape = (bone) => JSON.stringify((bone?.cubes ?? []).map((c) => [c.origin.map((v) => Math.round(v)), c.size.map((v) => Math.round(v))]));
+    const stages = [1, 2, 3].map((n) => bones.find((bone) => bone.name === `busy_${n}`));
+    for (const [n, bone] of stages.entries()) {
+      if (!bone?.cubes?.length) fail(`${where}: geometry has no cubes in bone busy_${n + 1}`);
+      const shown = geometry.bone_visibility?.[`busy_${n + 1}`];
+      if (typeof shown !== "string" || !shown.includes(`q.block_state('kaleidoscope_ranching:stage') == ${n + 1}`)) {
+        fail(`${where}: bone_visibility must show busy_${n + 1} at stage ${n + 1}`);
+      }
+    }
+    if (stages.every(Boolean) && new Set(stages.map(shape)).size !== 1) fail(`${where}: busy_1..busy_3 must hold the same cubes`);
+  }
+}
+
 for (const [name, entry] of [...Object.entries(itemAtlas), ...Object.entries(terrainAtlas)]) {
   const file = typeof entry.textures === "string" ? entry.textures : entry.textures?.[0];
   if (file && !exists(join(rp, file + ".png"))) fail(`atlas entry "${name}": missing ${file}.png`);

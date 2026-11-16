@@ -3,7 +3,8 @@ ice cream churn, spinning wheel, weaving loom, silage barrel, down pillow, down 
 (both halves) and the horn decoration. They replace the stand-ins in tools/art/blocks.py:
 tools/gen_m3_art.py installs art/blocks/<id>.geo.json and .png when they exist.
 
-Bones the block files need (tools/gen_blocks.mjs): `busy` on the stations, `closed` and `open`
+Bones the block files need (tools/gen_blocks.mjs): `busy` and busy_1..busy_3 (the contents in the
+colours of the three stages of a batch, station_stages.py) on the stations, `closed` and `open`
 on the two gate halves. The rug stays procedural: it is one flat cube dyed in 16 colours.
 
 Run with: python art_src/m4_scripts/blocks_m7.py
@@ -15,18 +16,16 @@ from pathlib import Path
 from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
+from station_stages import STAGE_PAINT, stage_paints, staged
 
 ROOT = Path(__file__).resolve().parents[2]
 
 STEEL, STEEL_DK, STEEL_LT = (146, 150, 158), (98, 102, 112), (196, 200, 208)
 TIN, TIN_DK, TIN_LT = (176, 182, 188), (128, 134, 142), (220, 224, 228)
-MINCE, MINCE_LT, MINCE_FAT = (196, 92, 92), (222, 124, 118), (240, 208, 200)
-MILK, CREAM, CREAM_DK = (244, 244, 238), (250, 236, 198), (232, 210, 160)
+MILK, CREAM = (244, 244, 238), (250, 236, 198)
 ICE, ICE_DK, ICE_LT = (188, 222, 240), (140, 186, 216), (236, 248, 252)
 YARN, YARN_DK = (236, 226, 208), (204, 190, 166)
-LINEN, LINEN_DK, STRIPE = (240, 234, 220), (214, 204, 184), (176, 78, 70)
 DOWN, DOWN_DK, PIPING = (246, 244, 238), (222, 220, 216), (142, 170, 204)
-SILAGE, SILAGE_DK = (128, 142, 62), (92, 106, 44)
 ROCK, ROCK_DK = (128, 126, 122), (96, 94, 92)
 HORN, HORN_DK, HORN_TIP = (224, 208, 176), (176, 150, 112), (92, 72, 56)
 BONE = (232, 226, 208)
@@ -184,6 +183,7 @@ SILAGE_BARREL = [
     ("busy", "barrel", [0, 14, 0], [
         ("stone", [-3, 14, -3], [6, 3, 6]),
         ("tuft", [4, 13, -2], [2, 1, 3]),
+        ("tuft", [-6, 13, -1], [2, 1, 3]),
     ]),
 ]
 
@@ -297,17 +297,6 @@ def perforated(f, i, j, w, h, fi):
     return cast()(f, i, j, w, h, fi)
 
 
-def mince(f, i, j, w, h, fi):
-    r = rnd(f, i, j)
-    return MINCE_FAT if r < 12 else MINCE_LT if r < 40 else MINCE
-
-
-def flat(a, b, p=30):
-    def fn(f, i, j, w, h, fi):
-        return b if rnd(f, i, j) < p else a
-    return fn
-
-
 def ice(f, i, j, w, h, fi):
     r = rnd(f, i, j)
     return ICE_LT if r < 25 else ICE_DK if r < 50 else ICE
@@ -319,17 +308,6 @@ def threads(a, b, along="i"):
         k = i if along == "i" else j
         return a if k % 2 == 0 else b
     return fn
-
-
-def wound(f, i, j, w, h, fi):
-    """Yarn wound on a bobbin or ball: diagonal wraps."""
-    return YARN_DK if (i + j) % 3 == 0 else YARN
-
-
-def woven(f, i, j, w, h, fi):
-    if f in ("top", "bottom") and i in (1, w - 2):
-        return STRIPE
-    return LINEN_DK if (i + j) % 2 else LINEN
 
 
 def pillow(f, i, j, w, h, fi):
@@ -362,11 +340,6 @@ def rock(f, i, j, w, h, fi):
     return ROCK_DK if r < 30 or j == h - 1 else ROCK
 
 
-def silage(f, i, j, w, h, fi):
-    r = rnd(f, i, j)
-    return SILAGE_DK if r < 35 else (164, 170, 84) if r > 88 else SILAGE
-
-
 def horn(f, i, j, w, h, fi):
     return HORN_DK if (j + i // 2) % 3 == 0 else HORN
 
@@ -394,8 +367,7 @@ PAINT = {
     "meat_grinder": {"board": wood(WOOD_DK), "neck": cast(), "barrel": cast(), "hopper": cast(),
                      "hopper_rim": vessel(cast(), (58, 60, 68), STEEL_LT), "plate": perforated,
                      "axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
-                     "bowl": vessel(wood(WOOD_LT), mix(WOOD_DK, (30, 18, 10), 0.3)),
-                     "mince": mince, "strands": mince},
+                     "bowl": vessel(wood(WOOD_LT), mix(WOOD_DK, (30, 18, 10), 0.3))},
     "milking_rack": {"post": wood(WOOD_DK, rings=WOOD_LT), "rail": wood(WOOD), "yoke": wood(WOOD),
                      "neck_bar": wood(WOOD_LT), "feed_box": feed_box,
                      "pail": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT), "pail_handle": iron,
@@ -405,23 +377,21 @@ PAINT = {
                         "knob": wood(WOOD_LT), "spout": cast(TIN, TIN_DK, TIN_LT),
                         "cream_can": vessel(cast(TIN, TIN_DK, TIN_LT), CREAM, TIN_LT),
                         "milk_jug": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT),
-                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
-                        "cream": flat(CREAM, CREAM_DK, 22)},
+                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT)},
     "ice_cream_churn": {"tub": vessel(staves(WOOD), ice, WOOD_DK), "hoop": iron, "ice": ice,
                         "can": cast(TIN, TIN_DK, TIN_LT), "bracket": cast(), "bar": cast(), "gear": cast(),
-                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
-                        "frost": flat(ICE_LT, (255, 255, 255), 40), "scoop": flat(CREAM, (255, 250, 232), 35)},
+                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT)},
     "spinning_wheel": {"bench": wood(WOOD_DK), "leg": wood(WOOD_DK), "treadle": wood(WOOD),
                        "upright": wood(WOOD), "rim": solid(WOOD_DK), "hub": wood(WOOD_DK, rings=WOOD_LT),
                        "spoke_h": solid(WOOD_LT), "spoke_v": solid(WOOD_LT), "maiden": wood(WOOD),
-                       "spindle": iron, "distaff": wood(WOOD_LT), "fleece": fleece, "bobbin": wound},
+                       "spindle": iron, "distaff": wood(WOOD_LT), "fleece": fleece},
     "weaving_loom": {"front_post": wood(WOOD_DK, rings=WOOD_LT), "back_post": wood(WOOD_DK, rings=WOOD_LT),
                      "side_rail": wood(WOOD), "foot_rail": wood(WOOD_DK), "beam": wood(WOOD_LT),
                      "warp": threads(YARN, YARN_DK), "warp_back": threads(YARN, YARN_DK),
                      "heddle": threads(WOOD, YARN), "beater": threads(WOOD_LT, WOOD_DK),
-                     "treadle": wood(WOOD), "cloth": woven, "cloth_roll": woven},
+                     "treadle": wood(WOOD)},
     "silage_barrel": {"staves": staves(WOOD), "hoop": iron, "lid": lid, "handle": iron,
-                      "stone": rock, "tuft": silage},
+                      "stone": rock},
     "down_pillow": {"body": pillow, "puff": pillow},
     "down_quilt": {"sheet": quilt_sheet, "square": quilt_square},
     "pen_gate": {"post": wood(WOOD_DK, rings=WOOD_LT), "hinge": iron, "latch": iron,
@@ -432,13 +402,13 @@ PAINT = {
 }
 
 BLOCKS = {
-    "meat_grinder": MEAT_GRINDER,
+    "meat_grinder": staged("meat_grinder", MEAT_GRINDER),
     "milking_rack": MILKING_RACK,
-    "cream_separator": CREAM_SEPARATOR,
-    "ice_cream_churn": ICE_CREAM_CHURN,
-    "spinning_wheel": SPINNING_WHEEL,
-    "weaving_loom": WEAVING_LOOM,
-    "silage_barrel": SILAGE_BARREL,
+    "cream_separator": staged("cream_separator", CREAM_SEPARATOR),
+    "ice_cream_churn": staged("ice_cream_churn", ICE_CREAM_CHURN),
+    "spinning_wheel": staged("spinning_wheel", SPINNING_WHEEL),
+    "weaving_loom": staged("weaving_loom", WEAVING_LOOM),
+    "silage_barrel": staged("silage_barrel", SILAGE_BARREL),
     "down_pillow": DOWN_PILLOW,
     "down_quilt": DOWN_QUILT,
     "pen_gate": PEN_GATE,
@@ -456,9 +426,10 @@ def main():
             bones, tw, th = autouv(raw, tw=th)
         th = tw
         p = Painter(tw, th, bones, bid)
-        missing = {c[0] for b in bones for c in b[3]} - set(PAINT[bid])
+        paints = {**PAINT[bid], **(stage_paints(bid) if bid in STAGE_PAINT else {})}
+        missing = {c[0] for b in bones for c in b[3]} - set(paints)
         assert not missing, (bid, missing)
-        for cube, fn in PAINT[bid].items():
+        for cube, fn in paints.items():
             p.paint(cube, fn)
         (out / f"{bid}.geo.json").write_text(json.dumps(geo(bid, bones, tw, th), indent=2) + "\n", encoding="utf8")
         p.save(out / f"{bid}.png")

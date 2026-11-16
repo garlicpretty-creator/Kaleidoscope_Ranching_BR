@@ -2851,6 +2851,84 @@ test("1.1: the butcher rack shows how many pieces are air-drying", () => {
   equal(shown(), 0, "a carcass is not a drying piece");
 });
 
+// --- Station stages: the contents change colour as a job advances ------------------
+
+const STAGE = "kaleidoscope_ranching:stage";
+const BUSY = "kaleidoscope_ranching:busy";
+const shownStage = (block) => (block.permutation.getState(BUSY) ? block.permutation.getState(STAGE) : 0);
+
+test("stages: a station's job shows stage 1, 2, 3 as time passes, then idle once collected", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const press = stationAt("cheese_press");
+  hold(player, "kaleidoscope_ranching:cow_milk", 3); // half a day: 12000 ticks
+  use(STATION, press, player);
+  equal(shownStage(press), 1, "just started");
+  __advance(4100);
+  equal(shownStage(press), 2, "a third of the way");
+  __advance(4000);
+  equal(shownStage(press), 3, "two thirds of the way");
+  __advance(4000);
+  equal(shownStage(press), 3, "finished, waiting to be taken");
+  hold(player, "minecraft:stick", 1);
+  use(STATION, press, player);
+  equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 1, "collected");
+  equal(shownStage(press), 0, "idle again");
+});
+
+test("stages: a short churn (shorter than a clock pass) still goes through its stages", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = stationAt("butter_churn");
+  hold(player, "kaleidoscope_ranching:cow_milk", 2); // butter: 600 ticks
+  use(STATION, churn, player);
+  equal(shownStage(churn), 1, "cream");
+  __advance(210);
+  equal(shownStage(churn), 2, "lumpy cream");
+  __advance(200);
+  equal(shownStage(churn), 3, "butter");
+});
+
+test("stages: an automated station shows its stages on the clock and goes idle when emptied", () => {
+  clearWorld();
+  const wheel = __place(overworld, { x: 0, y: 64, z: 0 }, "kaleidoscope_ranching:spinning_wheel", { [BUSY]: false });
+  const above = hopperAt({ x: 0, y: 65, z: 0 });
+  hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("minecraft:white_wool", 1)); // 12000 ticks
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 1, "wool");
+  __skipTime(4500);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 2, "half spun");
+  __skipTime(4500);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 3, "yarn");
+  __skipTime(3000);
+  tickAutoStation(wheel);
+  equal(shownStage(wheel), 0, "unloaded, nothing more to spin");
+});
+
+test("stages: a station saved mid-job shows its stage after a reload", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = stationAt("tanning_rack");
+  hold(player, "kaleidoscope_ranching:raw_hide", 1); // a day: 24000 ticks
+  use(STATION, rack, player);
+  // A save from before stages: the block only knows it is busy; timers of the old session are gone.
+  __place(overworld, rack.location, "kaleidoscope_ranching:tanning_rack", { [BUSY]: true });
+  __skipTime(10000);
+  runBlockClock();
+  equal(shownStage(rack), 2, "the ranch clock catches up");
+  // A rack the clock has never seen (worked in an old save, never used since): using it shows the stage.
+  for (const key of world.getDynamicPropertyIds()) if (key.includes("registry")) world.setDynamicProperty(key, undefined);
+  __place(overworld, rack.location, "kaleidoscope_ranching:tanning_rack", { [BUSY]: true });
+  __skipTime(8000);
+  hold(player, "minecraft:stick", 1);
+  use(STATION, rack, player);
+  equal(shownStage(rack), 3, "late in the job");
+  equal(player.inventory.count("minecraft:leather"), 0, "not finished yet");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

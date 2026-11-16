@@ -12,7 +12,7 @@ const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", 
 const { ANIMALS } = await load("animals.js");
 const { BLOCKS } = await load("blocks.js");
 const { PLACED_FOODS } = await load("placedFoods.js");
-const { DRYING_SLOTS } = await load("processing.js");
+const { AUTO_STATIONS, DRYING_SLOTS, STATIONS } = await load("processing.js");
 
 const NS = "kaleidoscope_ranching";
 const S = (name) => `${NS}:${name}`;
@@ -23,9 +23,26 @@ const CARCASSES = ANIMALS.map((animal) => animal.id);
 const FULL = { origin: [-8, 0, -8], size: [16, 16, 16] };
 const box = (x, y, z, w, h, d) => ({ origin: [x, y, z], size: [w, h, d] });
 
-const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder", "ice_cream_churn"];
-// 1.1: stations that also run on the ranch clock with containers above and below (data/processing.js AUTO_STATIONS).
-const AUTO_STATIONS = ["cream_separator", "spinning_wheel", "weaving_loom", "silage_barrel"];
+// Processing stations (data/processing.js): STATIONS are worked by hand, AUTO_STATIONS also run on the
+// ranch clock with containers above and below.
+//
+// Stages (systems/stations.js): `busy` is true while a batch is in the station, `stage` 1..3 is the
+// third of its time it has reached (1 again when idle). Bone `busy` holds the parts shown all through
+// the job (a weight, the cords); busy_1..busy_3 hold the contents in each stage's colours
+// (art_src/m4_scripts/station_stages.py), one shown at a time. A world saved before stages loads with
+// stage 1, the state's first value.
+const STAGES = [1, 2, 3];
+const stationDef = (component) => ({
+  component,
+  states: { [S("busy")]: [false, true], [S("stage")]: STAGES },
+  bones: {
+    busy: state("busy"),
+    ...Object.fromEntries(STAGES.map((n) => [`busy_${n}`, `${state("busy")} && ${state("stage")} == ${n}`])),
+  },
+  collision: FULL,
+  selection: FULL,
+  seconds: 1.5,
+});
 // 1.1 毛毯: one block, dyed by state (systems/textiles.js); each colour has its own texture kr_rug_<colour>.
 const RUG_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -181,32 +198,8 @@ const DEFS = {
     seconds: 1,
     mapColor: "#6f7a5a",
   },
-  ...Object.fromEntries(
-    AUTO_STATIONS.map((id) => [
-      id,
-      {
-        component: "auto_station",
-        states: { [S("busy")]: [false, true] },
-        bones: { busy: state("busy") },
-        collision: FULL,
-        selection: FULL,
-        seconds: 1.5,
-      },
-    ])
-  ),
-  ...Object.fromEntries(
-    STATIONS.map((id) => [
-      id,
-      {
-        component: "station",
-        states: { [S("busy")]: [false, true] },
-        bones: { busy: state("busy") },
-        collision: FULL,
-        selection: FULL,
-        seconds: 1.5,
-      },
-    ])
-  ),
+  ...Object.fromEntries(AUTO_STATIONS.map((id) => [id, stationDef("auto_station")])),
+  ...Object.fromEntries(STATIONS.map((id) => [id, stationDef("station")])),
 };
 
 const ROTATION = { north: 0, east: 270, south: 180, west: 90 };

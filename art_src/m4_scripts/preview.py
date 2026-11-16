@@ -41,7 +41,7 @@ def faces(cube):
 def render(block, shown=()):
     model = json.loads((ART / f"{block}.geo.json").read_text(encoding="utf8"))["minecraft:geometry"][0]
     tex = Image.open(ART / f"{block}.png").convert("RGBA").load()
-    hidden = {"busy", "open"} | {b["name"] for b in model["bones"] if b["name"].split("_")[0] in ("egg", "hay", "manure")}
+    hidden = {"busy", "open"} | {b["name"] for b in model["bones"] if b["name"].split("_")[0] in ("egg", "hay", "manure", "busy")}
     if "open" in shown:
         hidden.add("closed")
     hidden -= set(shown)
