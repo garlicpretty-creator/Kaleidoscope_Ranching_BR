@@ -22,6 +22,7 @@ import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
 const STATE_SKINNED = "kaleidoscope_ranching:skinned";
 const STATE_CUT = "kaleidoscope_ranching:cut";
+const STATE_DRYING = "kaleidoscope_ranching:drying";
 
 const WOOL_COLORS = [
   "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -66,6 +67,13 @@ const SEA_SALT = "kaleidoscope_fishing:sea_salt";
 const SALTED_TICKS = DRYING_TICKS - 24000;
 const ticksOf = (piece) => (piece.salted ? SALTED_TICKS : DRYING_TICKS);
 
+/** Shows `count` pieces hanging from the beam (bones dry_1 … dry_<DRYING_SLOTS>). */
+function showDrying(block, count) {
+  try {
+    block.setPermutation(block.permutation.withState(STATE_DRYING, Math.max(0, Math.min(DRYING_SLOTS, count))));
+  } catch {}
+}
+
 function hangToDry(block, player, item, data) {
   const pieces = data?.drying ?? [];
   if (pieces.length >= DRYING_SLOTS) return tell(player, "drying_full", [String(DRYING_SLOTS)]);
@@ -73,6 +81,7 @@ function hangToDry(block, player, item, data) {
   pieces.push({ item: item.typeId, start: nowTick(), ...(salted ? { salted: true } : {}) });
   consumeMainHand(player);
   setBlockData(block, { drying: pieces });
+  showDrying(block, pieces.length);
   block.dimension.playSound("block.itemframe.add_item", block.location);
   tell(player, "drying_hung", [String(pieces.length), String(DRYING_SLOTS)]);
 }
@@ -91,6 +100,7 @@ function takeDown(block, player, data) {
   }
   if (left.length) setBlockData(block, { drying: left });
   else clearBlockData(block.dimension, block.location);
+  showDrying(block, left.length);
   if (taken) block.dimension.playSound("random.pop", block.location);
   if (!left.length) return;
   const soonest = Math.min(...left.map((piece) => piece.start + ticksOf(piece) - now));

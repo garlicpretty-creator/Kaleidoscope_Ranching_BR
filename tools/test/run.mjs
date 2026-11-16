@@ -434,6 +434,7 @@ const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
 const STATION = COMPONENTS["kaleidoscope_ranching:station"];
 const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:butcher_rack", {
   "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:skinned": false, "kaleidoscope_ranching:cut": false,
+  "kaleidoscope_ranching:drying": 0,
 });
 /** Breaks a block the way the game does: both hooks fire, the block is air by then. */
 function breakBlock(component, block) {

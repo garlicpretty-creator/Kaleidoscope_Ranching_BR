@@ -35,6 +35,13 @@
         "kaleidoscope_ranching:cut": [
           false,
           true
+        ],
+        "kaleidoscope_ranching:drying": [
+          0,
+          1,
+          2,
+          3,
+          4
         ]
       }
     },
@@ -71,7 +78,11 @@
           "cut_buffalo": "q.block_state('kaleidoscope_ranching:carcass') == 'buffalo' && q.block_state('kaleidoscope_ranching:cut')",
           "carcass_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && !q.block_state('kaleidoscope_ranching:skinned')",
           "skinned_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
-          "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')"
+          "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')",
+          "dry_1": "q.block_state('kaleidoscope_ranching:drying') >= 1",
+          "dry_2": "q.block_state('kaleidoscope_ranching:drying') >= 2",
+          "dry_3": "q.block_state('kaleidoscope_ranching:drying') >= 3",
+          "dry_4": "q.block_state('kaleidoscope_ranching:drying') >= 4"
         }
       },
       "minecraft:display_name": "tile.kaleidoscope_ranching:butcher_rack.name",
