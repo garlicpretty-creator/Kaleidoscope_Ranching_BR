@@ -1,0 +1,63 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.down_pillow",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "pillow",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                0,
+                -4
+              ],
+              "size": [
+                12,
+                3,
+                8
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -5,
+                3,
+                -3
+              ],
+              "size": [
+                10,
+                1,
+                6
+              ],
+              "uv": [
+                0,
+                11
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
