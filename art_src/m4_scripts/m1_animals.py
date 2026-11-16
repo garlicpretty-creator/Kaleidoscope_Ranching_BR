@@ -97,8 +97,9 @@ def dims(p, name):
 
 
 def xyz(f, i, j, W, H, D):
-    """Centre of a face texel inside its cube: x in from the +x side, y down from the top,
-    z back from the front. Lets a marking run round the corners of a box."""
+    """Centre of a face texel inside its cube: x in from the side the "east" strip is on (the
+    cube's smallest x in the game), y down from the top, z back from the front. Lets a marking
+    run round the corners of a box."""
     if f == "north":
         return i + .5, j + .5, 0
     if f == "south":

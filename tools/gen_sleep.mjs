@@ -231,7 +231,8 @@ function lidCubes(cube, textures) {
       const px = sw / w;
       const py = sh / h;
       lids.push({
-        origin: [round(x + sw - (i + 1) * px), round(y + sh - (j + 1) * py), round(z - 0.05)],
+        // the north face's first texel column is at the cube's smallest x
+        origin: [round(x + i * px), round(y + sh - (j + 1) * py), round(z - 0.05)],
         size: [round(px), round(py), 0],
         uv: { north: { uv: [u + i, v + j - 1], uv_size: [1, 1] } },
       });

@@ -56,9 +56,11 @@ def face_point(cube, face, a, b):
     (x, y, z), (w, h, d) = cube["origin"], cube["size"]
     x1, y1, z1 = x + w, y + h, z + d
     return {
-        "up": (x1 - a * w, y1, z1 - b * d), "down": (x1 - a * w, y, z1 - b * d),
-        "north": (x1 - a * w, y1 - b * h, z), "south": (x + a * w, y1 - b * h, z1),
-        "east": (x1, y1 - b * h, z1 - a * d), "west": (x, y1 - b * h, z + a * d),
+        # Bedrock box UV: the left strip ("east") is the cube's smallest-x side, and the top,
+        # bottom and north faces run their first texel column from the smallest x.
+        "up": (x + a * w, y1, z1 - b * d), "down": (x + a * w, y, z1 - b * d),
+        "north": (x + a * w, y1 - b * h, z), "south": (x1 - a * w, y1 - b * h, z1),
+        "east": (x, y1 - b * h, z1 - a * d), "west": (x1, y1 - b * h, z + a * d),
     }[face]
 
 
