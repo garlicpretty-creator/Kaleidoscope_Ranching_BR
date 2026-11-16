@@ -8,6 +8,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { drawnFor, lowestPoint } from "./posed.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = join(root, "packs", "BP", "scripts", "data");
@@ -314,21 +315,24 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
     const texture = attachable.textures?.[key];
     if (!texture || !exists(join(rp, texture + ".png"))) fail(`${id}: attachable texture "${key}" (${texture}.png) is missing`);
   }
-  // Worn: the clothes, only in their own armour slot. Anywhere else (in a hand): the item's
-  // icon as a flat sprite bound to the holding bone, with the icon as its texture.
-  const slot = { "slot.armor.head": "head", "slot.armor.chest": "chest", "slot.armor.legs": "legs", "slot.armor.feet": "feet" }[item.components["minecraft:wearable"].slot];
+  // Worn: the clothes, whenever the item is not in a hand (the game's name for the chest slot
+  // is not 'chest': gated on it, the scarf and apron never showed). In a hand: the item's icon
+  // as a flat sprite on the hand bone, with the icon as its texture. The held geometry is bound
+  // even while worn, and q.item_slot_to_bone_name of an armor slot names a bone a persona skin
+  // does not have ("returned a bone name that doesn't exist"), so it binds to the hand bones.
+  const IN_HAND = "c.item_slot=='main_hand'||c.item_slot=='off_hand'";
   const entries = (attachable.render_controllers ?? []).map((entry) => (typeof entry === "string" ? [entry, null] : Object.entries(entry)[0]));
   for (const [rcId] of entries) if (!renderControllers.has(rcId)) fail(`${id}: attachable uses unknown render controller ${rcId}`);
   const worn = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.default");
   const held = entries.find(([rcId]) => renderControllers.get(rcId)?.geometry === "Geometry.held");
   const squash = (text) => String(text ?? "").replace(/\s+/g, "").replace(/\bcontext\./g, "c.");
-  if (!worn || squash(worn[1]) !== `c.item_slot=='${slot}'`) fail(`${id}: the worn render controller must be gated on c.item_slot == '${slot}'`);
-  if (!held || squash(held[1]) !== `c.item_slot!='${slot}'`) fail(`${id}: no render controller draws the held icon when c.item_slot != '${slot}'`);
+  if (!worn || squash(worn[1]) !== `!(${IN_HAND})`) fail(`${id}: the worn render controller must be gated on not being in a hand`);
+  if (!held || squash(held[1]) !== IN_HAND) fail(`${id}: no render controller draws the held icon in a hand`);
   else if (!JSON.stringify(renderControllers.get(held[0]).textures ?? []).includes("Texture.held")) fail(`${id}: the held render controller does not use Texture.held`);
   const heldGeo = geometryById.get(attachable.geometry?.held);
   if (!heldGeo) fail(`${id}: attachable geometry "held" ${attachable.geometry?.held} does not exist`);
-  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && /item_slot_to_bone_name\(c(ontext)?\.item_slot\)/.test(bone.binding ?? ""))) {
-    fail(`${id}: the held geometry has no bone bound to the holding slot`);
+  else if (!heldGeo.bones.some((bone) => bone.cubes?.length && squash(bone.binding) === "c.item_slot=='off_hand'?'leftitem':'rightitem'")) {
+    fail(`${id}: the held geometry must be bound with c.item_slot == 'off_hand' ? 'leftitem' : 'rightitem'`);
   }
   const icon = item.components["minecraft:icon"];
   const iconAtlas = exists(join(rp, "textures/item_texture.json")) ? readJson(join(rp, "textures/item_texture.json")).texture_data : {};
@@ -449,6 +453,15 @@ for (const path of walk(join(bp, "items")).filter((p) => p.endsWith(".json"))) {
             }
           }
         }
+      }
+    }
+    // The sleep pose stays off the ground plane: a face lying in y = 0 flickers against the
+    // block below (seen in game with the folded legs). tools/gen_sleep.mjs lifts it 0.15 px.
+    const sleepAnim = animationFiles.map((file) => file.animations?.[description.animations?.sleep]).find(Boolean);
+    if (sleepAnim) {
+      for (const baby of [false, true]) {
+        const low = lowestPoint(bones, sleepAnim.bones ?? {}, { baby, visible: drawnFor(bones, baby) });
+        if (low.y < 0.1) fail(`${where}: asleep${baby ? " (young)" : ""}, "${low.bone}" reaches y ${low.y.toFixed(2)}: it sinks into or lies on the ground and flickers`);
       }
     }
     // The walk animation must not play under the sleep pose (tools/gen_sleep.mjs).

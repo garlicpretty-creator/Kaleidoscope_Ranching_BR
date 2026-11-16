@@ -17,10 +17,10 @@
       },
       "render_controllers": [
         {
-          "controller.render.kaleidoscope_ranching.wearable": "c.item_slot == 'head'"
+          "controller.render.kaleidoscope_ranching.wearable": "!(c.item_slot == 'main_hand' || c.item_slot == 'off_hand')"
         },
         {
-          "controller.render.kaleidoscope_ranching.wearable_held": "c.item_slot != 'head'"
+          "controller.render.kaleidoscope_ranching.wearable_held": "c.item_slot == 'main_hand' || c.item_slot == 'off_hand'"
         }
       ]
     }

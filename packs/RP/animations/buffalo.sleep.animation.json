@@ -7,7 +7,7 @@
         "body": {
           "position": [
             0,
-            "q.is_baby ? -8.5 : -10",
+            "q.is_baby ? -8.16 : -9.59",
             0
           ]
         },

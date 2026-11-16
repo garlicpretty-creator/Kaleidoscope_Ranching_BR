@@ -236,8 +236,16 @@ def held_geometry(item):
     return {"format_version": "1.16.0", "minecraft:geometry": [{
         "description": {"identifier": f"geometry.{NS}.wearable.{item}.held", "texture_width": w, "texture_height": h,
                         "visible_bounds_width": 1, "visible_bounds_height": 1, "visible_bounds_offset": [0, 0.25, 0]},
-        "bones": [{"name": "held", "binding": "q.item_slot_to_bone_name(c.item_slot)", "pivot": [0, 0, 0], "cubes": cubes}]}]}
+        "bones": [{"name": "held", "binding": HELD_BINDING, "pivot": [0, 0, 0], "cubes": cubes}]}]}
 
+
+# In a hand the item shows its icon, anywhere else (an armor slot) the worn model. The game's
+# name for an armor slot is not documented and the chest slot did not match 'chest', so only
+# the two hand slots are named. The held geometry is bound even while worn, and
+# q.item_slot_to_bone_name of an armor slot names a bone a persona skin lacks, so bind to the
+# hand bones every player rig has.
+IN_HAND = "c.item_slot == 'main_hand' || c.item_slot == 'off_hand'"
+HELD_BINDING = "c.item_slot == 'off_hand' ? 'leftitem' : 'rightitem'"
 
 def main():
     for item in WEARABLES:
@@ -251,7 +259,7 @@ def main():
             "materials": {"default": "armor", "held": "entity_alphatest"},
             "textures": {"default": f"textures/entity/ranching/wearables/{item}", "held": f"textures/items/ranching/{item}"},
             "geometry": {"default": f"geometry.{NS}.wearable.{item}", "held": f"geometry.{NS}.wearable.{item}.held"},
-            "render_controllers": [{CONTROLLER: f"c.item_slot == '{slot}'"}, {HELD: f"c.item_slot != '{slot}'"}],
+            "render_controllers": [{CONTROLLER: f"!({IN_HAND})"}, {HELD: IN_HAND}],
         }}})
     dump(RP / "render_controllers" / "wearable.render_controllers.json", {"format_version": "1.8.0", "render_controllers": {
         CONTROLLER: {"geometry": "Geometry.default", "materials": [{"*": "Material.default"}], "textures": ["Texture.default"]},
