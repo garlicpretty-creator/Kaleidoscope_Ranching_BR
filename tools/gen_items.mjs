@@ -250,9 +250,9 @@ writeFresh(
       "minecraft:item": {
         description: {
           identifier: rid(item.id),
-          // Dishes sit with Cookery's foods in the creative inventory.
+          // Dishes and their uncooked steps sit with Cookery's foods in the creative inventory.
           menu_category:
-            item.category === "dish"
+            item.category === "dish" || item.category === "prep"
               ? { category: "equipment", group: "kaleidoscope_cookery:itemGroup.name.foods" }
               : { category: MENU[item.category] ?? "items" },
         },

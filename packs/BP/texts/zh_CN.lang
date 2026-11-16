@@ -178,6 +178,26 @@ tile.kaleidoscope_ranching:fermenting_jar.name=发酵罐
 tile.kaleidoscope_ranching:cheese_wheel.name=熟成奶酪轮
 tile.kaleidoscope_ranching:pickling_vat.name=腌制缸
 
+## catalog
+kaleidoscope_ranching:itemGroup.name.ranching_facilities=牧场设施
+itemGroup.name.ranching_facilities=牧场设施
+kaleidoscope_ranching:itemGroup.name.ranching_tools=牧场工具
+itemGroup.name.ranching_tools=牧场工具
+kaleidoscope_ranching:itemGroup.name.ranching_feed=饲料与零食
+itemGroup.name.ranching_feed=饲料与零食
+kaleidoscope_ranching:itemGroup.name.ranching_milk=乳品
+itemGroup.name.ranching_milk=乳品
+kaleidoscope_ranching:itemGroup.name.ranching_eggs=蛋
+itemGroup.name.ranching_eggs=蛋
+kaleidoscope_ranching:itemGroup.name.ranching_dairy=乳制品
+itemGroup.name.ranching_dairy=乳制品
+kaleidoscope_ranching:itemGroup.name.ranching_carcasses=屠体
+itemGroup.name.ranching_carcasses=屠体
+kaleidoscope_ranching:itemGroup.name.ranching_meat=肉品
+itemGroup.name.ranching_meat=肉品
+kaleidoscope_ranching:itemGroup.name.ranching_byproducts=副产物
+itemGroup.name.ranching_byproducts=副产物
+
 ## m2
 tile.kaleidoscope_ranching:trough.name=饲槽
 tile.kaleidoscope_ranching:water_trough.name=水槽

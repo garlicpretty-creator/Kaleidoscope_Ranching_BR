@@ -350,6 +350,9 @@ def block_defs():
 # --------------------------------------------------------------------------
 # Item definitions
 # --------------------------------------------------------------------------
+TOOLS = {"brush", "ranch_notebook", "ear_tag", "feed_bag", "manure_fork"}
+
+
 def item_defs():
     feed_tag = {"minecraft:tags": {"tags": [f"{NS}:feed"]}}
     I = {
@@ -623,8 +626,10 @@ def main():
         write_json(BP / "blocks" / f"{name}.json", {"format_version": FMT, "minecraft:block": body})
 
     for name, comps in item_defs().items():
+        # Tools go in the Equipment tab, like the other Ranching tools.
+        category = "equipment" if name in TOOLS else "items"
         write_json(BP / "items" / f"{name}.json", {"format_version": FMT, "minecraft:item": {
-            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": "items"}},
+            "description": {"identifier": f"{NS}:{name}", "menu_category": {"category": category}},
             "components": {"minecraft:icon": f"kr_{name}", **comps}}})
 
     recipes()

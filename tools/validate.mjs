@@ -455,7 +455,8 @@ const iconPrompts = readJson(join(root, "tools/art/icon_prompts.json")).items;
 for (const item of ITEMS) {
   const entry = iconPrompts[item.id];
   if (!entry) fail(`tools/art/icon_prompts.json: no entry for item "${item.id}"`);
-  else if (!entry.prompt && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
+  // `rendered`: drawn by that script instead (the carcasses, from the animal models).
+  else if (!entry.prompt && !entry.rendered && !(entry.from && iconPrompts[entry.from]?.prompt)) fail(`tools/art/icon_prompts.json: "${item.id}" needs a prompt or a "from" with one`);
 }
 
 // --- Simplified Chinese names (data/zh_cn.js) ---------------------------------

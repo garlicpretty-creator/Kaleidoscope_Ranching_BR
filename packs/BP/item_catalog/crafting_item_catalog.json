@@ -1,0 +1,209 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:crafting_items_catalog": {
+    "categories": [
+      {
+        "category_name": "items",
+        "groups": [
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:trough",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_facilities"
+            },
+            "items": [
+              "kaleidoscope_ranching:trough",
+              "kaleidoscope_ranching:water_trough",
+              "kaleidoscope_ranching:auto_feeder",
+              "kaleidoscope_ranching:auto_waterer",
+              "kaleidoscope_ranching:feed_mixer",
+              "kaleidoscope_ranching:chaff_cutter",
+              "kaleidoscope_ranching:hay_rack",
+              "kaleidoscope_ranching:nest_box",
+              "kaleidoscope_ranching:incubator",
+              "kaleidoscope_ranching:salt_lick",
+              "kaleidoscope_ranching:hitching_post",
+              "kaleidoscope_ranching:compost_bin",
+              "kaleidoscope_ranching:food_waste_bin",
+              "kaleidoscope_ranching:butcher_rack",
+              "kaleidoscope_ranching:butter_churn",
+              "kaleidoscope_ranching:cheese_press",
+              "kaleidoscope_ranching:aging_rack",
+              "kaleidoscope_ranching:tanning_rack",
+              "kaleidoscope_ranching:fermenting_jar",
+              "kaleidoscope_ranching:pickling_vat"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:mixed_feed",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_feed"
+            },
+            "items": [
+              "kaleidoscope_ranching:alfalfa",
+              "kaleidoscope_ranching:alfalfa_seeds",
+              "kaleidoscope_ranching:forage",
+              "kaleidoscope_ranching:mixed_feed",
+              "kaleidoscope_ranching:concentrate_feed",
+              "kaleidoscope_ranching:alfalfa_cake",
+              "kaleidoscope_ranching:grain_cake",
+              "kaleidoscope_ranching:beet_sugar_cube",
+              "kaleidoscope_ranching:carrot_chips"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:cow_milk",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_milk"
+            },
+            "items": [
+              "kaleidoscope_ranching:cow_milk",
+              "kaleidoscope_ranching:cow_milk_fine",
+              "kaleidoscope_ranching:cow_milk_superb",
+              "kaleidoscope_ranching:goat_milk",
+              "kaleidoscope_ranching:goat_milk_fine",
+              "kaleidoscope_ranching:goat_milk_superb",
+              "kaleidoscope_ranching:buffalo_milk",
+              "kaleidoscope_ranching:buffalo_milk_fine",
+              "kaleidoscope_ranching:buffalo_milk_superb",
+              "kaleidoscope_ranching:yak_milk",
+              "kaleidoscope_ranching:yak_milk_fine",
+              "kaleidoscope_ranching:yak_milk_superb"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:duck_egg",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_eggs"
+            },
+            "items": [
+              "kaleidoscope_ranching:egg_fine",
+              "kaleidoscope_ranching:egg_superb",
+              "kaleidoscope_ranching:duck_egg",
+              "kaleidoscope_ranching:duck_egg_fine",
+              "kaleidoscope_ranching:duck_egg_superb",
+              "kaleidoscope_ranching:goose_egg",
+              "kaleidoscope_ranching:goose_egg_fine",
+              "kaleidoscope_ranching:goose_egg_superb",
+              "kaleidoscope_ranching:fertilized_chicken_egg",
+              "kaleidoscope_ranching:fertilized_duck_egg",
+              "kaleidoscope_ranching:fertilized_goose_egg",
+              "kaleidoscope_ranching:salted_duck_egg",
+              "kaleidoscope_ranching:century_egg"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:butter",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_dairy"
+            },
+            "items": [
+              "kaleidoscope_ranching:butter",
+              "kaleidoscope_ranching:cream",
+              "kaleidoscope_ranching:ghee",
+              "kaleidoscope_ranching:yogurt",
+              "kaleidoscope_ranching:fresh_cheese",
+              "kaleidoscope_ranching:aged_cheese_wheel",
+              "kaleidoscope_ranching:cheese_slice"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:cow_carcass",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_carcasses"
+            },
+            "items": [
+              "kaleidoscope_ranching:cow_carcass",
+              "kaleidoscope_ranching:sheep_carcass",
+              "kaleidoscope_ranching:goat_carcass",
+              "kaleidoscope_ranching:pig_carcass",
+              "kaleidoscope_ranching:chicken_carcass",
+              "kaleidoscope_ranching:rabbit_carcass",
+              "kaleidoscope_ranching:duck_carcass",
+              "kaleidoscope_ranching:goose_carcass",
+              "kaleidoscope_ranching:buffalo_carcass",
+              "kaleidoscope_ranching:yak_carcass"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:beef_brisket",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_meat"
+            },
+            "items": [
+              "kaleidoscope_ranching:buffalo_meat",
+              "kaleidoscope_ranching:cooked_buffalo_meat",
+              "kaleidoscope_ranching:yak_meat",
+              "kaleidoscope_ranching:cooked_yak_meat",
+              "kaleidoscope_ranching:duck_meat",
+              "kaleidoscope_ranching:cooked_duck_meat",
+              "kaleidoscope_ranching:goose_meat",
+              "kaleidoscope_ranching:cooked_goose_meat",
+              "kaleidoscope_ranching:beef_brisket",
+              "kaleidoscope_ranching:beef_shank",
+              "kaleidoscope_ranching:beef_sirloin",
+              "kaleidoscope_ranching:pork_belly",
+              "kaleidoscope_ranching:pork_ribs",
+              "kaleidoscope_ranching:pork_trotter",
+              "kaleidoscope_ranching:lamb_chop",
+              "kaleidoscope_ranching:lamb_leg",
+              "kaleidoscope_ranching:chicken_leg",
+              "kaleidoscope_ranching:chicken_wing",
+              "kaleidoscope_ranching:duck_leg",
+              "kaleidoscope_ranching:goose_leg",
+              "kaleidoscope_ranching:rabbit_leg"
+            ]
+          },
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:large_bone",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_byproducts"
+            },
+            "items": [
+              "kaleidoscope_ranching:whey",
+              "kaleidoscope_ranching:food_waste",
+              "kaleidoscope_ranching:large_bone",
+              "kaleidoscope_ranching:chicken_frame",
+              "kaleidoscope_ranching:raw_hide",
+              "kaleidoscope_ranching:sheep_skin",
+              "kaleidoscope_ranching:pig_skin",
+              "kaleidoscope_ranching:beef_tallow",
+              "kaleidoscope_ranching:mutton_tallow",
+              "kaleidoscope_ranching:pork_fat",
+              "kaleidoscope_ranching:lard",
+              "kaleidoscope_ranching:cattle_horn",
+              "kaleidoscope_ranching:billy_goat_horn",
+              "kaleidoscope_ranching:down",
+              "kaleidoscope_ranching:yak_hair",
+              "kaleidoscope_ranching:pig_bristle",
+              "kaleidoscope_ranching:manure_item",
+              "kaleidoscope_ranching:dried_yak_dung",
+              "kaleidoscope_ranching:fertilizer"
+            ]
+          }
+        ]
+      },
+      {
+        "category_name": "equipment",
+        "groups": [
+          {
+            "group_identifier": {
+              "icon": "kaleidoscope_ranching:brush",
+              "name": "kaleidoscope_ranching:itemGroup.name.ranching_tools"
+            },
+            "items": [
+              "kaleidoscope_ranching:milking_pail",
+              "kaleidoscope_ranching:nursing_bottle",
+              "kaleidoscope_ranching:cowbell",
+              "kaleidoscope_ranching:animal_crate",
+              "kaleidoscope_ranching:brush",
+              "kaleidoscope_ranching:ranch_notebook",
+              "kaleidoscope_ranching:ear_tag",
+              "kaleidoscope_ranching:feed_bag",
+              "kaleidoscope_ranching:manure_fork"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

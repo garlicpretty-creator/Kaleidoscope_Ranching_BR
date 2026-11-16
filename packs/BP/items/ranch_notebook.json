@@ -4,7 +4,7 @@
     "description": {
       "identifier": "kaleidoscope_ranching:ranch_notebook",
       "menu_category": {
-        "category": "items"
+        "category": "equipment"
       }
     },
     "components": {

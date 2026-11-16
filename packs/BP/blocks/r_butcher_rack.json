@@ -78,6 +78,46 @@
         "*": {
           "texture": "kr_butcher_rack",
           "render_method": "alpha_test"
+        },
+        "cow": {
+          "texture": "kr_butcher_rack_cow",
+          "render_method": "alpha_test"
+        },
+        "sheep": {
+          "texture": "kr_butcher_rack_sheep",
+          "render_method": "alpha_test"
+        },
+        "goat": {
+          "texture": "kr_butcher_rack_goat",
+          "render_method": "alpha_test"
+        },
+        "pig": {
+          "texture": "kr_butcher_rack_pig",
+          "render_method": "alpha_test"
+        },
+        "chicken": {
+          "texture": "kr_butcher_rack_chicken",
+          "render_method": "alpha_test"
+        },
+        "rabbit": {
+          "texture": "kr_butcher_rack_rabbit",
+          "render_method": "alpha_test"
+        },
+        "duck": {
+          "texture": "kr_butcher_rack_duck",
+          "render_method": "alpha_test"
+        },
+        "goose": {
+          "texture": "kr_butcher_rack_goose",
+          "render_method": "alpha_test"
+        },
+        "buffalo": {
+          "texture": "kr_butcher_rack_buffalo",
+          "render_method": "alpha_test"
+        },
+        "yak": {
+          "texture": "kr_butcher_rack_yak",
+          "render_method": "alpha_test"
         }
       },
       "minecraft:collision_box": {

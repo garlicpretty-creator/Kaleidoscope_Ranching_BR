@@ -178,6 +178,26 @@ tile.kaleidoscope_ranching:fermenting_jar.name=Fermenting Jar
 tile.kaleidoscope_ranching:cheese_wheel.name=Aged Cheese Wheel
 tile.kaleidoscope_ranching:pickling_vat.name=Pickling Vat
 
+## catalog
+kaleidoscope_ranching:itemGroup.name.ranching_facilities=Ranch Facilities
+itemGroup.name.ranching_facilities=Ranch Facilities
+kaleidoscope_ranching:itemGroup.name.ranching_tools=Ranch Tools
+itemGroup.name.ranching_tools=Ranch Tools
+kaleidoscope_ranching:itemGroup.name.ranching_feed=Feed and Treats
+itemGroup.name.ranching_feed=Feed and Treats
+kaleidoscope_ranching:itemGroup.name.ranching_milk=Milk
+itemGroup.name.ranching_milk=Milk
+kaleidoscope_ranching:itemGroup.name.ranching_eggs=Eggs
+itemGroup.name.ranching_eggs=Eggs
+kaleidoscope_ranching:itemGroup.name.ranching_dairy=Dairy
+itemGroup.name.ranching_dairy=Dairy
+kaleidoscope_ranching:itemGroup.name.ranching_carcasses=Carcasses
+itemGroup.name.ranching_carcasses=Carcasses
+kaleidoscope_ranching:itemGroup.name.ranching_meat=Meat
+itemGroup.name.ranching_meat=Meat
+kaleidoscope_ranching:itemGroup.name.ranching_byproducts=By-products
+itemGroup.name.ranching_byproducts=By-products
+
 ## m2
 tile.kaleidoscope_ranching:trough.name=Feed Trough
 tile.kaleidoscope_ranching:water_trough.name=Water Trough

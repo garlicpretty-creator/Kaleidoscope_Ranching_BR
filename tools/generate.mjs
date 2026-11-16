@@ -10,8 +10,11 @@ const STEPS = [
   ["node", "tools/gen_entities.mjs"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
+  ["node", "tools/gen_catalog.mjs"],
   ["node", "tools/gen_shared.mjs"],
   ["py", "tools/art/rd_icons.py", "apply"],
+  ["py", "tools/art/carcass_icons.py"],
+  ["py", "tools/fix_zfight.py"],
   ["py", "tools/gen_pbr.py"],
 ];
 

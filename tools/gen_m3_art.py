@@ -66,6 +66,19 @@ def dish_looks():
     return {k: (v[0], tuple(v[1])) for k, v in json.loads(out.stdout).items()}
 
 
+def handmade_materials(block_id):
+    """Material instance names a hand-made block model's faces use, beyond the default `*`."""
+    geo = HANDMADE / f"{block_id}.geo.json"
+    if not geo.exists():
+        return []
+    names = set()
+    for bone in json.loads(geo.read_text(encoding="utf8"))["minecraft:geometry"][0]["bones"]:
+        for cube in bone.get("cubes", []):
+            if isinstance(cube.get("uv"), dict):
+                names.update(face["material_instance"] for face in cube["uv"].values() if "material_instance" in face)
+    return sorted(names)
+
+
 def write_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
@@ -102,7 +115,8 @@ def main():
     for geo in HANDMADE.glob("*.geo.json"):
         blocks.setdefault(geo.name.removesuffix(".geo.json"), None)
     blocks = dict(sorted(blocks.items()))
-    clean(block_dir, set(blocks))
+    extras = {block_id: handmade_materials(block_id) for block_id in blocks}
+    clean(block_dir, set(blocks) | {f"{b}_{m}" for b, ms in extras.items() for m in ms})
     terrain = {}
     previews = []
     for block_id, build in blocks.items():
@@ -112,6 +126,11 @@ def main():
             # Hand-made (art_src/m4_scripts/*.py): install it as is.
             shutil.copyfile(handmade, RP / "models" / "blocks" / f"{NS}.{block_id}.geo.json")
             shutil.copyfile(HANDMADE / f"{block_id}.png", block_dir / f"{block_id}.png")
+            # Faces with a material instance (the rack's carcasses) use <block>_<instance>.png.
+            for material in extras[block_id]:
+                name = f"{block_id}_{material}"
+                shutil.copyfile(HANDMADE / f"{name}.png", block_dir / f"{name}.png")
+                terrain[f"kr_{name}"] = {"textures": f"textures/blocks/ranching/{name}"}
             continue
         model = build()
         pack(model)
