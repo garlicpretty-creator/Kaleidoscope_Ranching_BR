@@ -296,6 +296,41 @@ def cmd_pick(config, args):
         print(f"picked {item_id} <- candidate {n}")
 
 
+def committed_png(path):
+    """Bytes of `path` as committed in git (HEAD), or None outside git / untracked."""
+    import subprocess
+
+    rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+    try:
+        result = subprocess.run(["git", "-C", ROOT, "show", f"HEAD:{rel}"], capture_output=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout
+
+
+def write_icon(icon, path):
+    """Saves `icon`, reusing the committed bytes when the pixels are unchanged.
+
+    The same pixels encode to different PNG bytes on different Pillow versions,
+    and earlier generators overwrite these files with procedural placeholders
+    first, so without this every `npm run generate` would rewrite every icon.
+    Returns True when the file now differs from the committed one.
+    """
+    import io
+
+    from PIL import Image
+
+    committed = committed_png(path)
+    if committed:
+        with Image.open(io.BytesIO(committed)) as old:
+            if old.size == icon.size and old.convert("RGBA").tobytes() == icon.convert("RGBA").tobytes():
+                with open(path, "wb") as f:
+                    f.write(committed)
+                return False
+    icon.save(path)
+    return True
+
+
 def cmd_apply(config):
     if not os.path.isdir(ART):
         print("rd_icons: no picked icons yet")
@@ -304,7 +339,7 @@ def cmd_apply(config):
 
     with open(ATLAS, encoding="utf8") as f:
         atlas = json.load(f)["texture_data"]
-    written = 0
+    written = applied = 0
     for item_id, entry in config["items"].items():
         if entry.get("ship") is False:
             continue
@@ -322,9 +357,10 @@ def cmd_apply(config):
                 icon.putpixel((x, y), color + (255,))
         texture = atlas[key]["textures"]
         texture = texture if isinstance(texture, str) else texture[0]
-        icon.save(os.path.join(ROOT, "packs", "RP", texture + ".png"))
-        written += 1
-    print(f"rd_icons: applied {written} icons")
+        if write_icon(icon, os.path.join(ROOT, "packs", "RP", texture + ".png")):
+            written += 1
+        applied += 1
+    print(f"rd_icons: applied {applied} icons ({written} changed)")
 
 
 def main():

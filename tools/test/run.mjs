@@ -1456,6 +1456,60 @@ test("whey from the cheese press fills a trough as mixed feed that pigs eat", ()
   equal(care.feedTierToday(pig), 2, "pig fed at tier 2");
 });
 
+// --- Walking to troughs, and the placeable cheese wheel ---------------------
+
+const { readFileSync: readJson } = await import("node:fs");
+const { cutCheeseWheel } = await import("../../packs/BP/scripts/systems/cheeseWheel.js");
+const SEEK = "minecraft:behavior.move_to_block";
+
+test("animals look for troughs until they have eaten and drunk, and again the next day", () => {
+  const cow = JSON.parse(readJson("packs/BP/entities/cow.json", "utf8"))["minecraft:entity"];
+  const seek = cow.component_groups["kaleidoscope_ranching:seeking"]?.[SEEK];
+  for (const block of ["trough", "hay_rack", "water_trough", "auto_waterer"]) {
+    assert(seek?.target_blocks.includes(`kaleidoscope_ranching:${block}`), `walks to ${block}`);
+  }
+  clearWorld();
+  const player = __newPlayer(at(0, -3));
+  const trough = place("trough", at(0), { fill: 0, kind: 0 });
+  const water = place("water_trough", at(4), { water: 0 });
+  const heifer = ranch("cow", 2, "female");
+  assert(heifer.hasComponent(SEEK), "a new animal looks for feed");
+  hold(player, `${NS}:mixed_feed`, 4);
+  troughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  runBlockClock();
+  assert(heifer.hasComponent(SEEK), "fed but not yet watered: still looking");
+  hold(player, "minecraft:water_bucket");
+  waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
+  runBlockClock();
+  assert(!heifer.hasComponent(SEEK), "fed and watered: stops looking");
+  __skipTime(DAY);
+  care.ensureSettled(heifer);
+  assert(heifer.hasComponent(SEEK), "the next day it looks again");
+});
+
+test("the aged cheese wheel is placed as a block and cut into four slices with a blade", () => {
+  const item = JSON.parse(readJson("packs/BP/items/r_aged_cheese_wheel.json", "utf8"))["minecraft:item"].components;
+  equal(item["minecraft:block_placer"]?.block, `${NS}:aged_cheese_wheel`, "the item places the block");
+  equal(item["minecraft:block_placer"]?.replace_block_item, true, "and is the block's item");
+  const block = JSON.parse(readJson("packs/BP/blocks/r_aged_cheese_wheel.json", "utf8"))["minecraft:block"];
+  const loots = block.permutations.filter((p) => p.components["minecraft:loot"]).map((p) => p.components["minecraft:loot"]);
+  equal(loots.length, 4, "a loot table for each state");
+  for (const path of loots) JSON.parse(readJson(`packs/BP/${path}`, "utf8"));
+
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const wheel = __place(overworld, at(0), `${NS}:aged_cheese_wheel`, { [`${NS}:slices`]: 0 });
+  hold(player, "minecraft:stick");
+  cutCheeseWheel(wheel, player);
+  equal(dropsOf(`${NS}:cheese_slice`).length, 0, "no slice without a blade");
+  hold(player, "kaleidoscope_cookery:iron_kitchen_knife");
+  for (let i = 0; i < 3; i++) cutCheeseWheel(wheel, player);
+  equal(wheel.permutation.getState(`${NS}:slices`), 3, "three wedges cut");
+  cutCheeseWheel(wheel, player);
+  equal(dropsOf(`${NS}:cheese_slice`).length, 4, "four slices in all, as on Cookery's board");
+  equal(wheel.typeId, "minecraft:air", "the last cut finishes the wheel");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

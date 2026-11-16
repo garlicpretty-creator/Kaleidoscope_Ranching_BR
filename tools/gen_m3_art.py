@@ -37,6 +37,7 @@ SOUNDS = {
     "cheese_press": "wood", "aging_rack": "wood", "fermenting_jar": "glass", "pickling_vat": "stone",
     "hay_rack": "wood",
     "hitching_post": "wood",
+    "aged_cheese_wheel": "cloth",
 }
 
 

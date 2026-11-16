@@ -92,6 +92,8 @@ M2 另外保留一個備援：若點擊沒有經過路由（實體沒有互動�
 | --- | --- |
 | `kaleidoscope_ranching:make_persistent` | 讓動物不再自然消失 |
 | `kaleidoscope_ranching:add_ear_tag` | 同上，M2 的耳標使用 |
+| `kaleidoscope_ranching:sated` | 移除 `seeking` 元件組（走向飼槽與水槽）；照顧核心在動物當天吃過也喝過時觸發 |
+| `kaleidoscope_ranching:hungry` | 加回 `seeking`；照顧核心在結算到新的一天時觸發 |
 | `kaleidoscope_ranching:become_baby` / `grow_up` | 變成幼體 / 長大 |
 | `kaleidoscope_ranching:set_female` / `set_male` | 指定性別 |
 
