@@ -46,6 +46,17 @@ export function isPregnant(entity) {
   return numberProperty(entity, PREGNANT_DUE) > 0;
 }
 
+/** Whole days until a pregnant mother gives birth (at least 1), or 0 when not pregnant. */
+export function daysToBirth(entity, now = nowTick()) {
+  const due = numberProperty(entity, PREGNANT_DUE);
+  return due > 0 ? Math.max(1, Math.ceil((due - now) / TICKS_PER_DAY)) : 0;
+}
+
+/** True while an animal rests after mating. */
+export function isResting(entity, now = nowTick()) {
+  return resting(entity, now);
+}
+
 function inLove(entity, now) {
   return numberProperty(entity, LOVE_UNTIL) > now;
 }

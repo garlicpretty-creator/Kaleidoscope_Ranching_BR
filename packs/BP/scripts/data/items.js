@@ -250,7 +250,8 @@ const TOOLS = [
   // A hand-held item, not a block: it carries one animal (systems/crate.js).
   ["animal_crate", "運畜籠", "Animal Crate", "tool"],
   ["brush", "毛刷", "Brush", "tool", "m2"],
-  ["ranch_notebook", "牧場記事本", "Ranch Notebook", "tool", "m2"],
+  // 觀察手冊 (formerly 牧場記事本; the id stays so existing worlds keep their copies).
+  ["ranch_notebook", "觀察手冊", "Observation Journal", "tool", "m2"],
   ["ear_tag", "耳標", "Ear Tag", "tool", "m2"],
   ["feed_bag", "飼料袋", "Feed Bag", "tool", "m2"],
   ["manure_fork", "糞叉", "Manure Fork", "tool", "m2"],

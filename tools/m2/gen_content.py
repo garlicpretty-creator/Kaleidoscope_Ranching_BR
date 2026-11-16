@@ -46,7 +46,7 @@ ITEM_NAMES = {
     "fertilizer": ("肥料", "肥料", "Fertilizer"),
     "pig_bristle": ("豬鬃", "猪鬃", "Pig Bristle"),
     "brush": ("毛刷", "毛刷", "Grooming Brush"),
-    "ranch_notebook": ("牧場記事本", "牧场记事本", "Ranch Notebook"),
+    "ranch_notebook": ("觀察手冊", "观察手册", "Observation Journal"),
     "ear_tag": ("耳標", "耳标", "Ear Tag"),
     "manure_fork": ("糞叉", "粪叉", "Manure Fork"),
     "feed_bag": ("飼料袋", "饲料袋", "Feed Bag"),
@@ -57,7 +57,7 @@ ITEM_NAMES = {
 }
 
 UI = {
-    "notebook.title": ("牧場記事本", "牧场记事本", "Ranch Notebook"),
+    "notebook.title": ("觀察手冊", "观察手册", "Observation Journal"),
     "notebook.rename": ("命名", "命名", "Rename"),
     "notebook.rename_label": ("名字", "名字", "Name"),
     "notebook.close": ("關閉", "关闭", "Close"),
