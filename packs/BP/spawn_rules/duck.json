@@ -37,6 +37,14 @@
             {
               "test": "has_biome_tag",
               "value": "swamp"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_river"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_swamp"
             }
           ]
         }

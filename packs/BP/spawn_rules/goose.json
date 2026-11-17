@@ -35,6 +35,14 @@
             {
               "test": "has_biome_tag",
               "value": "river"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_plains"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_river"
             }
           ]
         }

@@ -41,6 +41,18 @@
             {
               "test": "has_biome_tag",
               "value": "frozen_peaks"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_mountains"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_snowy_slopes"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_frozen_peaks"
             }
           ]
         }
@@ -72,6 +84,10 @@
             {
               "test": "has_biome_tag",
               "value": "meadow"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_meadow"
             }
           ]
         }
