@@ -1046,6 +1046,41 @@ test("the incubator hatches only while heated; the countdown pauses when cold", 
 
 const stationAt = (id, x = 0) => __place(overworld, { x, y: 64, z: 0 }, `kaleidoscope_ranching:${id}`, { "kaleidoscope_ranching:busy": false });
 
+const FRAME = (block) => overworld.getBlock(block.location).permutation.getState(`${NS}:frame`);
+
+test("1.1 station frames: the grinder's crank turns twice for a mince, then rests", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const grinder = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:meat_grinder`, { [`${NS}:busy`]: false, [`${NS}:frame`]: 0 });
+  hold(player, "minecraft:porkchop");
+  use(STATION, grinder, player);
+  equal(player.inventory.count(`${NS}:pork_mince`), 1, "a mince");
+  const seen = [];
+  for (let tick = 0; tick < 18; tick++) {
+    __advance(1);
+    seen.push(FRAME(grinder));
+  }
+  for (const frame of [1, 2, 3]) assert(seen.includes(frame), `frame ${frame} shown`);
+  equal(seen.at(-1), 0, "back at rest");
+});
+
+test("1.1 station frames: the churn's dasher plunges when a batch goes in; a press has no frames", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:butter_churn`, { [`${NS}:busy`]: false, [`${NS}:frame`]: 0 });
+  hold(player, `${NS}:cow_milk`, 2);
+  use(STATION, churn, player);
+  __advance(3);
+  equal(FRAME(churn), 1, "plunging");
+  __advance(40);
+  equal(FRAME(churn), 0, "at rest again");
+  const press = stationAt("cheese_press", 4);
+  hold(player, `${NS}:cow_milk`, 3);
+  use(STATION, press, player);
+  __advance(3);
+  equal(FRAME(press), undefined, "the press has no moving part");
+});
+
 test("the cheese press takes three milk and works half a day", () => {
   clearWorld();
   const player = __newPlayer(at(0));

@@ -43,6 +43,7 @@ import { containerOf, countIn, putInto, takeFrom } from "../core/containers.js";
 import { taggedItems } from "../core/tags.js";
 import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
 import { system, world } from "@minecraft/server";
+import { playFrames } from "../core/blockFrames.js";
 
 // ## The duration is stored with the running batch. A recipe another add-on
 // ## registered is unknown again after a world reload until that add-on
@@ -191,10 +192,12 @@ function start(block, player) {
     if (recipe.ticks <= 0) {
       for (const output of outputs) give(player, output.item, output.count);
       block.dimension.playSound("block.grindstone.use", block.location);
+      playFrames(block); // 1.1 工作台互動動畫: the crank turns
       return;
     }
     startBatch(block, batchFor(recipe, result));
     block.dimension.playSound("bucket.fill_water", block.location);
+    playFrames(block); // the dasher plunges, the wheel turns
     return;
   }
   tell(player, "missing");
