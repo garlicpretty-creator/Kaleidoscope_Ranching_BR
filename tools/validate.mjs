@@ -240,6 +240,11 @@ const animations = new Set();
 for (const path of walk(join(rp, "animations")).filter((p) => p.endsWith(".json"))) {
   Object.keys(readJson(path).animations ?? {}).forEach((id) => animations.add(id));
 }
+// Animation controllers (tools/gen_actions.mjs): the ids, and the animation names each state plays.
+const animationControllers = new Map();
+for (const path of walk(join(rp, "animation_controllers")).filter((p) => p.endsWith(".json"))) {
+  Object.entries(readJson(path).animation_controllers ?? {}).forEach(([id, controller]) => animationControllers.set(id, controller));
+}
 const renderControllers = new Map();
 for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith(".json"))) {
   Object.entries(readJson(path).render_controllers ?? {}).forEach(([id, rc]) => renderControllers.set(id, rc));
@@ -260,6 +265,20 @@ for (const path of walk(join(bp, "entities")).filter((p) => p.endsWith(".json"))
   const { description } = client;
   for (const geo of Object.values(description.geometry ?? {})) if (!geometries.has(geo)) fail(`${id}: unknown geometry ${geo}`);
   for (const [name, anim] of Object.entries(description.animations ?? {})) {
+    if (anim.startsWith("controller.animation.")) {
+      const controller = animationControllers.get(anim);
+      if (!controller) fail(`${id}: unknown animation controller ${anim} (${name})`);
+      for (const [stateName, state] of Object.entries(controller?.states ?? {})) {
+        for (const entry of state.animations ?? []) {
+          const key = typeof entry === "string" ? entry : Object.keys(entry)[0];
+          if (!description.animations[key]) fail(`${id}: controller ${anim} state ${stateName} plays "${key}", which the entity does not define`);
+        }
+        for (const transition of state.transitions ?? []) {
+          for (const target of Object.keys(transition)) if (!controller.states[target]) fail(`${id}: controller ${anim} state ${stateName} goes to missing state ${target}`);
+        }
+      }
+      continue;
+    }
     if (!anim.startsWith("animation.common.") && !animations.has(anim)) fail(`${id}: unknown animation ${anim} (${name})`);
   }
   for (const texture of Object.values(description.textures ?? {})) {

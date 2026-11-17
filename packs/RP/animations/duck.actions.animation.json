@@ -1,0 +1,97 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.duck.eat": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "math.max(0, math.sin(q.anim_time * 720)) * 70",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.duck.drink": {
+      "loop": true,
+      "animation_length": 1.4,
+      "bones": {
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              70,
+              0,
+              0
+            ],
+            "0.7": [
+              -40,
+              0,
+              0
+            ],
+            "1.1": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.duck.petted": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "scale": "1 + math.abs(math.sin(q.anim_time * 360)) * 0.06"
+        },
+        "head": {
+          "rotation": [
+            -5,
+            0,
+            "math.sin(q.anim_time * 360) * 15"
+          ]
+        },
+        "a_wing_left": {
+          "rotation": [
+            0,
+            0,
+            "-(10 + math.abs(math.sin(q.anim_time * 360)) * 8)"
+          ]
+        },
+        "b_wing_left": {
+          "rotation": [
+            0,
+            0,
+            "-(10 + math.abs(math.sin(q.anim_time * 360)) * 8)"
+          ]
+        },
+        "a_wing_right": {
+          "rotation": [
+            0,
+            0,
+            "(10 + math.abs(math.sin(q.anim_time * 360)) * 8)"
+          ]
+        },
+        "b_wing_right": {
+          "rotation": [
+            0,
+            0,
+            "(10 + math.abs(math.sin(q.anim_time * 360)) * 8)"
+          ]
+        },
+        "a_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1080) * 20",
+            0
+          ]
+        }
+      }
+    }
+  }
+}

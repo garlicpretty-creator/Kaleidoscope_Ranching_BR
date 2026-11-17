@@ -17,6 +17,7 @@ from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
+from station_frames import crank, wheel
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -48,10 +49,10 @@ MEAT_GRINDER = [
         ("hopper_rim", [-4, 12, -4], [8, 2, 8]),
         ("plate", [4, 5.5, -2.5], [1, 5, 5]),
         ("axle", [-6, 7.5, -0.5], [2, 1, 1]),
-        ("crank", [-7, 4, -0.5], [1, 5, 1]),
-        ("grip", [-8, 3, -0.5], [1, 2, 1]),
         ("bowl", [3, 2, -3], [4, 2, 6]),
     ]),
+    # 1.1 工作台互動動畫: the crank turns when it is used (station_frames.py)
+    *crank("crank", "stand", -7, 8, 0, 4, knob_dx=-1),
     ("busy", "stand", [0, 4, 0], [
         ("mince", [3.5, 4, -2.5], [3, 1, 5]),
         ("strands", [5, 5, -1], [1, 2, 2]),
@@ -110,9 +111,8 @@ ICE_CREAM_CHURN = [
         ("bar", [-5, 12, -1], [10, 1, 2]),
         ("gear", [-1, 13, -1.5], [2, 2, 3]),
         ("crank_axle", [6, 12, -0.5], [1, 1, 1]),
-        ("crank", [7, 9, -0.5], [1, 4, 1]),
-        ("grip", [7, 9, -2.5], [1, 1, 2]),
     ]),
+    *crank("crank", "bucket", 7, 12.5, 0, 3.5),
     ("busy", "bucket", [0, 10, 0], [
         ("frost", [-4.5, 11, -4.5], [3, 1, 3]),
         ("frost", [1.5, 11, 1.5], [3, 1, 3]),
@@ -127,21 +127,18 @@ SPINNING_WHEEL = [
         ("leg", [-7, 0, 1], [1, 4, 1]),
         ("leg", [6, 0, -2], [1, 4, 1]),
         ("leg", [6, 0, 1], [1, 4, 1]),
-        ("treadle", [-3, 0, -4], [6, 1, 3]),
         ("upright", [-4, 5, -2], [2, 6, 1]),
         ("upright", [-4, 5, 1], [2, 6, 1]),
         *ring("rim", -3, 11, -0.5),
         ("hub", [-4, 10, -1], [2, 2, 2]),
-        ("spoke_h", [-7, 10.5, -0.5], [3, 1, 1]),
-        ("spoke_h", [-2, 10.5, -0.5], [3, 1, 1]),
-        ("spoke_v", [-3.5, 12, -0.5], [1, 3, 1]),
-        ("spoke_v", [-3.5, 7, -0.5], [1, 3, 1]),
         ("maiden", [3, 5, -1], [1, 5, 2]),
         ("maiden", [6, 5, -1], [1, 5, 2]),
         ("spindle", [2, 8, -0.5], [6, 1, 1]),
         ("distaff", [5, 5, 1], [1, 9, 1]),
         ("fleece", [4, 12, 0], [3, 3, 3]),
     ]),
+    # the wheel turns and the treadle rocks when wool goes on (station_frames.py)
+    *wheel("wheel", "frame", -3, 11, -0.5, ([-3, 0, -4], [6, 1, 3])),
     ("busy", "frame", [5, 8, 0], [
         ("bobbin", [4, 7.5, -1], [2, 2, 2]),
     ]),
@@ -383,7 +380,7 @@ PAINT = {
                         "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT)},
     "spinning_wheel": {"bench": wood(WOOD_DK), "leg": wood(WOOD_DK), "treadle": wood(WOOD),
                        "upright": wood(WOOD), "rim": solid(WOOD_DK), "hub": wood(WOOD_DK, rings=WOOD_LT),
-                       "spoke_h": solid(WOOD_LT), "spoke_v": solid(WOOD_LT), "maiden": wood(WOOD),
+                       "spoke_h": solid(WOOD_LT), "spoke_v": solid(WOOD_LT), "spoke_d": solid(WOOD_LT), "maiden": wood(WOOD),
                        "spindle": iron, "distaff": wood(WOOD_LT), "fleece": fleece},
     "weaving_loom": {"front_post": wood(WOOD_DK, rings=WOOD_LT), "back_post": wood(WOOD_DK, rings=WOOD_LT),
                      "side_rail": wood(WOOD), "foot_rail": wood(WOOD_DK), "beam": wood(WOOD_LT),

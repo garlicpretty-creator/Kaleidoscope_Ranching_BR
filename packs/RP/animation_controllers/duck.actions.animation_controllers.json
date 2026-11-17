@@ -1,0 +1,64 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.kaleidoscope_ranching.duck.actions": {
+      "initial_state": "idle",
+      "states": {
+        "idle": {
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "eat": "q.property('kaleidoscope_ranching:action') == 'eat'"
+            },
+            {
+              "drink": "q.property('kaleidoscope_ranching:action') == 'drink'"
+            },
+            {
+              "petted": "q.property('kaleidoscope_ranching:action') == 'petted'"
+            }
+          ]
+        },
+        "eat": {
+          "animations": [
+            "eat"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'eat') || q.state_time > 10"
+            }
+          ]
+        },
+        "drink": {
+          "animations": [
+            "drink"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'drink') || q.state_time > 6"
+            }
+          ]
+        },
+        "petted": {
+          "animations": [
+            "petted"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'petted') || q.state_time > 2.5"
+            }
+          ]
+        },
+        "done": {
+          "transitions": [
+            {
+              "idle": "q.property('kaleidoscope_ranching:action') == 'none'"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

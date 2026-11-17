@@ -21,6 +21,8 @@ const STEPS = [
   // 1.1 美術: gear layered on the animals (fitted to the models as they are now), worn items.
   ["py", "art_src/m4_scripts/gear.py"],
   ["py", "art_src/m4_scripts/wearables.py"],
+  // 1.1 動物動作: eating, drinking and petting animations (after the sleep pose and gear rebuild the entity).
+  ["node", "tools/gen_actions.mjs"],
   ["node", "tools/gen_items.mjs"],
   ["node", "tools/gen_blocks.mjs"],
   ["node", "tools/gen_catalog.mjs"],

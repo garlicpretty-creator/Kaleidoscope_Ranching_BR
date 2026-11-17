@@ -13,6 +13,7 @@ const { ANIMALS } = await load("animals.js");
 const { BLOCKS } = await load("blocks.js");
 const { PLACED_FOODS } = await load("placedFoods.js");
 const { AUTO_STATIONS, DRYING_LOOKS, DRYING_SLOTS, DRYING_STAGES, STATIONS } = await load("processing.js");
+const { STATION_FRAMES } = await load("stationFrames.js");
 
 const NS = "kaleidoscope_ranching";
 const S = (name) => `${NS}:${name}`;
@@ -32,12 +33,23 @@ const box = (x, y, z, w, h, d) => ({ origin: [x, y, z], size: [w, h, d] });
 // (art_src/m4_scripts/station_stages.py), one shown at a time. A world saved before stages loads with
 // stage 1, the state's first value.
 const STAGES = [1, 2, 3];
-const stationDef = (component) => ({
+// 1.1 工作台互動動畫 (data/stationFrames.js, core/blockFrames.js): a station with a moving part
+// draws it in `frames` positions, bones <bone>_0.., and the `frame` state shows one of them.
+const frameStates = (id) => {
+  const spec = STATION_FRAMES[id];
+  return spec ? { [S("frame")]: Array.from({ length: spec.frames }, (_, n) => n) } : {};
+};
+const frameBones = (id) => {
+  const spec = STATION_FRAMES[id];
+  return spec ? Object.fromEntries(Array.from({ length: spec.frames }, (_, n) => [`${spec.bone}_${n}`, `${state("frame")} == ${n}`])) : {};
+};
+const stationDef = (component, id) => ({
   component,
-  states: { [S("busy")]: [false, true], [S("stage")]: STAGES },
+  states: { [S("busy")]: [false, true], [S("stage")]: STAGES, ...frameStates(id) },
   bones: {
     busy: state("busy"),
     ...Object.fromEntries(STAGES.map((n) => [`busy_${n}`, `${state("busy")} && ${state("stage")} == ${n}`])),
+    ...frameBones(id),
   },
   collision: FULL,
   selection: FULL,
@@ -272,8 +284,8 @@ const DEFS = {
     seconds: 1,
     mapColor: "#6f7a5a",
   },
-  ...Object.fromEntries(AUTO_STATIONS.map((id) => [id, stationDef("auto_station")])),
-  ...Object.fromEntries(STATIONS.map((id) => [id, stationDef("station")])),
+  ...Object.fromEntries(AUTO_STATIONS.map((id) => [id, stationDef("auto_station", id)])),
+  ...Object.fromEntries(STATIONS.map((id) => [id, stationDef("station", id)])),
 };
 
 const ROTATION = { north: 0, east: 270, south: 180, west: 90 };

@@ -10,6 +10,7 @@
 // ## pen with only a hay rack still gets its daily settlement and cleanliness
 // ## check. It does not change any M2 file.
 
+import { playAtBlock } from "../core/actions.js";
 import { ItemStack } from "@minecraft/server";
 import { ensureSettled, isMarkedToday, mark, cleanNeedEnabled } from "../care/state.js";
 import { MANURE_BLOCK } from "../custom_components/manure.js";
@@ -77,6 +78,8 @@ export function tickHayRack(block) {
   const day = today();
   let units = unitsOf(block);
   const before = units;
+  // 1.1 動物動作: grass eaters at the rack are seen eating.
+  if (units > 0) playAtBlock(block, animals, "eat", (e) => SPECIES[e.typeId]?.eats.includes(KIND.GRASS));
   const checkClean = cleanNeedEnabled();
   let clean = null;
   for (const animal of animals) {

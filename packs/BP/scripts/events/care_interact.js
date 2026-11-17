@@ -2,6 +2,7 @@
 // 牧場記事本, 耳標. Clicks arrive through the shared interaction router; item
 // use + view raycast is the fallback for clicks the router never sees.
 
+import { playAction } from "../core/actions.js";
 import { world, system } from "@minecraft/server";
 import { CARE } from "../data/care_config.js";
 import { SPECIES, isTreat } from "../data/species.js";
@@ -31,6 +32,7 @@ function hearts(e) {
 }
 
 function pet(player, e) {
+  playAction(e, "petted"); // 1.1 動物動作: it leans in, every time it is petted
   if (mark(e, "groom")) {
     hearts(e);
     notifyCared(e, player, "pet");
@@ -39,6 +41,7 @@ function pet(player, e) {
 }
 
 function brush(player, e) {
+  playAction(e, "petted");
   const first = mark(e, "groom");
   damageMainhand(player);
   e.dimension.playSound("mob.sheep.shear", e.location, { volume: 0.4, pitch: 1.6 });

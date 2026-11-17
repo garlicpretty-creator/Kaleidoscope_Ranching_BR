@@ -1,6 +1,7 @@
 // 水槽 (state water 0–3, one bucket fills it; one level is used per day in use)
 // 自動飲水器 (never runs dry while touching a water source block).
 
+import { playAtBlock } from "../core/actions.js";
 import { CARE } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { ensureSettled, mark, isMarkedToday } from "../care/state.js";
@@ -60,6 +61,8 @@ function waterAnimals(block, auto) {
   const level = auto ? 1 : getState(block, "water");
   if (level <= 0) return;
   if (auto && !touchesWaterSource(block)) return;
+  // 1.1 動物動作: animals at the trough are seen drinking.
+  playAtBlock(block, animals, "drink", (e) => Boolean(SPECIES[e.typeId]));
   let used = false;
   for (const e of animals) {
     if (!SPECIES[e.typeId]) continue;
