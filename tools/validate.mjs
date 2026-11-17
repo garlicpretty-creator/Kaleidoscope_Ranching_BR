@@ -967,6 +967,8 @@ if (exists(example)) {
   }
   // Every colour texture has its set (tools/gen_pbr.py), and no layer is left without one.
   for (const png of pngs) {
+    // textures/ui holds flat UI art (the guidebook's star icon): it is never lit, so it has no material set.
+    if (/[\/]textures[\/]ui[\/]/.test(png)) continue;
     if (isLayer(png)) {
       const owner = png.replace(/_(mers|normal)\.png$/, ".texture_set.json");
       if (!sets.includes(owner)) fail(`${relative(root, png)}: stale material layer, run npm run generate`);

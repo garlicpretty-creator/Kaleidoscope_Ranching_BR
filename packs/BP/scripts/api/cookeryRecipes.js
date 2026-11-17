@@ -163,7 +163,7 @@ export function guidebookPayload() {
     id: GUIDEBOOK_ID,
     version: "1.1.0",
     order: 200,
-    icon: iconPath("cow_milk"),
+    icon: "textures/ui/kr_guidebook", // the series star, as every Kaleidoscope add-on shows in the guidebook list
     titleKey: "title",
     introKey: "intro",
     allKey: "all",
