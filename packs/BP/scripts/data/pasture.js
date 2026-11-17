@@ -30,6 +30,9 @@ export const GRAZE = {
   [`${NS}:goat`]: 2,
   [`${NS}:rabbit`]: 1,
   [`${NS}:goose`]: 1,
+  // 1.1 追加 新動物
+  [`${NS}:turkey`]: 1,
+  [`${NS}:alpaca`]: 3,
 };
 
 /** register_animal `graze` (api/ranchingApi.js): another add-on's animal eats `n` grass a day. */

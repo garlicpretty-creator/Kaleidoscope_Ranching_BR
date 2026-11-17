@@ -35,13 +35,13 @@ const ASLEEP = `q.property('${NS}:sleeping')`;
 const ACTION = (value) => `q.property('${ACTION_PROPERTY}') == '${value}'`;
 const KEYS = ["eat", "drink", "petted", "graze", "chew", "actions"];
 
-const POULTRY = new Set(["chicken", "duck", "goose"]);
+const POULTRY = new Set(["chicken", "duck", "goose", "quail", "turkey"]);
 /** Animals that graze on a pasture (data/pasture.js). */
 const GRAZERS = new Set(Object.keys(GRAZE).map((typeId) => typeId.split(":")[1]));
 /** Animals whose behaviour pack eats grass blocks itself (minecraft:behavior.eat_block, q.is_grazing): the sheep. */
 const EAT_BLOCK = new Set(["sheep"]);
 /** Animals that chew the cud while standing still. */
-const RUMINANTS = new Set(["cow", "buffalo", "yak", "sheep", "goat"]);
+const RUMINANTS = new Set(["cow", "buffalo", "yak", "sheep", "goat", "alpaca"]);
 /** Every so many seconds of its life an idle ruminant chews for a few seconds (life time keeps herds out of step). */
 const CHEW_EVERY = 20;
 const CHEW_SECONDS = 3;

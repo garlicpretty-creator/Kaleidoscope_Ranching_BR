@@ -139,6 +139,45 @@
           "step": "mob.cow.step",
           "milk": "mob.cow.milk"
         }
+      },
+      "kaleidoscope_ranching:quail": {
+        "volume": 1,
+        "pitch": [
+          1.4,
+          1.6
+        ],
+        "events": {
+          "ambient": "mob.chicken.say",
+          "hurt": "mob.chicken.hurt",
+          "death": "mob.chicken.hurt",
+          "step": "mob.chicken.step"
+        }
+      },
+      "kaleidoscope_ranching:turkey": {
+        "volume": 1,
+        "pitch": [
+          0.45,
+          0.55
+        ],
+        "events": {
+          "ambient": "mob.chicken.say",
+          "hurt": "mob.chicken.hurt",
+          "death": "mob.chicken.hurt",
+          "step": "mob.chicken.step"
+        }
+      },
+      "kaleidoscope_ranching:alpaca": {
+        "volume": 1,
+        "pitch": [
+          1.1,
+          1.3
+        ],
+        "events": {
+          "ambient": "mob.llama.idle",
+          "hurt": "mob.llama.hurt",
+          "death": "mob.llama.death",
+          "step": "mob.llama.step"
+        }
       }
     }
   }

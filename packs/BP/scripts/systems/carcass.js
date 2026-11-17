@@ -21,7 +21,8 @@ export function startCarcassDrops() {
       if (!species) return;
       baby = isBaby(deadEntity);
       male = sexOf(deadEntity) === "male";
-      if (species.id === "sheep" && !deadEntity.hasComponent("minecraft:is_sheared")) {
+      // 1.1 追加: the alpaca keeps its fleece the same way (the colour does not matter there).
+      if ((species.id === "sheep" || species.id === "alpaca") && !deadEntity.hasComponent("minecraft:is_sheared")) {
         wool = deadEntity.getComponent("minecraft:color")?.value ?? 0;
       }
       dimension = deadEntity.dimension;

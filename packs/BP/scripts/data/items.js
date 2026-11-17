@@ -25,6 +25,10 @@ export const ANIMAL_NAMES = [
   ["goose", "鵝", "Goose"],
   ["buffalo", "水牛", "Buffalo"],
   ["yak", "氂牛", "Yak"],
+  // 1.1 追加 新動物 (docs/1.1_追加企劃書.md 二)
+  ["quail", "鵪鶉", "Quail"],
+  ["turkey", "火雞", "Turkey"],
+  ["alpaca", "羊駝", "Alpaca"],
 ];
 
 // ## Milk and eggs have no quality grades (the player's call, replacing the
@@ -45,6 +49,11 @@ const EGGS = [
   ["fertilized_chicken_egg", "受精雞蛋", "Fertilized Chicken Egg", "fertilized_egg"],
   ["fertilized_duck_egg", "受精鴨蛋", "Fertilized Duck Egg", "fertilized_egg"],
   ["fertilized_goose_egg", "受精鵝蛋", "Fertilized Goose Egg", "fertilized_egg"],
+  // 1.1 追加 新動物
+  ["quail_egg", "鵪鶉蛋", "Quail Egg", "egg"],
+  ["turkey_egg", "火雞蛋", "Turkey Egg", "egg"],
+  ["fertilized_quail_egg", "受精鵪鶉蛋", "Fertilized Quail Egg", "fertilized_egg"],
+  ["fertilized_turkey_egg", "受精火雞蛋", "Fertilized Turkey Egg", "fertilized_egg"],
 ];
 
 const DAIRY = [
@@ -77,6 +86,14 @@ const MEAT = [
   ["cooked_duck_meat", "熟鴨肉", "Cooked Duck", "meat"],
   ["goose_meat", "生鵝肉", "Raw Goose", "meat"],
   ["cooked_goose_meat", "熟鵝肉", "Cooked Goose", "meat"],
+  // 1.1 追加 新動物
+  ["quail_meat", "生鵪鶉肉", "Raw Quail", "meat"],
+  ["cooked_quail_meat", "熟鵪鶉肉", "Cooked Quail", "meat"],
+  ["turkey_meat", "生火雞肉", "Raw Turkey", "meat"],
+  ["cooked_turkey_meat", "熟火雞肉", "Cooked Turkey", "meat"],
+  ["alpaca_meat", "生羊駝肉", "Raw Alpaca", "meat"],
+  ["cooked_alpaca_meat", "熟羊駝肉", "Cooked Alpaca", "meat"],
+  ["cooked_turkey_breast", "熟火雞胸", "Cooked Turkey Breast", "meat"],
 ];
 
 const CUTS = [
@@ -93,6 +110,9 @@ const CUTS = [
   ["duck_leg", "鴨腿", "Duck Leg", "cut"],
   ["goose_leg", "鵝腿", "Goose Leg", "cut"],
   ["rabbit_leg", "兔腿", "Rabbit Leg", "cut"],
+  // 1.1 追加 新動物
+  ["turkey_leg", "火雞腿", "Turkey Leg", "cut"],
+  ["turkey_breast", "火雞胸", "Turkey Breast", "cut"],
 ];
 
 // 1.1 肉類線 (企劃書 1.1 一、肉類線): the meat grinder's mince and sausages, and
@@ -223,6 +243,9 @@ const BYPRODUCTS = [
   ["cattle_horn", "牛角", "Cattle Horn", "byproduct"],
   ["billy_goat_horn", "羊角", "Billy Goat Horn", "byproduct"],
   ["down", "羽絨", "Down", "byproduct"],
+  // 1.1 追加 新動物: the alpaca's fleece (spun as fine fleece) and hide (tanned)
+  ["alpaca_wool", "羊駝毛", "Alpaca Wool", "byproduct"],
+  ["alpaca_hide", "羊駝皮", "Alpaca Hide", "byproduct"],
   ["yak_hair", "氂牛毛", "Yak Hair", "byproduct"],
   ["pig_bristle", "豬鬃", "Pig Bristle", "byproduct", "m2"],
   ["manure_item", "糞便", "Manure", "byproduct", "m2"],

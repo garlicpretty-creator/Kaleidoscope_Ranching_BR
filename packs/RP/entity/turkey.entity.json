@@ -1,0 +1,53 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:turkey",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female": "textures/entity/ranching/turkey/female",
+        "male": "textures/entity/ranching/turkey/male",
+        "baby": "textures/entity/ranching/turkey/baby"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.turkey"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.turkey.walk",
+        "look_at_target": "animation.common.look_at_target",
+        "sleep": "animation.kaleidoscope_ranching.turkey.sleep",
+        "eat": "animation.kaleidoscope_ranching.turkey.eat",
+        "drink": "animation.kaleidoscope_ranching.turkey.drink",
+        "petted": "animation.kaleidoscope_ranching.turkey.petted",
+        "graze": "animation.kaleidoscope_ranching.turkey.graze",
+        "actions": "controller.animation.kaleidoscope_ranching.turkey.actions"
+      },
+      "scripts": {
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.2 : 1.0)",
+        "animate": [
+          {
+            "walk": "!q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping') && q.property('kaleidoscope_ranching:action') == 'none' && !q.is_grazing"
+          },
+          {
+            "sleep": "q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "actions": "!q.property('kaleidoscope_ranching:sleeping')"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.turkey"
+      ],
+      "spawn_egg": {
+        "base_color": "#4A3A2E",
+        "overlay_color": "#C82C28"
+      }
+    }
+  }
+}

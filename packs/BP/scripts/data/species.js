@@ -54,6 +54,25 @@ export const SPECIES = {
     treat: "kaleidoscope_ranching:grain_cake",
     brushDrops: [["minecraft:feather", 0.2]],
   },
+  // 1.1 追加 新動物 (docs/1.1_追加企劃書.md 二)
+  "kaleidoscope_ranching:quail": {
+    key: "quail",
+    eats: POULTRY,
+    treat: "kaleidoscope_ranching:grain_cake",
+    brushDrops: [],
+  },
+  "kaleidoscope_ranching:turkey": {
+    key: "turkey",
+    eats: [KIND.GRASS, ...POULTRY],
+    treat: "kaleidoscope_ranching:grain_cake",
+    brushDrops: [["minecraft:feather", 0.1]],
+  },
+  "kaleidoscope_ranching:alpaca": {
+    key: "alpaca",
+    eats: RUMINANT,
+    treat: "kaleidoscope_ranching:alfalfa_cake",
+    brushDrops: [["kaleidoscope_ranching:alpaca_wool", 0.3]],
+  },
   "kaleidoscope_ranching:goose": {
     key: "goose",
     eats: POULTRY,

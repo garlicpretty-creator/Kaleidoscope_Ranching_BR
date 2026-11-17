@@ -1,0 +1,122 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.alpaca.sleep": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "position": [
+            0,
+            "q.is_baby ? -7.72 : -10.72",
+            0
+          ]
+        },
+        "a_leg_fl": {
+          "rotation": [
+            90,
+            0,
+            8
+          ]
+        },
+        "a_leg_fr": {
+          "rotation": [
+            90,
+            0,
+            -8
+          ]
+        },
+        "a_leg_bl": {
+          "rotation": [
+            -90,
+            0,
+            8
+          ]
+        },
+        "a_leg_br": {
+          "rotation": [
+            -90,
+            0,
+            -8
+          ]
+        },
+        "b_leg_fl": {
+          "rotation": [
+            90,
+            0,
+            8
+          ]
+        },
+        "b_leg_fr": {
+          "rotation": [
+            90,
+            0,
+            -8
+          ]
+        },
+        "b_leg_bl": {
+          "rotation": [
+            -90,
+            0,
+            8
+          ]
+        },
+        "b_leg_br": {
+          "rotation": [
+            -90,
+            0,
+            -8
+          ]
+        },
+        "wool_coat": {
+          "scale": [
+            1,
+            0.95,
+            1
+          ]
+        },
+        "head": {
+          "rotation": [
+            32,
+            18,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            28,
+            18,
+            0
+          ]
+        },
+        "a_tail": {
+          "rotation": [
+            -20,
+            0,
+            25
+          ]
+        },
+        "b_tail": {
+          "rotation": [
+            -20,
+            0,
+            25
+          ]
+        },
+        "a_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        },
+        "b_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        }
+      }
+    }
+  }
+}

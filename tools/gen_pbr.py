@@ -110,7 +110,7 @@ RULES = [
     # Animals
     (r"^entity/ranching/wearables/leather_apron$", "skin"),
     (r"^entity/ranching/(wearables|gear)/", "cloth"),  # gear: per piece, see gear_materials
-    (r"^entity/ranching/(chicken|duck|goose)/", "feather"),
+    (r"^entity/ranching/(chicken|duck|goose|quail|turkey)/", "feather"),
     (r"^entity/ranching/pig/", "skin"),
     (r"^entity/ranching/", "fur"),
     (r"^entity/", "matte"),

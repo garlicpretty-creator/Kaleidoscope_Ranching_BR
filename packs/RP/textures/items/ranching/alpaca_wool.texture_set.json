@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "alpaca_wool",
+    "metalness_emissive_roughness_subsurface": "alpaca_wool_mers",
+    "normal": "alpaca_wool_normal"
+  }
+}

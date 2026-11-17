@@ -1,0 +1,66 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.quail.walk": {
+      "loop": true,
+      "bones": {
+        "a_leg_left": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 90",
+            0,
+            0
+          ]
+        },
+        "b_leg_left": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 90",
+            0,
+            0
+          ]
+        },
+        "a_leg_right": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 90",
+            0,
+            0
+          ]
+        },
+        "b_leg_right": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 90",
+            0,
+            0
+          ]
+        },
+        "a_wing_left": {
+          "rotation": [
+            0,
+            0,
+            "-(q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40)"
+          ]
+        },
+        "b_wing_left": {
+          "rotation": [
+            0,
+            0,
+            "-(q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40)"
+          ]
+        },
+        "a_wing_right": {
+          "rotation": [
+            0,
+            0,
+            "q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40"
+          ]
+        },
+        "b_wing_right": {
+          "rotation": [
+            0,
+            0,
+            "q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40"
+          ]
+        }
+      }
+    }
+  }
+}

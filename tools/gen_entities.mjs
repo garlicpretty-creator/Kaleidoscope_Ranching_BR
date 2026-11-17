@@ -33,6 +33,11 @@ const TUNING = {
   goose: { family: "goose", health: 8, speed: 0.25, box: [0.7, 1.0], mass: 0.6, noFallDamage: true, swims: true, guard: true },
   buffalo: { family: "buffalo", health: 14, speed: 0.2, box: [1.1, 1.4], mass: 1.2 },
   yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1, packBag: true },
+  // 1.1 追加 新動物 (docs/1.1_追加企劃書.md 二)
+  quail: { family: "quail", health: 3, speed: 0.25, box: [0.4, 0.5], mass: 0.3, noFallDamage: true },
+  turkey: { family: "turkey", health: 10, speed: 0.22, box: [0.8, 1.1], mass: 0.7, noFallDamage: true },
+  // shearable: sheared with shears like the sheep (no dye colours); the fleece grows back in a day.
+  alpaca: { family: "alpaca", health: 16, speed: 0.2, box: [0.9, 1.7], mass: 1.0, guard: true, shearable: true },
 };
 
 // Natural spawning for the M4 animals. Biome tags are Bedrock's; a rule applies where any of
@@ -51,6 +56,10 @@ const SPAWN = {
     { tags: ["mountains", "snowy_slopes", "frozen_peaks"], blocks: YAK_BLOCKS, weight: 3, herd: [2, 3], density: 3 },
     { tags: ["meadow"], blocks: YAK_BLOCKS, weight: 1, herd: [2, 3], density: 3 },
   ],
+  // 1.1 追加 新動物
+  quail: [{ tags: ["plains", "savanna"], blocks: ["minecraft:grass_block"], weight: 4, herd: [2, 4], density: 3 }],
+  turkey: [{ tags: ["forest"], blocks: ["minecraft:grass_block", "minecraft:podzol"], weight: 4, herd: [2, 3], density: 2 }],
+  alpaca: [{ tags: ["meadow", "extreme_hills"], blocks: ["minecraft:grass_block", "minecraft:stone"], weight: 2, herd: [2, 3], density: 3 }],
 };
 
 // ## Biomes O' Plenty (our Bedrock port; see its docs/HANDSHAKE.md) keeps vanilla vegetation
@@ -227,6 +236,13 @@ function buildEntity(animal, t) {
     groups[g("sheared")] = { "minecraft:is_sheared": {} };
     spawnDefaults.push(g("color_0"));
   }
+  if (t.shearable) {
+    // The alpaca's fleece grows back after a game day (1200 s), no grass needed.
+    groups[g("sheared")] = {
+      "minecraft:is_sheared": {},
+      "minecraft:timer": { looping: false, time: 1200, time_down_event: { event: g("regrow_wool"), target: "self" } },
+    };
+  }
   if (t.variants) {
     for (const i of range(t.variants)) groups[g(`variant_${i}`)] = { "minecraft:variant": { value: i } };
     spawnDefaults.push(g("variant_0"));
@@ -387,6 +403,10 @@ function buildEntity(animal, t) {
         sequence: [{ remove: { component_groups: all } }, { add: { component_groups: [g(`color_${i}`)] } }, { set_property: { [WOOL_COLOR]: i } }],
       };
     }
+    events[g("shear")] = { add: { component_groups: [g("sheared")] } };
+    events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
+  }
+  if (t.shearable) {
     events[g("shear")] = { add: { component_groups: [g("sheared")] } };
     events[g("regrow_wool")] = { remove: { component_groups: [g("sheared")] } };
   }
@@ -668,6 +688,10 @@ const SOUNDS = {
   goose: { pitch: [0.55, 0.65], events: voice("mob.chicken") },
   buffalo: { pitch: [0.75, 0.85], events: { ...voice("mob.cow"), milk: "mob.cow.milk" } },
   yak: { pitch: [0.65, 0.75], events: { ...voice("mob.cow"), milk: "mob.cow.milk" } },
+  // 1.1 追加: the quail a quick high chicken, the turkey a low one, the alpaca the llama's voice
+  quail: { pitch: [1.4, 1.6], events: voice("mob.chicken") },
+  turkey: { pitch: [0.45, 0.55], events: voice("mob.chicken") },
+  alpaca: { pitch: [1.1, 1.3], events: voice("mob.llama", { ambient: "mob.llama.idle", hurt: "mob.llama.hurt", death: "mob.llama.death", step: "mob.llama.step" }) },
 };
 for (const animal of ANIMALS) if (!SOUNDS[animal.id]) throw new Error(`gen_entities: no sounds for ${animal.id}`);
 writeFileSync(

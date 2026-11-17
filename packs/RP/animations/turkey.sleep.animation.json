@@ -1,0 +1,99 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.turkey.sleep": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "position": [
+            0,
+            -2.5,
+            0
+          ]
+        },
+        "a_leg_left": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "a_leg_right": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_left": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "b_leg_right": {
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "head": {
+          "rotation": [
+            -105,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -1,
+            0
+          ]
+        },
+        "a_wing_left": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "a_wing_right": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "b_wing_left": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "b_wing_right": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "a_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        },
+        "b_torso": {
+          "scale": [
+            1,
+            "1 + math.sin(q.life_time * 90) * 0.025",
+            1
+          ]
+        }
+      }
+    }
+  }
+}

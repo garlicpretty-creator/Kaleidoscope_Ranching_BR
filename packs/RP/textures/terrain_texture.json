@@ -94,6 +94,9 @@
     "kr_butcher_rack": {
       "textures": "textures/blocks/ranching/butcher_rack"
     },
+    "kr_butcher_rack_alpaca": {
+      "textures": "textures/blocks/ranching/butcher_rack_alpaca"
+    },
     "kr_butcher_rack_buffalo": {
       "textures": "textures/blocks/ranching/butcher_rack_buffalo"
     },
@@ -115,11 +118,17 @@
     "kr_butcher_rack_pig": {
       "textures": "textures/blocks/ranching/butcher_rack_pig"
     },
+    "kr_butcher_rack_quail": {
+      "textures": "textures/blocks/ranching/butcher_rack_quail"
+    },
     "kr_butcher_rack_rabbit": {
       "textures": "textures/blocks/ranching/butcher_rack_rabbit"
     },
     "kr_butcher_rack_sheep": {
       "textures": "textures/blocks/ranching/butcher_rack_sheep"
+    },
+    "kr_butcher_rack_turkey": {
+      "textures": "textures/blocks/ranching/butcher_rack_turkey"
     },
     "kr_butcher_rack_yak": {
       "textures": "textures/blocks/ranching/butcher_rack_yak"

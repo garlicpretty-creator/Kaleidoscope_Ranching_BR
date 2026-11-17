@@ -219,6 +219,24 @@
     "fresh_milk_bucket": { "prompt": "iron bucket filled to the brim with white fresh milk" },
     "yak_milk_bucket": { "prompt": "iron bucket filled with rich creamy yellowish yak milk" },
     "milk_wine": { "prompt": "pale wooden goblet cup on a short foot, full of cloudy white milk wine" },
-    "yak_milk_wine": { "prompt": "dark brown wooden goblet cup with silver bands, on a short foot, full of creamy golden milk wine" }
+    "yak_milk_wine": { "prompt": "dark brown wooden goblet cup with silver bands, on a short foot, full of creamy golden milk wine" },
+    "quail_carcass": { "rendered": "tools/art/carcass_icons.py", "ship": false },
+    "turkey_carcass": { "rendered": "tools/art/carcass_icons.py", "ship": false },
+    "alpaca_carcass": { "rendered": "tools/art/carcass_icons.py", "ship": false },
+    "quail_egg": { "prompt": "small cream quail egg covered in dark brown speckles" },
+    "turkey_egg": { "prompt": "large pale tan turkey egg with light brown freckles" },
+    "fertilized_quail_egg": { "from": "quail_egg", "badge": "fertilized" },
+    "fertilized_turkey_egg": { "from": "turkey_egg", "badge": "fertilized" },
+    "quail_meat": { "prompt": "small whole raw plucked quail, pale pink" },
+    "cooked_quail_meat": { "prompt": "small whole roasted quail, golden brown" },
+    "turkey_meat": { "prompt": "chunk of raw pink turkey meat" },
+    "cooked_turkey_meat": { "prompt": "chunk of roasted turkey meat, golden brown" },
+    "alpaca_meat": { "prompt": "slab of raw dark red alpaca meat" },
+    "cooked_alpaca_meat": { "prompt": "slab of seared brown alpaca meat" },
+    "turkey_leg": { "prompt": "big raw turkey drumstick, pale pink" },
+    "turkey_breast": { "prompt": "raw boneless turkey breast fillet, pale pink" },
+    "cooked_turkey_breast": { "prompt": "roasted sliced turkey breast, golden edges" },
+    "alpaca_wool": { "prompt": "fluffy tuft of cream alpaca fleece" },
+    "alpaca_hide": { "prompt": "folded tan alpaca hide with cream wool on one side" }
   }
 }

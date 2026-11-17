@@ -1038,6 +1038,65 @@ test("three bottle feedings make a calf grow up and return the bottles", () => {
 
 const nestAt = (x = 0, z = 0) => __place(overworld, { x, y: 64, z }, "kaleidoscope_ranching:nest_box", { "kaleidoscope_ranching:eggs": 0 });
 
+// --- 1.1 追加 新動物 --------------------------------------------------------
+
+test("new animals: a quail lays two eggs a day, a turkey one every other day", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const nest = nestAt();
+  ranch("quail", 2, "female");
+  use(NEST, nest, player);
+  equal(player.inventory.count(`${NS}:quail_egg`), 2, "two quail eggs");
+
+  clearWorld();
+  const keeper = __newPlayer(at(0));
+  const turkeyNest = nestAt();
+  ranch("turkey", 2, "female");
+  let laid = 0;
+  for (let day = 0; day < 4; day++) {
+    use(NEST, turkeyNest, keeper);
+    __skipTime(DAY);
+  }
+  laid = keeper.inventory.count(`${NS}:turkey_egg`);
+  equal(laid, 2, "two eggs in four days");
+});
+
+test("new animals: shears take an alpaca's fleece, and an unshorn alpaca carcass gives alpaca wool", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const alpaca = ranch("alpaca", 1, "female");
+  hold(player, "minecraft:shears");
+  assert(__interact(player, alpaca), "handled");
+  assert(alpaca.hasComponent("minecraft:is_sheared"), "sheared");
+  assert(dropsOf(`${NS}:alpaca_wool`).length === 1, "alpaca wool dropped");
+  assert(!__interact(player, alpaca), "cannot shear twice");
+
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("alpaca", "male"));
+  player.selectedSlotIndex = 0;
+  use(RACK, rack, player);
+  equal(rack.permutation.getState(`${NS}:carcass`), "alpaca", "hangs as an alpaca");
+  cutAll(player, rack);
+  equal(player.inventory.count(`${NS}:alpaca_wool`), 2, "two fleece from the unshorn carcass");
+  equal(player.inventory.slots.filter((slot) => slot?.typeId.endsWith("_wool") && slot.typeId.startsWith("minecraft:")).length, 0, "no sheep wool");
+  equal(player.inventory.count(`${NS}:alpaca_meat`), 4, "a male gives four");
+  equal(player.inventory.count(`${NS}:alpaca_hide`), 1, "one hide");
+});
+
+test("new animals: turkeys and alpacas graze; quail do not", () => {
+  clearWorld();
+  grassPatch(10);
+  place("pasture_post", at(0));
+  const turkey = ranch("turkey", 1, "female");
+  const alpaca = ranch("alpaca", 2, "female");
+  const quail = ranch("quail", 3, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(turkey, "fed"), "the turkey grazed");
+  assert(care.isMarkedToday(alpaca, "fed"), "the alpaca grazed");
+  assert(!care.isMarkedToday(quail, "fed"), "the quail did not");
+});
+
+
 test("hens lay one egg a day into the nest box, at most three days at once", () => {
   clearWorld();
   const player = __newPlayer(at(0));

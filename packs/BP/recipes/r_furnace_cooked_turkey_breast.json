@@ -1,0 +1,16 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_furnace_cooked_turkey_breast"
+    },
+    "tags": [
+      "furnace",
+      "smoker",
+      "campfire",
+      "soul_campfire"
+    ],
+    "input": "kaleidoscope_ranching:turkey_breast",
+    "output": "kaleidoscope_ranching:cooked_turkey_breast"
+  }
+}

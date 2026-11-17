@@ -286,6 +286,9 @@ const RECIPES = [
   // Goose eggs work wherever a vanilla egg does
   // (Cookery's egg dishes and the vanilla cake take only minecraft:egg).
   shapeless("egg_from_goose_egg", [{ item: rid("goose_egg") }], "minecraft:egg", 2),
+  // 1.1 追加: four small quail eggs make one vanilla egg; a turkey egg makes two, like the goose's.
+  shapeless("egg_from_quail_egg", [{ item: rid("quail_egg"), count: 4 }], "minecraft:egg"),
+  shapeless("egg_from_turkey_egg", [{ item: rid("turkey_egg") }], "minecraft:egg", 2),
   // Restores the vanilla goat horn, which Ranching's goats no longer drop by ramming.
   shapeless("goat_horn", [{ item: rid("billy_goat_horn") }], "minecraft:goat_horn"),
   // Two horns, not one: one horn alone is the horn cup, and two crafting-table recipes with the same

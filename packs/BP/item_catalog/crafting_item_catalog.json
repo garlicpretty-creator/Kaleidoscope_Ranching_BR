@@ -88,6 +88,10 @@
               "kaleidoscope_ranching:fertilized_chicken_egg",
               "kaleidoscope_ranching:fertilized_duck_egg",
               "kaleidoscope_ranching:fertilized_goose_egg",
+              "kaleidoscope_ranching:quail_egg",
+              "kaleidoscope_ranching:turkey_egg",
+              "kaleidoscope_ranching:fertilized_quail_egg",
+              "kaleidoscope_ranching:fertilized_turkey_egg",
               "kaleidoscope_ranching:salted_duck_egg",
               "kaleidoscope_ranching:century_egg"
             ]
@@ -145,7 +149,10 @@
               "kaleidoscope_ranching:duck_carcass",
               "kaleidoscope_ranching:goose_carcass",
               "kaleidoscope_ranching:buffalo_carcass",
-              "kaleidoscope_ranching:yak_carcass"
+              "kaleidoscope_ranching:yak_carcass",
+              "kaleidoscope_ranching:quail_carcass",
+              "kaleidoscope_ranching:turkey_carcass",
+              "kaleidoscope_ranching:alpaca_carcass"
             ]
           },
           {
@@ -162,6 +169,13 @@
               "kaleidoscope_ranching:cooked_duck_meat",
               "kaleidoscope_ranching:goose_meat",
               "kaleidoscope_ranching:cooked_goose_meat",
+              "kaleidoscope_ranching:quail_meat",
+              "kaleidoscope_ranching:cooked_quail_meat",
+              "kaleidoscope_ranching:turkey_meat",
+              "kaleidoscope_ranching:cooked_turkey_meat",
+              "kaleidoscope_ranching:alpaca_meat",
+              "kaleidoscope_ranching:cooked_alpaca_meat",
+              "kaleidoscope_ranching:cooked_turkey_breast",
               "kaleidoscope_ranching:beef_brisket",
               "kaleidoscope_ranching:beef_shank",
               "kaleidoscope_ranching:beef_sirloin",
@@ -175,6 +189,8 @@
               "kaleidoscope_ranching:duck_leg",
               "kaleidoscope_ranching:goose_leg",
               "kaleidoscope_ranching:rabbit_leg",
+              "kaleidoscope_ranching:turkey_leg",
+              "kaleidoscope_ranching:turkey_breast",
               "kaleidoscope_ranching:pork_mince",
               "kaleidoscope_ranching:beef_mince",
               "kaleidoscope_ranching:mutton_mince",
@@ -233,6 +249,8 @@
               "kaleidoscope_ranching:cattle_horn",
               "kaleidoscope_ranching:billy_goat_horn",
               "kaleidoscope_ranching:down",
+              "kaleidoscope_ranching:alpaca_wool",
+              "kaleidoscope_ranching:alpaca_hide",
               "kaleidoscope_ranching:yak_hair",
               "kaleidoscope_ranching:pig_bristle",
               "kaleidoscope_ranching:manure_item",

@@ -36,7 +36,7 @@ const WOOL_COLORS = [
 // ## The rack's carcass state lists the built-in animals. A carcass from
 // ## another add-on (api/ranchingApi.js) borrows one of those looks: the
 // ## `look` it registered, else a cow for large carcasses and a chicken for small.
-const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak"]);
+const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak", "quail", "turkey", "alpaca"]);
 
 /** Cuts for a carcass (full item id); data saved by older builds used short ids. */
 function cutsOf(carcass) {
@@ -216,7 +216,8 @@ export function rollCut(cut, data) {
   let amount = min + Math.floor(Math.random() * (max - min + 1));
   if (data.male && cut.maleBonus) amount += cut.maleBonus;
   let typeId = rid(cut.item);
-  if (cut.ifUnshorn) typeId = `minecraft:${WOOL_COLORS[(data.wool ?? 0) & 15]}_wool`;
+  // The sheep's wool comes off in its own colour; other fleece (the alpaca's) is its own item.
+  if (cut.ifUnshorn && cut.item === "minecraft:white_wool") typeId = `minecraft:${WOOL_COLORS[(data.wool ?? 0) & 15]}_wool`;
   return amount > 0 ? [{ typeId, amount }] : [];
 }
 

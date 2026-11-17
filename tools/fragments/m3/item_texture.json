@@ -29,6 +29,18 @@
     "kr_fertilized_goose_egg": {
       "textures": "textures/items/ranching/fertilized_goose_egg"
     },
+    "kr_quail_egg": {
+      "textures": "textures/items/ranching/quail_egg"
+    },
+    "kr_turkey_egg": {
+      "textures": "textures/items/ranching/turkey_egg"
+    },
+    "kr_fertilized_quail_egg": {
+      "textures": "textures/items/ranching/fertilized_quail_egg"
+    },
+    "kr_fertilized_turkey_egg": {
+      "textures": "textures/items/ranching/fertilized_turkey_egg"
+    },
     "kr_butter": {
       "textures": "textures/items/ranching/butter"
     },
@@ -92,6 +104,15 @@
     "kr_yak_carcass": {
       "textures": "textures/items/ranching/yak_carcass"
     },
+    "kr_quail_carcass": {
+      "textures": "textures/items/ranching/quail_carcass"
+    },
+    "kr_turkey_carcass": {
+      "textures": "textures/items/ranching/turkey_carcass"
+    },
+    "kr_alpaca_carcass": {
+      "textures": "textures/items/ranching/alpaca_carcass"
+    },
     "kr_buffalo_meat": {
       "textures": "textures/items/ranching/buffalo_meat"
     },
@@ -115,6 +136,27 @@
     },
     "kr_cooked_goose_meat": {
       "textures": "textures/items/ranching/cooked_goose_meat"
+    },
+    "kr_quail_meat": {
+      "textures": "textures/items/ranching/quail_meat"
+    },
+    "kr_cooked_quail_meat": {
+      "textures": "textures/items/ranching/cooked_quail_meat"
+    },
+    "kr_turkey_meat": {
+      "textures": "textures/items/ranching/turkey_meat"
+    },
+    "kr_cooked_turkey_meat": {
+      "textures": "textures/items/ranching/cooked_turkey_meat"
+    },
+    "kr_alpaca_meat": {
+      "textures": "textures/items/ranching/alpaca_meat"
+    },
+    "kr_cooked_alpaca_meat": {
+      "textures": "textures/items/ranching/cooked_alpaca_meat"
+    },
+    "kr_cooked_turkey_breast": {
+      "textures": "textures/items/ranching/cooked_turkey_breast"
     },
     "kr_beef_brisket": {
       "textures": "textures/items/ranching/beef_brisket"
@@ -154,6 +196,12 @@
     },
     "kr_rabbit_leg": {
       "textures": "textures/items/ranching/rabbit_leg"
+    },
+    "kr_turkey_leg": {
+      "textures": "textures/items/ranching/turkey_leg"
+    },
+    "kr_turkey_breast": {
+      "textures": "textures/items/ranching/turkey_breast"
     },
     "kr_pork_mince": {
       "textures": "textures/items/ranching/pork_mince"
@@ -397,6 +445,12 @@
     },
     "kr_down": {
       "textures": "textures/items/ranching/down"
+    },
+    "kr_alpaca_wool": {
+      "textures": "textures/items/ranching/alpaca_wool"
+    },
+    "kr_alpaca_hide": {
+      "textures": "textures/items/ranching/alpaca_hide"
     },
     "kr_yak_hair": {
       "textures": "textures/items/ranching/yak_hair"

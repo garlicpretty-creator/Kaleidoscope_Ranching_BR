@@ -12,6 +12,8 @@ RULES = [
     ("f_", f"q.is_baby || !({MALE})"),
     ("a_", "!q.is_baby"),
     ("b_", "q.is_baby"),
+    # 1.1 追加: the alpaca's fleece, gone once it is sheared (systems/vanillaParity.js)
+    ("wool_", "!q.is_sheared"),
 ]
 # Fades with the speed, so a standing animal stands straight and the sleep pose is not offset.
 SWING = "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed"
@@ -26,6 +28,21 @@ SPECIES = {
         "egg": ("#EEEEE8", "#E08A2A"), "scale_male": 1.15,
         "walk": {"leg_left": f"{SWING} * 70", "leg_right": f"-{SWING} * 70"},
         "wings": True,
+    },
+    # 1.1 追加 新動物 (new_animals.py)
+    "quail": {
+        "egg": ("#8A6A4A", "#E8D8B8"), "scale_male": 1.05,
+        "walk": {"leg_left": f"{SWING} * 90", "leg_right": f"-{SWING} * 90"},
+        "wings": True,
+    },
+    "turkey": {
+        "egg": ("#4A3A2E", "#C82C28"), "scale_male": 1.2,
+        "walk": {"leg_left": f"{SWING} * 60", "leg_right": f"-{SWING} * 60"},
+        "wings": True,
+    },
+    "alpaca": {
+        "egg": ("#E2D6BE", "#7A5A40"), "scale_male": 1.1, "baby_look": True,
+        "walk": {"leg_fl": f"{SWING} * 60", "leg_br": f"{SWING} * 60", "leg_fr": f"-{SWING} * 60", "leg_bl": f"-{SWING} * 60"},
     },
     "buffalo": {
         "egg": ("#3C3A3A", "#8A8478"), "scale_male": 1.15, "baby_look": True,
