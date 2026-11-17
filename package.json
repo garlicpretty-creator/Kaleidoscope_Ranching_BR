@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "node tools/generate.mjs",
+    "generate": "node tools/generate.mjs && node tools/gen_burnt_tea.mjs packs/BP packs/RP kaleidoscope_ranching packs/BP/scripts/data/burntTeaCatalog.js",
     "validate": "node tools/validate.mjs",
-    "test": "node --import ./tools/test/register.mjs tools/test/run.mjs",
+    "test": "node --import ./tools/test/register.mjs tools/test/run.mjs && node --test tools/test/burnt_tea.test.mjs",
     "build": "npm run validate && npm test && bash tools/build.sh"
   }
 }

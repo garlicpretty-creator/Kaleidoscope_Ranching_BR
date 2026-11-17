@@ -1,7 +1,10 @@
 // Kaleidoscope Ranching entry point.
 // Keep this file small: bootstrap integrations, components and events only.
 
+import { system } from "@minecraft/server";
+import { startBurntTea } from "./api/burntTea.js";
 import { connectToCookery } from "./api/cookery.js";
+import { OTC_FOODS, SMOKER_RECIPES } from "./data/burntTeaCatalog.js";
 import { startCookeryContent } from "./api/cookeryRecipes.js";
 import { startRanchingApi } from "./api/ranchingApi.js";
 import { connectToFishing } from "./api/fishing.js";
@@ -28,6 +31,8 @@ connectToFishing();
 connectToTavern();
 // Optional: Herbal 寒熱 for Ranching dishes (api/herbal.js)
 connectToHerbal();
+// Optional: burnt-tea-dev's packs (下單了 menu and stove, 煙火 skewers) take registrations without a ping (api/burntTea.js)
+startBurntTea(system, { source: "kaleidoscope_ranching", foods: OTC_FOODS, smoking: SMOKER_RECIPES });
 
 // M1: own animals, sex, breeding
 startConversion();
