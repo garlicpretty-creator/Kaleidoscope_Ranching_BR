@@ -244,6 +244,15 @@ const DEFS = {
     selection: box(-3, 0, -3, 6, 16, 6),
     seconds: 1,
   },
+  // 1.1 追加 草場與放牧 (systems/pasture.js): a post with a small sign; a clock block.
+  pasture_post: {
+    component: "pasture_post",
+    states: {},
+    bones: {},
+    collision: box(-2, 0, -2, 4, 16, 4),
+    selection: box(-2, 0, -2, 4, 16, 4),
+    seconds: 1,
+  },
   hay_rack: {
     component: "hay_rack",
     states: { [S("hay")]: [0, 1, 2, 3] },

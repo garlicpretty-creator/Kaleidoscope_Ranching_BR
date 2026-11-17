@@ -66,6 +66,9 @@
   "kaleidoscope_ranching:cheese_wheel": {
     "sound": "cloth"
   },
+  "kaleidoscope_ranching:pasture_post": {
+    "sound": "wood"
+  },
   "kaleidoscope_ranching:vintage_cheese_wheel": {
     "sound": "cloth"
   },

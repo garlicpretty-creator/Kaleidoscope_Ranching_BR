@@ -71,6 +71,54 @@
           ]
         }
       }
+    },
+    "animation.kaleidoscope_ranching.yak.graze": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "62 + math.sin(q.anim_time * 720) * 4",
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -2,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "62 + math.sin(q.anim_time * 720) * 4",
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -2,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.yak.chew": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "4 + math.sin(q.anim_time * 540) * 2",
+            "math.sin(q.anim_time * 270) * 4",
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "4 + math.sin(q.anim_time * 540) * 2",
+            "math.sin(q.anim_time * 270) * 4",
+            0
+          ]
+        }
+      }
     }
   }
 }

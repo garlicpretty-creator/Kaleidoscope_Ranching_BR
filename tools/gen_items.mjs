@@ -79,6 +79,8 @@ const OVERRIDES = {
   lasso: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:lasso": {}, "minecraft:durability": { max_durability: 64 }, "minecraft:cooldown": { category: "kr_lasso", duration: 1 } } },
   feather_duster: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:feather_duster": {}, "minecraft:durability": { max_durability: 64 } } },
   egg_candler: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:egg_candler": {} } },
+  // 1.1 追加 草場與放牧 (systems/pasture.js)
+  pasture_seed: { stack: 64, format: "1.21.90", components: { "kaleidoscope_ranching:pasture_seed": {} } },
   vet_medicine: { stack: 16 },
   soap: { stack: 16 },
   // Tavern shaker drinks (api/tavern.js); drinking gives the bottle back.
@@ -252,6 +254,7 @@ const RECIPES = [
   shapeless("down_pillow", [{ item: rid("down"), count: 3 }, { item: rid("felt") }], "down_pillow"),
   shapeless("down_quilt", [{ item: rid("down"), count: 4 }, { item: rid("plush_cloth"), count: 2 }], "down_quilt"),
   shapeless("lasso", [{ item: rid("oiled_leather"), count: 2 }, { item: "minecraft:string" }], "lasso"),
+  shapeless("pasture_seed", [{ item: rid("alfalfa_seeds") }, { item: "minecraft:wheat_seeds" }], "pasture_seed", 2),
   shapeless("feather_duster", [{ item: "minecraft:feather", count: 3 }, { item: "minecraft:stick" }], "feather_duster"),
   shapeless("felt", [{ item: rid("yarn"), count: 4 }], "felt", 2),
   shapeless("string_from_yarn", [{ item: rid("yarn") }], "minecraft:string"),

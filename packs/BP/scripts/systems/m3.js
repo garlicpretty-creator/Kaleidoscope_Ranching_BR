@@ -17,6 +17,7 @@ import { startPackBag } from "./packBag.js";
 import { hornItemComponent, penGateComponent, penGateTopComponent, startWorkAnimals } from "./workAnimals.js";
 import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./textiles.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
+import { pasturePostComponent, pastureSeedItemComponent, startPastures } from "./pasture.js";
 import { cheeseWheelComponent } from "./cheeseWheel.js";
 import { foodWasteBinComponent } from "./foodWasteBin.js";
 import { placedFoodComponent } from "./placedFood.js";
@@ -28,6 +29,9 @@ export function startM3() {
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:incubator", incubatorComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:station", stationComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:hay_rack", hayRackComponent);
+    // 1.1 追加 草場與放牧
+    blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:pasture_post", pasturePostComponent);
+    itemComponentRegistry.registerCustomComponent("kaleidoscope_ranching:pasture_seed", pastureSeedItemComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:cheese_wheel", cheeseWheelComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:food_waste_bin", foodWasteBinComponent);
     blockComponentRegistry.registerCustomComponent("kaleidoscope_ranching:placed_food", placedFoodComponent);
@@ -46,6 +50,7 @@ export function startM3() {
   startMilking();
   startNests();
   startHayRacks();
+  startPastures(); // after the troughs and hay racks: better feed first
   startAutoStations();
   startMilkingRacks();
   startTruffles();

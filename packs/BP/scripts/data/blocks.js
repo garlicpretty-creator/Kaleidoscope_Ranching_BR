@@ -13,6 +13,8 @@ export const BLOCKS = [
   ["feed_mixer", "飼料攪拌桶", "Feed Mixer", "husbandry", "m2"],
   ["chaff_cutter", "鍘草機", "Chaff Cutter", "husbandry", "m2"],
   ["hay_rack", "乾草架", "Hay Rack", "husbandry"],
+  // 1.1 追加 草場與放牧 (systems/pasture.js)
+  ["pasture_post", "草場界樁", "Pasture Post", "husbandry"],
   ["nest_box", "巢箱", "Nest Box", "husbandry"],
   ["incubator", "孵化器", "Incubator", "husbandry"],
   ["salt_lick", "鹽磚", "Salt Lick", "husbandry", "m2"],

@@ -3,13 +3,15 @@
 //
 // The behaviour pack sets the synced enum property kaleidoscope_ranching:action
 // (data/actions.js, core/actions.js). For each animal this writes
-//   animations/<id>.actions.animation.json            eat, drink, petted (and graze for the sheep)
+//   animations/<id>.actions.animation.json            eat, drink, petted, graze, chew
 //   animation_controllers/<id>.actions.animation_controllers.json
 // and wires the controller into the client entity:
 // - eat     head down to the trough, chewing; poultry peck; the rabbit nibbles.
 // - drink   head lower, lapping; poultry dip the beak and tip the head back to swallow.
 // - petted  the head leans in and sways, the tail wags; poultry fluff up; the rabbit lays its ears back.
-// - graze   the sheep's own grass eating (minecraft:behavior.eat_block, q.is_grazing), head to the ground.
+// - graze   head to the ground (1.1 追加 草場與放牧, systems/pasture.js), for every animal that grazes
+//           (data/pasture.js GRAZE); the sheep also plays it for its own grass eating (q.is_grazing).
+// - chew    the ruminants chew now and then while standing still: client only, no property.
 // The controller leaves each state when the property changes or after the action's
 // time (ACTION_SECONDS), so a property left set when a world closed plays only once.
 // The head stops following the player (look_at_target) while an action plays.
@@ -25,16 +27,24 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const load = (name) => import(pathToFileURL(join(root, "packs/BP/scripts/data", name)).href);
 const { ANIMALS } = await load("animals.js");
 const { ACTION_PROPERTY, ACTION_SECONDS } = await load("actions.js");
+const { GRAZE } = await load("pasture.js");
 
 const NS = "kaleidoscope_ranching";
 const RP = join(root, "packs/RP");
 const ASLEEP = `q.property('${NS}:sleeping')`;
 const ACTION = (value) => `q.property('${ACTION_PROPERTY}') == '${value}'`;
-const KEYS = ["eat", "drink", "petted", "graze", "actions"];
+const KEYS = ["eat", "drink", "petted", "graze", "chew", "actions"];
 
 const POULTRY = new Set(["chicken", "duck", "goose"]);
-/** Animals whose behaviour pack eats grass blocks (minecraft:behavior.eat_block): the sheep. */
-const GRAZERS = new Set(["sheep"]);
+/** Animals that graze on a pasture (data/pasture.js). */
+const GRAZERS = new Set(Object.keys(GRAZE).map((typeId) => typeId.split(":")[1]));
+/** Animals whose behaviour pack eats grass blocks itself (minecraft:behavior.eat_block, q.is_grazing): the sheep. */
+const EAT_BLOCK = new Set(["sheep"]);
+/** Animals that chew the cud while standing still. */
+const RUMINANTS = new Set(["cow", "buffalo", "yak", "sheep", "goat"]);
+/** Every so many seconds of its life an idle ruminant chews for a few seconds (life time keeps herds out of step). */
+const CHEW_EVERY = 20;
+const CHEW_SECONDS = 3;
 
 const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
 const writeJson = (path, data) => {
@@ -99,12 +109,18 @@ function animationsFor(id, bones) {
     };
   }
   if (GRAZERS.has(id)) {
-    out.graze = { loop: true, bones: each(H, { rotation: ["62 + math.sin(q.anim_time * 720) * 4", 0, 0], position: [0, -2, 0] }) };
+    // Poultry peck and the rabbit nibbles as they do at a trough; the rest put the head to the ground.
+    out.graze = POULTRY.has(id) || id === "rabbit"
+      ? { ...out.eat }
+      : { loop: true, bones: each(H, { rotation: ["62 + math.sin(q.anim_time * 720) * 4", 0, 0], position: [0, -2, 0] }) };
+  }
+  if (RUMINANTS.has(id)) {
+    out.chew = { loop: true, bones: each(H, { rotation: ["4 + math.sin(q.anim_time * 540) * 2", "math.sin(q.anim_time * 270) * 4", 0] }) };
   }
   return Object.fromEntries(Object.entries(out).map(([key, anim]) => [`animation.${NS}.${id}.${key}`, anim]));
 }
 
-function controllerFor(id, keys) {
+function controllerFor(id, keys, eatsBlocks) {
   const state = (key, exit) => ({
     animations: [key],
     blend_transition: 0.25,
@@ -115,17 +131,22 @@ function controllerFor(id, keys) {
       blend_transition: 0.25,
       transitions: [
         ...["eat", "drink", "petted"].map((key) => ({ [key]: ACTION(key) })),
-        ...(keys.includes("graze") ? [{ graze: "q.is_grazing" }] : []),
+        ...(keys.includes("graze") ? [{ graze: eatsBlocks ? `${ACTION("graze")} || q.is_grazing` : ACTION("graze") }] : []),
+        ...(keys.includes("chew") ? [{ chew: `!q.is_moving && ${ACTION("none")} && math.mod(math.floor(q.life_time), ${CHEW_EVERY}) == 0` }] : []),
       ],
     },
     eat: state("eat", `!(${ACTION("eat")}) || q.state_time > ${ACTION_SECONDS.eat}`),
     drink: state("drink", `!(${ACTION("drink")}) || q.state_time > ${ACTION_SECONDS.drink}`),
     petted: state("petted", `!(${ACTION("petted")}) || q.state_time > ${ACTION_SECONDS.petted}`),
     // Back to idle only once the property is reset, so a stale value plays once.
-    done: { transitions: [{ idle: `${ACTION("none")}${keys.includes("graze") ? " || q.is_grazing" : ""}` }] },
+    done: { transitions: [{ idle: ACTION("none") }] },
   };
   if (keys.includes("graze")) {
-    states.graze = { animations: ["graze"], blend_transition: 0.25, transitions: [{ idle: "!q.is_grazing" }] };
+    const grazing = eatsBlocks ? `${ACTION("graze")} || q.is_grazing` : ACTION("graze");
+    states.graze = { animations: ["graze"], blend_transition: 0.25, transitions: [{ done: `!(${grazing}) || q.state_time > ${ACTION_SECONDS.graze}` }] };
+  }
+  if (keys.includes("chew")) {
+    states.chew = { animations: ["chew"], blend_transition: 0.4, transitions: [{ idle: `q.is_moving || !(${ACTION("none")}) || q.state_time > ${CHEW_SECONDS}` }] };
   }
   return {
     format_version: "1.10.0",
@@ -147,7 +168,7 @@ for (const { id } of ANIMALS) {
   const animations = animationsFor(id, geo.bones);
   writeJson(join(RP, "animations", `${id}.actions.animation.json`), { format_version: "1.8.0", animations });
   const keys = Object.keys(animations).map((full) => full.split(".").pop());
-  writeJson(join(RP, "animation_controllers", `${id}.actions.animation_controllers.json`), controllerFor(id, keys));
+  writeJson(join(RP, "animation_controllers", `${id}.actions.animation_controllers.json`), controllerFor(id, keys, EAT_BLOCK.has(id)));
 
   for (const key of KEYS) delete description.animations[key];
   for (const key of keys) description.animations[key] = `animation.${NS}.${id}.${key}`;

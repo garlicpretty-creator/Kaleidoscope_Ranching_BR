@@ -17,7 +17,10 @@
               "petted": "q.property('kaleidoscope_ranching:action') == 'petted'"
             },
             {
-              "graze": "q.is_grazing"
+              "graze": "q.property('kaleidoscope_ranching:action') == 'graze' || q.is_grazing"
+            },
+            {
+              "chew": "!q.is_moving && q.property('kaleidoscope_ranching:action') == 'none' && math.mod(math.floor(q.life_time), 20) == 0"
             }
           ]
         },
@@ -57,7 +60,7 @@
         "done": {
           "transitions": [
             {
-              "idle": "q.property('kaleidoscope_ranching:action') == 'none' || q.is_grazing"
+              "idle": "q.property('kaleidoscope_ranching:action') == 'none'"
             }
           ]
         },
@@ -68,7 +71,18 @@
           "blend_transition": 0.25,
           "transitions": [
             {
-              "idle": "!q.is_grazing"
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'graze' || q.is_grazing) || q.state_time > 8"
+            }
+          ]
+        },
+        "chew": {
+          "animations": [
+            "chew"
+          ],
+          "blend_transition": 0.4,
+          "transitions": [
+            {
+              "idle": "q.is_moving || !(q.property('kaleidoscope_ranching:action') == 'none') || q.state_time > 3"
             }
           ]
         }

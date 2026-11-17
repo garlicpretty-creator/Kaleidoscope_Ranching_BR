@@ -200,6 +200,7 @@
     "wool_hat": { "prompt": "red knitted wool hat with a white brim" },
     "wool_scarf": { "prompt": "blue knitted wool scarf" },
     "egg_candler": { "prompt": "small brass handheld lantern with a glowing yellow round lens" },
+    "pasture_seed": { "prompt": "small cloth seed pouch spilling mixed green and tan grass seeds" },
     "eggshell": { "prompt": "broken white eggshell halves with jagged edges" },
     "calcium_powder": { "prompt": "small wooden bowl of fine white powder" },
     "calcium_feed": { "prompt": "small sack of pale grey poultry calcium feed" },

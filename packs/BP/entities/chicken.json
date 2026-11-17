@@ -27,7 +27,8 @@
             "none",
             "eat",
             "drink",
-            "petted"
+            "petted",
+            "graze"
           ],
           "default": "none",
           "client_sync": true

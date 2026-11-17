@@ -187,6 +187,9 @@
     "kr_nest_box_candled": {
       "textures": "textures/blocks/ranching/nest_box_candled"
     },
+    "kr_pasture_post": {
+      "textures": "textures/blocks/ranching/pasture_post"
+    },
     "kr_pen_gate": {
       "textures": "textures/blocks/ranching/pen_gate"
     },

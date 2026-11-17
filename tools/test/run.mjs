@@ -389,6 +389,93 @@ test("M2: a chicken does not eat hay feed", () => {
   equal(state(trough, "fill"), 5, "hay untouched");
 });
 
+// --- 1.1 追加 草場與放牧 ------------------------------------------------------
+
+const pasture = await import("../../packs/BP/scripts/systems/pasture.js");
+const { getBlockData: postData } = await import("../../packs/BP/scripts/core/blockStore.js");
+const grassCount = () => [...overworld.blocks.values()].filter((p) => p.type.id === "minecraft:grass_block").length;
+const dirtCount = () => [...overworld.blocks.values()].filter((p) => p.type.id === "minecraft:dirt").length;
+function grassPatch(n) {
+  let placed = 0;
+  for (let x = -8; x <= 8 && placed < n; x++) for (let z = -8; z <= 8 && placed < n; z++, placed++) overworld.setBlockType({ x, y: 63, z }, "minecraft:grass_block");
+}
+
+test("pasture: grazers eat the post's grass instead of a trough, and the grass wears to dirt", () => {
+  clearWorld();
+  grassPatch(10);
+  const post = place("pasture_post", at(0));
+  const cow = ranch("cow", 1, "female");
+  const ewe = ranch("sheep", 2, "female");
+  const pig = ranch("pig", 3, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(cow, "fed"), "the cow grazed");
+  assert(care.isMarkedToday(ewe, "fed"), "the sheep grazed");
+  assert(!care.isMarkedToday(pig, "fed"), "a pig does not graze");
+  assert(typeof cow.getDynamicProperty("kr:grazed_day") === "number", "grazed day recorded");
+  const data = postData(post, {});
+  equal(data.grass, 10, "today's grass counted");
+  equal(data.eaten, 5, "3 for the cow, 2 for the sheep");
+  equal(dirtCount(), 2, "every 2 eaten turns one grass block to dirt");
+  equal(data.trampled, 1, "the odd one is kept for next time");
+});
+
+test("pasture: too little grass feeds only the animals it covers; a trough feeds first", () => {
+  clearWorld();
+  grassPatch(2);
+  place("pasture_post", at(0));
+  const cow = ranch("cow", 1, "female");
+  const ewe = ranch("sheep", 2, "female");
+  runBlockClock();
+  assert(!care.isMarkedToday(cow, "fed"), "the cow needs 3 and gets none");
+  assert(care.isMarkedToday(ewe, "fed"), "the sheep needs 2");
+
+  clearWorld();
+  grassPatch(10);
+  const post = place("pasture_post", at(0));
+  place("trough", at(-3), { fill: 5, kind: 1 });
+  const fed = ranch("cow", 1, "female");
+  runBlockClock();
+  assert(care.isMarkedToday(fed, "fed"), "fed");
+  equal(postData(post, {}).eaten ?? 0, 0, "by the trough, not the pasture");
+});
+
+test("pasture: a rested pasture gives extra affection; turned off, nothing grazes", () => {
+  clearWorld();
+  grassPatch(20);
+  place("pasture_post", at(0));
+  const cow = ranch("cow", 1, "female");
+  runBlockClock();
+  __skipTime(DAY * 3);
+  care.ensureSettled(cow);
+  const before = care.getAffection(cow);
+  runBlockClock();
+  equal(care.getAffection(cow) - before, 5, "rested: +5 points");
+  __skipTime(DAY);
+  care.ensureSettled(cow);
+  const next = care.getAffection(cow);
+  runBlockClock();
+  equal(care.getAffection(cow) - next, 0, "grazed yesterday: no bonus");
+
+  clearWorld();
+  grassPatch(20);
+  place("pasture_post", at(0));
+  const off = ranch("cow", 1, "female");
+  world.setDynamicProperty("kr:cfg:pasture", false);
+  runBlockClock();
+  assert(!care.isMarkedToday(off, "fed"), "grazing off");
+});
+
+test("pasture seed turns the 3×3 dirt around into grass", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  for (let x = -2; x <= 2; x++) for (let z = -2; z <= 2; z++) overworld.setBlockType({ x, y: 63, z }, "minecraft:dirt");
+  hold(player, `${NS}:pasture_seed`, 3);
+  equal(pasture.sowPasture(player, overworld.getBlock({ x: 0, y: 63, z: 0 })), 9, "nine blocks");
+  equal(grassCount(), 9, "now grass");
+  equal(player.inventory.count(`${NS}:pasture_seed`), 2, "one seed used");
+  equal(pasture.sowPasture(player, overworld.getBlock({ x: 0, y: 63, z: 0 })), 0, "not on grass");
+});
+
 test("M2: a broken trough leaves the clock", () => {
   clearWorld();
   const trough = place("trough", at(0), { fill: 0, kind: 0 });

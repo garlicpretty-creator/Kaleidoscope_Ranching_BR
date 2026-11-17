@@ -92,6 +92,18 @@
           ]
         }
       }
+    },
+    "animation.kaleidoscope_ranching.goose.graze": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "math.max(0, math.sin(q.anim_time * 720)) * 70",
+            0,
+            0
+          ]
+        }
+      }
     }
   }
 }

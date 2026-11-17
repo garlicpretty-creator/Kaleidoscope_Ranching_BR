@@ -287,6 +287,9 @@
     "kr_feather_duster": {
       "textures": "textures/items/ranching/feather_duster"
     },
+    "kr_pasture_seed": {
+      "textures": "textures/items/ranching/pasture_seed"
+    },
     "kr_felt": {
       "textures": "textures/items/ranching/felt"
     },

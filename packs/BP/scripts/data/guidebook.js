@@ -60,6 +60,7 @@ export const GUIDE_ALSO = {
   milking_pail: ["milk"],
   trough: ["feed"],
   hay_rack: ["feed"],
+  pasture_post: ["feed"],
 };
 
 /**
@@ -93,6 +94,7 @@ const BLOCK_ICONS = {
   salt_lick: M2_FACE("salt_lick"),
   compost_bin: M2_FACE("compost_bin_side"),
   hay_rack: "forage",
+  pasture_post: "pasture_seed",
   nest_box: "fertilized_chicken_egg",
   incubator: "fertilized_duck_egg",
   hitching_post: "lasso",
@@ -327,6 +329,12 @@ export const GUIDE_TEXT = {
     ["範圍內也有飼槽時，飼槽先餵。打掉時存量變回乾草塊和小麥。", "When a trough is also in range, the trough feeds first. Broken, it gives its hay back as hay bales and wheat."],
     ["動物入睡時 4 格內有乾草架或地毯、頭上 8 格內有遮蔽，就算睡得好，好感度 +4 點。", "An animal that falls asleep with a hay rack or rug within 4 blocks and a roof within 8 sleeps well: +4 affection points."],
   ],
+  pasture_post: [
+    ["半徑 8 格內的草方塊就是草場。牛、水牛、氂牛每天吃 3 格草，羊、山羊 2 格，兔、鵝 1 格，幼體吃一半。", "The grass blocks within 8 blocks are its pasture. Cows, buffalo and yaks eat 3 a day, sheep and goats 2, rabbits and geese 1; young ones half."],
+    ["今天還沒吃飽的放牧動物會吃草場的草，等於吃了乾草；範圍內有飼槽或乾草架時先吃那些。豬、雞、鴨不吃草。", "Grazers that have not eaten today eat its grass as if it were hay; troughs and hay racks in range feed them first. Pigs, chickens and ducks do not graze."],
+    ["每吃掉 2 格草，就有 1 格草方塊變成泥土，旁邊的草地會慢慢長回來，也可以撒牧草種子。", "Every 2 grass eaten turns one grass block to dirt; the grass grows back from its neighbours, or sow Pasture Seed."],
+    ["連續 2 天沒有動物吃草就算休養過，那之後第一天在這裡吃飽的動物好感度 +5 點。手持觀察手冊點它可以看今天的草。", "Left ungrazed for two days it is rested: animals that eat there the next day gain 5 affection points. Use the Observation Notebook on it to see today's grass."],
+  ],
   nest_box: [
     ["8 格內的成年母雞、母鴨、母鵝每天在這裡下 1 顆蛋。巢箱最多存 16 顆，多的掉在旁邊。", "Adult hens, ducks and geese within 8 blocks lay one egg a day into it. It stores 16; more drop beside it."],
     ["空手或拿其他東西點它，取出所有的蛋；正下方接漏斗會自動送出。", "Use it with anything but a fertilized egg to take the eggs; a hopper below collects them."],
@@ -498,6 +506,10 @@ export const GUIDE_TEXT = {
     ["對成年氂牛使用就裝上，共 15 格。", "Use it on an adult yak to put it on: 15 slots."],
     ["蹲下拿著物品對氂牛互動，整組放進馱袋；不蹲下空手互動，打開清單選一組取出。", "Sneak and use an item on the yak to store the stack; use it with an empty hand, standing, to pick a stack to take out."],
     ["清空後才能取下馱袋。氂牛死亡時馱袋和裡面的東西會掉出來。", "Empty it before taking it off. If the yak dies, the bag and its contents drop."],
+  ],
+  pasture_seed: [
+    ["工作台：苜蓿種子與小麥種子各 1，做出 2 份。", "Crafting table: 1 alfalfa seeds and 1 wheat seeds make 2."],
+    ["對泥土使用，周圍 3×3 的泥土立刻變成草方塊，補回被吃光的草場。", "Use it on dirt to turn the 3×3 patch of dirt around it into grass at once, mending a bare pasture."],
   ],
   feather_duster: [["對蜘蛛網或雪層使用，清掉周圍 3×3 範圍內的同種方塊。耐久度 64。", "Use it on cobwebs or snow layers to clear that block in a 3×3 area. 64 durability."]],
   wool_hat: [["戴在頭盔欄位，護甲 1，耐久度 80。", "Worn in the helmet slot: 1 armor, 80 durability."]],

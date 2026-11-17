@@ -165,6 +165,8 @@ const FLUFF_LINE = [
   ["yarn", "毛線", "Yarn", "material"],
   ["fine_yarn", "絨線", "Fine Yarn", "material"],
   ["feather_duster", "羽毛撣", "Feather Duster", "tool"],
+  // 1.1 追加 草場與放牧: turns dirt back into grass (systems/pasture.js)
+  ["pasture_seed", "牧草種子", "Pasture Seed", "tool"],
 ];
 const CLOTH_LINE = [
   ["felt", "毛氈", "Felt", "material"],

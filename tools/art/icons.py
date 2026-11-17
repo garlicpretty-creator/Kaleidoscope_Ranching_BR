@@ -555,6 +555,9 @@ def draw(item_id):
     # --- 1.1 馱袋與奶酒 ---
     elif base == "pack_bag":
         sack(c, (130, 80, 46), (190, 160, 90))
+    elif base == "pasture_seed":
+        # 1.1 追加: a small seed pouch with green and tan seeds spilling out
+        sack(c, (176, 150, 104), (120, 170, 80))
     elif base in ("fresh_milk_bucket", "yak_milk_bucket"):
         c.fill({(x, y) for x in range(3, 13) for y in range(6, 14) if x - 3 >= (y - 6) // 4 and 12 - x >= (y - 6) // 4}, (168, 172, 178))
         c.fill(rect(4, 6, 11, 7), (250, 248, 240) if base == "fresh_milk_bucket" else (244, 226, 170))
