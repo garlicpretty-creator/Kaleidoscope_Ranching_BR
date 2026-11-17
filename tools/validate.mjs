@@ -773,11 +773,29 @@ for (const path of walk(join(rp, "render_controllers")).filter((p) => p.endsWith
   }
 }
 
-// ## Action-bar text goes through core/actionBar.js, which hides hints and status
-// ## read-outs; a direct setActionBar would bypass that.
-for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js") && !p.endsWith(join("core", "actionBar.js")))) {
-  if (readFileSync(path, "utf8").includes("onScreenDisplay.setActionBar(")) {
-    fail(`${relative(root, path)}: use showActionBar from core/actionBar.js instead of setActionBar`);
+// ## No text on screen (series rule, immersion): no action bar, title, chat message or
+// ## title/tellraw command. Outcomes are sounds, particles and models (core/feedback.js).
+// ## Forms the player opens (ui/notebook.js, systems/packBag.js) and console.warn are fine.
+{
+  const ON_SCREEN = [
+    /\.setActionBar\(/, /\.setTitle\(/, /\.updateSubtitle\(/, /\.sendMessage\(/,
+    /runCommand(Async)?\(\s*[`"'](\/)?(title|titleraw|tellraw|say|me|msg|tell|w)\b/,
+  ];
+  for (const path of walk(join(bp, "scripts")).filter((p) => p.endsWith(".js"))) {
+    const code = readFileSync(path, "utf8");
+    for (const pattern of ON_SCREEN) {
+      if (pattern.test(code)) fail(`${relative(root, path)}: puts text on screen (${pattern}); use a sound or particle (core/feedback.js)`);
+    }
+  }
+}
+
+// ## core/feedback.js's AMBIENT table matches the animals' ambient sounds in packs/RP/sounds.json.
+{
+  const feedback = readFileSync(join(bp, "scripts", "core", "feedback.js"), "utf8");
+  const entities = JSON.parse(readFileSync(join(rp, "sounds.json"), "utf8")).entity_sounds?.entities ?? {};
+  for (const [id, { events }] of Object.entries(entities)) {
+    const sound = events?.ambient;
+    if (sound && !feedback.includes(`"${id}": "${sound}"`)) fail(`core/feedback.js AMBIENT: ${id} should be "${sound}" (packs/RP/sounds.json)`);
   }
 }
 

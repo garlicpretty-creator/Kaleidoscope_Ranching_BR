@@ -145,3 +145,15 @@ M3 的方塊用四個自訂元件：`kaleidoscope_ranching:butcher_rack`、`nest
 
 出生、孵化、收成、屠宰完成時，系統呼叫 `emitRanchEvent(type, data)` 回報；對外 API 會把它轉成 `kaleidoscope_ranching:animal_event` 廣播出去。新功能如果會產出動物或收成，也請在這裡回報，事件種類見 `core/events.js`。出生與孵化已在 `core/husbandry.js` 的 `notifyBorn` 統一回報，不需要另外呼叫。
 
+## 12. 玩家回饋：`core/feedback.js`
+
+畫面上不跳任何字（系列共同規則）。玩家做了什麼、被拒絕了什麼，一律用聲音、粒子與模型表達：
+
+| 函式 | 用途 |
+| --- | --- |
+| `cue(target, sound, { pitch, volume, particle, y })` | 在方塊（中心）或動物（頭部）播音效、放粒子，附近的人都聽得到 |
+| `refuse(player, animal?)` | 拒絕：只有該玩家聽得到的低音，每半秒最多一次；帶動物時動物叫一聲、冒怒氣粒子 |
+| `levelPitch(n, max)` | 裝填量對應的音高（空 0.7、滿 1.3） |
+| `AMBIENT` | 各動物的叫聲（與 `packs/RP/sounds.json` 一致，驗證會比對） |
+
+不要用 `setActionBar`、`setTitle`、`sendMessage` 或 `title`/`tellraw` 指令；安裝類的問題（例如沒有廚房）用 `console.warn` 寫進內容記錄。

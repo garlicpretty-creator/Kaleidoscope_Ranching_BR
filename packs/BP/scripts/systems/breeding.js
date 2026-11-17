@@ -23,7 +23,7 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand } from "../core/inventory.js";
 import { TICKS_PER_DAY, nowTick } from "../core/time.js";
 import { DP_PREGNANT_UNTIL_DAY } from "../data/m1_contract.js";
-import { showActionBar } from "../core/actionBar.js";
+import { grumble, refuse } from "../core/feedback.js";
 
 const LOVE_UNTIL = dp("love_until");
 const COOLDOWN_UNTIL = dp("breed_cooldown_until");
@@ -65,9 +65,6 @@ function resting(entity, now) {
   return numberProperty(entity, COOLDOWN_UNTIL) > now;
 }
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.breed.${key}` });
-}
 
 function hearts(entity) {
   const { x, y, z } = entity.location;
@@ -107,9 +104,9 @@ function conceive(mother, father, now) {
 
 function feed(player, animal) {
   const now = nowTick();
-  if (sexOf(animal) === "female" && isPregnant(animal)) return tell(player, "pregnant");
-  if (resting(animal, now)) return tell(player, "resting");
-  if (!canBreed(animal)) return tell(player, "not_cared");
+  if (sexOf(animal) === "female" && isPregnant(animal)) return refuse(player, animal);
+  if (resting(animal, now)) return refuse(player, animal);
+  if (!canBreed(animal)) return refuse(player, animal); // not cared for enough
 
   consumeMainHand(player);
   animal.setDynamicProperty(LOVE_UNTIL, now + LOVE_TICKS);
@@ -121,7 +118,7 @@ function feed(player, animal) {
     const [mother, father] = sexOf(animal) === "female" ? [animal, mate] : [mate, animal];
     conceive(mother, father, now);
   } else if (others.length) {
-    tell(player, "same_sex");
+    grumble(others[0]); // only the same sex near: no mate
   }
 }
 

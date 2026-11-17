@@ -6,7 +6,6 @@ import { SPECIES } from "../data/species.js";
 import { FAMILY_LIVESTOCK } from "../data/m1_contract.js";
 import { getBlockData, setBlockData, clearBlockData } from "../core/blockStore.js";
 import { dropItems, stacksOf } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
 
 /** Current game day and absolute tick, from the shared clock (core/time.js). */
 export { today, nowTick as absTime } from "../core/time.js";
@@ -121,10 +120,6 @@ export function countBlocksNear(block, typeId, radius = CARE.RADIUS, half = CARE
         }
     return n;
   }
-}
-
-export function actionbar(player, rawtext) {
-  showActionBar(player, rawtext); // filters hints and status read-outs (core/actionBar.js)
 }
 
 export function later(fn) {

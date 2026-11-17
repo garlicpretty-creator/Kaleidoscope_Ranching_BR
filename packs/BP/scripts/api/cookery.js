@@ -5,7 +5,7 @@
 // ## Cookery keeps registrations for the current world session only, so the
 // ## handshake runs again on every world load.
 
-import { system, world } from "@minecraft/server";
+import { system } from "@minecraft/server";
 
 const API_PING = "kaleidoscope_cookery:api_ping";
 const API_READY = "kaleidoscope_cookery:api_ready";
@@ -50,6 +50,7 @@ export function connectToCookery() {
 
   system.runTimeout(() => {
     if (cookeryCapabilities) return;
-    world.sendMessage({ translate: "kaleidoscope_ranching.message.cookery_missing" });
+    // ## A setup problem, not a game event: it goes to the content log, never on screen.
+    console.warn("[Kaleidoscope Ranching] Kaleidoscope Cookery did not respond. Check that Cookery 1.6.6 or newer is active and loaded above Ranching.");
   }, READY_TIMEOUT_TICKS);
 }

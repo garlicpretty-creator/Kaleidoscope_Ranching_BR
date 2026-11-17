@@ -38,7 +38,7 @@ import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js
 import { rid, shortId } from "../core/ids.js";
 import { countItems, dropItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { nowTick } from "../core/time.js";
-import { showActionBar } from "../core/actionBar.js";
+import { refuse } from "../core/feedback.js";
 import { containerOf, countIn, putInto, takeFrom } from "../core/containers.js";
 import { taggedItems } from "../core/tags.js";
 import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
@@ -53,9 +53,6 @@ const BUSY_STATE = "kaleidoscope_ranching:busy";
 const STAGE_STATE = "kaleidoscope_ranching:stage";
 export const STAGES = 3;
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.station.${key}`, with: values });
-}
 
 /** The stage a batch has reached now: 1..STAGES by the share of its time gone. */
 export function stageOf(data, now = nowTick()) {
@@ -180,9 +177,9 @@ function collect(block, player, data) {
 function start(block, player) {
   const station = shortId(block.typeId);
   const held = mainHand(player)?.getItem();
-  if (!held) return tell(player, "empty");
+  if (!held) return refuse(player);
   const candidates = candidatesFor(station, held.typeId);
-  if (!candidates.length) return tell(player, "wrong_item");
+  if (!candidates.length) return refuse(player); // not an input here
 
   for (const recipe of candidates) {
     const result = takeInputs(player, recipe, held.typeId);
@@ -197,7 +194,7 @@ function start(block, player) {
     block.dimension.playSound("bucket.fill_water", block.location);
     return;
   }
-  tell(player, "missing");
+  refuse(player); // an input of every matching recipe is missing
 }
 
 function spill(dimension, location, typeId) {
@@ -223,7 +220,7 @@ const stationEvents = {
     const data = getBlockData(block);
     if (!data) return start(block, player);
     if (nowTick() >= data.start + ticksOf(data)) return collect(block, player, data);
-    // Still working: no read-out (message.station.working is silenced); the contents show the stage.
+    // Still working: no read-out (no text on screen); the contents show the stage.
     setStage(block, stageOf(data));
   },
 

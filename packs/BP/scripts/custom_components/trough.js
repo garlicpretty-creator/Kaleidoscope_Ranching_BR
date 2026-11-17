@@ -8,11 +8,11 @@ import { SPECIES } from "../data/species.js";
 import { ensureSettled, mark, isMarkedToday, cleanNeedEnabled } from "../care/state.js";
 import {
   today, getState, setStates, animalsNear, countBlocksNear, blockGet, blockSet,
-  mainhand, consumeMainhand, actionbar,
+  mainhand, consumeMainhand,
 } from "../utils/world_util.js";
 import { MANURE_BLOCK } from "./manure.js";
 import { FEED_BAG, bagToTrough } from "../events/feed_bag.js";
-import { T } from "../ui/text.js";
+import { cue, refuse, levelPitch } from "../core/feedback.js";
 import { clockBlockEvents } from "../core/blockClock.js";
 
 export const TROUGH = "kaleidoscope_ranching:trough";
@@ -70,31 +70,18 @@ export function tickTrough(block) {
   if (fill !== getState(block, "fill")) setStates(block, { fill, kind: fill > 0 ? kind : KIND.EMPTY });
 }
 
-function showStatus(player, block) {
-  const kind = getState(block, "kind");
-  const fill = getState(block, "fill");
-  actionbar(player, T("trough.status", [T(`kind.${kind}`), `${fill}`, `${CARE.TROUGH_CAPACITY}`]));
-}
-
+// ## No read-out: the feed shows in the trough (its model's fill and colour come from the
+// ## kind and fill states), and a filling sound rises in pitch as the trough fills.
 function interact(block, player) {
   const held = mainhand(player);
-  if (held?.typeId === FEED_BAG) {
-    bagToTrough(player, held, block);
-    showStatus(player, block);
-    return;
-  }
+  if (held?.typeId === FEED_BAG) return void bagToTrough(player, held, block);
   const feed = held && FEEDS[held.typeId];
-  if (!feed) return showStatus(player, block);
+  if (!feed) return;
   const n = itemsThatFit(block, feed, player.isSneaking ? held.amount : 1);
-  if (n <= 0) {
-    const kind = getState(block, "kind");
-    actionbar(player, kind !== KIND.EMPTY && kind !== feed.kind ? T("trough.other_kind") : T("trough.full"));
-    return;
-  }
+  if (n <= 0) return refuse(player); // full, or holding another kind of feed
   addToTrough(block, feed.kind, n * feed.units);
   consumeMainhand(player, n);
-  block.dimension.playSound("block.composter.fill", block.location);
-  showStatus(player, block);
+  cue(block, "block.composter.fill", { pitch: levelPitch(getState(block, "fill"), CARE.TROUGH_CAPACITY) });
 }
 
 export const troughComponent = clockBlockEvents({

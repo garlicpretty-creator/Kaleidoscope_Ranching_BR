@@ -18,7 +18,7 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { damageMainHand, give, takeItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
-import { showActionBar } from "../core/actionBar.js";
+import { AMBIENT, cue, refuse } from "../core/feedback.js";
 import { isAsleep, wakeUp } from "./sleep.js";
 import { wearing } from "./textiles.js";
 
@@ -30,9 +30,6 @@ export const NURSING_FEEDS = dp("nursing_feeds");
 // 1.1: skim milk from the cream separator feeds babies too, before whole milk.
 const MILK_FOR_FEEDING = [rid("skim_milk"), ...ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id))];
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
-}
 
 /** The milk an animal gives (one item: products have no quality grades). */
 export function milkOf(species) {
@@ -41,12 +38,12 @@ export function milkOf(species) {
 
 function milk(player, animal) {
   const species = speciesOf(animal);
-  if (isBaby(animal) || !isFemale(animal)) return tell(player, "milking.not_female");
+  if (isBaby(animal) || !isFemale(animal)) return refuse(player, animal);
   const day = today();
-  if (animal.getDynamicProperty(LAST_MILKED_DAY) === day) return tell(player, "milking.milked_today");
+  if (animal.getDynamicProperty(LAST_MILKED_DAY) === day) return refuse(player, animal);
   const { produces } = production(animal, day);
-  if (!produces) return tell(player, "milking.no_milk");
-  if (!takeItems(player, ["minecraft:glass_bottle"], 1)) return tell(player, "milking.need_bottle");
+  if (!produces) return refuse(player, animal); // no milk today
+  if (!takeItems(player, ["minecraft:glass_bottle"], 1)) return refuse(player); // no empty bottle
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
   // 1.1 動物作息: milking a sleeping animal wakes her, unless the player wears
@@ -60,7 +57,7 @@ function milk(player, animal) {
 }
 
 function nurse(player, baby) {
-  if (!takeItems(player, MILK_FOR_FEEDING, 1)) return tell(player, "nursing.need_milk");
+  if (!takeItems(player, MILK_FOR_FEEDING, 1)) return refuse(player); // no milk to give
   give(player, "minecraft:glass_bottle");
   damageMainHand(player);
   notifyCared(baby, player, "nursing_bottle");
@@ -73,7 +70,7 @@ function nurse(player, baby) {
   if (feeds >= NURSING_FEEDS_TO_GROW) {
     baby.setDynamicProperty(NURSING_FEEDS, undefined);
     baby.triggerEvent("kaleidoscope_ranching:grow_up");
-    tell(player, "nursing.grew");
+    cue(baby, AMBIENT[baby.typeId], { particle: "minecraft:villager_happy", y: 1.2 });
   } else {
     baby.setDynamicProperty(NURSING_FEEDS, feeds);
   }

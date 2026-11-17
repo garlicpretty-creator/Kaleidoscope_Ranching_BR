@@ -22,15 +22,12 @@ import { updateRoster } from "../ui/roster.js";
 import { adoptPregnancy } from "./breeding.js";
 import { bagContents, resumePackBag, wearsPackBag } from "./packBag.js";
 import { resumePloughing } from "./workAnimals.js";
-import { showActionBar } from "../core/actionBar.js";
+import { refuse } from "../core/feedback.js";
 
 export const CRATE = rid("animal_crate");
 const SNAPSHOT = "kaleidoscope_ranching:crate";
 const NAMES = new Map(ANIMAL_NAMES.map(([id, zh, en]) => [rid(id), `${zh} ${en}`]));
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.crate.${key}`, with: values });
-}
 
 const snapshotOf = (item) => {
   const raw = item?.typeId === CRATE ? item.getDynamicProperty(SNAPSHOT) : undefined;
@@ -69,7 +66,7 @@ export function snapshot(entity) {
 
 function pack(player, entity) {
   const reason = busy(entity);
-  if (reason) return tell(player, reason);
+  if (reason) return refuse(player, entity); // on a lead, ridden, or carrying a full bag
   const data = snapshot(entity);
   const crate = new ItemStack(CRATE, 1);
   crate.setDynamicProperty(SNAPSHOT, JSON.stringify(data));
@@ -118,11 +115,13 @@ function unpack(player, block, face) {
   if (!data) return;
   const target = face === "Up" || !face ? block.above() : block;
   const spot = target && (target.isAir || target.isLiquid) ? target : block.above();
-  if (!spot?.isAir && !spot?.isLiquid) return tell(player, "no_room");
+  if (!spot?.isAir && !spot?.isLiquid) return refuse(player); // no room
   try {
     release(block.dimension, { x: spot.location.x + 0.5, y: spot.location.y, z: spot.location.z + 0.5 }, data);
   } catch {
-    return tell(player, "missing", [shortId(data.type) ?? data.type]);
+    // ## The animal's add-on is gone: a setup problem, so it goes to the content log.
+    console.warn(`[Kaleidoscope Ranching] Cannot release ${shortId(data.type) ?? data.type} from a crate: that animal is not in this world.`);
+    return refuse(player);
   }
   mainHand(player).setItem(new ItemStack(CRATE, 1));
   block.dimension.playSound("block.barrel.open", spot.location);

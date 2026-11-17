@@ -20,7 +20,7 @@ import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand } from "../core/inventory.js";
 import { today } from "../core/time.js";
-import { showActionBar } from "../core/actionBar.js";
+import { refuse } from "../core/feedback.js";
 import { cleanNeedEnabled, mark, readRecord } from "../care/state.js";
 
 export const SICK_CHANCE = 0.2;
@@ -49,9 +49,6 @@ export function isSick(animal) {
   }
 }
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
-}
 
 /** What puts this animal at risk today: "thirst", "dirt" or null. */
 export function riskOf(animal, day = today()) {
@@ -101,7 +98,7 @@ export function checkHealthNearPlayers() {
 }
 
 function treat(player, animal, item) {
-  if (!isSick(animal)) return tell(player, "medicine.not_sick");
+  if (!isSick(animal)) return refuse(player, animal); // not sick
   cure(animal, item);
   consumeMainHand(player);
   try {

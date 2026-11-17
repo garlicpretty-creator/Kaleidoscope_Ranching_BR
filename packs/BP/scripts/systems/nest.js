@@ -43,7 +43,7 @@ import { TICKS_PER_DAY, nowTick, today } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { KIND } from "../data/feeds.js";
 import { isMarkedToday } from "../care/state.js";
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse } from "../core/feedback.js";
 
 export const NEST_RADIUS = 8;
 export const MALE_RADIUS = 8;
@@ -78,9 +78,6 @@ const HEAT = new Set([
 ]);
 
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
-}
 
 function center(block) {
   const { x, y, z } = block.location;
@@ -298,13 +295,15 @@ export const nestBoxComponent = {
     const item = mainHand(player)?.getItem();
     const species = item && speciesForEgg(item.typeId);
     if (species) {
-      if (data.hatching.length >= HATCH_SLOTS) return tell(player, "nest.full");
+      if (data.hatching.length >= HATCH_SLOTS) return refuse(player); // full
       data.hatching.push({ egg: item.typeId, species, due: nowTick() + hatchTicks(item.typeId) });
       consumeMainHand(player);
+      cue(block, "block.itemframe.add_item");
     } else {
-      if (!storedCount(data)) return tell(player, "nest.empty");
+      if (!storedCount(data)) return refuse(player); // no eggs to take
       for (const [egg, count] of Object.entries(data.eggs)) give(player, egg, count);
       emitRanchEvent("harvested", { product: "egg", items: { ...data.eggs } });
+      cue(block, "random.pop");
       data.eggs = {};
     }
     setBlockData(block, data);
@@ -387,14 +386,17 @@ export const incubatorComponent = {
     const item = mainHand(player)?.getItem();
     const species = item && speciesForEgg(item.typeId);
     if (species) {
-      if (data.eggs.length >= HATCH_SLOTS) return tell(player, "incubator.full");
+      if (data.eggs.length >= HATCH_SLOTS) return refuse(player); // full
       data.eggs.push({ egg: item.typeId, species, due: nowTick() + hatchTicks(item.typeId) });
       consumeMainHand(player);
-      if (!isHeated(block)) tell(player, "incubator.cold");
+      cue(block, "block.itemframe.add_item");
+      // ## Cold (no heat source below): a fizz and a wisp of smoke instead of the warm glow.
+      if (!isHeated(block)) cue(block, "random.fizz", { volume: 0.4, particle: "minecraft:basic_smoke_particle" });
     } else {
-      if (!data.eggs.length && !data.shells) return tell(player, "incubator.empty");
+      if (!data.eggs.length && !data.shells) return refuse(player); // nothing to take
       for (const egg of data.eggs) give(player, egg.egg, 1);
       if (data.shells) give(player, EGGSHELL, data.shells);
+      cue(block, "random.pop");
       data.eggs = [];
       data.shells = undefined;
       forgetStaleGlow(data, data.eggs, nowTick());

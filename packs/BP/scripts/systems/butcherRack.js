@@ -19,7 +19,7 @@ import { nowTick } from "../core/time.js";
 import { emitRanchEvent } from "../core/events.js";
 import { consumeMainHand, damageMainHand, dropItems, give, mainHand, takeItems } from "../core/inventory.js";
 import { CARCASS_MALE, CARCASS_WOOL } from "./carcass.js";
-import { showActionBar } from "../core/actionBar.js";
+import { refuse } from "../core/feedback.js";
 import { APRON_SAVE_CHANCE, wearing } from "./textiles.js";
 
 const STATE_CARCASS = "kaleidoscope_ranching:carcass";
@@ -51,13 +51,9 @@ function lookOf(carcass) {
   return animal?.largeCarcass === false ? "chicken" : "cow";
 }
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.rack.${key}`, with: values });
-}
 
 // --- 1.1 掛架風乾 ---------------------------------------------------------------
 
-const TICKS_PER_MINUTE = 1200;
 const RACK = "kaleidoscope_ranching:butcher_rack";
 
 /** The dried result for a held item, or undefined if it cannot be dried. */
@@ -107,7 +103,7 @@ function tickDrying(block) {
 
 function hangToDry(block, player, item, data) {
   const pieces = data?.drying ?? [];
-  if (pieces.length >= DRYING_SLOTS) return tell(player, "drying_full", [String(DRYING_SLOTS)]);
+  if (pieces.length >= DRYING_SLOTS) return refuse(player); // every drying slot taken
   const salted = Boolean(takeItems(player, [SEA_SALT], 1));
   pieces.push({ item: item.typeId, start: nowTick(), ...(salted ? { salted: true } : {}) });
   consumeMainHand(player);
@@ -115,10 +111,9 @@ function hangToDry(block, player, item, data) {
   showDrying(block, pieces);
   trackBlock(block);
   block.dimension.playSound("block.itemframe.add_item", block.location);
-  tell(player, "drying_hung", [String(pieces.length), String(DRYING_SLOTS)]);
 }
 
-/** Takes down every finished piece; reports the time left on the rest. */
+/** Takes down every finished piece; the rest stay up (their colour shows how far along they are). */
 function takeDown(block, player, data) {
   const now = nowTick();
   const left = [];
@@ -135,9 +130,7 @@ function takeDown(block, player, data) {
   showDrying(block, left);
   if (!left.length) untrackBlock(RACK, block.dimension, block.location);
   if (taken) block.dimension.playSound("random.pop", block.location);
-  if (!left.length) return;
-  const soonest = Math.min(...left.map((piece) => piece.start + ticksOf(piece) - now));
-  tell(player, "drying_left", [String(left.length), String(Math.ceil(soonest / TICKS_PER_MINUTE))]);
+  if (!taken) refuse(player); // nothing is done yet
 }
 
 // ## Racks saved before the drying pieces were drawn have the pieces in block data but a
@@ -329,17 +322,17 @@ export const butcherRackComponent = {
         if (data.drying.some((piece) => nowTick() >= piece.start + ticksOf(piece))) return takeDown(block, player, data);
         return hangToDry(block, player, item, data);
       }
-      if (item && butcherEntry(item.typeId)) return tell(player, "drying_busy");
+      if (item && butcherEntry(item.typeId)) return refuse(player); // drying, not free for butchering
       return takeDown(block, player, data);
     }
     if (!data) {
       if (item && butcherEntry(item.typeId)) hang(block, player, item);
       else if (item && dryingResult(item.typeId)) hangToDry(block, player, item, null);
-      else tell(player, "empty");
+      else refuse(player);
       return;
     }
-    if (item && butcherEntry(item.typeId)) return tell(player, "occupied");
-    if (!isBlade(item)) return tell(player, "need_blade");
+    if (item && butcherEntry(item.typeId)) return refuse(player); // a carcass already hangs here
+    if (!isBlade(item)) return refuse(player); // needs a blade
     cut(block, player, data);
   },
 

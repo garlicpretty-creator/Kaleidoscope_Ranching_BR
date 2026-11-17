@@ -8,16 +8,13 @@
 import { system } from "@minecraft/server";
 import { getAffection } from "../core/husbandry.js";
 import { isRanchAnimal } from "../core/animal.js";
-import { showActionBar } from "../core/actionBar.js";
+import { AMBIENT, cue } from "../core/feedback.js";
 import { wakeNear } from "./sleep.js";
 
 export const CALL_RADIUS = 32;
 /** Hearts (0-5) an animal needs before it answers the bell. */
 export const BOND_HEARTS = 3;
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.cowbell.${key}`, with: values });
-}
 
 export function ring(player) {
   wakeNear(player.dimension, player.location, CALL_RADIUS, "cowbell");
@@ -29,10 +26,11 @@ export function ring(player) {
     try {
       animal.triggerEvent("kaleidoscope_ranching:called");
       called++;
+      cue(animal, AMBIENT[animal.typeId]); // answers the bell
     } catch {}
   }
   player.dimension.playSound("block.bell.hit", player.location);
-  tell(player, called ? "called" : "nobody", [`${called}`]);
+  // Nobody bonded in earshot: only the bell, no answer.
   return called;
 }
 

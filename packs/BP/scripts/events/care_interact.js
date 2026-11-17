@@ -7,10 +7,10 @@ import { CARE } from "../data/care_config.js";
 import { SPECIES, isTreat } from "../data/species.js";
 import { FAMILY_LIVESTOCK, EVENT_ADD_EAR_TAG } from "../data/m1_contract.js";
 import { mark, addAffection, isMarkedToday, ensureSettled } from "../care/state.js";
-import { consumeMainhand, damageMainhand, dropAt, actionbar } from "../utils/world_util.js";
+import { consumeMainhand, damageMainhand, dropAt } from "../utils/world_util.js";
 import { showAnimal, showRoster } from "../ui/notebook.js";
 import { nextTagNumber, updateRoster, removeFromRoster } from "../ui/roster.js";
-import { T } from "../ui/text.js";
+import { AMBIENT, cue, refuse } from "../core/feedback.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { notifyCared } from "../core/husbandry.js";
 
@@ -34,8 +34,8 @@ function pet(player, e) {
   if (mark(e, "groom")) {
     hearts(e);
     notifyCared(e, player, "pet");
-    actionbar(player, T("care.petted"));
-  } else actionbar(player, T("care.already_groomed"));
+    cue(e, AMBIENT[e.typeId], { pitch: 1.2, volume: 0.6 });
+  } else refuse(player, e); // already groomed today
 }
 
 function brush(player, e) {
@@ -48,14 +48,13 @@ function brush(player, e) {
     for (const [item, chance] of SPECIES[e.typeId].brushDrops ?? []) {
       if (Math.random() < chance) dropAt(e.dimension, e.location, item, 1);
     }
-    actionbar(player, T("care.brushed"));
-  } else actionbar(player, T("care.already_groomed"));
+  } else refuse(player, e); // already groomed today
 }
 
 function treat(player, e, itemId) {
-  if (SPECIES[e.typeId].treat !== itemId) return actionbar(player, T("care.treat_wrong"));
+  if (SPECIES[e.typeId].treat !== itemId) return refuse(player, e); // not this animal's treat
   ensureSettled(e);
-  if (isMarkedToday(e, "treat")) return actionbar(player, T("care.treat_full"));
+  if (isMarkedToday(e, "treat")) return refuse(player, e); // had its treat today
   mark(e, "treat");
   addAffection(e, CARE.TREAT_GAIN);
   consumeMainhand(player, 1);
@@ -65,7 +64,7 @@ function treat(player, e, itemId) {
 }
 
 function earTag(player, e) {
-  if (e.getDynamicProperty("kr:ear_tag") !== undefined) return actionbar(player, T("care.ear_tag_already"));
+  if (e.getDynamicProperty("kr:ear_tag") !== undefined) return refuse(player, e); // already tagged
   const n = nextTagNumber();
   e.setDynamicProperty("kr:ear_tag", n);
   if (!e.nameTag) e.nameTag = `#${String(n).padStart(3, "0")}`; // named mobs never despawn
@@ -76,7 +75,8 @@ function earTag(player, e) {
   updateRoster(e);
   consumeMainhand(player, 1);
   notifyCared(e, player, "ear_tag");
-  actionbar(player, T("care.ear_tagged", [`${String(n).padStart(3, "0")}`]));
+  // The tag shows on the ear (EVENT_ADD_EAR_TAG) and its number in the name tag.
+  cue(e, "block.itemframe.add_item", { particle: "minecraft:villager_happy", y: 1.2 });
 }
 
 function act(player, e, itemId) {

@@ -12,14 +12,11 @@ import { system, world } from "@minecraft/server";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { isRanchAnimal } from "../core/animal.js";
 import { rid } from "../core/ids.js";
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse } from "../core/feedback.js";
 
 export const KNOT = rid("hitch_knot");
 const GATHER_RADIUS = 12;
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.hitching_post.${key}`, with: values });
-}
 
 const knotSpot = (location) => ({ x: location.x + 0.5, y: location.y + 0.9, z: location.z + 0.5 });
 
@@ -53,13 +50,13 @@ function use(block, player) {
     const knot = ensureKnot(block);
     for (const animal of led) leash(animal).leashTo(knot);
     block.dimension.playSound("leashknot.place", block.location);
-    return tell(player, "tied", [`${led.length}`]);
+    return;
   }
   const knot = findKnot(block);
   const tied = knot ? ledBy(knot, block.dimension, block.location) : [];
-  if (!tied.length) return tell(player, "empty");
+  if (!tied.length) return refuse(player); // nobody tied here
   for (const animal of tied) leash(animal).leashTo(player);
-  tell(player, "untied", [`${tied.length}`]);
+  cue(block, "leashknot.break");
 }
 
 export function free(dimension, location, typeId) {

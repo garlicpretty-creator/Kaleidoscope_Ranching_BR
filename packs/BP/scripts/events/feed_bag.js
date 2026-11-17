@@ -5,8 +5,8 @@
 import { CARE } from "../data/care_config.js";
 import { FEEDS, KIND } from "../data/feeds.js";
 import { addToTrough } from "../custom_components/trough.js";
-import { setMainhand, actionbar } from "../utils/world_util.js";
-import { T } from "../ui/text.js";
+import { setMainhand, getState } from "../utils/world_util.js";
+import { cue, refuse, levelPitch } from "../core/feedback.js";
 
 export const FEED_BAG = "kaleidoscope_ranching:feed_bag";
 
@@ -22,21 +22,30 @@ function write(player, bag, kind, units) {
   bag.setLore([`§7${units} / ${CARE.FEED_BAG_CAPACITY}`]);
   setMainhand(player, bag);
 }
-function show(player, kind, units) {
-  actionbar(player, T("bag.status", [T(`kind.${kind}`), `${units}`, `${CARE.FEED_BAG_CAPACITY}`]));
+/** The bag rustles, higher the fuller it is (its lore holds the count); an empty bag says no. */
+function rustle(player, units) {
+  if (units <= 0) return refuse(player);
+  try {
+    player.playSound("block.composter.fill", { pitch: levelPitch(units, CARE.FEED_BAG_CAPACITY), volume: 0.6 });
+  } catch {}
 }
 
+/** Pours the bag into a trough; returns false when nothing went in (empty bag, full trough, other feed). */
 export function bagToTrough(player, bag, trough) {
   const { kind, units } = read(bag);
-  if (units <= 0) return show(player, KIND.EMPTY, 0);
-  const accepted = addToTrough(trough, kind, units);
-  if (accepted <= 0) return actionbar(player, T("trough.other_kind"));
+  const accepted = units > 0 ? addToTrough(trough, kind, units) : 0;
+  if (accepted <= 0) {
+    refuse(player);
+    return false;
+  }
   write(player, bag, kind, units - accepted);
-  trough.dimension.playSound("block.composter.fill", trough.location);
+  cue(trough, "block.composter.fill", { pitch: levelPitch(getState(trough, "fill"), CARE.TROUGH_CAPACITY) });
+  return true;
 }
 
 export function gatherIntoBag(player, bag) {
   let { kind, units } = read(bag);
+  const before = units;
   const inv = player.getComponent("minecraft:inventory")?.container;
   if (!inv) return;
   for (let i = 0; i < inv.size && units < CARE.FEED_BAG_CAPACITY; i++) {
@@ -55,16 +64,14 @@ export function gatherIntoBag(player, bag) {
     } else inv.setItem(i, undefined);
   }
   write(player, bag, kind, units);
-  show(player, kind, units);
+  if (units > before) rustle(player, units);
+  else refuse(player);
 }
 
 export const feedBagComponent = {
   onUse({ source, itemStack }) {
     if (!source || !itemStack) return;
     if (source.isSneaking) gatherIntoBag(source, itemStack);
-    else {
-      const { kind, units } = read(itemStack);
-      show(source, kind, units);
-    }
+    else rustle(source, read(itemStack).units);
   },
 };
