@@ -1,0 +1,14 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_furnace_roast_turkey"
+    },
+    "tags": [
+      "furnace",
+      "smoker"
+    ],
+    "input": "kaleidoscope_ranching:whole_turkey",
+    "output": "kaleidoscope_ranching:roast_turkey"
+  }
+}

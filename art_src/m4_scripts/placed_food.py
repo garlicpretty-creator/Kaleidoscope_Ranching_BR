@@ -340,7 +340,42 @@ def gratin(bid):
     m.save()
 
 
+ROAST, ROAST_DK, MEAT_IN = (196, 120, 60), (140, 78, 36), (240, 214, 184)
+
+
+def roast_turkey():
+    """1.1 追加: the roast turkey on a platter, six portions (piece_6 first: the drumsticks go first).
+    A stand-in until the art pass."""
+    m = Model("placed_roast_turkey")
+    plate = vessel(*CERAMIC)
+    m.bone("platter")
+    m.box("platter", [-6, 0, -5], [12, 1, 10], plate)
+
+    def skin(f, x, y, z):
+        if f == "top":
+            return ROAST_DK if rnd(x, 7, z) < 18 else ROAST
+        if f in ("east", "west") and abs(x) < 1.5:
+            return MEAT_IN  # a carved face shows the white meat
+        return mix(ROAST, ROAST_DK, 0.3)
+
+    # body in six portions: three across, front and back halves
+    cols = [(-4, 3), (-1, 2), (1, 3)]
+    n = 0
+    for z0, depth in ((0, 3), (-3, 3)):
+        for x0, w in cols:
+            n += 1
+            m.bone(f"piece_{n}", "platter", (0, 1, 0))
+            m.box(f"piece_{n}", [x0, 1, z0], [w, 4, depth], skin)
+    # the drumsticks on the two front-most portions
+    m.box("piece_6", [3, 1, -4], [2, 2, 2], lump(ROAST, ROAST_DK))
+    m.box("piece_6", [5, 1, -4], [1, 1, 1], solid((236, 226, 206)), raw=True)
+    m.box("piece_4", [-5, 1, -4], [2, 2, 2], lump(ROAST, ROAST_DK, 3))
+    m.box("piece_4", [-6, 1, -4], [1, 1, 1], solid((236, 226, 206)), raw=True)
+    m.save()
+
+
 def main():
+    roast_turkey()
     pizza()
     fondue()
     for bid, row in STEWS.items():

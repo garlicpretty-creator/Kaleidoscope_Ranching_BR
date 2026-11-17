@@ -35,6 +35,7 @@ export const BLOCKS = [
   ["smoked_cheese_wheel", "煙燻乳酪輪", "Smoked Cheese Wheel", "processing"],
   ["placed_pizza", "瑪格麗特披薩", "Margherita Pizza", "processing"],
   ["placed_fondue", "起司火鍋", "Cheese Fondue", "processing"],
+  ["placed_roast_turkey", "烤全火雞", "Roast Turkey", "processing"],
   ["placed_old_duck_soup", "老鴨湯", "Old Duck Soup", "processing"],
   ["placed_braised_brisket", "燉牛腩", "Braised Beef Brisket", "processing"],
   ["placed_yak_stew", "氂牛肉燉菜", "Yak Meat Stew", "processing"],

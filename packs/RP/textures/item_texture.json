@@ -254,6 +254,9 @@
     "kr_turkey_breast": {
       "textures": "textures/items/ranching/turkey_breast"
     },
+    "kr_whole_turkey": {
+      "textures": "textures/items/ranching/whole_turkey"
+    },
     "kr_pork_mince": {
       "textures": "textures/items/ranching/pork_mince"
     },
@@ -647,6 +650,30 @@
     "kr_truffle_eggs": {
       "textures": "textures/items/ranching/truffle_eggs"
     },
+    "kr_tea_quail_eggs": {
+      "textures": "textures/items/ranching/tea_quail_eggs"
+    },
+    "kr_tomato_quail_eggs": {
+      "textures": "textures/items/ranching/tomato_quail_eggs"
+    },
+    "kr_quail_egg_shumai": {
+      "textures": "textures/items/ranching/quail_egg_shumai"
+    },
+    "kr_pan_fried_quail": {
+      "textures": "textures/items/ranching/pan_fried_quail"
+    },
+    "kr_roast_turkey": {
+      "textures": "textures/items/ranching/roast_turkey"
+    },
+    "kr_turkey_leg_stew": {
+      "textures": "textures/items/ranching/turkey_leg_stew"
+    },
+    "kr_turkey_breast_sandwich": {
+      "textures": "textures/items/ranching/turkey_breast_sandwich"
+    },
+    "kr_alpaca_risotto": {
+      "textures": "textures/items/ranching/alpaca_risotto"
+    },
     "kr_cheese_fondue": {
       "textures": "textures/items/ranching/cheese_fondue"
     },
@@ -688,6 +715,9 @@
     },
     "kr_raw_egg_tart": {
       "textures": "textures/items/ranching/raw_egg_tart"
+    },
+    "kr_raw_shumai": {
+      "textures": "textures/items/ranching/raw_shumai"
     },
     "kr_raw_pizza": {
       "textures": "textures/items/ranching/raw_pizza"

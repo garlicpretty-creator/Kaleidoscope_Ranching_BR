@@ -113,6 +113,8 @@ const CUTS = [
   // 1.1 追加 新動物
   ["turkey_leg", "火雞腿", "Turkey Leg", "cut"],
   ["turkey_breast", "火雞胸", "Turkey Breast", "cut"],
+  // Plucked and taken down whole from the butcher rack (systems/butcherRack.js), for the oven.
+  ["whole_turkey", "整隻火雞", "Whole Turkey", "cut"],
 ];
 
 // 1.1 肉類線 (企劃書 1.1 一、肉類線): the meat grinder's mince and sausages, and

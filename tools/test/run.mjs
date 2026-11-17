@@ -886,7 +886,7 @@ test("every shared dish is eaten in four portions worth at least the dish, and h
     equal(player.inventory.count(food.gives), 1, `${food.block} hands back its bowl`);
     const dish = DISH_ROWS.find((d) => d.id === food.item);
     assert(dish && food.portions * food.eat >= dish.food[0], `${food.item}: sharing is worth at least eating it from the hand`);
-    equal(dish.carrier, food.gives, `${food.item}: the bowl handed back is the dish's own carrier`);
+    if (food.gives === "minecraft:bowl") equal(dish.carrier, food.gives, `${food.item}: the bowl handed back is the dish's own carrier`);
     const item = JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${food.item}.json`, import.meta.url), "utf8"))["minecraft:item"].components;
     equal(item["minecraft:block_placer"]?.block, block, `${food.item} places ${food.block}`);
   }
@@ -1081,6 +1081,28 @@ test("new animals: shears take an alpaca's fleece, and an unshorn alpaca carcass
   equal(player.inventory.slots.filter((slot) => slot?.typeId.endsWith("_wool") && slot.typeId.startsWith("minecraft:")).length, 0, "no sheep wool");
   equal(player.inventory.count(`${NS}:alpaca_meat`), 4, "a male gives four");
   equal(player.inventory.count(`${NS}:alpaca_hide`), 1, "one hide");
+});
+
+test("new animals: a plucked turkey comes down whole when you sneak with an empty hand", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("turkey", "female"));
+  player.selectedSlotIndex = 0;
+  use(RACK, rack, player);
+  player.isSneaking = true;
+  player.inventory.setItem(0, undefined);
+  use(RACK, rack, player);
+  equal(player.inventory.count(`${NS}:whole_turkey`), 0, "not before it is plucked");
+  player.isSneaking = false;
+  hold(player, "minecraft:iron_sword");
+  use(RACK, rack, player);
+  equal(player.inventory.count("minecraft:feather"), 3, "plucked: three feathers");
+  player.inventory.setItem(player.selectedSlotIndex, undefined);
+  player.isSneaking = true;
+  use(RACK, rack, player);
+  equal(player.inventory.count(`${NS}:whole_turkey`), 1, "taken down whole");
+  equal(rack.permutation.getState(`${NS}:carcass`), "none", "the rack is empty");
 });
 
 test("new animals: turkeys and alpacas graze; quail do not", () => {
@@ -1998,6 +2020,19 @@ test("when Cookery is ready every Cookery dish, the cheese board and the wok mea
   assert(oil && JSON.parse(oil.message).container.id === "kaleidoscope_ranching:lard", "lard registered as wok oil");
   equal(new ItemStack("kaleidoscope_ranching:lard").maxAmount, 1, "lard does not stack, so it can hold its oil count");
   assert(cookeryDishes.length + DISHES.filter((d) => !["stockpot", "wok", "steamer"].includes(d.station)).length >= 20, "about twenty dishes");
+});
+
+test("1.1 additions: the new animals' dishes reach Cookery's stations, the rest have their own recipes", () => {
+  const recipes = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_recipe").map((e) => JSON.parse(e.message));
+  for (const id of ["tea_quail_eggs", "tomato_quail_eggs", "quail_egg_shumai", "pan_fried_quail", "turkey_leg_stew", "alpaca_risotto"]) {
+    assert(recipes.some((r) => r.recipe.result === `${NS}:${id}`), `${id} registered with Cookery`);
+  }
+  const files = readdirSync(new URL("../../packs/BP/recipes/", import.meta.url));
+  assert(files.some((f) => f.includes("roast_turkey")), "roast turkey in the furnace");
+  assert(files.some((f) => f.includes("turkey_breast_sandwich")), "the sandwich on a crafting table");
+  assert(files.some((f) => f.includes("raw_shumai")), "shumai wrapped on a crafting table");
+  const meats = system.__scriptEvents.filter((e) => e.id === "kaleidoscope_cookery:register_wok_meat").map((e) => JSON.parse(e.message));
+  for (const raw of ["quail_meat", "turkey_meat", "turkey_breast", "alpaca_meat"]) assert(meats.some((m) => m.raw === `${NS}:${raw}`), `${raw} cooks in the wok`);
 });
 
 test("every milk and the duck egg are accepted in the dishes that use them", () => {

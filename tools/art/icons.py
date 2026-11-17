@@ -357,6 +357,9 @@ def draw(item_id):
         meat(c, COOKED, (196, 150, 110))
     elif base.endswith("_meat"):
         meat(c, RAW)
+    elif base == "whole_turkey":
+        # 1.1 追加: a plucked bird, ready for the oven
+        blob(c, (240, 206, 180), 6, 5)
     elif base == "turkey_breast":
         meat(c, (236, 186, 166))
     elif base in ("chicken_leg", "duck_leg", "goose_leg", "rabbit_leg", "lamb_leg", "turkey_leg"):

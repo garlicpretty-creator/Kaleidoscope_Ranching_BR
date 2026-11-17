@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "turkey_leg_stew",
+    "metalness_emissive_roughness_subsurface": "turkey_leg_stew_mers",
+    "normal": "turkey_leg_stew_normal"
+  }
+}

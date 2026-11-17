@@ -76,7 +76,7 @@ RULES = [
     (r"^blocks/ranching/(meat_grinder|cream_separator)$", "metal"),
     (r"^blocks/ranching/fermenting_jar$", "glazed"),
     (r"^blocks/ranching/(vintage_|smoked_)?cheese_wheel$", "fat"),
-    (r"^blocks/ranching/placed_pizza$", "food"),
+    (r"^blocks/ranching/placed_(pizza|roast_turkey)$", "food"),
     (r"^blocks/ranching/placed_(cheese_gratin|truffle_gratin|claypot_rice|old_duck_soup|fondue)$", "glazed"),
     # Placed drinks (art_src/m4_scripts/placed_drink.py): horn cups, glass, glazed crock and porcelain, a wooden bowl.
     (r"^blocks/ranching/placed_(yak_)?milk_wine$", "horn"),

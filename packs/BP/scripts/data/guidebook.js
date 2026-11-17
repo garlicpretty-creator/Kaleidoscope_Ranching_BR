@@ -841,6 +841,10 @@ export const GUIDE_TEXT = {
     ["分切火雞屠體取得，一具 1 塊。", "Cut from a Turkey Carcass, 1 each."],
     ["熔爐、煙燻爐或營火烤成熟火雞胸；也能在炒鍋直接煎熟。", "Cook it into Cooked Turkey Breast in a furnace, smoker or campfire, or in the wok."],
   ],
+  whole_turkey: [
+    ["火雞拔完毛（第一刀）、還沒切其他部位時，蹲下空手點屠宰掛架，就能把整隻取下。", "Once a turkey is plucked (the first stroke) and nothing else is cut, sneak and use the Butcher Rack with an empty hand to take it down whole."],
+    ["放進熔爐或煙燻爐烤成烤全火雞。", "Roast it into a Roast Turkey in a furnace or smoker."],
+  ],
   cooked_turkey_breast: [["火雞胸烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Turkey breast cooked in a furnace or the wok. 8 hunger."]],
   alpaca_meat: [
     ["分切羊駝屠體取得，公的多一份。", "Cut from an Alpaca Carcass; a male gives one more."],
@@ -1131,6 +1135,10 @@ export const GUIDE_TEXT = {
     ["工作台：馬鈴薯、乳酪塊、鮮奶油、碗。", "Crafting table: potato, cheese slice, cream and a bowl."],
     ["放進熔爐或煙燻爐烤成乳酪焗烤。", "Bakes into Cheese Gratin in a furnace or smoker."],
   ],
+  raw_shumai: [
+    ["工作台：1 顆鵪鶉蛋、1 份豬絞肉、1 份生麵團（廚房）。", "Crafting table: 1 quail egg, 1 pork mince and 1 raw dough (Cookery)."],
+    ["放進廚房的蒸籠蒸成鵪鶉蛋燒賣。", "Steam it in Cookery's steamer into Quail Egg Shumai."],
+  ],
   raw_egg_tart: [
     ["工作台：卡士達醬加廚房的生麵團。", "Crafting table: custard and Cookery's raw dough."],
     ["放進熔爐或煙燻爐烤成蛋塔。", "Bakes into an Egg Tart in a furnace or smoker."],
@@ -1240,6 +1248,8 @@ const CONTAINER = {
   "minecraft:bowl": ["碗", "bowl"],
   "minecraft:glass_bottle": ["玻璃瓶", "glass bottle"],
   "kaleidoscope_ranching:horn_cup": ["角杯", "horn cup"],
+  // 1.1 追加: the roast turkey leaves its bones
+  "kaleidoscope_ranching:large_bone": ["大骨", "large bone"],
 };
 
 /** The line for food that can be set down and eaten in place (data/placedFoods.js), or null. */

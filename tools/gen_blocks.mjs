@@ -69,6 +69,7 @@ const PLACED_SHAPES = {
   pot: both(-6, 0, -6, 12, 9, 12),
   claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
+  roast: both(-6, 0, -5, 12, 5, 10),
   // The fondue's forks stand over the rim of its pot.
   fondue: both(-6, 0, -6, 12, 11, 12),
   // Placed drinks (art_src/m4_scripts/placed_drink.py), each as tall as its model (tools/validate.mjs checks).
@@ -82,7 +83,7 @@ const PLACED_SHAPES = {
 };
 const PLACED_COLORS = {
   cheese_wheel: "#e2b45a", vintage_cheese_wheel: "#c98a3c", smoked_cheese_wheel: "#8a5a32",
-  placed_pizza: "#d86a3c", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
+  placed_pizza: "#d86a3c", placed_roast_turkey: "#c47838", placed_fondue: "#ac382c", placed_old_duck_soup: "#965c3e", placed_claypot_rice: "#965c3e",
   placed_milk_wine: "#c8a068", placed_yak_milk_wine: "#705038", placed_cream_cocoa: "#683c26", placed_yogurt_berry_drink: "#e27896",
   placed_yogurt: "#849cb6", placed_milk_tea: "#8c402c", placed_milk_skin_tea: "#f4f4ee",
 };

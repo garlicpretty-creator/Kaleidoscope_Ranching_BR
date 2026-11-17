@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "placed_roast_turkey",
+    "metalness_emissive_roughness_subsurface": "placed_roast_turkey_mers",
+    "normal": "placed_roast_turkey_normal"
+  }
+}

@@ -237,6 +237,16 @@
     "turkey_breast": { "prompt": "raw boneless turkey breast fillet, pale pink" },
     "cooked_turkey_breast": { "prompt": "roasted sliced turkey breast, golden edges" },
     "alpaca_wool": { "prompt": "fluffy tuft of cream alpaca fleece" },
-    "alpaca_hide": { "prompt": "folded tan alpaca hide with cream wool on one side" }
+    "alpaca_hide": { "prompt": "folded tan alpaca hide with cream wool on one side" },
+    "whole_turkey": { "prompt": "whole raw plucked turkey, pale pink skin, legs tucked" },
+    "raw_shumai": { "prompt": "two raw open-topped shumai dumplings with pink filling and a quail egg yolk on top" },
+    "tea_quail_eggs": { "prompt": "wooden bowl of small brown marbled tea-stained quail eggs in dark tea" },
+    "tomato_quail_eggs": { "prompt": "wooden bowl of red tomato stir-fry with small halved quail eggs" },
+    "quail_egg_shumai": { "prompt": "two steamed shumai dumplings with yellow quail egg on top" },
+    "pan_fried_quail": { "prompt": "small golden pan-fried quail on a plate" },
+    "roast_turkey": { "prompt": "whole golden-brown roast turkey on a white platter" },
+    "turkey_leg_stew": { "prompt": "wooden bowl of stew with a turkey drumstick, potato and carrot" },
+    "turkey_breast_sandwich": { "prompt": "sandwich of bread with sliced turkey breast and green lettuce" },
+    "alpaca_risotto": { "prompt": "wooden bowl of creamy risotto with chunks of brown meat" }
   }
 }

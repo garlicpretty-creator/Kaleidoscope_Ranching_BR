@@ -161,6 +161,9 @@
     "kr_placed_pizza": {
       "textures": "textures/blocks/ranching/placed_pizza"
     },
+    "kr_placed_roast_turkey": {
+      "textures": "textures/blocks/ranching/placed_roast_turkey"
+    },
     "kr_placed_truffle_gratin": {
       "textures": "textures/blocks/ranching/placed_truffle_gratin"
     },
