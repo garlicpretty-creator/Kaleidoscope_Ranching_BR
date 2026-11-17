@@ -20,6 +20,17 @@
           "type": "bool",
           "default": false,
           "client_sync": true
+        },
+        "kaleidoscope_ranching:action": {
+          "type": "enum",
+          "values": [
+            "none",
+            "eat",
+            "drink",
+            "petted"
+          ],
+          "default": "none",
+          "client_sync": true
         }
       }
     },

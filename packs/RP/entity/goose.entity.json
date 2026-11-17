@@ -17,7 +17,11 @@
       "animations": {
         "walk": "animation.kaleidoscope_ranching.goose.walk",
         "look_at_target": "animation.common.look_at_target",
-        "sleep": "animation.kaleidoscope_ranching.goose.sleep"
+        "sleep": "animation.kaleidoscope_ranching.goose.sleep",
+        "eat": "animation.kaleidoscope_ranching.goose.eat",
+        "drink": "animation.kaleidoscope_ranching.goose.drink",
+        "petted": "animation.kaleidoscope_ranching.goose.petted",
+        "actions": "controller.animation.kaleidoscope_ranching.goose.actions"
       },
       "scripts": {
         "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.15 : 1.0)",
@@ -26,10 +30,13 @@
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"
           },
           {
-            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping')"
+            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping') && q.property('kaleidoscope_ranching:action') == 'none' && !q.is_grazing"
           },
           {
             "sleep": "q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "actions": "!q.property('kaleidoscope_ranching:sleeping')"
           }
         ]
       },

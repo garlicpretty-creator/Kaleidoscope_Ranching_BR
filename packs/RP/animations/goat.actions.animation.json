@@ -1,0 +1,76 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.goat.eat": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "38 + math.sin(q.anim_time * 720) * 4",
+            "math.sin(q.anim_time * 180) * 6",
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "38 + math.sin(q.anim_time * 720) * 4",
+            "math.sin(q.anim_time * 180) * 6",
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.goat.drink": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "50 + math.sin(q.anim_time * 540) * 3",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "50 + math.sin(q.anim_time * 540) * 3",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.goat.petted": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "-6 + math.sin(q.anim_time * 360) * 4",
+            "math.sin(q.anim_time * 360) * 14",
+            10
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "-6 + math.sin(q.anim_time * 360) * 4",
+            "math.sin(q.anim_time * 360) * 14",
+            10
+          ]
+        },
+        "a_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1080) * 28",
+            0
+          ]
+        },
+        "b_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1080) * 28",
+            0
+          ]
+        }
+      }
+    }
+  }
+}

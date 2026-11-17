@@ -26,11 +26,14 @@ SS = 6
 ANIMALS = ["cow", "buffalo", "yak", "sheep", "goat", "pig", "chicken", "duck", "goose", "rabbit"]
 
 
+ANIM_TIME = 0.0  # q.anim_time for previews of looping animations (actions_preview.py sets it)
+
+
 def molang(expr, baby):
     if isinstance(expr, (int, float)):
         return float(expr)
-    e = expr.replace("q.is_baby", "1" if baby else "0").replace("q.life_time", "0")
-    e = e.replace("math.sin", "_sin")
+    e = expr.replace("q.is_baby", "1" if baby else "0").replace("q.life_time", "0").replace("q.anim_time", repr(ANIM_TIME))
+    e = e.replace("math.sin", "_sin").replace("math.max", "max").replace("math.abs", "abs")
     e = re.sub(r"(\S+)\s*\?\s*(\S+)\s*:\s*(\S+)", r"(\2 if \1 else \3)", e)
     return float(eval(e, {"_sin": lambda d: math.sin(math.radians(d))}))
 
@@ -78,9 +81,10 @@ def visible(name, bones, baby, asleep, rules, male=False, sheared=False):
     return True
 
 
-def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=TILE, scale=SCALE, model_scale=1.0, ground=0.72):
+def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=TILE, scale=SCALE, model_scale=1.0, ground=0.72, pose=None):
     """One tile. The defaults draw the female (or first) skin; `texture` names another skin,
-    `model_scale` is the entity's own scale (males are larger)."""
+    `model_scale` is the entity's own scale (males are larger); `pose` is an animation's bones to
+    apply instead of the sleep pose (actions_preview.py)."""
     TILE, SCALE = tile, scale * model_scale
     geo = json.loads((RP / "models" / "entity" / f"{animal}.geo.json").read_text())["minecraft:geometry"][0]
     entity = json.loads((RP / "entity" / f"{animal}.entity.json").read_text())["minecraft:client_entity"]["description"]
@@ -94,8 +98,8 @@ def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=T
     tex = Image.open(RP / f"{textures[key]}.png").convert("RGBA")
     tw, th = geo["description"]["texture_width"], geo["description"]["texture_height"]
     tex = tex.resize((tw, th), Image.NEAREST).load() if tex.size != (tw, th) else tex.load()
-    anim = {}
-    if asleep:
+    anim = pose or {}
+    if asleep and pose is None:
         a = json.loads((RP / "animations" / f"{animal}.sleep.animation.json").read_text())
         anim = next(iter(a["animations"].values()))["bones"]
     bones = {b["name"]: b for b in geo["bones"]}
@@ -105,7 +109,8 @@ def render(animal, baby, asleep, male=False, sheared=False, texture=None, tile=T
         piv = np.array(b.get("pivot", [0, 0, 0]), float)
         st = anim.get(name, {})
         r = rot(*[molang(v, baby) for v in st.get("rotation", [0, 0, 0])]) @ rot(*b.get("rotation", [0, 0, 0]))
-        s = np.diag([molang(v, baby) for v in st.get("scale", [1, 1, 1])]) if not isinstance(st.get("scale"), (int, float)) else np.eye(3) * st["scale"]
+        scale = st.get("scale", [1, 1, 1])
+        s = np.eye(3) * molang(scale, baby) if isinstance(scale, (int, float, str)) else np.diag([molang(v, baby) for v in scale])
         t = np.array([molang(v, baby) for v in st.get("position", [0, 0, 0])])
         M = r @ s
         local = lambda p: piv + t + (np.asarray(p, float) - piv) @ M.T  # points as rows

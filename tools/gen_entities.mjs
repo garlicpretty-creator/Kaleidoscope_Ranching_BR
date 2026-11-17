@@ -11,6 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/animals.js")).href);
 
 const { gearOf, gearProperty } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/gear.js")).href);
+const { ACTION_PROPERTY, ACTIONS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/actions.js")).href);
 
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
@@ -405,6 +406,8 @@ function buildEntity(animal, t) {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
           ...(t.wool ? { [WOOL_COLOR]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
           [SLEEPING]: { type: "bool", default: false, client_sync: true },
+          // 1.1 動物動作 (core/actions.js): eating, drinking, being petted, played by tools/gen_actions.mjs.
+          [ACTION_PROPERTY]: { type: "enum", values: ACTIONS, default: "none", client_sync: true },
           // Gear the animal wears, drawn by the resource pack (data/gear.js, core/gear.js).
           ...Object.fromEntries(gearOf(animal.id).map((gear) => [gearProperty(gear.id), { type: "bool", default: false, client_sync: true }])),
         },

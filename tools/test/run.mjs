@@ -428,6 +428,71 @@ test("M2: one click with a brush is handled once, by M2 only", () => {
   equal(cow.getDynamicProperty("kaleidoscope_ranching:love_until"), undefined, "breeding untouched");
 });
 
+// --- 1.1 動物動作 ----------------------------------------------------------
+
+const actions = await import("../../packs/BP/scripts/core/actions.js");
+const ACTION = `${NS}:action`;
+const always = () => 0;
+const { ANIMALS: ACTION_ANIMALS } = await import("../../packs/BP/scripts/data/animals.js");
+
+test("1.1 actions: petting and brushing play the petted animation, which ends by itself", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  equal(cow.getProperty(ACTION), "none", "starts at rest");
+  player.isSneaking = true; // petting is a sneaking, empty-handed use
+  __interact(player, cow);
+  __advance(1);
+  equal(cow.getProperty(ACTION), "petted", "pet");
+  __advance(60);
+  equal(cow.getProperty(ACTION), "none", "back to rest after 2.5 s");
+  player.isSneaking = false;
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  __advance(1);
+  equal(cow.getProperty(ACTION), "petted", "brushing too, even when already groomed today");
+});
+
+test("1.1 actions: animals standing at a trough with their feed eat, others do not", () => {
+  clearWorld();
+  const trough = place("trough", at(0), { fill: 5, kind: 1 });
+  const cow = ranch("cow", 1, "female");
+  const far = ranch("cow", 6, "female");
+  const hen = ranch("chicken", 1, "female", 1);
+  equal(actions.playAtBlock(trough, [cow, far, hen], "eat", (e) => e.typeId.endsWith("cow"), always), 1, "one animal plays");
+  equal(cow.getProperty(ACTION), "eat", "the cow at the trough eats");
+  equal(far.getProperty(ACTION), "none", "a cow six blocks away does not");
+  equal(hen.getProperty(ACTION), "none", "a hen does not eat hay");
+});
+
+test("1.1 actions: the clock makes animals at a water trough drink, and leaves sleeping ones alone", () => {
+  clearWorld();
+  place("water_trough", at(0), { water: 3 });
+  const goat = ranch("goat", 1, "female");
+  const sleeper = ranch("goat", 0, "female", 1);
+  sleeper.triggerEvent(`${NS}:fall_asleep`);
+  const random = Math.random;
+  Math.random = always;
+  try {
+    runBlockClock();
+  } finally {
+    Math.random = random;
+  }
+  equal(goat.getProperty(ACTION), "drink", "drinks");
+  equal(sleeper.getProperty(ACTION), "none", "asleep, it does not");
+});
+
+test("1.1 actions: every animal's client entity plays the actions only while awake", () => {
+  for (const { id } of ACTION_ANIMALS) {
+    const description = JSON.parse(readFileSync(new URL(`../../packs/RP/entity/${id}.entity.json`, import.meta.url), "utf8"))["minecraft:client_entity"].description;
+    equal(description.animations.actions, `controller.animation.${NS}.${id}.actions`, `${id} has the controller`);
+    const entry = description.scripts.animate.find((e) => typeof e === "object" && "actions" in e);
+    assert(entry?.actions.includes("sleeping"), `${id}: not while asleep`);
+    const look = description.scripts.animate.find((e) => typeof e === "object" && "look_at_target" in e);
+    assert(look?.look_at_target.includes("action"), `${id}: stops looking at the player while it eats`);
+  }
+});
+
 // --- M3: carcasses and the butcher rack -----------------------------------
 
 const butcherData = await import("../../packs/BP/scripts/data/butcher.js");
