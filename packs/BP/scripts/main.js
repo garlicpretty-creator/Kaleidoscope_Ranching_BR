@@ -5,6 +5,7 @@ import { connectToCookery } from "./api/cookery.js";
 import { startCookeryContent } from "./api/cookeryRecipes.js";
 import { startRanchingApi } from "./api/ranchingApi.js";
 import { connectToFishing } from "./api/fishing.js";
+import { connectToHerbal } from "./api/herbal.js";
 import { connectToTavern } from "./api/tavern.js";
 import { ANIMALS } from "./data/animals.js";
 import { startBreeding } from "./systems/breeding.js";
@@ -25,6 +26,8 @@ startRanchingApi();
 // Optional: Fishing Voyage fish offal and bones as poultry feed (api/fishing.js)
 connectToFishing();
 connectToTavern();
+// Optional: Herbal 寒熱 for Ranching dishes (api/herbal.js)
+connectToHerbal();
 
 // M1: own animals, sex, breeding
 startConversion();

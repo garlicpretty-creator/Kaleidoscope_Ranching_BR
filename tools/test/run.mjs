@@ -3944,6 +3944,56 @@ test("stages: an old-save batch without its stored ticks uses the recipe's time"
   equal(shownStage(press), 2, "7000 of 12000 ticks");
 });
 
+// --- Optional integration: Herbal ------------------------------------------
+
+const herbalApi = await import("../../packs/BP/scripts/api/herbal.js");
+
+test("Herbal: Ranching pings it and registers the 寒熱 of its dishes only once it answers with external_heat", () => {
+  herbalApi.__resetHerbal();
+  system.__scriptEvents.length = 0;
+  herbalApi.pingHerbal();
+  assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_herbal:api_ping" && e.message === "kaleidoscope_ranching"), "pings Herbal with its namespace");
+  const heat = () => system.__scriptEvents.filter((e) => e.id === "kaleidoscope_herbal:heat_register");
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: "not json" });
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: JSON.stringify({ api: 2, capabilities: ["external_heat"] }) });
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: JSON.stringify({ api: 1, capabilities: ["catalog"] }) });
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: JSON.stringify({ api: 1, capabilities: ["external_heat"] }), sourceType: "Entity" });
+  equal(heat().length, 0, "nothing without an API 1 answer that has external_heat");
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: JSON.stringify({ api: 1, version: "1.1.0", capabilities: ["external_heat"], limits: { itemsPerMessage: 32 } }), sourceType: "Server" });
+  const items = heat().flatMap((e) => JSON.parse(e.message).items);
+  equal(items.length, herbalApi.HERBAL_HEAT.length, "every dish");
+  const ids = new Set(readdirSync("packs/BP/items").map((f) => JSON.parse(readFileSync(`packs/BP/items/${f}`, "utf8"))["minecraft:item"]));
+  const foods = new Set([...ids].filter((d) => d.components["minecraft:food"]).map((d) => d.description.identifier));
+  for (const { id, heat: h } of items) {
+    assert(foods.has(id), `${id} is a Ranching food`);
+    assert(Number.isInteger(h) && h !== 0 && Math.abs(h) <= 30, `${id}: everyday dishes stay within ±30`);
+  }
+  for (const e of heat()) {
+    assert(e.message.length < 2048, "under 2048 characters");
+    equal(JSON.parse(e.message).source, "kaleidoscope_ranching", "source");
+  }
+  equal(herbalApi.herbalMessages({ api: 1, capabilities: ["external_heat"], limits: { itemsPerMessage: 5 } }).length, Math.ceil(herbalApi.HERBAL_HEAT.length / 5), "split by itemsPerMessage");
+  herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:api_ready", message: JSON.stringify({ api: 1, capabilities: ["external_heat"] }) });
+  equal(heat().flatMap((e) => JSON.parse(e.message).items).length, 2 * herbalApi.HERBAL_HEAT.length, "sent again on the next api_ready");
+});
+
+test("Herbal: only refusals addressed to Ranching are logged, once each", () => {
+  const original = console.warn;
+  const lines = [];
+  console.warn = (...args) => lines.push(args.join(" "));
+  try {
+    const ack = (body) => herbalApi.onHerbalEvent({ id: "kaleidoscope_herbal:heat_ack", message: JSON.stringify({ api: 1, ok: true, ...body }) });
+    ack({ to: "other_pack", rejected: [{ id: "other_pack:tea", code: "TAKEN" }] });
+    ack({ to: "kaleidoscope_ranching", accepted: 14, rejected: [] });
+    ack({ to: "kaleidoscope_ranching", accepted: 13, rejected: [{ id: "kaleidoscope_ranching:yogurt", code: "TAKEN" }] });
+    ack({ to: "kaleidoscope_ranching", accepted: 13, rejected: [{ id: "kaleidoscope_ranching:yogurt", code: "TAKEN" }] });
+  } finally {
+    console.warn = original;
+  }
+  equal(lines.length, 1, "one line");
+  assert(lines[0].includes("yogurt TAKEN"), "names the item and the code");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);
