@@ -129,9 +129,9 @@
  "margherita_pizza": 0,
  "milk_skin": 3,
  "milk_skin_tea": 0,
- "milk_tea": 1,
+ "milk_tea": 0,
  "milk_tofu": 0,
- "milk_wine": 2,
+ "milk_wine": 0,
  "milking_pail": 1,
  "mixed_feed": 3,
  "mozzarella": 0,
@@ -204,9 +204,9 @@
  "yak_meat": 1,
  "yak_milk": 3,
  "yak_milk_bucket": 1,
- "yak_milk_wine": 2,
+ "yak_milk_wine": 1,
  "yak_stew": 2,
  "yarn": 1,
- "yogurt": 3,
- "yogurt_berry_drink": 3
+ "yogurt": 0,
+ "yogurt_berry_drink": 0
 }

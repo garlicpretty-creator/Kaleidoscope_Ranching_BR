@@ -18,7 +18,7 @@
     "butter": { "prompt": "block of yellow butter on a small square of wax paper" },
     "cream": { "prompt": "small clay jar filled with thick whipped white cream" },
     "ghee": { "prompt": "small glass jar of golden clarified butter ghee with a wooden lid" },
-    "yogurt": { "prompt": "small white ceramic cup of thick plain yogurt" },
+    "yogurt": { "prompt": "small blue ceramic bowl of thick white yogurt with a wooden spoon standing in it" },
     "fresh_cheese": { "prompt": "soft round fresh white cheese wrapped in cheesecloth" },
     "aged_cheese_wheel": { "prompt": "whole round aged cheese wheel with a hard orange-brown rind" },
     "cheese_slice": { "prompt": "wedge of yellow cheese with a few small holes" },
@@ -95,7 +95,7 @@
     "goose_stew": { "prompt": "small iron pot of braised goose with potatoes and red chili" },
     "trotter_soup": { "prompt": "wooden bowl of milky white pork trotter soup with a pig trotter" },
     "century_egg_congee": { "prompt": "wooden bowl of white rice congee with dark century egg pieces and shredded pork" },
-    "milk_tea": { "prompt": "glass bottle of creamy light brown milk tea, cork stopper" },
+    "milk_tea": { "prompt": "tall clear drinking glass full of creamy light brown milk tea" },
     "salted_egg_yolk_greens": { "prompt": "wooden bowl of green lettuce stir-fried with orange salted egg yolk" },
     "braised_pork_belly": { "prompt": "wooden bowl of glossy red braised pork belly cubes" },
     "tomato_duck_egg": { "prompt": "wooden bowl of tomato and scrambled egg stir-fry, red and yellow" },
@@ -166,7 +166,7 @@
     "condensed_milk": { "prompt": "small glass bottle of thick creamy condensed milk" },
     "milk_skin": { "prompt": "thin folded sheet of golden milk skin" },
     "condensed_milk_toast": { "prompt": "thick toast slice drizzled with condensed milk" },
-    "milk_skin_tea": { "prompt": "glass bottle of brown milk tea with a milk skin" },
+    "milk_skin_tea": { "prompt": "white porcelain tea bowl with a blue band, on a white saucer, full of pale creamy milk tea with a yellow milk skin on top" },
     "double_skin_milk": { "prompt": "bowl of white cantonese double skin milk pudding" },
     "egg_pudding": { "prompt": "bowl of smooth yellow egg pudding with caramel" },
     "egg_tart": { "prompt": "golden egg tart with yellow custard filling" },
@@ -212,12 +212,12 @@
     "vet_medicine": { "prompt": "small glass bottle of green herbal veterinary medicine with a cork" },
     "soap": { "prompt": "bar of pale cream tallow soap" },
     "cream_cocoa": { "prompt": "glass of brown cocoa drink topped with whipped cream" },
-    "yogurt_berry_drink": { "prompt": "glass of pink berry yogurt drink" },
+    "yogurt_berry_drink": { "prompt": "pink glass bottle of berry yogurt drink with a red and white striped straw" },
     "pack_bag": { "prompt": "pair of brown leather saddlebags with brass buckles joined by a strap" },
     "horn_cup": { "prompt": "drinking cup carved from a curved pale cattle horn with a dark tip, empty" },
     "fresh_milk_bucket": { "prompt": "iron bucket filled to the brim with white fresh milk" },
     "yak_milk_bucket": { "prompt": "iron bucket filled with rich creamy yellowish yak milk" },
-    "milk_wine": { "prompt": "curved cattle horn cup filled with cloudy pale milk wine" },
-    "yak_milk_wine": { "prompt": "curved cattle horn cup filled with cloudy golden cream yak milk wine" }
+    "milk_wine": { "prompt": "pale wooden goblet cup on a short foot, full of cloudy white milk wine" },
+    "yak_milk_wine": { "prompt": "dark brown wooden goblet cup with silver bands, on a short foot, full of creamy golden milk wine" }
   }
 }
