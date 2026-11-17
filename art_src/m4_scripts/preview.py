@@ -65,7 +65,7 @@ def render(block, shown=(), facing="north", band=(0, 16)):
     names = [b["name"] for b in model["bones"]]
     hidden |= {n for s in shown if s.startswith("-") for n in fnmatch.filter(names, s[1:])}  # "-piece_4" hides a bone
     # flip-book frames (station_frames.py): frame 0 unless another frame of the same part is asked for
-    frames = [n for n in names if re.fullmatch(r"(crank|plunger|wheel)_[0-9]", n)]
+    frames = [n for n in names if re.fullmatch(r"(crank|plunger|wheel|blade|beater)_[0-9]", n)]
     asked = {n.rsplit("_", 1)[0] for n in shown if n in frames}
     hidden |= {n for n in frames if not n.endswith("_0") or n.rsplit("_", 1)[0] in asked}
     hidden -= set(shown)

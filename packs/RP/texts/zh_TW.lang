@@ -465,6 +465,7 @@ kaleidoscope_ranching.ui.need.water=飲水
 kaleidoscope_ranching.ui.need.groom=照料
 kaleidoscope_ranching.ui.need.clean=清潔
 kaleidoscope_ranching.ui.settings.pasture=放牧（草場界樁範圍內的草可以當飼料）
+kaleidoscope_ranching.ui.settings.block_fx=方塊動畫與粒子（工作台轉動、煙與熱氣）
 kaleidoscope_ranching.ui.observe.needs.grazed=今天在草場吃草。
 kaleidoscope_ranching.ui.pasture.title=草場
 kaleidoscope_ranching.ui.pasture.grass=今天的草：%s 格，已吃掉 %s 格

@@ -82,6 +82,7 @@ UI = {
     "need.clean": ("清潔", "清洁", "Clean"),
     # 1.1 追加 草場與放牧 (systems/pasture.js)
     "settings.pasture": ("放牧（草場界樁範圍內的草可以當飼料）", "放牧（草场界桩范围内的草可以当饲料）", "Grazing (grass around a pasture post counts as feed)"),
+    "settings.block_fx": ("方塊動畫與粒子（工作台轉動、煙與熱氣）", "方块动画与粒子（工作台转动、烟与热气）", "Block animations and particles (moving stations, smoke and steam)"),
     "observe.needs.grazed": ("今天在草場吃草。", "今天在草场吃草。", "Grazed on a pasture today."),
     "pasture.title": ("草場", "草场", "Pasture"),
     "pasture.grass": ("今天的草：%s 格，已吃掉 %s 格", "今天的草：%s 格，已吃掉 %s 格", "Today's grass: %s blocks, %s eaten"),
@@ -277,8 +278,10 @@ def block_defs():
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#5b5b5b",
         f"{NS}:auto_feeder": {},
     })
-    B["chaff_cutter"] = dict(components={
-        **look("chaff_cutter", "kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks"),
+    # 1.1 追加 方塊動畫: the blade's two positions (data/stationFrames.js, core/blockFrames.js)
+    cutter_model = handmade("chaff_cutter", {f"blade_{n}": f"{q('frame')} == {n}" for n in (0, 1)})
+    B["chaff_cutter"] = dict(states=state("frame", 0, 1) if cutter_model else {}, components={
+        **(cutter_model or full("kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks")),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#8a5a32",
         "minecraft:crafting_table": {"table_name": f"tile.{NS}:chaff_cutter.name",
                                      "crafting_tags": [f"{NS}_chaff_cutter"]},

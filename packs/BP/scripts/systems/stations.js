@@ -44,6 +44,7 @@ import { taggedItems } from "../core/tags.js";
 import { clockBlockEvents, defineClockBlock } from "../core/blockClock.js";
 import { system, world } from "@minecraft/server";
 import { playFrames } from "../core/blockFrames.js";
+import { addFx } from "./blockFx.js";
 
 // ## The duration is stored with the running batch. A recipe another add-on
 // ## registered is unknown again after a world reload until that add-on
@@ -178,6 +179,12 @@ function collect(block, player, data) {
   block.dimension.playSound("random.pop", block.location);
 }
 
+// 1.1 追加 方塊動畫: smoke rises through an aging rack working over a lit campfire (systems/blockFx.js).
+const isBusy = (block) => block.permutation.getState(BUSY_STATE) === true;
+function smokeIfOverFire(block) {
+  if (overLitFire(block)) addFx(block, "smoke", { keep: (b) => isBusy(b) && overLitFire(b) });
+}
+
 function start(block, player) {
   const station = shortId(block.typeId);
   const held = mainHand(player)?.getItem();
@@ -198,6 +205,7 @@ function start(block, player) {
     startBatch(block, batchFor(recipe, result));
     block.dimension.playSound("bucket.fill_water", block.location);
     playFrames(block); // the dasher plunges, the wheel turns
+    smokeIfOverFire(block);
     return;
   }
   tell(player, "missing");
@@ -228,6 +236,7 @@ const stationEvents = {
     if (nowTick() >= data.start + ticksOf(data)) return collect(block, player, data);
     // Still working: no read-out (message.station.working is silenced); the contents show the stage.
     setStage(block, stageOf(data));
+    smokeIfOverFire(block); // after a reload the smoke comes back once someone looks in
   },
 
   onPlayerBreak({ block, dimension, brokenBlockPermutation }) {

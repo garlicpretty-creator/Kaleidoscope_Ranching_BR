@@ -18,6 +18,7 @@ import { hornItemComponent, penGateComponent, penGateTopComponent, startWorkAnim
 import { featherDusterItemComponent, lassoItemComponent, rugComponent } from "./textiles.js";
 import { hayRackComponent, startHayRacks } from "./hayRack.js";
 import { pasturePostComponent, pastureSeedItemComponent, startPastures } from "./pasture.js";
+import { startBlockFx } from "./blockFx.js";
 import { cheeseWheelComponent } from "./cheeseWheel.js";
 import { foodWasteBinComponent } from "./foodWasteBin.js";
 import { placedFoodComponent } from "./placedFood.js";
@@ -51,6 +52,7 @@ export function startM3() {
   startNests();
   startHayRacks();
   startPastures(); // after the troughs and hay racks: better feed first
+  startBlockFx();
   startAutoStations();
   startMilkingRacks();
   startTruffles();

@@ -589,6 +589,7 @@ const RACK = COMPONENTS["kaleidoscope_ranching:butcher_rack"];
 const NEST = COMPONENTS["kaleidoscope_ranching:nest_box"];
 const INCUBATOR = COMPONENTS["kaleidoscope_ranching:incubator"];
 const STATION = COMPONENTS["kaleidoscope_ranching:station"];
+const AUTO_STATION_FX = COMPONENTS["kaleidoscope_ranching:auto_station"];
 const rackAt = (x = 10) => __place(overworld, { x, y: 64, z: 0 }, "kaleidoscope_ranching:butcher_rack", {
   "kaleidoscope_ranching:carcass": "none", "kaleidoscope_ranching:skinned": false, "kaleidoscope_ranching:cut": false,
   "kaleidoscope_ranching:drying": 0, "kaleidoscope_ranching:drying_mix": 0,
@@ -1149,6 +1150,43 @@ test("1.1 station frames: the grinder's crank turns twice for a mince, then rest
   }
   for (const frame of [1, 2, 3]) assert(seen.includes(frame), `frame ${frame} shown`);
   equal(seen.at(-1), 0, "back at rest");
+});
+
+const { playFrames } = await import("../../packs/BP/scripts/core/blockFrames.js");
+const fx = await import("../../packs/BP/scripts/systems/blockFx.js");
+
+test("1.1 additions: the chaff cutter's blade and the separator's crank move; the setting stops them", () => {
+  clearWorld();
+  const cutter = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:chaff_cutter`, { [`${NS}:frame`]: 0 });
+  assert(playFrames(cutter), "the cutter has frames");
+  __advance(4);
+  equal(FRAME(cutter), 1, "blade down");
+  __advance(8);
+  equal(FRAME(cutter), 0, "and up again");
+  const player = __newPlayer(at(0));
+  const separator = __place(overworld, { x: 4, y: 64, z: 0 }, `${NS}:cream_separator`, { [`${NS}:busy`]: false, [`${NS}:frame`]: 0 });
+  hold(player, `${NS}:cow_milk`);
+  use(AUTO_STATION_FX, separator, player);
+  __advance(2);
+  equal(FRAME(separator), 1, "the crank turns when milk goes in");
+  __advance(20);
+  world.setDynamicProperty("kr:cfg:block_fx", false);
+  assert(!playFrames(cutter), "turned off in the settings");
+  world.setDynamicProperty("kr:cfg:block_fx", undefined);
+});
+
+test("1.1 additions: a dish set down steams while a player is near, and only for a while", () => {
+  clearWorld();
+  const pot = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:placed_fondue`, { [`${NS}:cut`]: 0 });
+  COMPONENTS[`${NS}:placed_food`].onPlace({ block: pot });
+  assert(fx.fxEntries().some((e) => e.kind === "steam" && e.location.x === 0), "on the list");
+  overworld.particles = [];
+  equal(fx.runBlockFx(), 0, "nobody near: no particles");
+  __newPlayer(at(3));
+  equal(fx.runBlockFx(), 1, "a player near: steam");
+  __advance(fx.STEAM_SECONDS * 20 + 1);
+  fx.runBlockFx();
+  assert(!fx.fxEntries().some((e) => e.location.x === 0 && e.location.y === 64 && e.location.z === 0), "gone after five minutes");
 });
 
 test("1.1 station frames: the churn's dasher plunges when a batch goes in; a press has no frames", () => {

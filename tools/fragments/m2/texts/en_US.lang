@@ -50,6 +50,7 @@ kaleidoscope_ranching.ui.need.water=Water
 kaleidoscope_ranching.ui.need.groom=Care
 kaleidoscope_ranching.ui.need.clean=Clean
 kaleidoscope_ranching.ui.settings.pasture=Grazing (grass around a pasture post counts as feed)
+kaleidoscope_ranching.ui.settings.block_fx=Block animations and particles (moving stations, smoke and steam)
 kaleidoscope_ranching.ui.observe.needs.grazed=Grazed on a pasture today.
 kaleidoscope_ranching.ui.pasture.title=Pasture
 kaleidoscope_ranching.ui.pasture.grass=Today's grass: %s blocks, %s eaten
