@@ -32,6 +32,12 @@ export const GRAZE = {
   [`${NS}:goose`]: 1,
 };
 
+/** register_animal `graze` (api/ranchingApi.js): another add-on's animal eats `n` grass a day. */
+export function setGraze(typeId, n) {
+  if (String(typeId).startsWith(`${NS}:`)) return; // built-in animals keep their own amount
+  GRAZE[typeId] = n;
+}
+
 /** Grass a grazing animal eats today. */
 export function grazeOf(typeId, baby = false) {
   const n = GRAZE[typeId];

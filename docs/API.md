@@ -205,6 +205,23 @@
 | `coldHardy` | `true`：不怕冷，像氂牛 |
 | `forage` | `{ "item": ..., "chance": 0.25, "minHearts": 5 }`：好感夠的成年動物，在森林的草地或灰化土上每天有機率拱出這個物品，像豬拱松露 |
 
+## 1.1 新增：草場與新夥伴
+
+| 能力 | 內容 |
+| --- | --- |
+| `animal_pasture` | `register_animal` 多了四個選填欄位，見下表 |
+| `events_pasture` | `animal_event` 多了 `grazed`（附 `post`：界樁的座標，`grass`：吃掉的草量） |
+| `query_pasture` | `animal_info` 多了 `grazing`（今天有沒有在草場吃草） |
+
+| 欄位 | 內容 |
+| --- | --- |
+| `graze` | 1 到 6：成年動物在草場每天吃幾格草，幼體減半；沒有這個欄位的動物不放牧 |
+| `eggsPerDay` | 1 到 4，下蛋的動物才能用：產蛋那天下幾顆 |
+| `layEvery` | 1 到 7，下蛋的動物才能用：幾天下一次蛋 |
+| `animations` | `{ "eat": ..., "drink": ..., "petted": ..., "graze": ... }`：你的動畫名稱。樂牧在動物吃、喝、被撫摸、吃草時，把同步的列舉屬性 `kaleidoscope_ranching:action` 設成 `"eat"`、`"drink"`、`"petted"`、`"graze"`，幾秒後設回 `"none"`；你的實體要宣告這個屬性（`client_sync: true`），資源包依它播放。沒有這個屬性的動物不會被設定 |
+
+標籤契約多一個：方塊標籤 `kaleidoscope_ranching:pasture_grass`，掛上的方塊算進草場的草量。
+
 ## 樂牧會主動找的附加包
 
 樂牧載入一秒後會送出下面的 `api_ping`。有回覆才會動作；沒裝的話什麼都不會發生，也不會在畫面上顯示文字。

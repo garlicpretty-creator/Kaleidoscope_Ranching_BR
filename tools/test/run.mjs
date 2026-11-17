@@ -393,6 +393,7 @@ test("M2: a chicken does not eat hay feed", () => {
 
 const pasture = await import("../../packs/BP/scripts/systems/pasture.js");
 const { getBlockData: postData } = await import("../../packs/BP/scripts/core/blockStore.js");
+const pastureData = await import("../../packs/BP/scripts/data/pasture.js");
 const grassCount = () => [...overworld.blocks.values()].filter((p) => p.type.id === "minecraft:grass_block").length;
 const dirtCount = () => [...overworld.blocks.values()].filter((p) => p.type.id === "minecraft:dirt").length;
 function grassPatch(n) {
@@ -1442,6 +1443,32 @@ test("M5: built-in and foreign-namespace registrations are refused; bad input ge
   r = call("register_feed", { item: "kr_test:oats", kind: "grain", units: 3 });
   equal(r.ok, true, "registering again is safe");
   equal(LIVE_FEEDS["kr_test:oats"].units, 3, "and updates it");
+});
+
+test("1.1 additions API: register_animal takes graze, laying and animations; a grazer reports it", () => {
+  let r = call("register_animal", { id: "kr_test:yakling", reproduction: "gestation", breedItems: ["minecraft:wheat"], graze: 2, animations: { eat: "animation.kr_test.yakling.eat" } });
+  equal(r.ok, true, `registered (${r.error})`);
+  equal(pastureData.grazeOf("kr_test:yakling"), 2, "grazes 2 a day");
+  equal(pastureData.grazeOf("kr_test:yakling", true), 1, "young ones half");
+  r = call("register_animal", { id: "kr_test:yakling2", reproduction: "gestation", breedItems: ["minecraft:wheat"], eggsPerDay: 2 });
+  equal(r.ok, false, "eggsPerDay is for egg animals only");
+  r = call("register_animal", { id: "kr_test:yakling3", reproduction: "gestation", breedItems: ["minecraft:wheat"], animations: { dance: "x" } });
+  equal(r.ok, false, "only the four actions");
+  r = call("register_animal", { id: "kr_test:yakling4", reproduction: "gestation", breedItems: ["minecraft:wheat"], graze: 9 });
+  equal(r.ok, false, "graze 1 to 6");
+  system.sendScriptEvent(`${API}:api_ping`, "{}");
+  const caps = sent("api_ready").at(-1)?.capabilities ?? [];
+  for (const cap of ["animal_pasture", "events_pasture", "query_pasture"]) assert(caps.includes(cap), `capability ${cap}`);
+
+  clearWorld();
+  grassPatch(10);
+  place("pasture_post", at(0));
+  const cow = ranch("cow", 1, "female");
+  system.__scriptEvents.length = 0;
+  runBlockClock();
+  assert(sent("animal_event").some((e) => e.type === "grazed" && e.entity === cow.id && e.grass === 3), "grazed broadcast");
+  call("query_animal", { entity: cow.id, ref: "q1" });
+  equal(sent("animal_info").at(-1).grazing, true, "query says it grazed today");
 });
 
 test("M5: a registered animal without a carcass dies quietly, and its own gestation days count", () => {

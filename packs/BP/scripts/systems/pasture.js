@@ -20,6 +20,7 @@ import { ensureSettled, isMarkedToday, mark, addAffection } from "../care/state.
 import { clockBlockEvents, defineClockBlock, startBlockClock } from "../core/blockClock.js";
 import { getBlockData, setBlockData } from "../core/blockStore.js";
 import { playAction } from "../core/actions.js";
+import { emitRanchEvent } from "../core/events.js";
 import { rid } from "../core/ids.js";
 import { consumeMainHand, isCreative, mainHand } from "../core/inventory.js";
 import { today } from "../core/time.js";
@@ -134,6 +135,7 @@ export function tickPasture(block, random = Math.random) {
     e.setDynamicProperty(GRAZED_DAY, day);
     if (data.rested) addAffection(e, PASTURE.REST_BONUS);
     playAction(e, "graze");
+    emitRanchEvent("grazed", { animal: e.typeId, entity: e.id, post: { ...block.location }, grass: need });
     left -= need;
     ate += need;
     fed++;
