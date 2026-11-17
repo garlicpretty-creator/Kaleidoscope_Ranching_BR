@@ -463,8 +463,8 @@ function parseLang(text) {
 // ## shows the name's \n as a new line in the tooltip.
 const TOOLTIP = {
   mod: { en_US: "Kaleidoscope Ranching", zh_TW: "森羅物語樂牧", zh_CN: "森罗物语乐牧" },
-  food: { en_US: "Placeable food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
-  drink: { en_US: "Placeable drink", zh_TW: "可放置的飲品", zh_CN: "可放置的饮品" },
+  food: { en_US: "Placeable Food", zh_TW: "可放置的食物", zh_CN: "可放置的食物" },
+  drink: { en_US: "Placeable Drink", zh_TW: "可放置的飲品", zh_CN: "可放置的饮品" },
 };
 
 // Registry categories that are food even when not eaten as they are (the cheese wheel is cut first).
@@ -493,7 +493,7 @@ function withTooltip(key, value, language) {
   if (!match) return value;
   let text = `${value}\\n§9§o${TOOLTIP.mod[language]}§r`;
   const placeable = match[1] === "item" && PLACEABLE[match[2]];
-  if (placeable) text += `\\n§d${TOOLTIP[placeable][language]}§r`;
+  if (placeable) text += `\\n§5${TOOLTIP[placeable][language]}§r`;
   return text;
 }
 
