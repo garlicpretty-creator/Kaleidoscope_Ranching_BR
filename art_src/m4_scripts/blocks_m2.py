@@ -16,6 +16,7 @@ from pathlib import Path
 from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
+from station_frames import shift
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -46,14 +47,18 @@ CHAFF_CUTTER = [
         ("brace", [-6, 3, -6], [12, 1, 12]),
         ("chaff", [-5, 4, -5], [10, 2, 10]),
         ("table", [-8, 10, -8], [16, 2, 16]),
-        ("guide", [-4, 12, -8], [1, 2, 13]),
-        ("guide", [3, 12, -8], [1, 2, 13]),
-        ("straw", [-3, 12, -8], [6, 1, 12]),
-        ("hinge", [5, 12, 4], [2, 4, 3]),
+        ("guide", [-4, 12, -6], [1, 2, 12]),
+        ("guide", [3, 12, -6], [1, 2, 12]),
+        ("straw", [-3, 12, -6], [6, 1, 11]),
+        # the knife's frame stands over the mouth at the front, where the straw is fed out
+        ("upright", [-5, 12, -8], [1, 6, 2]),
+        ("upright", [4, 12, -8], [1, 6, 2]),
+        ("crossbar", [-6, 18, -8], [12, 1, 2]),
     ]),
-    # 1.1 追加 方塊動畫: the blade comes down when the cutter is opened (station_frames.py)
-    ("blade_0", "cutter", [0, 0, 0], [("blade", [-6, 13, 5], [11, 3, 1]), ("grip", [-8, 14, 4], [2, 1, 3])]),
-    ("blade_1", "cutter", [0, 0, 0], [("blade", [-6, 12, 4], [11, 2, 1]), ("grip", [-8, 12, 3], [2, 1, 3])]),
+    # 1.1 追加 方塊動畫: the knife hangs raised between the uprights and drops onto the mouth when
+    # the cutter is opened (station_frames.py)
+    *shift("blade", "cutter", [("blade", [-4, 15, -7], [8, 3, 1]), ("grip", [-1, 16, -8], [2, 1, 1])],
+           [(0, 0, 0), (0, -3, 0)]),
 ]
 
 FEED_MIXER = [
@@ -147,7 +152,8 @@ PAINT = {
     "auto_feeder": {"pan_floor": solid(GALV_DK), "pan_fb": iron, "pan_s": iron, "grain": grain,
                     "hopper": galvanized, "rim": iron, "lid": solid(GALV, edge=GALV_DK), "handle": iron},
     "chaff_cutter": {"leg": wood(WOOD_DK, rings=WOOD_LT), "brace": wood(WOOD_DK), "chaff": chopped,
-                     "table": wood(WOOD), "guide": wood(WOOD_DK), "straw": hay, "hinge": wood(WOOD_DK),
+                     "table": wood(WOOD), "guide": wood(WOOD_DK), "straw": hay, "upright": wood(WOOD_DK, rings=WOOD_LT),
+                     "crossbar": wood(WOOD),
                      "blade": blade, "grip": wood(WOOD_LT)},
     "feed_mixer": {"stand": wood(WOOD_DK), "barrel": mixed_top, "hoop": iron, "axle": iron,
                    "paddle": iron, "crank": iron, "knob": wood(WOOD_LT)},

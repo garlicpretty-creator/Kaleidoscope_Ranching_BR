@@ -260,7 +260,8 @@ def horn_decor():
 
 
 def pasture_post():
-    # 1.1 追加: a post with a small sign nailed near the top (stand-in until the hand-made model).
+    # 1.1 追加: a post with a small sign nailed near the top (stand-in; the hand-made model is
+    # art_src/m4_scripts/blocks_m12.py, installed from art/blocks/ by gen_m3_art.py).
     bones = [Bone("post", None, (0, 0, 0))]
     cubes = [
         Cube("post", "dark_wood", (-1.5, 0, -1.5), (3, 14, 3)),

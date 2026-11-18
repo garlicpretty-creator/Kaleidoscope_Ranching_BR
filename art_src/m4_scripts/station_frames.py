@@ -9,7 +9,9 @@ to their models in place of the static part.
   plunger(...)  a churn dasher pushed down and pulled up again
   wheel(...)    spinning-wheel spokes, upright cross then diagonal, with the treadle rocking
   crank_z(...)  a crank whose axle runs along z (the cream separator): down, left, up, right
-  shift(...)    the same cubes moved by an offset per frame (the loom's beater, the chaff cutter's blade)
+  shift(...)    the same cubes moved by an offset per frame (the chaff cutter's blade)
+  swing(...)    a beater hanging on two swords pivoted low, its top swung forward a pixel a frame (the loom)
+  extra(...)    adds cubes of a frame's own to each frame bone (the cream separator's ribbed bowl)
 """
 
 FRAMES = 4
@@ -71,3 +73,29 @@ def shift(prefix, parent, cubes, offsets):
     return [(f"{prefix}_{i}", parent, [0, 0, 0],
              [(name, [o[0] + dx, o[1] + dy, o[2] + dz], s) for name, o, s in cubes])
             for i, (dx, dy, dz) in enumerate(offsets)]
+
+
+def swing(prefix, parent, x0, x1, y0, y1, z, swings=(0, -1, -2, -1), reed=3):
+    """A loom beater: two swords (1 pixel square, at x0..x0+1 and x1-1..x1) standing from the pivot at
+    y0 to the hand-tree at y1, with the reed (`reed` pixels tall) under the hand-tree between them.
+    Each frame swings the top by the frame's offset along z; the swords become a staircase of
+    |offset|+1 equal steps from the pivot, so they stay joined to it and to the hand-tree."""
+    bones = []
+    for i, d in enumerate(swings):
+        steps = abs(d) + 1
+        cubes = []
+        for k in range(steps):
+            lo = y0 + (y1 - y0) * k / steps
+            hi = y0 + (y1 - y0) * (k + 1) / steps
+            dz = -k if d < 0 else k
+            for sx in (x0, x1 - 1):
+                cubes.append(("sword", [sx, lo, z + dz], [1, hi - lo, 1]))
+        cubes.append(("reed", [x0 + 1, y1 - reed, z + d], [x1 - x0 - 2, reed, 1]))
+        cubes.append(("hand_tree", [x0, y1, z + d], [x1 - x0, 1, 1]))
+        bones.append((f"{prefix}_{i}", parent, [0, y0, z], cubes))
+    return bones
+
+
+def extra(bones, cubes_of):
+    """The frame bones with cubes_of(frame) added to each."""
+    return [(name, parent, pivot, cubes + cubes_of(i)) for i, (name, parent, pivot, cubes) in enumerate(bones)]

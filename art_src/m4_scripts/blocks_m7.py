@@ -17,7 +17,7 @@ from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
-from station_frames import crank, crank_z, shift, wheel
+from station_frames import crank, crank_z, extra, swing, wheel
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -84,7 +84,6 @@ CREAM_SEPARATOR = [
         ("base", [-6, 0, -6], [12, 2, 12]),
         ("column", [-2, 2, -2], [4, 6, 4]),
         ("drum", [-4, 8, -4], [8, 3, 8]),
-        ("bowl", [-5, 11, -5], [10, 3, 10]),
         ("knob", [-1, 14, -1], [2, 2, 2]),
         ("spout", [5, 9, -1], [3, 1, 2]),
         ("spout", [-8, 8, -1], [4, 1, 2]),
@@ -93,7 +92,8 @@ CREAM_SEPARATOR = [
         ("crank_axle", [-0.5, 5, -4], [1, 1, 2]),
     ]),
     # 1.1 追加 方塊動畫: the crank turns when milk goes in (station_frames.py)
-    *crank_z("crank", "frame", -5, 0, 5.5, 2.5, knob_dz=-1),
+    # and the ribbed bowl on top spins with it: each frame has its own bowl, ribs a pixel further round
+    *extra(crank_z("crank", "frame", -5, 0, 5.5, 3.5, knob_dz=-1), lambda i: [(f"bowl_{i}", [-5, 11, -5], [10, 3, 10])]),
     ("busy", "frame", [0, 14, 0], [
         ("cream", [-4, 14, -4], [8, 1, 8]),
     ]),
@@ -163,7 +163,9 @@ WEAVING_LOOM = [
         ("treadle", [1, 0, -5], [2, 1, 9]),
     ]),
     # 1.1 追加 方塊動畫: the beater swings in and out when yarn goes on (station_frames.py)
-    *shift("beater", "frame", [("beater", [-5, 8, -3], [10, 4, 1])], [(0, 0, 0), (0, 0, -1), (0, 0, -2), (0, 0, -1)]),
+    # (station_frames.py): the swords pivot on the floor, the reed under the hand-tree beats the weft
+    # against the cloth at the front beam
+    *swing("beater", "frame", -5.5, 5.5, 1, 13, -1, reed=4),
     ("busy", "frame", [0, 10, -5], [
         ("cloth", [-5, 10.5, -4], [10, 1, 1]),
         ("cloth_roll", [-4, 8.5, -6.5], [8, 3, 3]),
@@ -289,6 +291,40 @@ def vessel(side, inside, rim=None):
     return fn
 
 
+def ribbed(phase):
+    """The separator's spinning bowl: tin with a dark rib every fourth pixel round its side, and a
+    bright one beside it; each frame starts the ribs a pixel further round, so the bowl turns."""
+    def fn(f, i, j, w, h, fi):
+        if f in ("top", "bottom"):
+            return cast(TIN, TIN_DK, TIN_LT)(f, i, j, w, h, fi)
+        if j == 0:
+            return TIN_LT
+        k = (i + phase) % 4
+        return STEEL_DK if k == 0 else TIN_LT if k == 1 else TIN
+    return fn
+
+
+def skim(phase):
+    """Inside the bowl: dark milk with one pale streak from the middle to the rim, pointing a quarter
+    turn further round each frame (the same way the ribs go), like the hand of a clock."""
+    dx, dz = [(0, 1), (1, 0), (0, -1), (-1, 0)][phase]
+
+    def fn(f, i, j, w, h, fi):
+        px, pz = i + 0.5 - w / 2, h / 2 - j - 0.5
+        along, across = px * dx + pz * dz, px * dz - pz * dx
+        if 0 < along and -1 < across <= 0:
+            return (226, 230, 234)
+        return (150, 158, 170)
+    return fn
+
+
+def reed(f, i, j, w, h, fi):
+    """The beater's reed: fine dark dents between bright wires, a wooden rail along the bottom."""
+    if f in ("top", "bottom") or j == h - 1:
+        return WOOD
+    return (88, 64, 44) if i % 2 else (196, 188, 170)
+
+
 def perforated(f, i, j, w, h, fi):
     if f in ("east", "west") and 0 < i < w - 1 and 0 < j < h - 1 and (i + j) % 2 == 0:
         return (52, 40, 44)
@@ -371,7 +407,7 @@ PAINT = {
                      "pail": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT), "pail_handle": iron,
                      "stool_seat": wood(WOOD_LT), "stool_leg": wood(WOOD_DK)},
     "cream_separator": {"base": wood(WOOD_DK), "column": cast(), "drum": cast(TIN, TIN_DK, TIN_LT),
-                        "bowl": vessel(cast(TIN, TIN_DK, TIN_LT), (104, 110, 120), TIN_LT),
+                        **{f"bowl_{i}": vessel(ribbed(i), skim(i), TIN_LT) for i in range(4)},
                         "knob": wood(WOOD_LT), "spout": cast(TIN, TIN_DK, TIN_LT),
                         "cream_can": vessel(cast(TIN, TIN_DK, TIN_LT), CREAM, TIN_LT),
                         "milk_jug": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT),
@@ -386,7 +422,8 @@ PAINT = {
     "weaving_loom": {"front_post": wood(WOOD_DK, rings=WOOD_LT), "back_post": wood(WOOD_DK, rings=WOOD_LT),
                      "side_rail": wood(WOOD), "foot_rail": wood(WOOD_DK), "beam": wood(WOOD_LT),
                      "warp": threads(YARN, YARN_DK), "warp_back": threads(YARN, YARN_DK),
-                     "heddle": threads(WOOD, YARN), "beater": threads(WOOD_LT, WOOD_DK),
+                     "heddle": threads(WOOD, YARN), "sword": wood(WOOD), "reed": reed,
+                     "hand_tree": wood(WOOD_LT),
                      "treadle": wood(WOOD)},
     "silage_barrel": {"staves": staves(WOOD), "hoop": iron, "lid": lid, "handle": iron,
                       "stone": rock},
