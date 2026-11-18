@@ -14,7 +14,7 @@
 | `packs/BP/scripts/core/` | 各里程碑共用的小模組，規則見 `docs/INTERFACES.md` |
 | `packs/BP/scripts/systems/` | M1、M3 的玩法系統，每個檔案一件事 |
 | `packs/BP/scripts/care/`、`custom_components/`、`events/`、`ui/`、`utils/`、`care_init.js` | M2 照顧核心（另一位開發者的程式，交接見 `docs/M2_交接.md`） |
-| `packs/BP/scripts/api/` | 對外的兩個介面：和廚房握手（`cookery.js`）、樂牧自己的對外 API（`ranchingApi.js`） |
+| `packs/BP/scripts/api/` | 對外的兩個介面：和廚房握手（`cookery.js`）、樂牧自己的對外 API（`ranchingApi.js`）；另有和姊妹包的選用聯動：漁歌（`fishing.js`）、草本（`herbal.js`）、豐收（`harvest.js`）、酒館（`tavern.js`） |
 | `packs/BP/{entities,items,blocks,recipes,loot_tables,texts}` | 生成的檔案 |
 | `packs/RP/` | 生成的資源包：模型、動畫、渲染控制器、貼圖、索引、語言檔 |
 | `tools/` | 生成器、驗證、測試、打包 |

@@ -17,14 +17,14 @@
           "adjust_for_weather": false
         },
         "minecraft:weight": {
-          "default": 6
+          "default": 4
         },
         "minecraft:herd": {
           "min_size": 2,
           "max_size": 3
         },
         "minecraft:density_limit": {
-          "surface": 4
+          "surface": 2
         },
         "minecraft:biome_filter": {
           "any_of": [
@@ -35,6 +35,14 @@
             {
               "test": "has_biome_tag",
               "value": "river"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_plains"
+            },
+            {
+              "test": "has_biome_tag",
+              "value": "bop_like_river"
             }
           ]
         }

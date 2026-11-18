@@ -19,7 +19,11 @@
       "animations": {
         "walk": "animation.kaleidoscope_ranching.pig.walk",
         "look_at_target": "animation.common.look_at_target",
-        "sleep": "animation.kaleidoscope_ranching.pig.sleep"
+        "sleep": "animation.kaleidoscope_ranching.pig.sleep",
+        "eat": "animation.kaleidoscope_ranching.pig.eat",
+        "drink": "animation.kaleidoscope_ranching.pig.drink",
+        "petted": "animation.kaleidoscope_ranching.pig.petted",
+        "actions": "controller.animation.kaleidoscope_ranching.pig.actions"
       },
       "scripts": {
         "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.1 : 1.0)",
@@ -28,10 +32,13 @@
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"
           },
           {
-            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping')"
+            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping') && q.property('kaleidoscope_ranching:action') == 'none' && !q.is_grazing"
           },
           {
             "sleep": "q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "actions": "!q.property('kaleidoscope_ranching:sleeping')"
           }
         ]
       },

@@ -2,6 +2,7 @@
 // Its clock pass (core/blockClock.js) is the "飼槽結算": settles animals in range, feeds them,
 // and marks the 清潔 need from the pen's manure count.
 
+import { playAtBlock } from "../core/actions.js";
 import { CARE } from "../data/care_config.js";
 import { FEEDS, KIND, KIND_TIER } from "../data/feeds.js";
 import { SPECIES } from "../data/species.js";
@@ -50,6 +51,8 @@ export function tickTrough(block) {
   const day = today();
   let kind = getState(block, "kind");
   let fill = getState(block, "fill");
+  // 1.1 動物動作: animals at the trough are seen eating what is in it.
+  if (fill > 0) playAtBlock(block, animals, "eat", (e) => SPECIES[e.typeId]?.eats.includes(kind));
   const checkClean = cleanNeedEnabled();
   let clean = null;
 

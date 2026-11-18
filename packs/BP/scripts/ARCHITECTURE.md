@@ -11,7 +11,7 @@ described in `docs/PROPOSAL.zh-TW.md`.
 ## Folders
 
 - `main.js` — bootstrap only: integrations, components, events.
-- `api/` — integration with Cookery and other hosts (`cookery.js`), and Ranching's own public registration API (`ranchingApi.js`, contract in `docs/API.md`).
+- `api/` — integration with Cookery and other hosts (`cookery.js`), and Ranching's own public registration API (`ranchingApi.js`, contract in `docs/API.md`). Optional sister-pack links: Fishing Voyage (`fishing.js`), Herbal (`herbal.js`), Harvest (`harvest.js`), Tavern (`tavern.js`).
 - `core/` — shared layer. `content.js` is the runtime view of animals, carcass cuts and recipes (built-in tables plus API registrations); systems read content through it, not from `data/` directly.
 - `data/` — declarative tables. The single source of truth for animals, items, feed, processing recipes and butchering.
 - `custom_components/` — block and item custom components.

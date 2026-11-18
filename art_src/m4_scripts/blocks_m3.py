@@ -25,6 +25,7 @@ from PIL import Image
 from boxuv import Painter
 from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
+from station_frames import plunger
 
 ROOT = Path(__file__).resolve().parents[2]
 NS = "kaleidoscope_ranching"
@@ -179,9 +180,9 @@ BUTTER_CHURN = [
         ("hoop", [-4.5, 2, -4.5], [9, 1, 9]),
         ("hoop", [-4.5, 9, -4.5], [9, 1, 9]),
         ("lid", [-3, 12, -3], [6, 1, 6]),
-        ("pole", [-0.5, 13, -0.5], [1, 7, 1]),
-        ("handle", [-2.5, 19, -0.5], [5, 1, 1]),
     ]),
+    # 1.1 工作台互動動畫: the dasher plunges when a batch goes in (station_frames.py)
+    *plunger("plunger", "churn", [("pole", [-0.5, 13, -0.5], [1, 7, 1]), ("handle", [-2.5, 19, -0.5], [5, 1, 1])]),
     # churning: cream foams up around the dasher and runs down the front
     ("busy", "churn", [0, 12, 0], [
         ("foam", [-1.5, 13, -1.5], [3, 1, 3]),

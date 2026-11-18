@@ -1,0 +1,90 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.rabbit.eat": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "18 + math.sin(q.anim_time * 1440) * 3",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "18 + math.sin(q.anim_time * 1440) * 3",
+            0,
+            0
+          ]
+        },
+        "a_ears": {
+          "rotation": [
+            12,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.rabbit.drink": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "26 + math.sin(q.anim_time * 720) * 2",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "26 + math.sin(q.anim_time * 720) * 2",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.rabbit.petted": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            -5,
+            0,
+            "math.sin(q.anim_time * 360) * 12"
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            -5,
+            0,
+            "math.sin(q.anim_time * 360) * 12"
+          ]
+        },
+        "a_ears": {
+          "rotation": [
+            45,
+            0,
+            0
+          ]
+        },
+        "a_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1440) * 20",
+            0
+          ]
+        },
+        "b_tail": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1440) * 20",
+            0
+          ]
+        }
+      }
+    }
+  }
+}

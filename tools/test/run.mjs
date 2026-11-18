@@ -441,6 +441,71 @@ test("M2: one click with a brush is handled once, by M2 only", () => {
   equal(cow.getDynamicProperty("kaleidoscope_ranching:love_until"), undefined, "breeding untouched");
 });
 
+// --- 1.1 動物動作 ----------------------------------------------------------
+
+const actions = await import("../../packs/BP/scripts/core/actions.js");
+const ACTION = `${NS}:action`;
+const always = () => 0;
+const { ANIMALS: ACTION_ANIMALS } = await import("../../packs/BP/scripts/data/animals.js");
+
+test("1.1 actions: petting and brushing play the petted animation, which ends by itself", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  equal(cow.getProperty(ACTION), "none", "starts at rest");
+  player.isSneaking = true; // petting is a sneaking, empty-handed use
+  __interact(player, cow);
+  __advance(1);
+  equal(cow.getProperty(ACTION), "petted", "pet");
+  __advance(60);
+  equal(cow.getProperty(ACTION), "none", "back to rest after 2.5 s");
+  player.isSneaking = false;
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  __advance(1);
+  equal(cow.getProperty(ACTION), "petted", "brushing too, even when already groomed today");
+});
+
+test("1.1 actions: animals standing at a trough with their feed eat, others do not", () => {
+  clearWorld();
+  const trough = place("trough", at(0), { fill: 5, kind: 1 });
+  const cow = ranch("cow", 1, "female");
+  const far = ranch("cow", 6, "female");
+  const hen = ranch("chicken", 1, "female", 1);
+  equal(actions.playAtBlock(trough, [cow, far, hen], "eat", (e) => e.typeId.endsWith("cow"), always), 1, "one animal plays");
+  equal(cow.getProperty(ACTION), "eat", "the cow at the trough eats");
+  equal(far.getProperty(ACTION), "none", "a cow six blocks away does not");
+  equal(hen.getProperty(ACTION), "none", "a hen does not eat hay");
+});
+
+test("1.1 actions: the clock makes animals at a water trough drink, and leaves sleeping ones alone", () => {
+  clearWorld();
+  place("water_trough", at(0), { water: 3 });
+  const goat = ranch("goat", 1, "female");
+  const sleeper = ranch("goat", 0, "female", 1);
+  sleeper.triggerEvent(`${NS}:fall_asleep`);
+  const random = Math.random;
+  Math.random = always;
+  try {
+    runBlockClock();
+  } finally {
+    Math.random = random;
+  }
+  equal(goat.getProperty(ACTION), "drink", "drinks");
+  equal(sleeper.getProperty(ACTION), "none", "asleep, it does not");
+});
+
+test("1.1 actions: every animal's client entity plays the actions only while awake", () => {
+  for (const { id } of ACTION_ANIMALS) {
+    const description = JSON.parse(readFileSync(new URL(`../../packs/RP/entity/${id}.entity.json`, import.meta.url), "utf8"))["minecraft:client_entity"].description;
+    equal(description.animations.actions, `controller.animation.${NS}.${id}.actions`, `${id} has the controller`);
+    const entry = description.scripts.animate.find((e) => typeof e === "object" && "actions" in e);
+    assert(entry?.actions.includes("sleeping"), `${id}: not while asleep`);
+    const look = description.scripts.animate.find((e) => typeof e === "object" && "look_at_target" in e);
+    assert(look?.look_at_target.includes("action"), `${id}: stops looking at the player while it eats`);
+  }
+});
+
 // --- M3: carcasses and the butcher rack -----------------------------------
 
 const butcherData = await import("../../packs/BP/scripts/data/butcher.js");
@@ -993,6 +1058,41 @@ test("the incubator hatches only while heated; the countdown pauses when cold", 
 // --- M3: processing stations ----------------------------------------------
 
 const stationAt = (id, x = 0) => __place(overworld, { x, y: 64, z: 0 }, `kaleidoscope_ranching:${id}`, { "kaleidoscope_ranching:busy": false });
+
+const FRAME = (block) => overworld.getBlock(block.location).permutation.getState(`${NS}:frame`);
+
+test("1.1 station frames: the grinder's crank turns twice for a mince, then rests", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const grinder = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:meat_grinder`, { [`${NS}:busy`]: false, [`${NS}:frame`]: 0 });
+  hold(player, "minecraft:porkchop");
+  use(STATION, grinder, player);
+  equal(player.inventory.count(`${NS}:pork_mince`), 1, "a mince");
+  const seen = [];
+  for (let tick = 0; tick < 18; tick++) {
+    __advance(1);
+    seen.push(FRAME(grinder));
+  }
+  for (const frame of [1, 2, 3]) assert(seen.includes(frame), `frame ${frame} shown`);
+  equal(seen.at(-1), 0, "back at rest");
+});
+
+test("1.1 station frames: the churn's dasher plunges when a batch goes in; a press has no frames", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const churn = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:butter_churn`, { [`${NS}:busy`]: false, [`${NS}:frame`]: 0 });
+  hold(player, `${NS}:cow_milk`, 2);
+  use(STATION, churn, player);
+  __advance(3);
+  equal(FRAME(churn), 1, "plunging");
+  __advance(40);
+  equal(FRAME(churn), 0, "at rest again");
+  const press = stationAt("cheese_press", 4);
+  hold(player, `${NS}:cow_milk`, 3);
+  use(STATION, press, player);
+  __advance(3);
+  equal(FRAME(press), undefined, "the press has no moving part");
+});
 
 test("the cheese press takes three milk and works half a day", () => {
   clearWorld();
@@ -3405,6 +3505,79 @@ test("M11: with Fishing, Ranching baits are registered, fish bones grind to calc
   __skipTime(24000 * 2);
   use(RACK, rack, player);
   equal(player.inventory.count("kaleidoscope_ranching:cured_pork_belly"), 1, "salted: done in two days");
+});
+
+const herbalApi = await import("../../packs/BP/scripts/api/herbal.js");
+const harvestApi = await import("../../packs/BP/scripts/api/harvest.js");
+const { HERBAL_HEAT } = await import("../../packs/BP/scripts/data/partners.js");
+
+test("Herbal: Ranching pings it and sends 寒熱 for its foods only once it answers with external_heat", () => {
+  clearWorld();
+  herbalApi.__resetHerbal();
+  system.__scriptEvents.length = 0;
+  herbalApi.pingHerbal();
+  assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_herbal:api_ping" && e.message === "kaleidoscope_ranching"), "pinged with our namespace");
+  const heatSent = () => system.__scriptEvents.filter((e) => e.id === "kaleidoscope_herbal:heat_register");
+  equal(herbalApi.onHerbalReady("not json"), false, "a broken answer is ignored");
+  equal(herbalApi.onHerbalReady(JSON.stringify({ api: 2, capabilities: ["external_heat"] })), false, "api 2 is left alone");
+  herbalApi.onHerbalReady(JSON.stringify({ api: 1, version: "1.0.0", capabilities: ["events"] }));
+  equal(heatSent().length, 0, "nothing without external_heat");
+  herbalApi.onHerbalReady(JSON.stringify({ api: 1, version: "1.1.0", capabilities: ["external_heat"], limits: { itemsPerMessage: 32 } }));
+  const items = heatSent().flatMap((e) => JSON.parse(e.message).items);
+  equal(items.length, Object.keys(HERBAL_HEAT).length, "every value sent");
+  for (const e of heatSent()) {
+    const m = JSON.parse(e.message);
+    equal(m.api, 1, "api");
+    equal(m.source, "kaleidoscope_ranching", "source");
+    assert(e.message.length < 2048, "under 2048 characters");
+  }
+  for (const row of items) {
+    assert(row.id.startsWith("kaleidoscope_ranching:"), `${row.id} is ours`);
+    assert(Number.isInteger(row.heat) && row.heat !== 0 && Math.abs(row.heat) <= 30, `${row.id} heat within ±30`);
+    const file = readdirSync("packs/BP/items").find((f) => readFileSync(`packs/BP/items/${f}`, "utf8").includes(`"${row.id}"`));
+    assert(file && readFileSync(`packs/BP/items/${file}`, "utf8").includes("minecraft:food"), `${row.id} is a food`);
+  }
+  equal(herbalApi.herbalMessages({ api: 1, capabilities: ["external_heat"], limits: { itemsPerMessage: 5 } }).length, Math.ceil(items.length / 5), "split by itemsPerMessage");
+  herbalApi.onHerbalReady(JSON.stringify({ api: 1, capabilities: ["external_heat"] }));
+  equal(heatSent().flatMap((e) => JSON.parse(e.message).items).length, 2 * items.length, "sent again on the next api_ready");
+});
+
+test("Herbal: only our own refusals are logged, once each", () => {
+  herbalApi.__resetHerbal();
+  const lines = [];
+  const original = console.warn;
+  console.warn = (...args) => lines.push(args.join(" "));
+  try {
+    herbalApi.onHeatAck(JSON.stringify({ api: 1, to: "other_pack", ok: true, rejected: [{ id: "other_pack:tea", code: "TAKEN" }] }));
+    herbalApi.onHeatAck(JSON.stringify({ api: 1, to: "kaleidoscope_ranching", ok: true, rejected: [{ id: "kaleidoscope_ranching:yogurt", code: "TAKEN" }] }));
+    herbalApi.onHeatAck(JSON.stringify({ api: 1, to: "kaleidoscope_ranching", ok: true, rejected: [{ id: "kaleidoscope_ranching:yogurt", code: "TAKEN" }] }));
+    herbalApi.onHeatAck("{broken");
+  } finally {
+    console.warn = original;
+  }
+  equal(lines.length, 1, "one line");
+  assert(lines[0].includes("kaleidoscope_ranching:yogurt") && lines[0].includes("TAKEN"), "the yogurt refusal");
+});
+
+test("Harvest: once it answers (or its corn exists), four Harvest corn make four silage in three days", () => {
+  clearWorld();
+  system.__scriptEvents.length = 0;
+  harvestApi.pingHarvest();
+  assert(system.__scriptEvents.some((e) => e.id === "kaleidoscope_harvest:api_ping" && e.message === "kaleidoscope_ranching"), "pinged with our namespace");
+  equal(harvestApi.onHarvestReady("not json"), false, "a broken answer is ignored");
+  equal(harvestApi.onHarvestReady(JSON.stringify({ api: 2 })), false, "api 2 is left alone");
+  equal(harvestApi.lookForHarvestItems({ get: () => undefined }), false, "no corn item: not there");
+  equal(harvestApi.lookForHarvestItems({ get: () => { throw new Error("unknown item"); } }), false, "a throwing lookup: not there");
+  assert(harvestApi.onHarvestReady(JSON.stringify({ api: 1, source: "kaleidoscope_harvest", version: "1.0.0", capabilities: ["catalog"] })), "api 1 answer taken");
+  equal(harvestApi.harvest()?.version, "1.0.0", "remembered");
+  const barrel = __place(overworld, { x: 0, y: 64, z: 5 }, "kaleidoscope_ranching:silage_barrel", { "kaleidoscope_ranching:busy": false });
+  hopperItems(hopperAt({ x: 0, y: 65, z: 5 })).addItem(new ItemStack("kaleidoscope_harvest:corn", 4));
+  const out = hopperAt({ x: 0, y: 63, z: 5 });
+  tickAutoStation(barrel);
+  __skipTime(24000 * 3);
+  tickAutoStation(barrel);
+  equal(hopperItems(out).count("kaleidoscope_ranching:silage"), 4, "four silage after three days");
+  assert(harvestApi.lookForHarvestItems({ get: (id) => (id === "kaleidoscope_harvest:corn" ? { id } : undefined) }), "Harvest 1.0.0 is found by its corn");
 });
 
 test("M11: with the Tavern, the extension goes out and its grapes become feed", () => {

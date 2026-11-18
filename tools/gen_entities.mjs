@@ -11,6 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const { ANIMALS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/animals.js")).href);
 
 const { gearOf, gearProperty } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/gear.js")).href);
+const { ACTION_PROPERTY, ACTIONS } = await import(pathToFileURL(join(root, "packs/BP/scripts/data/actions.js")).href);
 
 const NS = "kaleidoscope_ranching";
 const SEX = `${NS}:sex`;
@@ -34,14 +35,28 @@ const TUNING = {
   yak: { family: "yak", health: 12, speed: 0.22, box: [1.0, 1.4], mass: 1.1, packBag: true },
 };
 
-// Natural spawning for the M4 animals, modelled on vanilla cows. Biome tags are
-// Bedrock's; an animal spawns where any of its tags is present.
+// Natural spawning for the M4 animals. Biome tags are Bedrock's; a rule applies where any of
+// its tags is present, and an animal may have several rules.
+// ## Weights follow vanilla's rarer animals (horse 4, goat 5; the farm animals are sheep 12,
+// ## chicken 10, pig 10, cow 8). A weight is only a share among the animals of one biome, and
+// ## rivers have no vanilla land animals to share with, so `density` (the cap on this animal
+// ## nearby; vanilla's river squid use 2) is what keeps the numbers down there. Meadows have
+// ## low vanilla weights (sheep 2, donkey 1), hence the yak's separate rule.
+const YAK_BLOCKS = ["minecraft:grass_block", "minecraft:snow", "minecraft:stone"];
 const SPAWN = {
-  duck: { tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], weight: 8, herd: [2, 4] },
-  goose: { tags: ["plains", "river"], blocks: ["minecraft:grass_block"], weight: 6, herd: [2, 3] },
-  buffalo: { tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 6, herd: [2, 3] },
-  yak: { tags: ["mountains", "meadow", "snowy_slopes", "frozen_peaks"], blocks: ["minecraft:grass_block", "minecraft:snow", "minecraft:stone"], weight: 6, herd: [2, 4] },
+  duck: [{ tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], weight: 4, herd: [2, 3], density: 2 }],
+  goose: [{ tags: ["plains", "river"], blocks: ["minecraft:grass_block"], weight: 4, herd: [2, 3], density: 2 }],
+  buffalo: [{ tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 4, herd: [2, 3], density: 3 }],
+  yak: [
+    { tags: ["mountains", "snowy_slopes", "frozen_peaks"], blocks: YAK_BLOCKS, weight: 3, herd: [2, 3], density: 3 },
+    { tags: ["meadow"], blocks: YAK_BLOCKS, weight: 1, herd: [2, 3], density: 3 },
+  ],
 };
+
+// ## Biomes O' Plenty (our Bedrock port; see its docs/HANDSHAKE.md) keeps vanilla vegetation
+// ## tags off its biomes and instead tags each one `bop_like_<tag>` for the vanilla biomes it
+// ## replaces, so every tag X above also accepts `bop_like_X`. Without BOP these never match.
+const withBopTags = (tags) => [...tags, ...tags.map((tag) => `bop_like_${tag}`)];
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
 
@@ -405,6 +420,8 @@ function buildEntity(animal, t) {
           [SEX]: { type: "enum", values: ["female", "male"], default: "female", client_sync: true },
           ...(t.wool ? { [WOOL_COLOR]: { type: "int", range: [0, 15], default: 0, client_sync: true } } : {}),
           [SLEEPING]: { type: "bool", default: false, client_sync: true },
+          // 1.1 動物動作 (core/actions.js): eating, drinking, being petted, played by tools/gen_actions.mjs.
+          [ACTION_PROPERTY]: { type: "enum", values: ACTIONS, default: "none", client_sync: true },
           // Gear the animal wears, drawn by the resource pack (data/gear.js, core/gear.js).
           ...Object.fromEntries(gearOf(animal.id).map((gear) => [gearProperty(gear.id), { type: "bool", default: false, client_sync: true }])),
         },
@@ -430,7 +447,7 @@ for (const animal of ANIMALS) {
 
 const spawnDir = join(root, "packs/BP/spawn_rules");
 mkdirSync(spawnDir, { recursive: true });
-for (const [id, rule] of Object.entries(SPAWN)) {
+for (const [id, rules] of Object.entries(SPAWN)) {
   if (!TUNING[id]) continue;
   writeFileSync(
     join(spawnDir, `${id}.json`),
@@ -439,17 +456,15 @@ for (const [id, rule] of Object.entries(SPAWN)) {
         format_version: "1.8.0",
         "minecraft:spawn_rules": {
           description: { identifier: rid(id), population_control: "animal" },
-          conditions: [
-            {
-              "minecraft:spawns_on_surface": {},
-              "minecraft:spawns_on_block_filter": rule.blocks,
-              "minecraft:brightness_filter": { min: 7, max: 15, adjust_for_weather: false },
-              "minecraft:weight": { default: rule.weight },
-              "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
-              "minecraft:density_limit": { surface: 4 },
-              "minecraft:biome_filter": { any_of: rule.tags.map((tag) => ({ test: "has_biome_tag", value: tag })) },
-            },
-          ],
+          conditions: rules.map((rule) => ({
+            "minecraft:spawns_on_surface": {},
+            "minecraft:spawns_on_block_filter": rule.blocks,
+            "minecraft:brightness_filter": { min: 7, max: 15, adjust_for_weather: false },
+            "minecraft:weight": { default: rule.weight },
+            "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
+            "minecraft:density_limit": { surface: rule.density },
+            "minecraft:biome_filter": { any_of: withBopTags(rule.tags).map((tag) => ({ test: "has_biome_tag", value: tag })) },
+          })),
         },
       },
       null,

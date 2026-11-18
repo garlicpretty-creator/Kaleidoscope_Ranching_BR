@@ -16,7 +16,7 @@
 ## 文件
 
 - [企劃書（正式版）](docs/PROPOSAL.zh-TW.md)
-- [1.2 企劃書（草案）](docs/1.2_企劃書.md)
+- [1.1 追加企劃書：草場與新夥伴](docs/1.1_追加企劃書.md)
 - [專案架構](docs/ARCHITECTURE.md)：接手前先讀
 - [腳本架構](packs/BP/scripts/ARCHITECTURE.md)
 - [里程碑之間的介面](docs/INTERFACES.md)
