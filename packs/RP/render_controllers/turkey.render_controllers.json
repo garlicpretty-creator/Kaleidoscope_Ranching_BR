@@ -31,10 +31,16 @@
           "a_tail": "!q.is_baby"
         },
         {
-          "m_curl": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+          "m_beard": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         },
         {
           "a_head": "!q.is_baby"
+        },
+        {
+          "m_wattle": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+        },
+        {
+          "fa_wattle": "!q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
         },
         {
           "a_wing_left": "!q.is_baby"

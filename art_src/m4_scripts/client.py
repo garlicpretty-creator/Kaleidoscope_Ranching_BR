@@ -36,7 +36,7 @@ SPECIES = {
         "wings": True,
     },
     "turkey": {
-        "egg": ("#4A3A2E", "#C82C28"), "scale_male": 1.2,
+        "egg": ("#4A3A2E", "#C82C28"), "scale_male": 1.2, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 60", "leg_right": f"-{SWING} * 60"},
         "wings": True,
     },

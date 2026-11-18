@@ -1,10 +1,10 @@
-"""1.1 追加 新動物 (docs/1.1_追加企劃書.md 二): models and textures for the quail, the turkey
-(stand-ins until the hand-made art) and the alpaca (its own rig and painting in alpaca.py).
+"""1.1 追加 新動物 (docs/1.1_追加企劃書.md 二): models and textures for the quail, the turkey and
+the alpaca. Each has its own rig and painting: quail.py, turkey.py and alpaca.py.
 
-- quail, turkey: the duck's rig (duck.py BONES) scaled down or up, repainted. Same bone names, so
+- quail, turkey: the poultry bone names (a_/b_ head, torso, leg_left/right, wing_left/right), so
   client.py's walk, tools/gen_sleep.mjs (roost) and tools/gen_actions.mjs work unchanged.
-- alpaca: alpaca.py, a long-necked quadruped on the yak's conventions (a_*, b_*, legs a_leg_fl..),
-  with its fleece in wool_* bones that client.py hides once it is sheared.
+- alpaca: a long-necked quadruped on the yak's conventions (a_*, b_*, legs a_leg_fl..), with its
+  fleece in wool_* bones that client.py hides once it is sheared.
 
 Eyes are painted with boxuv.plain_eyes so gen_sleep can lay eyelids over them.
 UVs are packed afresh (blocks_m3.autouv): scaled cubes no longer fit the duck's sheet.
@@ -17,6 +17,7 @@ import sys
 from blocks_m3 import autouv
 from boxuv import RP, Painter, geo, plain_eyes, write_geo
 from duck import BONES as DUCK_BONES
+import turkey
 
 
 def mix(a, b, t):
@@ -66,9 +67,6 @@ POULTRY_LOOKS = {
     "quail": {"scale": 0.7, "female": ((150, 118, 84), (86, 62, 42), (214, 190, 150), (136, 104, 74)),
               "male": ((140, 104, 72), (80, 56, 38), (220, 196, 156), (120, 70, 44)),
               "bill": (74, 62, 52), "legs": (206, 160, 120), "down": (214, 186, 140), "back": (120, 92, 62)},
-    "turkey": {"scale": 1.4, "female": ((96, 76, 58), (52, 40, 32), (150, 128, 100), (120, 104, 96)),
-               "male": ((70, 58, 46), (34, 28, 24), (148, 112, 70), (150, 170, 200)),
-               "bill": (196, 180, 140), "legs": (170, 120, 110), "down": (204, 180, 130), "back": (132, 104, 70)},
 }
 WATTLE = (200, 44, 40)
 
@@ -123,13 +121,16 @@ def alpaca():
     return model.build()
 
 
-BUILD = {"quail": lambda: poultry("quail"), "turkey": lambda: poultry("turkey"), "alpaca": alpaca}
+BUILD = {"quail": lambda: poultry("quail"), "turkey": turkey.build, "alpaca": alpaca}
 
 
 def main(ids):
     for sid in ids:
         bones, tw, th, adult, young = BUILD[sid]()
-        write_geo(sid, geo(sid, tw, th, bones, bounds=(2.5, 2.5) if sid == "alpaca" else (1.5, 1.5)))
+        data = geo(sid, tw, th, bones, bounds=(2.5, 2.5) if sid == "alpaca" else (1.5, 1.5))
+        if sid == "turkey":
+            turkey.finish(data)
+        write_geo(sid, data)
         d = RP / "textures" / "entity" / "ranching" / sid
         for variant in ("female", "male", "baby"):
             p = Painter(tw, th, bones, f"{sid}-{variant}")
