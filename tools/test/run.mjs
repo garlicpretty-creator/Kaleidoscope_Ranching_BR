@@ -594,6 +594,117 @@ test("1.1 actions: every animal's client entity plays the actions only while awa
   }
 });
 
+// --- 1.1 追加: the new animals' special actions --------------------------------
+
+const special = await import("../../packs/BP/scripts/systems/specialActions.js");
+const actionData = await import("../../packs/BP/scripts/data/actions.js");
+const never = () => 0.99;
+/** Moves the clock on to `hour` ticks into the next day (day: < 12000). */
+const timeOfDay = (tod) => __skipTime((24000 + tod - world.getTimeOfDay()) % 24000);
+const hurtBy = (entity, attacker) => world.afterEvents.entityHurt.fire({ hurtEntity: entity, damageSource: { cause: "entityAttack", damagingEntity: attacker } });
+
+test("1.1 special: an adult tom near a player now and then fans out; hens, poults and far toms do not", () => {
+  clearWorld();
+  __newPlayer(at(0));
+  const tom = ranch("turkey", 3, "male");
+  const hen = ranch("turkey", 3, "female", 1);
+  const poult = ranch("turkey", 2, "male", 2);
+  poult.triggerEvent(`${NS}:become_baby`);
+  const far = ranch("turkey", actionData.DISPLAY_RANGE + 3, "male");
+  equal(special.displayNearPlayers(never), 0, "not every pass");
+  equal(special.displayNearPlayers(always), 1, "one tom displays");
+  equal(tom.getProperty(ACTION), "display", "the tom near the player");
+  for (const [bird, why] of [[hen, "a hen"], [poult, "a poult"], [far, "a tom beyond 8 blocks"]]) equal(bird.getProperty(ACTION), "none", why);
+  __advance(actionData.ACTION_SECONDS.display * 20);
+  equal(tom.getProperty(ACTION), "none", "back to rest after the display");
+  tom.triggerEvent(`${NS}:fall_asleep`);
+  equal(special.displayNearPlayers(always), 0, "asleep, it does not");
+});
+
+test("1.1 special: a quail on sand dust-bathes in the daytime and raises dust where a player can see", () => {
+  clearWorld();
+  timeOfDay(2000);
+  __newPlayer(at(0));
+  const bather = ranch("quail", 3, "female");
+  const chick = ranch("quail", 4, "male", 2);
+  chick.triggerEvent(`${NS}:become_baby`);
+  const onGrass = ranch("quail", 5, "female", 4);
+  __place(overworld, { x: 3, y: 63, z: 0 }, "minecraft:sand");
+  __place(overworld, { x: 4, y: 63, z: 2 }, "minecraft:dirt");
+  __place(overworld, { x: 5, y: 63, z: 4 }, "minecraft:grass_block");
+  equal(special.dustBathNearPlayers(always), 2, "the quail on sand and the chick on dirt");
+  equal(bather.getProperty(ACTION), "dust_bath", "bathes");
+  equal(chick.getProperty(ACTION), "dust_bath", "chicks too");
+  equal(onGrass.getProperty(ACTION), "none", "not on grass");
+  __advance(Math.round(actionData.DUST_PUFFS[0] * 20));
+  assert(overworld.particles.some((p) => p.id === "minecraft:falling_dust_sand_particle"), "sand dust rises");
+  assert(overworld.particles.some((p) => p.id === "minecraft:falling_dust_red_sand_particle"), "dirt dust rises");
+  __advance(actionData.ACTION_SECONDS.dust_bath * 20);
+  equal(bather.getProperty(ACTION), "none", "back to rest after the bath");
+  overworld.particles = [];
+  // Nobody near enough to see: the bath still plays, but no particles are spawned.
+  const lonely = ranch("quail", 40, "female");
+  __place(overworld, { x: 40, y: 63, z: 0 }, "minecraft:sand");
+  assert(special.dustBath(lonely), "bathes");
+  __advance(Math.round(actionData.DUST_PUFFS[0] * 20));
+  equal(overworld.particles.length, 0, "no dust nobody sees");
+  timeOfDay(15000);
+  __advance(actionData.ACTION_SECONDS.dust_bath * 20);
+  equal(special.dustBathNearPlayers(always), 0, "not at night");
+  noText(world.getAllPlayers()[0], "dust bath");
+});
+
+test("1.1 special: an alpaca hit by a player spits at them: sound and particles only, no damage", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const alpaca = ranch("alpaca", 2, "female");
+  hurtBy(alpaca, player);
+  __advance(1);
+  equal(alpaca.getProperty(ACTION), "spit", "plays the spit");
+  assert(overworld.sounds.some((s) => s.id === actionData.SPIT_SOUND), "spits audibly");
+  assert(Math.abs(alpaca.getRotation().y - 90) < 0.01, "turns to face the player (to its -x)");
+  __advance(20);
+  const spit = overworld.particles.filter((p) => p.id === actionData.SPIT_PARTICLE);
+  equal(spit.length, actionData.SPIT_STEPS, "the spit flies to the player");
+  assert(Math.abs(spit.at(-1).location.x - player.location.x) < 0.01, "and lands on them");
+  equal(alpaca.getProperty(ACTION), "none", "back to rest");
+  hurtBy(alpaca, player);
+  __advance(1);
+  equal(alpaca.getProperty(ACTION), "none", "not again so soon");
+  __advance(actionData.SPIT_COOLDOWN_TICKS);
+  const zombie = overworld.spawnEntity("minecraft:zombie", at(1));
+  hurtBy(alpaca, zombie);
+  __advance(1);
+  equal(alpaca.getProperty(ACTION), "none", "a zombie is not spat at");
+  const sleeper = ranch("alpaca", 3, "male", 2);
+  sleeper.triggerEvent(`${NS}:fall_asleep`);
+  hurtBy(sleeper, player);
+  __advance(1);
+  equal(sleeper.getProperty(ACTION), "spit", "a sleeping alpaca wakes up spitting");
+  noText(player, "spit");
+});
+
+test("1.1 special: the property and the client animations carry the new actions", () => {
+  for (const { id } of ACTION_ANIMALS) {
+    const bp = JSON.parse(readFileSync(new URL(`../../packs/BP/entities/${id}.json`, import.meta.url), "utf8"))["minecraft:entity"];
+    const values = bp.description.properties[ACTION].values;
+    equal(JSON.stringify(values), JSON.stringify(actionData.ACTIONS), `${id}: every action is a property value`);
+    const controller = Object.values(JSON.parse(readFileSync(new URL(`../../packs/RP/animation_controllers/${id}.actions.animation_controllers.json`, import.meta.url), "utf8")).animation_controllers)[0];
+    const own = actionData.SPECIAL_ACTIONS[id];
+    for (const key of ["display", "dust_bath", "spit"]) {
+      equal(Boolean(controller.states[key]), key === own, `${id}: ${key} state only on its animal`);
+    }
+    if (own) {
+      const exit = controller.states[own].transitions[0].done;
+      assert(exit.includes(`q.state_time > ${actionData.ACTION_SECONDS[own]}`), `${id}: ${own} stops after its time`);
+      assert(controller.states.idle.transitions.some((t) => t[own]), `${id}: idle starts ${own}`);
+    }
+    equal(Boolean(controller.states.shake), id === "alpaca", `${id}: only the alpaca shakes its head`);
+  }
+  const bones = JSON.parse(readFileSync(new URL("../../packs/RP/models/entity/alpaca.geo.json", import.meta.url), "utf8"))["minecraft:geometry"][0].bones;
+  for (const ear of ["a_ear_left", "a_ear_right", "b_ear_left", "b_ear_right"]) assert(bones.some((b) => b.name === ear), `alpaca ${ear} bone`);
+});
+
 // --- M3: carcasses and the butcher rack -----------------------------------
 
 const butcherData = await import("../../packs/BP/scripts/data/butcher.js");

@@ -21,6 +21,12 @@
             },
             {
               "chew": "!q.is_moving && q.property('kaleidoscope_ranching:action') == 'none' && math.mod(math.floor(q.life_time), 20) == 0"
+            },
+            {
+              "spit": "q.property('kaleidoscope_ranching:action') == 'spit'"
+            },
+            {
+              "shake": "!q.is_moving && q.property('kaleidoscope_ranching:action') == 'none' && math.mod(math.floor(q.life_time), 17) == 9"
             }
           ]
         },
@@ -72,6 +78,28 @@
           "transitions": [
             {
               "done": "!(q.property('kaleidoscope_ranching:action') == 'graze') || q.state_time > 8"
+            }
+          ]
+        },
+        "spit": {
+          "animations": [
+            "spit"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'spit') || q.state_time > 1"
+            }
+          ]
+        },
+        "shake": {
+          "animations": [
+            "shake"
+          ],
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "idle": "q.is_moving || !(q.property('kaleidoscope_ranching:action') == 'none') || q.state_time > 1.5"
             }
           ]
         },

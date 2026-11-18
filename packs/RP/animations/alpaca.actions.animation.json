@@ -121,6 +121,178 @@
         }
       }
     },
+    "animation.kaleidoscope_ranching.alpaca.spit": {
+      "animation_length": 1,
+      "bones": {
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -10,
+              0,
+              0
+            ],
+            "0.45": [
+              10,
+              0,
+              0
+            ],
+            "0.8": [
+              0,
+              0,
+              0
+            ]
+          },
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              0,
+              0.5,
+              0.5
+            ],
+            "0.45": [
+              0,
+              0,
+              -1.5
+            ],
+            "0.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "b_head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -10,
+              0,
+              0
+            ],
+            "0.45": [
+              10,
+              0,
+              0
+            ],
+            "0.8": [
+              0,
+              0,
+              0
+            ]
+          },
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              0,
+              0.5,
+              0.5
+            ],
+            "0.45": [
+              0,
+              0,
+              -1.5
+            ],
+            "0.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "a_ear_left": {
+          "rotation": [
+            -50,
+            0,
+            0
+          ]
+        },
+        "a_ear_right": {
+          "rotation": [
+            -50,
+            0,
+            0
+          ]
+        },
+        "b_ear_left": {
+          "rotation": [
+            -50,
+            0,
+            0
+          ]
+        },
+        "b_ear_right": {
+          "rotation": [
+            -50,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.kaleidoscope_ranching.alpaca.shake": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1080) * 8",
+            "math.sin(q.anim_time * 1080) * 14"
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            0,
+            "math.sin(q.anim_time * 1080) * 8",
+            "math.sin(q.anim_time * 1080) * 14"
+          ]
+        },
+        "a_ear_left": {
+          "rotation": [
+            "math.sin(q.anim_time * 720) * 25",
+            0,
+            "-math.abs(math.sin(q.anim_time * 1080)) * 30"
+          ]
+        },
+        "b_ear_left": {
+          "rotation": [
+            "math.sin(q.anim_time * 720) * 25",
+            0,
+            "-math.abs(math.sin(q.anim_time * 1080)) * 30"
+          ]
+        },
+        "a_ear_right": {
+          "rotation": [
+            "math.sin(q.anim_time * 720) * 25",
+            0,
+            "math.abs(math.sin(q.anim_time * 1080)) * 30"
+          ]
+        },
+        "b_ear_right": {
+          "rotation": [
+            "math.sin(q.anim_time * 720) * 25",
+            0,
+            "math.abs(math.sin(q.anim_time * 1080)) * 30"
+          ]
+        }
+      }
+    },
     "animation.kaleidoscope_ranching.alpaca.chew": {
       "loop": true,
       "bones": {

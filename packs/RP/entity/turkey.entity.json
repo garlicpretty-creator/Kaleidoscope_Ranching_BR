@@ -22,6 +22,7 @@
         "drink": "animation.kaleidoscope_ranching.turkey.drink",
         "petted": "animation.kaleidoscope_ranching.turkey.petted",
         "graze": "animation.kaleidoscope_ranching.turkey.graze",
+        "display": "animation.kaleidoscope_ranching.turkey.display",
         "actions": "controller.animation.kaleidoscope_ranching.turkey.actions"
       },
       "scripts": {

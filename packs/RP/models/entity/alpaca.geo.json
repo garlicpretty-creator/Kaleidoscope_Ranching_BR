@@ -259,7 +259,18 @@
                 60,
                 21
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "a_ear_left",
+          "parent": "a_head",
+          "pivot": [
+            2.5,
+            23.5,
+            -8
+          ],
+          "cubes": [
             {
               "origin": [
                 1.5,
@@ -285,7 +296,18 @@
                 23.5,
                 -8
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "a_ear_right",
+          "parent": "a_head",
+          "pivot": [
+            -2.5,
+            23.5,
+            -8
+          ],
+          "cubes": [
             {
               "origin": [
                 -3.5,
@@ -942,7 +964,18 @@
                 100,
                 36
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "b_ear_left",
+          "parent": "b_head",
+          "pivot": [
+            2,
+            21.5,
+            -5.5
+          ],
+          "cubes": [
             {
               "origin": [
                 1.5,
@@ -968,7 +1001,18 @@
                 21.5,
                 -5.5
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "b_ear_right",
+          "parent": "b_head",
+          "pivot": [
+            -2,
+            21.5,
+            -5.5
+          ],
+          "cubes": [
             {
               "origin": [
                 -2.5,

@@ -5,6 +5,7 @@
 //   cue(target, sound, options)  a sound (and particle) at a block or an animal: something happened
 //   refuse(player, animal?)      a low note for that player only: "no"; an animal also shakes its head
 //   levelPitch(n, max)           a pitch that rises with a fill level, so a fuller block sounds higher
+//   seenBy(dimension, at, range) whether a player is near enough to see a particle there
 
 import { system, world } from "@minecraft/server";
 
@@ -76,6 +77,15 @@ export function refuse(player, animal) {
     player.playSound("note.bass", { pitch: 0.7, volume: 0.6 });
   } catch {}
   if (animal?.isValid !== false && animal?.location) grumble(animal);
+}
+
+/** Whether any player is within `range` blocks of `location`: particles nobody sees are not spawned. */
+export function seenBy(dimension, location, range) {
+  try {
+    return dimension.getPlayers({ location, maxDistance: range }).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /** A pitch from 0.7 (empty) to 1.3 (full) for a fill level n of max. */
