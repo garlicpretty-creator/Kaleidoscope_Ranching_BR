@@ -534,6 +534,17 @@ for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) 
     for (const bone of ["body", "head", "a_head", "b_head", "a_torso", "b_torso"]) need(bone, "rig");
     for (const limb of LIMBS[animal.id] ?? []) for (const age of ["a", "b"]) need(`${age}_${limb}`, "walk animation and sleep pose");
     for (const bone of ["lids_a", "lids_b"]) need(bone, "closed eyes while asleep: tools/gen_sleep.mjs found no eye on the head's front face");
+    // A pair of eyes: one row of lids, mirrored left and right (one pixel per eye, or a pupil
+    // and its white). More means some other dark pixel on the head's front was taken for a pupil.
+    for (const lids of bones.filter((bone) => bone.name.startsWith("lids_"))) {
+      const cubes = lids.cubes ?? [];
+      const rows = new Set(cubes.map((c) => c.origin[1]));
+      const xs = cubes.map((c) => c.origin[0] + c.size[0] / 2);
+      const mirrored = xs.every((x) => xs.some((o) => Math.abs(o + x - 2 * (lids.pivot?.[0] ?? 0)) < 0.01));
+      if (cubes.length > 4 || cubes.length % 2 || rows.size > 1 || !mirrored) {
+        fail(`${where}: ${lids.name} has ${cubes.length} eyelid(s) on ${rows.size} row(s); only the eyes may use the pupil colour (26, 22, 26) on the head's front faces`);
+      }
+    }
     for (const bone of bones) {
       if (bone.parent && !names.has(bone.parent)) fail(`${where}: bone "${bone.name}" hangs from missing bone "${bone.parent}"`);
     }

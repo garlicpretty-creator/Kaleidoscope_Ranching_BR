@@ -9,6 +9,11 @@
             "math.max(0, math.sin(q.anim_time * 720)) * 70",
             0,
             0
+          ],
+          "position": [
+            0,
+            "-math.max(0, math.sin(q.anim_time * 720)) * 3",
+            0
           ]
         },
         "b_head": {
@@ -38,6 +43,28 @@
             ],
             "0.7": [
               -40,
+              0,
+              0
+            ],
+            "1.1": [
+              0,
+              0,
+              0
+            ]
+          },
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              0,
+              -3,
+              0
+            ],
+            "0.7": [
+              0,
               0,
               0
             ],
@@ -138,6 +165,11 @@
           "rotation": [
             "math.max(0, math.sin(q.anim_time * 720)) * 70",
             0,
+            0
+          ],
+          "position": [
+            0,
+            "-math.max(0, math.sin(q.anim_time * 720)) * 3",
             0
           ]
         },

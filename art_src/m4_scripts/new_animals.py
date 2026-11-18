@@ -194,7 +194,10 @@ BUILD = {"quail": lambda: poultry("quail"), "turkey": turkey.build, "alpaca": al
 def main(ids):
     for sid in ids:
         bones, tw, th, adult, young = BUILD[sid]()
-        write_geo(sid, geo(sid, tw, th, bones, bounds=(2.5, 2.5) if sid == "alpaca" else (1.5, 1.5)))
+        data = geo(sid, tw, th, bones, bounds=(2.5, 2.5) if sid == "alpaca" else (1.5, 1.5))
+        if sid == "turkey":
+            turkey.finish(data)
+        write_geo(sid, data)
         d = RP / "textures" / "entity" / "ranching" / sid
         for variant in ("female", "male", "baby"):
             p = Painter(tw, th, bones, f"{sid}-{variant}")

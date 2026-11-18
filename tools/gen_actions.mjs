@@ -36,6 +36,12 @@ const ACTION = (value) => `q.property('${ACTION_PROPERTY}') == '${value}'`;
 const KEYS = ["eat", "drink", "petted", "graze", "chew", "actions"];
 
 const POULTRY = new Set(["chicken", "duck", "goose", "quail", "turkey"]);
+/**
+ * Per species: pixels the adult head drops at the bottom of a peck or a sip, on top of the 70°
+ * nod, for birds whose neck stands too tall for the bill to reach the feed (the turkey's head is
+ * about 9 px up at the nod; trough feed is at 5). The young keep the plain nod.
+ */
+const PECK_DIP = { turkey: 3 };
 /** Animals that graze on a pasture (data/pasture.js). */
 const GRAZERS = new Set(Object.keys(GRAZE).map((typeId) => typeId.split(":")[1]));
 /** Animals whose behaviour pack eats grass blocks itself (minecraft:behavior.eat_block, q.is_grazing): the sheep. */
@@ -76,6 +82,15 @@ function animationsFor(id, bones) {
       animation_length: 1.4,
       bones: each(H, { rotation: { "0.0": [0, 0, 0], "0.35": [70, 0, 0], "0.7": [-40, 0, 0], "1.1": [0, 0, 0] } }),
     };
+    const dip = PECK_DIP[id];
+    if (dip && H[0] !== "b_head") {
+      const adult = H[0];
+      out.eat.bones[adult] = { ...out.eat.bones[adult], position: [0, `-math.max(0, math.sin(q.anim_time * 720)) * ${dip}`, 0] };
+      out.drink.bones[adult] = {
+        ...out.drink.bones[adult],
+        position: { "0.0": [0, 0, 0], "0.35": [0, -dip, 0], "0.7": [0, 0, 0], "1.1": [0, 0, 0] },
+      };
+    }
     out.petted = {
       loop: true,
       bones: {

@@ -27,8 +27,8 @@ BONES = [
         ("belly", [-3, 4, -4], [6, 1, 8]),         # softens the underside
         ("rump", [-3, 7, 6], [6, 5, 2]),           # tapers to the tail
     ]),
-    # the folded tail hangs down behind the rump, its rounded tip painted in (transparent
-    # corners); FAN swings it up over the back and spreads it
+    # the folded tail slopes down and back from the rump (REST tilts the bone), its rounded tip
+    # painted in (transparent corners); FAN swings it up over the back and spreads it
     ("a_tail", "body", [0, 12, 8], [("tail", [-3.5, 6, 8], [7, 6, 2])]),
     # the tom's beard: a tuft of black bristles hanging from the breast
     ("m_beard", "body", [0, 11, -7], [("beard", [-0.5, 7, -8], [1, 4, 1])]),
@@ -41,7 +41,7 @@ BONES = [
     # snood over the bill and the wattle under the chin: long on the tom, a nub on the hen
     ("m_wattle", "a_head", [0, 18, -10], [
         ("snood", [-1, 15, -12], [1, 4, 1]),
-        ("wattle", [-1, 14, -10], [2, 3, 2]),
+        ("wattle", [-1, 15, -9.5], [2, 2, 1]),
     ]),
     ("fa_wattle", "a_head", [0, 18, -10], [("snood_hen", [-1, 18, -11], [1, 1, 1])]),
     ("a_wing_left", "body", [4, 12, -2], [("wing_l", [4, 6, -4], [1, 6, 10])]),
@@ -60,10 +60,16 @@ BONES = [
     ("b_leg_right", "body", [-1, 2, 0.5], [("b_leg", [-1.5, 0, 0], [1, 2, 1]), ("b_foot", [-2, 0, -1], [2, 1, 2])]),
 ]
 
-# The display (開屏) pose, for whoever writes the animation: the tail swings up over the back and
-# spreads, the wings drop to the ground, the head pulls back onto the breast.
+# Rest rotations of bones (geo bone "rotation"; animations add to them): the tail held at a slope.
+REST = {"a_tail": [40, 0, 0]}
+# The model is drawn wherever the fanned tail reaches (blocks above the ground, centred at).
+BOUNDS = {"visible_bounds_height": 2.0, "visible_bounds_offset": [0, 0.75, 0]}
+
+# The display (開屏) pose, for whoever writes the animation (rotations add to REST): the tail
+# swings up over the back and spreads, the wings drop to the ground, the head pulls back onto
+# the breast.
 FAN = {
-    "a_tail": {"rotation": [165, 0, 0], "scale": [2.0, 1.6, 0.5]},
+    "a_tail": {"rotation": [125, 0, 0], "scale": [2.0, 1.6, 0.5]},
     "a_wing_left": {"rotation": [0, 0, -18], "position": [0.5, -2, 0]},
     "a_wing_right": {"rotation": [0, 0, 18], "position": [-0.5, -2, 0]},
     "head": {"rotation": [-18, 0, 0], "position": [0, 0, 1]},
@@ -81,29 +87,29 @@ def flat(c):
 
 # plumage per sex: base, dark bar (feather tips), glint (copper sheen), sheen (green on the tom,
 # pale tips on the hen)
-TOM = {"base": (64, 46, 32), "bar": (28, 22, 20), "glint": (118, 80, 44), "sheen": (58, 72, 52),
+# No colour here may come within 10 of the pupil (26, 22, 26): gen_sleep lids every such pixel on
+# the head's front faces, the neck's included.
+TOM = {"base": (64, 46, 32), "bar": (50, 36, 26), "glint": (96, 66, 40), "sheen": (58, 72, 52),
        "skin": (196, 46, 44), "face": (178, 200, 226), "wing": (44, 36, 30)}
 HEN = {"base": (116, 90, 64), "bar": (72, 56, 42), "glint": (150, 116, 80), "sheen": (184, 166, 136),
        "skin": (156, 158, 176), "face": (196, 204, 220), "wing": (92, 74, 56)}
 LEGS = (190, 156, 152)
 BILL = (204, 186, 150)
 RED, RED_DK = (204, 40, 40), (150, 26, 30)
-BUFF, TAIL, TAIL_BAR = (226, 204, 160), (124, 80, 46), (52, 34, 24)
+BUFF, TAIL, TAIL_BAR, TAIL_BAND = (226, 204, 160), (124, 80, 46), (52, 34, 24), (46, 32, 24)
+BEARD = (40, 32, 28)
 
 
 def barred(c):
-    """Bronze feathers lying in bands, rows of three: a copper band, the feather, a dark tip; the
-    tips scalloped (a gap every third pixel, offset per row), now and then the sheen."""
+    """Bronze feathers lying in bands, rows of four: a copper sheen band, two rows of feather, a
+    dark tip scalloped (a gap every third pixel, offset per row); now and then the green sheen."""
     def fn(f, i, j, w, h, fi):
         x = fi if f in ("east", "west") else i
-        row = j // 3
-        k = (x + row) % 3
-        if j % 3 == 2:
-            return c["bar"] if k != 1 else c["base"]
-        if j % 3 == 0:
-            if k == 1:
-                return c["base"]
-            return c["sheen"] if (x + 2 * row) % 7 == 0 else c["glint"]
+        row = j // 4
+        if j % 4 == 3:
+            return c["bar"] if (x + row) % 3 != 1 else c["base"]
+        if j % 4 == 0:
+            return c["sheen"] if (x + 3 * row) % 7 == 0 else c["glint"]
         return c["base"]
     return fn
 
@@ -121,7 +127,7 @@ def adult(p, sex):
     c = TOM if sex == "male" else HEN
     body = barred(c)
     p.paint("torso", lambda f, i, j, w, h, fi: mix(c["base"], c["bar"], 0.3) if f == "bottom" else body(f, i, j, w, h, fi))
-    p.paint("back", lambda f, i, j, w, h, fi: body(f, i, j, w, h, fi) if f == "top" else mix(c["base"], c["bar"], 0.3))
+    p.paint("back", lambda f, i, j, w, h, fi: c["base"] if f == "top" else mix(c["base"], c["bar"], 0.3))
     p.paint("breast", body)
     p.paint("belly", flat(mix(c["base"], c["bar"], 0.35)))
     p.paint("rump", body)
@@ -135,7 +141,7 @@ def adult(p, sex):
             if j == h - 1 or (j == h - 2 and i in (0, w - 1)):
                 return BUFF if sex == "female" else mix(BUFF, (250, 248, 240), 0.4)
             if j == h - 2 or (j == h - 3 and i in (0, w - 1)):
-                return (26, 20, 18)
+                return TAIL_BAND
             if f == "north":
                 return mix(c["base"], c["bar"], 0.3)
             if i % 2 == 1:
@@ -145,21 +151,25 @@ def adult(p, sex):
             return BUFF
         return mix(c["base"], c["bar"], 0.3)
     p.paint("tail", tail_fn)
-    p.paint("beard", lambda f, i, j, w, h, fi: (20, 18, 18) if j < h - 1 else (40, 34, 30))
+    p.paint("beard", lambda f, i, j, w, h, fi: BEARD if j < h - 1 else mix(BEARD, BUFF, 0.15))
 
     def neck_fn(f, i, j, w, h, fi):
-        # bare skin above, feathers below; the tom's throat warty red
+        # bare skin above, feathers below; the tom's throat warty red on the front and top only
         if j < 4:
             if sex == "male":
-                if j == 0 and f in ("south", "top"):
-                    return c["face"]
-                return RED_DK if (i + j) % 3 == 0 and f == "north" else c["skin"]
+                if f in ("north", "top") and j < 2:
+                    return RED_DK if (i + j) % 3 == 0 else c["skin"]
+                if f == "north":
+                    return mix(c["skin"], c["face"], 0.35)
+                return mix(c["face"], c["skin"], 0.25) if j < 2 else mix(c["face"], (150, 140, 150), 0.4)
             return c["skin"] if j > 1 else mix(c["skin"], c["face"], 0.5)
         return body(f, i, j, w, h, fi)
     p.paint("neck", neck_fn)
 
     def head_fn(f, i, j, w, h, fi):
-        # small bare head: pale blue face and crown, the skin below
+        # small bare head: pale blue-white face and crown; the tom red only along the bottom row
+        if sex == "male":
+            return c["skin"] if (j == h - 1 and f != "top") or f == "bottom" else c["face"]
         if f == "top" or j == 0:
             return c["face"]
         if f in ("east", "west") and fi < 2 and j == 1:
@@ -169,7 +179,7 @@ def adult(p, sex):
     p.paint("bill", lambda f, i, j, w, h, fi: mix(BILL, (90, 74, 60), 0.5) if f in ("north", "bottom") else BILL)
     p.paint("snood", lambda f, i, j, w, h, fi: RED_DK if j == h - 1 else RED)
     p.paint("wattle", lambda f, i, j, w, h, fi: RED_DK if (i + j) % 2 else RED)
-    p.paint("snood_hen", flat((186, 96, 96)))
+    p.paint("snood_hen", flat((170, 130, 130)))
     plain_eyes(p, "head", 1)
 
     def wing_fn(f, i, j, w, h, fi):
@@ -216,6 +226,15 @@ def baby(p):
     p.paint("b_wing_r", flat(mix(down, back, 0.5)))
     p.paint("b_leg", flat((210, 176, 160)), light=False)
     p.paint("b_foot", flat((210, 176, 160)))
+
+
+def finish(data):
+    """Rest rotations and visible bounds on the geometry boxuv.geo wrote."""
+    g = data["minecraft:geometry"][0]
+    g["description"].update(BOUNDS)
+    for bone in g["bones"]:
+        if bone["name"] in REST:
+            bone["rotation"] = REST[bone["name"]]
 
 
 def build():
