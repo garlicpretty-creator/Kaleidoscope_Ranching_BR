@@ -7,7 +7,8 @@ the alpaca. Each has its own rig and painting: quail.py, turkey.py and alpaca.py
   fleece in wool_* bones that client.py hides once it is sheared.
 
 Eyes are painted with boxuv.plain_eyes so gen_sleep can lay eyelids over them.
-UVs are packed afresh (blocks_m3.autouv): scaled cubes no longer fit the duck's sheet.
+UVs are packed afresh (blocks_m3.autouv): scaled cubes no longer fit the duck's sheet
+(quail.py packs its own rig the same way).
 
 Run with: python art_src/m4_scripts/new_animals.py [quail|turkey|alpaca ...]
 then python art_src/m4_scripts/client.py <id> for each, and npm run generate.
@@ -18,6 +19,7 @@ from blocks_m3 import autouv
 from boxuv import RP, Painter, geo, plain_eyes, write_geo
 from duck import BONES as DUCK_BONES
 import turkey
+import quail
 
 
 def mix(a, b, t):
@@ -64,9 +66,6 @@ def scaled(bones, k):
 
 POULTRY_LOOKS = {
     # body, dark, light, head, bill, legs, chick down, chick back
-    "quail": {"scale": 0.7, "female": ((150, 118, 84), (86, 62, 42), (214, 190, 150), (136, 104, 74)),
-              "male": ((140, 104, 72), (80, 56, 38), (220, 196, 156), (120, 70, 44)),
-              "bill": (74, 62, 52), "legs": (206, 160, 120), "down": (214, 186, 140), "back": (120, 92, 62)},
 }
 WATTLE = (200, 44, 40)
 
@@ -121,7 +120,8 @@ def alpaca():
     return model.build()
 
 
-BUILD = {"quail": lambda: poultry("quail"), "turkey": turkey.build, "alpaca": alpaca}
+
+BUILD = {"quail": lambda: (quail.BONES, quail.TW, quail.TH, quail.adult, quail.chick), "turkey": turkey.build, "alpaca": alpaca}
 
 
 def main(ids):

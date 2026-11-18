@@ -188,6 +188,9 @@ def face_fn(L, seed):
     def fn(f, i, j, w, h, fi):
         if f == "north" and j >= h - 2:
             return mix(L["face"], L["muzzle"], 0.45)
+        if f == "north":
+            # plain on the front: a speckle beside an eye can match the eye white and grow a lid
+            return L["face"]
         r = hsh(seed, f, i, j) % 11
         if r == 0:
             return mix(L["face"], L["light"], 0.5)
