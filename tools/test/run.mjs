@@ -23,9 +23,18 @@ function equal(actual, expected, message) {
   if (actual !== expected) throw new Error(`${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
 }
 
-/** Immersion: Ranching shows no text on screen (core/actionBar.js); `why` is what used to be said. */
+/** Immersion: Ranching shows no text on screen (core/feedback.js); `why` is what used to be said. */
 function noText(player, why) {
   equal(player.actionBar.length, 0, `no text on screen (${why})`);
+  equal(world.__messages.length, 0, `no chat message (${why})`);
+}
+/** A refusal: no text, but the player hears the low "no" note (core/feedback.js). Resets the
+ *  player's refusal rate limit (as leaving the world does) so the next refusal is heard too. */
+function refused(player, why) {
+  noText(player, why);
+  assert(player.sounds.includes("note.bass"), `refusal sound (${why})`);
+  player.sounds.length = 0;
+  world.afterEvents.playerLeave.fire({ playerId: player.id });
 }
 
 const SEX = "kaleidoscope_ranching:sex";
@@ -40,6 +49,8 @@ function clearWorld() {
   world.setDynamicProperty("kr:cfg:disease", false);
   overworld.entities = [];
   overworld.items = [];
+  overworld.particles = [];
+  overworld.sounds = [];
   overworld.blocks = new Map();
   overworld.containers = new Map();
 }
@@ -166,6 +177,8 @@ test("two animals of the same sex never conceive", () => {
   equal(a.getDynamicProperty("kaleidoscope_ranching:pregnant_due"), undefined, "a");
   equal(b.getDynamicProperty("kaleidoscope_ranching:pregnant_due"), undefined, "b");
   noText(player, "player is told why");
+  assert(overworld.particles.some((p) => p.id === "minecraft:villager_angry"), "the other ewe grumbles: an angry puff");
+  assert(overworld.sounds.some((s) => s.id === "mob.sheep.say"), "and bleats");
 });
 
 test("a pregnant female cannot be put in love again", () => {
@@ -180,7 +193,7 @@ test("a pregnant female cannot be put in love again", () => {
   __interact(player, boar);
   __interact(player, sow);
   equal(player.inventory.count("minecraft:carrot"), 1, "third carrot not used");
-  noText(player, "player is told she is pregnant");
+  refused(player, "player is told she is pregnant");
 });
 
 test("a lamb inherits its mother's wool colour", () => {
@@ -219,7 +232,7 @@ test("animals that were not cared for today do not breed", () => {
   hold(player, "minecraft:wheat", 2);
   __interact(player, cow);
   equal(player.inventory.count("minecraft:wheat"), 2, "wheat kept");
-  noText(player, "player told why");
+  refused(player, "player told why");
 });
 
 test("production has no quality grades and does not depend on care", () => {
@@ -656,7 +669,7 @@ test("a cow carcass has no horns, and needs a blade", () => {
   player.inventory.setItem(0, carcassFrom("cow", "female"));
   use(RACK, rack, player);
   use(RACK, rack, player); // empty hand
-  noText(player, "asks for a blade");
+  refused(player, "asks for a blade");
   hold(player, "kaleidoscope_cookery:iron_kitchen_knife");
   use(RACK, rack, player);
   assert(player.inventory.count("kaleidoscope_ranching:raw_hide") > 0, "Cookery knife cuts");
@@ -992,13 +1005,13 @@ test("milking gives one bottle per cow per day and needs an empty bottle", () =>
   careFor(cow, 3);
   hold(player, "kaleidoscope_ranching:milking_pail");
   __interact(player, cow);
-  noText(player, "needs a bottle");
+  refused(player, "needs a bottle");
   player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 2));
   __interact(player, cow);
   equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 1, "a bottle of cow milk");
   __interact(player, cow);
   equal(player.inventory.count("minecraft:glass_bottle"), 1, "only once a day");
-  noText(player, "told it was milked");
+  refused(player, "told it was milked");
   __skipTime(DAY);
   __interact(player, cow);
   equal(player.inventory.count("minecraft:glass_bottle"), 0, "milked again the next day");
@@ -1014,7 +1027,7 @@ test("bulls and calves cannot be milked", () => {
   calf.triggerEvent("kaleidoscope_ranching:become_baby");
   __interact(player, calf);
   equal(player.inventory.count("minecraft:glass_bottle"), 2, "no bottle used");
-  noText(player, "told why");
+  refused(player, "told why");
 });
 
 test("three bottle feedings make a calf grow up and return the bottles", () => {
@@ -1297,7 +1310,7 @@ test("the cheese press takes three milk and works half a day", () => {
   equal(press.permutation.getState("kaleidoscope_ranching:busy"), true, "working");
   equal(player.inventory.count("kaleidoscope_ranching:cow_milk"), 0, "milk taken");
   use(STATION, press, player);
-  assert(!player.actionBar.some((m) => m?.translate?.endsWith("station.working")), "no progress read-out (core/actionBar.js)");
+  assert(!player.actionBar.some((m) => m?.translate?.endsWith("station.working")), "no progress read-out (core/feedback.js)");
   __skipTime(12000);
   use(STATION, press, player);
   equal(player.inventory.count("kaleidoscope_ranching:fresh_cheese"), 1, "one cheese");
@@ -1357,7 +1370,7 @@ test("the pickling vat needs every ingredient and refunds them if broken early",
   const vat = stationAt("pickling_vat");
   player.inventory.setItem(0, new ItemStack("kaleidoscope_ranching:duck_egg", 4));
   use(STATION, vat, player);
-  noText(player, "missing clay");
+  refused(player, "missing clay");
   player.inventory.setItem(1, new ItemStack("minecraft:clay_ball", 1));
   use(STATION, vat, player);
   equal(player.inventory.count("kaleidoscope_ranching:duck_egg"), 0, "eggs in the vat");
@@ -1664,6 +1677,45 @@ test("M5: petting, brushing and treats are broadcast as cared events", () => {
   equal(cared[0].player, player.id, "who did it");
 });
 
+test("no text: a refusal is a low note for that player, at most one per half second, and the animal grumbles", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cow = ranch("cow", 1, "female");
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  assert(overworld.particles.some((p) => p.id === "minecraft:heart_particle"), "brushed: hearts");
+  equal(player.sounds.filter((id) => id === "note.bass").length, 0, "no refusal yet");
+  for (let i = 0; i < 3; i++) {
+    hold(player, `${NS}:brush`);
+    __interact(player, cow);
+  }
+  noText(player, "already groomed today");
+  equal(player.sounds.filter((id) => id === "note.bass").length, 1, "three refusals in a row: one note");
+  assert(overworld.particles.some((p) => p.id === "minecraft:villager_angry"), "the cow grumbles: an angry puff");
+  assert(overworld.sounds.some((s) => s.id === "mob.cow.say"), "and moos");
+  __advance(20);
+  hold(player, `${NS}:brush`);
+  __interact(player, cow);
+  equal(player.sounds.filter((id) => id === "note.bass").length, 2, "heard again after half a second");
+});
+
+test("no text: filling a trough sounds higher the fuller it gets; a full trough or another feed says no", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("trough", at(3), { fill: 0, kind: 0 });
+  const pitches = [];
+  for (let i = 0; i < 3; i++) {
+    hold(player, `${NS}:mixed_feed`, 1);
+    troughComponent.onPlayerInteract({ block: trough, player });
+    pitches.push(overworld.sounds.at(-1).pitch);
+  }
+  assert(pitches[0] < pitches[1] && pitches[1] < pitches[2], `rising pitch: ${pitches}`);
+  hold(player, "minecraft:wheat", 1);
+  troughComponent.onPlayerInteract({ block: trough, player });
+  equal(player.inventory.count("minecraft:wheat"), 1, "other feed kept");
+  refused(player, "the trough holds another feed");
+});
+
 test("M5: malformed registrations get a readable reason, never a script error", () => {
   const bad = [
     ["register_animal", { id: "kr_test:x", reproduction: "gestation", breedItems: ["minecraft:wheat"], dailyProduct: null }, "dailyProduct"],
@@ -1743,7 +1795,7 @@ test("a hay rack takes only grass feed and holds four hay bales", () => {
   const rack = place("hay_rack", at(0), { hay: 0 });
   hold(player, "minecraft:wheat_seeds", 1);
   use(HAY_RACK, rack, player);
-  noText(player, "seeds refused");
+  refused(player, "seeds refused");
   hold(player, "minecraft:hay_block", 1);
   use(HAY_RACK, rack, player);
   equal(hayUnits(rack), 9, "one bale is nine units");
@@ -1756,7 +1808,7 @@ test("a hay rack takes only grass feed and holds four hay bales", () => {
   equal(player.inventory.count("minecraft:hay_block"), 2, "the rest stays in hand");
   equal(state(rack, "hay"), 3, "full hay shown");
   use(HAY_RACK, rack, player);
-  noText(player, "told it is full");
+  refused(player, "told it is full");
 });
 
 test("the hay rack feeds grass eaters once a day at tier 1, not chickens", () => {
@@ -1949,7 +2001,7 @@ test("a leashed animal cannot be crated", () => {
   __interact(player, cow);
   __advance(1);
   assert(cow.isValid, "still here");
-  noText(player, "told why");
+  refused(player, "told why");
 });
 
 test("the hitching post ties led animals and hands them back", () => {
@@ -2664,7 +2716,7 @@ test("M7: intestine and tripe are washed at the water trough for one level of wa
   equal(state(water, "water"), 0, "used one level");
   waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
   equal(player.inventory.count("kaleidoscope_ranching:cleaned_intestine"), 1, "no water, no wash");
-  noText(player, "says it is dry");
+  refused(player, "says it is dry");
 });
 
 test("M7: the meat grinder gives one mince per use and makes sausages from mince and casing", () => {
@@ -2692,11 +2744,11 @@ test("M7: an empty butcher rack air-dries up to four pieces for three days", () 
   hold(player, "kaleidoscope_ranching:raw_sausage", 5);
   for (let i = 0; i < 5; i++) use(RACK, rack, player);
   equal(player.inventory.count("kaleidoscope_ranching:raw_sausage"), 1, "only four hang");
-  noText(player, "says it is full");
+  refused(player, "says it is full");
   player.inventory.setItem(8, carcassFrom("chicken", "female"));
   player.selectedSlotIndex = 8;
   use(RACK, rack, player);
-  noText(player, "no carcass while drying");
+  refused(player, "no carcass while drying");
   equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "none", "carcass not hung");
   __skipTime(24000 * 2);
   player.selectedSlotIndex = 6;
@@ -2868,13 +2920,13 @@ test("M8: the milking rack milks its cow once a day into the container below", (
   bull.getComponent("minecraft:leashable").leashTo(player);
   MILKING_RACK.onPlayerInteract({ block: rack, player });
   __advance(1);
-  noText(player, "no bulls");
+  refused(player, "no bulls");
   bull.getComponent("minecraft:leashable").unleash();
   const cow = ranch("cow", 2, "female");
   cow.getComponent("minecraft:leashable").leashTo(player);
   MILKING_RACK.onPlayerInteract({ block: rack, player });
   __advance(1);
-  assert(!player.actionBar.some((m) => m?.translate?.endsWith("milking_rack.tied")), "tying shows no hint (core/actionBar.js)");
+  assert(!player.actionBar.some((m) => m?.translate?.endsWith("milking_rack.tied")), "tying shows no hint (core/feedback.js)");
   tickMilkingRack(rack);
   equal(hopperItems(below).count("kaleidoscope_ranching:cow_milk"), 1, "one bottle of milk below");
   equal(hopperItems(above).count("minecraft:glass_bottle"), 2, "one empty bottle used");
@@ -3025,7 +3077,7 @@ test("M9: a hatched egg leaves an eggshell", () => {
   equal(player.inventory.count("kaleidoscope_ranching:eggshell"), 1, "one shell from the hatched egg");
 });
 
-// --- 1.1 Eggs show how far along they are (no text: see core/actionBar.js) --------------------
+// --- 1.1 Eggs show how far along they are (no text: see core/feedback.js) --------------------
 
 const CANDLER = COMPONENTS["kaleidoscope_ranching:egg_candler"];
 /** [eggs, cracks, ready, candled] as the block shows them (systems/nest.js: how the eggs look). */
@@ -3484,12 +3536,12 @@ test("M10: a harnessed buffalo with a plough tills three blocks wide while led",
   hold(player, "kaleidoscope_ranching:harness", 1);
   __interact(player, buffalo);
   __advance(1);
-  noText(player, "needs three hearts");
+  refused(player, "needs three hearts");
   care.setAffection(buffalo, 60);
   hold(player, "kaleidoscope_ranching:plough", 1);
   __interact(player, buffalo);
   __advance(1);
-  noText(player, "harness first");
+  refused(player, "harness first");
   hold(player, "kaleidoscope_ranching:harness", 1);
   __interact(player, buffalo);
   __advance(1);
@@ -3513,7 +3565,7 @@ test("M10: a sheepdog drives the animals to the rally point when the horn is blo
   hold(player, "kaleidoscope_ranching:herding_horn", 1);
   __interact(player, wolf);
   __advance(1);
-  noText(player, "an untamed wolf will not do");
+  refused(player, "an untamed wolf will not do");
   wolf.tamedTo = player.id;
   __interact(player, wolf);
   __advance(1);
@@ -3528,7 +3580,7 @@ test("M10: a sheepdog drives the animals to the rally point when the horn is blo
     const d = Math.hypot(animal.location.x - 0.5, animal.location.z - 0.5);
     assert(d <= work.RALLY_RADIUS + 0.5, `${animal.typeId} brought within the rally radius`);
   }
-  assert(!player.actionBar.some((m) => m?.translate?.endsWith("horn.done")), "no herd read-out (core/actionBar.js)");
+  assert(!player.actionBar.some((m) => m?.translate?.endsWith("horn.done")), "no herd read-out (core/feedback.js)");
 });
 
 test("M10: the pen gate opens for a player close by and shuts behind them", () => {
@@ -3824,7 +3876,7 @@ test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", ()
   hold(player, "kaleidoscope_ranching:pack_bag", 1);
   __interact(player, calf);
   __advance(1);
-  noText(player, "not on a calf");
+  refused(player, "not on a calf");
   const yak = ranch("yak", 0, "female");
   __interact(player, yak);
   __advance(1);
@@ -3839,7 +3891,7 @@ test("1.1: a yak carries a pack bag of 15 slots; it drops when the yak dies", ()
   equal(player.inventory.count("minecraft:wheat"), 0, "stored, not fed");
   equal(packBag.bagContents(yak).length, 1, "one stack in the bag");
   assert(!packBag.takeOffPackBag(player, yak), "not while full");
-  noText(player, "says so");
+  refused(player, "says so");
   assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "taken out");
   equal(player.inventory.count("minecraft:wheat"), 20, "all 20 back");
   assert(packBag.takeOffPackBag(player, yak), "off when empty");
@@ -3997,7 +4049,7 @@ test("1.1: a crated yak keeps its pack bag; a bag with things in it must be empt
   __interact(player, yak);
   __advance(1);
   assert(yak.isValid, "not crated while the bag holds things");
-  noText(player, "told why");
+  refused(player, "told why");
   assert(packBag.takeOut(player, yak, packBag.bagContents(yak)[0].slot), "emptied");
   const back = crateAndRelease(player, yak);
   assert(back, "released");

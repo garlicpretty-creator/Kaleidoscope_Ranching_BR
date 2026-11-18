@@ -7,14 +7,13 @@ import { SPECIES } from "../data/species.js";
 import { ensureSettled, mark, isMarkedToday } from "../care/state.js";
 import {
   today, getState, setStates, animalsNear, blockGet, blockSet, mainhand, setMainhand,
-  isCreative, actionbar,
+  isCreative,
 } from "../utils/world_util.js";
 import { ItemStack } from "@minecraft/server";
-import { T } from "../ui/text.js";
 import { clockBlockEvents } from "../core/blockClock.js";
 import { WASHING } from "../data/processing.js";
 import { consumeMainHand, give } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse, levelPitch } from "../core/feedback.js";
 
 const NS = "kaleidoscope_ranching";
 
@@ -25,14 +24,14 @@ function wash(block, player, held) {
   if (!out) return false;
   const level = getState(block, "water");
   if (level <= 0) {
-    showActionBar(player, { translate: `${NS}.message.wash.no_water` });
+    refuse(player);
     return true;
   }
   consumeMainHand(player);
   give(player, `${NS}:${out}`, 1);
   setStates(block, { water: level - 1 });
-  block.dimension.playSound("bucket.empty_water", block.location);
-  showActionBar(player, { translate: `${NS}.message.wash.done`, with: [`${level - 1}`, `${CARE.WATER_LEVELS_PER_BUCKET}`] });
+  // The water left shows in the trough's model; the splash drops in pitch as it runs low.
+  cue(block, "bucket.empty_water", { pitch: levelPitch(level - 1, CARE.WATER_LEVELS_PER_BUCKET), particle: "minecraft:water_splash_particle" });
   return true;
 }
 
@@ -86,17 +85,19 @@ export const waterTroughComponent = clockBlockEvents({
     if (!player) return;
     const held = mainhand(player);
     if (wash(block, player, held)) return;
-    if (held?.typeId === "minecraft:water_bucket") {
-      setStates(block, { water: CARE.WATER_LEVELS_PER_BUCKET });
-      if (!isCreative(player)) setMainhand(player, new ItemStack("minecraft:bucket", 1));
-      block.dimension.playSound("bucket.empty_water", block.location);
-    }
-    actionbar(player, T("water.status", [`${getState(block, "water")}`, `${CARE.WATER_LEVELS_PER_BUCKET}`]));
+    if (held?.typeId !== "minecraft:water_bucket") return;
+    // ## The water level shows in the trough's model (water state); no read-out.
+    setStates(block, { water: CARE.WATER_LEVELS_PER_BUCKET });
+    if (!isCreative(player)) setMainhand(player, new ItemStack("minecraft:bucket", 1));
+    cue(block, "bucket.empty_water", { particle: "minecraft:water_splash_particle" });
   },
 });
 
 export const autoWatererComponent = clockBlockEvents({
+  // Touching water: it bubbles and gurgles. Dry: a "no" (and no bubbles).
   onPlayerInteract({ block, player }) {
-    if (player) actionbar(player, T(touchesWaterSource(block) ? "waterer.ok" : "waterer.dry"));
+    if (!player) return;
+    if (touchesWaterSource(block)) cue(block, "bucket.fill_water", { particle: "minecraft:water_splash_particle", volume: 0.6 });
+    else refuse(player);
   },
 });

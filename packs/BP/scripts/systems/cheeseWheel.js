@@ -9,7 +9,7 @@ import { ItemStack } from "@minecraft/server";
 import { rid } from "../core/ids.js";
 import { damageMainHand, give, mainHand } from "../core/inventory.js";
 import { isBlade } from "./butcherRack.js";
-import { showActionBar } from "../core/actionBar.js";
+import { refuse } from "../core/feedback.js";
 import { PLACED_FOODS, PORTIONS } from "../data/placedFoods.js";
 
 export const STATE_CUT = rid("cut");
@@ -22,9 +22,6 @@ const WHEELS = Object.fromEntries(
 
 const cutOf = (permutation) => Number(permutation?.getState(STATE_CUT) ?? 0);
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}` });
-}
 
 /** What a broken wheel gives back, given how many slices were already cut. */
 export function leftovers(cut, blockId = AGED) {
@@ -36,7 +33,7 @@ export function leftovers(cut, blockId = AGED) {
 export const cheeseWheelComponent = {
   onPlayerInteract({ block, player }) {
     if (!player) return;
-    if (!isBlade(mainHand(player)?.getItem())) return tell(player, "rack.need_blade");
+    if (!isBlade(mainHand(player)?.getItem())) return refuse(player); // needs a blade
     const cut = cutOf(block.permutation) + 1;
     give(player, (WHEELS[block.typeId] ?? WHEELS[AGED]).slice, 1);
     damageMainHand(player, 1);

@@ -10,15 +10,12 @@ import { ItemStack } from "@minecraft/server";
 import { clearBlockData, getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid } from "../core/ids.js";
 import { consumeMainHand, give, mainHand } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
+import { levelPitch, refuse } from "../core/feedback.js";
 
 export const CAPACITY = 32;
 export const STATE_FILL = rid("fill");
 export const FOOD_WASTE = rid("food_waste");
 
-function tell(player, key, values = []) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.food_waste_bin.${key}`, with: values });
-}
 
 /** Whether an item can go in the bin: anything edible except the scraps themselves. */
 export function isScrapable(item) {
@@ -45,14 +42,15 @@ export const foodWasteBinComponent = {
     const item = mainHand(player)?.getItem();
     const count = countOf(block);
     if (isScrapable(item)) {
-      if (count >= CAPACITY) return tell(player, "full");
+      if (count >= CAPACITY) return refuse(player); // full
       const amount = Math.min(player.isSneaking ? item.amount : 1, CAPACITY - count);
       consumeMainHand(player, amount);
       store(block, count + amount);
-      block.dimension.playSound("block.composter.fill", block.location);
-      return tell(player, "added", [`${count + amount}`, `${CAPACITY}`]);
+      // The fill shows in the bin (fill state); the sound rises as it fills.
+      block.dimension.playSound("block.composter.fill", block.location, { pitch: levelPitch(count + amount, CAPACITY) });
+      return;
     }
-    if (count <= 0) return tell(player, "empty");
+    if (count <= 0) return refuse(player); // nothing to take
     give(player, FOOD_WASTE, count);
     store(block, 0);
     block.dimension.playSound("block.composter.empty", block.location);

@@ -33,7 +33,7 @@ import { GEAR } from "../data/gear.js";
 
 /** The buffalo, or an animal another add-on registered with `harness: true`. */
 const takesHarness = (entity) => entity.typeId === BUFFALO || animalByType(entity.typeId)?.harness === true;
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse } from "../core/feedback.js";
 
 export const HARNESS_HEARTS = 3;
 export const HERD_RADIUS = 24;
@@ -60,9 +60,6 @@ const GATE = rid("pen_gate");
 const GATE_TOP = rid("pen_gate_top");
 const OPEN = "kaleidoscope_ranching:open";
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.${key}`, with: values });
-}
 
 const leashHolder = (entity) => {
   try {
@@ -86,31 +83,30 @@ function savePloughing(ids) {
 }
 
 export function harness(player, buffalo) {
-  if (isBaby(buffalo)) return tell(player, "harness.baby");
-  if (buffalo.getDynamicProperty(HARNESSED)) return tell(player, "harness.already");
-  if (getAffection(buffalo) < HARNESS_HEARTS) return tell(player, "harness.shy", [`${HARNESS_HEARTS}`]);
+  if (isBaby(buffalo)) return refuse(player, buffalo);
+  if (buffalo.getDynamicProperty(HARNESSED)) return refuse(player, buffalo);
+  if (getAffection(buffalo) < HARNESS_HEARTS) return refuse(player, buffalo); // not close enough yet
   buffalo.setDynamicProperty(HARNESSED, true);
   showGear(buffalo, "harness", true);
   consumeMainHand(player);
   buffalo.dimension.playSound("mob.horse.armor", buffalo.location);
-  tell(player, "harness.on");
 }
 
 export function hitchPlough(player, buffalo) {
-  if (!buffalo.getDynamicProperty(HARNESSED)) return tell(player, "plough.need_harness");
+  if (!buffalo.getDynamicProperty(HARNESSED)) return refuse(player, buffalo); // harness first
   const ids = ploughingIds();
   if (buffalo.getDynamicProperty(PLOUGHING)) {
     buffalo.setDynamicProperty(PLOUGHING, undefined);
     showGear(buffalo, "plough", false);
     savePloughing(ids.filter((id) => id !== buffalo.id));
     give(player, rid("plough"));
-    return tell(player, "plough.off");
+    return cue(buffalo, "mob.horse.armor", { pitch: 0.8 });
   }
   buffalo.setDynamicProperty(PLOUGHING, true);
   showGear(buffalo, "plough", true);
   savePloughing([...ids.filter((id) => id !== buffalo.id), buffalo.id]);
   consumeMainHand(player);
-  tell(player, "plough.on");
+  cue(buffalo, "mob.horse.armor");
 }
 
 /** An animal let out of a crate (systems/crate.js) is a new entity: put it back on the
@@ -126,7 +122,7 @@ function unharness(player, buffalo) {
   buffalo.setDynamicProperty(HARNESSED, undefined);
   showGear(buffalo, "harness", false);
   give(player, rid("harness"));
-  tell(player, "harness.off");
+  cue(buffalo, "mob.horse.leather", { pitch: 0.8 });
 }
 
 /** Tills the ground under a led, ploughing buffalo and on its two sides. Returns the blocks tilled. */
@@ -167,11 +163,11 @@ function ploughAll() {
 // --- Blanket --------------------------------------------------------------------
 
 export function putBlanket(player, animal) {
-  if (animal.getDynamicProperty(BLANKET)) return tell(player, "blanket.already");
+  if (animal.getDynamicProperty(BLANKET)) return refuse(player, animal);
   animal.setDynamicProperty(BLANKET, true);
   showGear(animal, "blanket", true);
   consumeMainHand(player);
-  tell(player, "blanket.on");
+  cue(animal, "armor.equip_leather");
 }
 
 // --- Herding horn and sheepdogs -----------------------------------------------------
@@ -188,15 +184,15 @@ const isTamedBy = (wolf, player) => {
 };
 
 export function makeSheepdog(player, wolf) {
-  if (!isTamedBy(wolf, player)) return tell(player, "sheepdog.not_yours");
+  if (!isTamedBy(wolf, player)) return refuse(player, wolf); // not your dog
   wolf.setDynamicProperty(SHEEPDOG_OF, player.id);
-  tell(player, "sheepdog.made");
+  cue(wolf, "mob.wolf.bark", { particle: "minecraft:heart_particle" });
 }
 
 export function setRally(player, block) {
   const { x, y, z } = block.location;
   player.setDynamicProperty(RALLY, JSON.stringify({ x: x + 0.5, y, z: z + 0.5, d: block.dimension.id }));
-  tell(player, "horn.rally_set");
+  cue(block, "random.orb", { particle: "minecraft:villager_happy", y: 0.6 });
 }
 
 function rallyOf(player) {
@@ -212,9 +208,8 @@ export function blowHorn(player) {
   player.dimension.playSound("horn.call.0", player.location);
   wakeNear(player.dimension, player.location, 32, "horn");
   const rally = rallyOf(player);
-  if (!rally) return tell(player, "horn.no_rally");
+  if (!rally) return refuse(player); // no rally point set
   herds.set(player.id, { rally, until: system.currentTick + HERD_TICKS, herded: new Set() });
-  tell(player, "horn.herding");
 }
 
 const flat = (from, to) => {
@@ -233,7 +228,7 @@ export function herdStep(player) {
     .filter((wolf) => wolf.getDynamicProperty(SHEEPDOG_OF) === player.id);
   if (!dogs.length) {
     herds.delete(player.id);
-    tell(player, "horn.no_dog");
+    refuse(player); // no sheepdog of yours near
     return -1;
   }
   const out = [];
@@ -247,7 +242,7 @@ export function herdStep(player) {
   }
   if (!out.length || system.currentTick > herd.until) {
     herds.delete(player.id);
-    tell(player, "horn.done", [`${herd.herded.size}`]);
+    cue(dogs[0], "mob.wolf.bark"); // the herd is in
     return -1;
   }
   let farthest = out[0];

@@ -77,7 +77,14 @@ system.afterEvents.scriptEventReceive.subscribe(({ id, message }) => {
 
   if (id === `${R}:animal_event`) {
     const event = JSON.parse(message);
-    if (event.type === "born" && event.animal === `${ME}:alpaca`) world.sendMessage({ translate: `${ME}.born` });
+    // The Kaleidoscope series puts no text on screen: answer with a sound and particles instead.
+    if (event.type === "born" && event.animal === `${ME}:alpaca`) {
+      const baby = world.getEntity(event.entity);
+      if (!baby?.isValid) return;
+      const at = { ...baby.location, y: baby.location.y + 0.8 };
+      baby.dimension.playSound("random.orb", at, { pitch: 1.4 });
+      baby.dimension.spawnParticle("minecraft:villager_happy", at);
+    }
   }
 });
 

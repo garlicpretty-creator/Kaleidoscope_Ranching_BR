@@ -356,7 +356,9 @@ export class Player extends Entity {
   playSound(id) {
     this.sounds.push(id);
   }
-  sendMessage() {}
+  sendMessage(message) {
+    this.actionBar.push(message); // any text on screen counts (tools/test/run.mjs noText)
+  }
 }
 
 // --- Blocks ---------------------------------------------------------------
@@ -497,8 +499,8 @@ class Dimension {
   spawnParticle(id, location) {
     this.particles.push({ id, location });
   }
-  playSound(id, location) {
-    this.sounds.push({ id, location });
+  playSound(id, location, options = {}) {
+    this.sounds.push({ id, location, ...options });
   }
   getBlock(location) {
     return new Block(this, { x: Math.floor(location.x), y: Math.floor(location.y), z: Math.floor(location.z) });
@@ -552,6 +554,7 @@ export const world = {
     itemUse: new Signal(),
     entityHurt: new Signal(),
     playerBreakBlock: new Signal(),
+    playerLeave: new Signal(),
   },
   getDimension: (id) => dimensions.get(id.includes(":") ? id : `minecraft:${id}`),
   getAbsoluteTime: () => absoluteTime,

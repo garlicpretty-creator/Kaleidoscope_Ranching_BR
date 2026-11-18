@@ -16,7 +16,7 @@
 import { system } from "@minecraft/server";
 import { cookeryHas, onCookeryReady } from "./cookery.js";
 import { DISHES } from "../data/dishes.js";
-import { GUIDE_TEXT_KEYS, guideCategories, guideEntries, guideName, iconPath } from "../data/guidebook.js";
+import { GUIDE_TEXT_KEYS, guideCategories, guideEntries, guideName } from "../data/guidebook.js";
 import { NAMESPACE } from "../data/items.js";
 import { WOK_MEATS } from "../data/processing.js";
 import { toSimplified } from "../data/zh_cn.js";

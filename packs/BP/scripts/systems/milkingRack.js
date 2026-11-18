@@ -22,13 +22,10 @@ import { dropItems } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { ensureKnot, findKnot, free, leash, ledBy } from "./hitchingPost.js";
 import { LAST_MILKED_DAY, milkOf } from "./milking.js";
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse } from "../core/feedback.js";
 
 export const MILKING_RACK = rid("milking_rack");
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.milking_rack.${key}`, with: values });
-}
 
 export const isMilkable = (animal) =>
   speciesOf(animal)?.dailyProduct?.via === "milking_pail" && !isBaby(animal) && isFemale(animal);
@@ -42,17 +39,17 @@ export function rackAnimal(block) {
 function use(block, player) {
   const led = ledBy(player, block.dimension, block.location);
   if (led.length) {
-    if (rackAnimal(block)) return tell(player, "occupied");
+    if (rackAnimal(block)) return refuse(player); // one animal per rack
     const cow = led.find(isMilkable);
-    if (!cow) return tell(player, "not_milkable");
+    if (!cow) return refuse(player, led[0]); // not a milkable adult female
     leash(cow).leashTo(ensureKnot(block));
     block.dimension.playSound("leashknot.place", block.location);
-    return tell(player, "tied");
+    return;
   }
   const tied = rackAnimal(block);
-  if (!tied) return tell(player, "empty");
+  if (!tied) return refuse(player); // nobody tied here
   leash(tied).leashTo(player);
-  tell(player, "untied");
+  cue(block, "leashknot.break");
 }
 
 /** Milks the tied animal if she has not been milked today. Returns the bottle id, or undefined. */

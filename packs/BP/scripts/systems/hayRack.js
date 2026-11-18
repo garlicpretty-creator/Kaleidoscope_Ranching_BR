@@ -23,7 +23,7 @@ import { consumeMainHand, mainHand } from "../core/inventory.js";
 import { rid } from "../core/ids.js";
 import { today } from "../core/time.js";
 import { animalsNear, countBlocksNear } from "../utils/world_util.js";
-import { showActionBar } from "../core/actionBar.js";
+import { levelPitch, refuse } from "../core/feedback.js";
 
 export const HAY_RACK = rid("hay_rack");
 /** Feed units a hay rack holds: four hay bales. */
@@ -32,9 +32,6 @@ const HAY_STATE = "kaleidoscope_ranching:hay";
 const HAY_BALE = "minecraft:hay_block";
 const HAY_BALE_UNITS = 9;
 
-function tell(player, key, values) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.hay_rack.${key}`, with: values });
-}
 
 const unitsOf = (block) => getBlockData(block, { units: 0 }).units ?? 0;
 
@@ -44,23 +41,18 @@ function store(block, units) {
   block.setPermutation(block.permutation.withState(HAY_STATE, stage));
 }
 
-function showStatus(player, block) {
-  tell(player, "status", [`${unitsOf(block)}`, `${HAY_RACK_CAPACITY}`]);
-}
-
 function fill(block, player) {
   const held = mainHand(player)?.getItem();
   const feed = held && FEEDS[held.typeId];
-  if (!feed) return showStatus(player, block);
-  if (feed.kind !== KIND.GRASS) return tell(player, "only_grass");
+  if (!feed) return; // the hay shows in the rack (hay state)
+  if (feed.kind !== KIND.GRASS) return refuse(player); // grass feed only
   const units = unitsOf(block);
   const room = Math.floor((HAY_RACK_CAPACITY - units) / feed.units);
   const count = Math.min(room, player.isSneaking ? held.amount : 1);
-  if (count <= 0) return tell(player, "full");
+  if (count <= 0) return refuse(player); // full
   consumeMainHand(player, count);
   store(block, units + count * feed.units);
-  block.dimension.playSound("block.composter.fill", block.location);
-  showStatus(player, block);
+  block.dimension.playSound("block.composter.fill", block.location, { pitch: levelPitch(unitsOf(block), HAY_RACK_CAPACITY) });
 }
 
 function penIsClean(block, day) {

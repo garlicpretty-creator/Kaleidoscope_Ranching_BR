@@ -25,7 +25,7 @@ import { showGear } from "../core/gear.js";
 import { dp, rid } from "../core/ids.js";
 import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, give, giveStack, mainHand } from "../core/inventory.js";
-import { showActionBar } from "../core/actionBar.js";
+import { cue, refuse } from "../core/feedback.js";
 
 export const PACK_BAG = rid("pack_bag");
 export const PACKED = dp("pack_bag");
@@ -33,9 +33,6 @@ const PUT_ON = rid("put_on_pack_bag");
 const TAKE_OFF = rid("take_off_pack_bag");
 const YAK = rid("yak");
 
-function tell(player, key) {
-  showActionBar(player, { translate: `kaleidoscope_ranching.message.pack_bag.${key}` });
-}
 
 /** The yak, or an animal another add-on registered with `packBag: true`. */
 export const takesPackBag = (entity) => entity.typeId === YAK || animalByType(entity.typeId)?.packBag === true;
@@ -51,19 +48,18 @@ export function bagOf(animal) {
 }
 
 export function putOnPackBag(player, animal) {
-  if (isBaby(animal)) return tell(player, "baby");
-  if (wearsPackBag(animal)) return tell(player, "already");
+  if (isBaby(animal)) return refuse(player, animal);
+  if (wearsPackBag(animal)) return refuse(player, animal);
   try {
     animal.triggerEvent(PUT_ON);
   } catch {
     // Another add-on's animal without the event: it must have an inventory already.
   }
-  if (!bagOf(animal)) return tell(player, "cannot");
+  if (!bagOf(animal)) return refuse(player, animal);
   animal.setDynamicProperty(PACKED, true);
   showGear(animal, "pack_bag", true);
   consumeMainHand(player);
   animal.dimension.playSound("mob.horse.armor", animal.location);
-  tell(player, "on");
 }
 
 /** Gives an animal let out of a crate (systems/crate.js) its bag's storage back. A crate only
@@ -82,10 +78,9 @@ export function storeHeld(player, animal) {
   const bag = bagOf(animal);
   if (!held || !bag) return;
   const rest = bag.addItem(held);
-  if (rest && rest.amount === held.amount) return tell(player, "full");
+  if (rest && rest.amount === held.amount) return refuse(player); // full
   slot.setItem(rest);
-  animal.dimension.playSound("armor.equip_leather", animal.location);
-  tell(player, rest ? "full" : "stored");
+  animal.dimension.playSound("armor.equip_leather", animal.location); // what did not fit stays in hand
 }
 
 /** [{ slot, item }] for every stack in the bag. */
@@ -113,7 +108,7 @@ export function takeOut(player, animal, slot) {
 export function takeOffPackBag(player, animal) {
   if (!wearsPackBag(animal)) return false;
   if (bagContents(animal).length) {
-    tell(player, "not_empty");
+    refuse(player, animal); // empty the bag first
     return false;
   }
   try {
@@ -122,7 +117,7 @@ export function takeOffPackBag(player, animal) {
   animal.setDynamicProperty(PACKED, undefined);
   showGear(animal, "pack_bag", false);
   give(player, PACK_BAG);
-  tell(player, "off");
+  cue(animal, "armor.equip_leather", { pitch: 0.8 });
   return true;
 }
 

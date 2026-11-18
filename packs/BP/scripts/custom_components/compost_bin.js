@@ -4,9 +4,9 @@
 import { CARE } from "../data/care_config.js";
 import { MANURE_ITEM } from "./manure.js";
 import {
-  getState, setStates, mainhand, consumeMainhand, give, absTime, blockGet, blockSet, blockClear, actionbar, dropAt, center,
+  getState, setStates, mainhand, consumeMainhand, give, absTime, blockGet, blockSet, blockClear, dropAt, center,
 } from "../utils/world_util.js";
-import { T } from "../ui/text.js";
+import { cue, refuse, levelPitch } from "../core/feedback.js";
 
 export const FERTILIZER = "kaleidoscope_ranching:fertilizer";
 const STRAW = ["minecraft:wheat", "kaleidoscope_cookery:straw"];
@@ -21,8 +21,8 @@ function interact(block, player) {
     const start = blockGet(block, "start") ?? absTime();
     const elapsed = absTime() - start;
     if (elapsed < CARE.COMPOST_TICKS) {
-      const pct = Math.floor((elapsed / CARE.COMPOST_TICKS) * 100);
-      return actionbar(player, T("compost.progress", [`${pct}`]));
+      // Still working: a soft churn, higher the closer it is to done.
+      return cue(block, "block.composter.fill", { pitch: levelPitch(elapsed, CARE.COMPOST_TICKS), volume: 0.5 });
     }
     stage = READY;
   }
@@ -33,19 +33,17 @@ function interact(block, player) {
     block.dimension.playSound("block.composter.ready", block.location);
     return;
   }
-  // FILLING
+  // FILLING: the manure level shows in the bin's model; each scoop sounds higher.
   if (held?.typeId === MANURE_ITEM && manure < CARE.COMPOST_MANURE) {
     consumeMainhand(player, 1);
     setStates(block, { manure: manure + 1 });
-    block.dimension.playSound("block.composter.fill", block.location);
+    cue(block, "block.composter.fill", { pitch: levelPitch(manure + 1, CARE.COMPOST_MANURE) });
   } else if (held && STRAW.includes(held.typeId) && manure >= CARE.COMPOST_MANURE) {
     consumeMainhand(player, 1);
     setStates(block, { stage: FERMENTING });
     blockSet(block, "start", absTime());
-    block.dimension.playSound("block.composter.fill_success", block.location);
-    return actionbar(player, T("compost.started"));
-  }
-  actionbar(player, T("compost.filling", [`${getState(block, "manure")}`, `${CARE.COMPOST_MANURE}`]));
+    cue(block, "block.composter.fill_success", { particle: "minecraft:crop_growth_emitter" });
+  } else if (held) refuse(player); // full of manure without straw, straw too early, or the wrong item
 }
 
 export const compostBinComponent = {
