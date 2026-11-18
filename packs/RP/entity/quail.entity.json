@@ -21,6 +21,7 @@
         "eat": "animation.kaleidoscope_ranching.quail.eat",
         "drink": "animation.kaleidoscope_ranching.quail.drink",
         "petted": "animation.kaleidoscope_ranching.quail.petted",
+        "dust_bath": "animation.kaleidoscope_ranching.quail.dust_bath",
         "actions": "controller.animation.kaleidoscope_ranching.quail.actions"
       },
       "scripts": {

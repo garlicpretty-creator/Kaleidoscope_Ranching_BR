@@ -15,6 +15,9 @@
             },
             {
               "petted": "q.property('kaleidoscope_ranching:action') == 'petted'"
+            },
+            {
+              "dust_bath": "q.property('kaleidoscope_ranching:action') == 'dust_bath'"
             }
           ]
         },
@@ -55,6 +58,17 @@
           "transitions": [
             {
               "idle": "q.property('kaleidoscope_ranching:action') == 'none'"
+            }
+          ]
+        },
+        "dust_bath": {
+          "animations": [
+            "dust_bath"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'dust_bath') || q.state_time > 6"
             }
           ]
         }

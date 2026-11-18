@@ -9,7 +9,8 @@ Shape, as the proposal asks ("較矮、毛較蓬", unlike the vanilla llama):
 
 Bones keep the pack's conventions (client.py, tools/gen_sleep.mjs, tools/gen_actions.mjs,
 tools/validate.mjs): body, head, a_head, b_head, a_torso, b_torso, a_/b_leg_fl..br, a_tail,
-b_tail. The fleece is in wool_* bones that the render controller hides once the alpaca is
+b_tail; the ears are bones of their own (a_/b_ear_left, _right) for the head shake's ear
+flick (tools/gen_actions.mjs). The fleece is in wool_* bones that the render controller hides once the alpaca is
 sheared (wool_coat over the body, wool_neck round the neck, wool_leg_* the leg warmers); m_ruff
 hangs from wool_neck so a sheared male loses it too. Under the fleece the body, neck and legs are
 painted as short-cropped fleece, so a sheared alpaca looks clipped, not bare. The topknot and the
@@ -51,11 +52,17 @@ def quad(prefix, cube, warm, size, x, zf, zb, top, warm_h):
     return out
 
 
-def ears(name, x, y, z, size, tilt, pivot_y):
-    """A pair of spear-shaped ears, leaning out a little (the point is painted, see ear_fn)."""
+def ears(prefix, parent, name, x, y, z, size, tilt, pivot_y):
+    """A pair of spear-shaped ears, leaning out a little (the point is painted, see ear_fn). Each
+    ear is its own bone (<prefix>ear_left / _right, pivot at the ear's base) so the head shake
+    (tools/gen_actions.mjs) can twitch it; the cubes are the same as when the head held them."""
     w = size[0]
-    return [(name, [x, y, z], size, {"rotation": [0, 0, -tilt], "pivot": [x + w / 2, pivot_y, z + size[2] / 2]}),
-            (name, [-(x + w), y, z], size, {"rotation": [0, 0, tilt], "pivot": [-(x + w / 2), pivot_y, z + size[2] / 2]})]
+    out = []
+    for side, ox, sign in (("left", x, 1), ("right", -(x + w), -1)):
+        pivot = [sign * (x + w / 2), pivot_y, z + size[2] / 2]
+        out.append((f"{prefix}ear_{side}", parent, pivot,
+                    [(name, [ox, y, z], size, {"rotation": [0, 0, -sign * tilt], "pivot": pivot})]))
+    return out
 
 
 # Heights: the hitbox is 0.9 x 1.7 blocks (27.2 px, tools/gen_entities.mjs) and the male is
@@ -82,8 +89,8 @@ BONES = [
         ("muzzle", [-1.5, 20, -13.5], [3, 2, 2]),
         # the topknot: a pom of fleece over the crown, its fringe just above the eyes
         ("topknot", [-3.5, 23, -12], [7, 3, 6]),
-        *ears("ear", 1.5, 23.5, -8.5, [2, 4, 1], 12, 23.5),
     ]),
+    *ears("a_", "a_head", "ear", 1.5, 23.5, -8.5, [2, 4, 1], 12, 23.5),
     # The fleece round the neck, from the chest to the jaw.
     ("wool_neck", "a_head", [0, 14, -6], [("ruff", [-3, 12.5, -10], [6, 9, 6])]),
     # The male's longer neck fleece: a bib hanging down the front of the neck. It is also hidden
@@ -98,8 +105,8 @@ BONES = [
         ("b_skull", [-2.5, 17, -8.5], [5, 4, 4]),
         ("b_muzzle", [-1.5, 17, -10], [3, 2, 1.5]),
         ("b_topknot", [-3, 20, -9], [6, 2.5, 5]),
-        *ears("b_ear", 1.5, 21.5, -6, [1, 2.5, 1], 14, 21.5),
     ]),
+    *ears("b_", "b_head", "b_ear", 1.5, 21.5, -6, [1, 2.5, 1], 14, 21.5),
     *quad("b_", "b_leg", None, [2, 8, 2], 1, -4, 2.5, 8, 0),
 ]
 
