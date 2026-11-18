@@ -26,7 +26,7 @@
         "actions": "controller.animation.kaleidoscope_ranching.alpaca.actions"
       },
       "scripts": {
-        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.1 : 1.0)",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.05 : 1.0)",
         "animate": [
           {
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"

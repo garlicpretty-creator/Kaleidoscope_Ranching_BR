@@ -114,6 +114,38 @@ function animationsFor(id, bones) {
       ? { ...out.eat }
       : { loop: true, bones: each(H, { rotation: ["62 + math.sin(q.anim_time * 720) * 4", 0, 0], position: [0, -2, 0] }) };
   }
+  if (id === "alpaca") {
+    // The alpaca's head bone turns at the base of a long neck, so turning it alone leaves the
+    // muzzle nibbling the air. Within the same 38-62° it is also lowered and brought forward
+    // (clear of the front legs): the muzzle just over the feed (5 px) and over the trough's rim
+    // (7 px), and 1-3 px off the grass. The cria (drawn at half size) bends less.
+    // Check with art_src/m4_scripts/actions_preview.py.
+    const adult = (rotation, position) => (has("head") ? { head: { rotation, position } } : {});
+    const young = (rotation, position) => (has("b_head") ? { b_head: { rotation, position } } : {});
+    out.eat = {
+      loop: true,
+      bones: {
+        ...adult(["52 + math.sin(q.anim_time * 720) * 4", "math.sin(q.anim_time * 180) * 6", 0], [0, -5.5, -2.5]),
+        ...young(["40 + math.sin(q.anim_time * 720) * 4", "math.sin(q.anim_time * 180) * 6", 0], [0, 0, -1]),
+      },
+    };
+    out.drink = {
+      loop: true,
+      bones: {
+        ...adult(["56 + math.sin(q.anim_time * 540) * 3", 0, 0], [0, -3, -2.5]),
+        ...young(["38 + math.sin(q.anim_time * 540) * 2", 0, 0], [0, 2.5, -1]),
+      },
+    };
+    if (GRAZERS.has(id)) {
+      out.graze = {
+        loop: true,
+        bones: {
+          ...adult(["58 + math.sin(q.anim_time * 720) * 4", 0, 0], [0, -8, -2.5]),
+          ...young(["58 + math.sin(q.anim_time * 720) * 4", 0, 0], [0, -5, -1.5]),
+        },
+      };
+    }
+  }
   if (RUMINANTS.has(id)) {
     out.chew = { loop: true, bones: each(H, { rotation: ["4 + math.sin(q.anim_time * 540) * 2", "math.sin(q.anim_time * 270) * 4", 0] }) };
   }

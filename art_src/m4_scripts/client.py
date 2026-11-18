@@ -41,7 +41,9 @@ SPECIES = {
         "wings": True,
     },
     "alpaca": {
-        "egg": ("#E2D6BE", "#7A5A40"), "scale_male": 1.1, "baby_look": True,
+        "egg": ("#E2D6BE", "#7A5A40"), "scale_male": 1.05, "baby_look": True,
+        # the male's neck ruff (m_ruff) is fleece too: shorn with the rest
+        "shorn": ("m_ruff",),
         "walk": {"leg_fl": f"{SWING} * 60", "leg_br": f"{SWING} * 60", "leg_fr": f"-{SWING} * 60", "leg_bl": f"-{SWING} * 60"},
     },
     "buffalo": {
@@ -78,7 +80,7 @@ def main(sid):
     for b in bones:
         for prefix, molang in RULES:
             if b.startswith(prefix):
-                vis.append({b: molang})
+                vis.append({b: f"{molang} && !q.is_sheared" if b in s.get("shorn", ()) else molang})
                 break
     dump(RP / "render_controllers" / f"{sid}.render_controllers.json", {"format_version": "1.8.0", "render_controllers": {
         f"controller.render.{NS}.{sid}": {
