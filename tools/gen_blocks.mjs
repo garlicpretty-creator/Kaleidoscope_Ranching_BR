@@ -251,7 +251,9 @@ const DEFS = {
     states: {},
     bones: {},
     collision: box(-2, 0, -2, 4, 16, 4),
-    selection: box(-2, 0, -2, 4, 16, 4),
+    // the sign board is 8 wide and stands out in front (art_src/m4_scripts/blocks_m12.py): the
+    // selection box takes it in, the collision box stays the post
+    selection: box(-4, 0, -3, 8, 16, 6),
     seconds: 1,
   },
   hay_rack: {

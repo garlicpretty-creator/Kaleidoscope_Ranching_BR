@@ -50,15 +50,16 @@ CHAFF_CUTTER = [
         ("guide", [-4, 12, -6], [1, 2, 12]),
         ("guide", [3, 12, -6], [1, 2, 12]),
         ("straw", [-3, 12, -6], [6, 1, 11]),
-        # the knife's frame stands over the mouth at the front, where the straw is fed out
-        ("upright", [-5, 12, -8], [1, 6, 2]),
-        ("upright", [4, 12, -8], [1, 6, 2]),
-        ("crossbar", [-6, 18, -8], [12, 1, 2]),
+        # the straw fed out through the mouth, in front of the knife
+        ("straw", [-3, 12, -8], [6, 1, 1]),
+        # the knife slides between two uprights over the mouth at the front
+        ("upright", [-5, 12, -8], [1, 4, 2]),
+        ("upright", [4, 12, -8], [1, 4, 2]),
     ]),
-    # 1.1 追加 方塊動畫: the knife hangs raised between the uprights and drops onto the mouth when
-    # the cutter is opened (station_frames.py)
-    *shift("blade", "cutter", [("blade", [-4, 15, -7], [8, 3, 1]), ("grip", [-1, 16, -8], [2, 1, 1])],
-           [(0, 0, 0), (0, -3, 0)]),
+    # 1.1 追加 方塊動畫: the knife waits raised and drops through the straw at the mouth when the
+    # cutter is opened (station_frames.py); everything stays inside the block's 16 pixels
+    *shift("blade", "cutter", [("blade", [-4, 14, -7], [8, 2, 1]), ("grip", [-1, 15, -8], [2, 1, 1])],
+           [(0, 0, 0), (0, -2, 0)]),
 ]
 
 FEED_MIXER = [
@@ -153,7 +154,6 @@ PAINT = {
                     "hopper": galvanized, "rim": iron, "lid": solid(GALV, edge=GALV_DK), "handle": iron},
     "chaff_cutter": {"leg": wood(WOOD_DK, rings=WOOD_LT), "brace": wood(WOOD_DK), "chaff": chopped,
                      "table": wood(WOOD), "guide": wood(WOOD_DK), "straw": hay, "upright": wood(WOOD_DK, rings=WOOD_LT),
-                     "crossbar": wood(WOOD),
                      "blade": blade, "grip": wood(WOOD_LT)},
     "feed_mixer": {"stand": wood(WOOD_DK), "barrel": mixed_top, "hoop": iron, "axle": iron,
                    "paddle": iron, "crank": iron, "knob": wood(WOOD_LT)},

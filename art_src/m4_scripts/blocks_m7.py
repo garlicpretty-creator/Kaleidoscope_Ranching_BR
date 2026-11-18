@@ -17,7 +17,7 @@ from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
-from station_frames import crank, crank_z, extra, swing, wheel
+from station_frames import crank, crank_z, extra, shift, wheel
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -93,7 +93,7 @@ CREAM_SEPARATOR = [
     ]),
     # 1.1 追加 方塊動畫: the crank turns when milk goes in (station_frames.py)
     # and the ribbed bowl on top spins with it: each frame has its own bowl, ribs a pixel further round
-    *extra(crank_z("crank", "frame", -5, 0, 5.5, 3.5, knob_dz=-1), lambda i: [(f"bowl_{i}", [-5, 11, -5], [10, 3, 10])]),
+    *extra(crank_z("crank", "frame", -5, 0, 5.5, 3, knob_dz=-1), lambda i: [(f"bowl_{i}", [-5, 11, -5], [10, 3, 10])]),
     ("busy", "frame", [0, 14, 0], [
         ("cream", [-4, 14, -4], [8, 1, 8]),
     ]),
@@ -162,10 +162,10 @@ WEAVING_LOOM = [
         ("treadle", [-3, 0, -5], [2, 1, 9]),
         ("treadle", [1, 0, -5], [2, 1, 9]),
     ]),
-    # 1.1 追加 方塊動畫: the beater swings in and out when yarn goes on (station_frames.py)
-    # (station_frames.py): the swords pivot on the floor, the reed under the hand-tree beats the weft
-    # against the cloth at the front beam
-    *swing("beater", "frame", -5.5, 5.5, 1, 13, -1, reed=4),
+    # 1.1 追加 方塊動畫: the beater swings in and out when yarn goes on (station_frames.py):
+    # one cube, swords at its ends riding on the side rails, the reed between
+    # them under the hand-tree; it slides from the heddle to the cloth at the front beam and back
+    *shift("beater", "frame", [("beater", [-6.5, 9, -1], [13, 5, 1])], [(0, 0, 0), (0, 0, -1), (0, 0, -2), (0, 0, -1)]),
     ("busy", "frame", [0, 10, -5], [
         ("cloth", [-5, 10.5, -4], [10, 1, 1]),
         ("cloth_roll", [-4, 8.5, -6.5], [8, 3, 3]),
@@ -305,24 +305,31 @@ def ribbed(phase):
 
 
 def skim(phase):
-    """Inside the bowl: dark milk with one pale streak from the middle to the rim, pointing a quarter
+    """Inside the bowl: dark milk with one broad pale streak from the middle to the rim, pointing a quarter
     turn further round each frame (the same way the ribs go), like the hand of a clock."""
     dx, dz = [(0, 1), (1, 0), (0, -1), (-1, 0)][phase]
 
     def fn(f, i, j, w, h, fi):
         px, pz = i + 0.5 - w / 2, h / 2 - j - 0.5
         along, across = px * dx + pz * dz, px * dz - pz * dx
-        if 0 < along and -1 < across <= 0:
-            return (226, 230, 234)
-        return (150, 158, 170)
+        if 0 < along and -1 < across <= 1:
+            return (236, 238, 240)  # two pixels wide, so it shows past the knob
+        return (120, 128, 142)
     return fn
 
 
-def reed(f, i, j, w, h, fi):
-    """The beater's reed: fine dark dents between bright wires, a wooden rail along the bottom."""
-    if f in ("top", "bottom") or j == h - 1:
-        return WOOD
-    return (88, 64, 44) if i % 2 else (196, 188, 170)
+def beater(f, i, j, w, h, fi):
+    """The loom's beater in one cube: a sword at each end, the hand-tree along the top, and the reed
+    between them, fine dark dents between bright wires over a wooden bottom rail."""
+    if f in ("north", "south"):
+        if i in (0, w - 1):
+            return wood(WOOD)(f, i, j, w, h, fi)  # the swords
+        if j == 0:
+            return WOOD_LT  # the hand-tree
+        if j == h - 1:
+            return WOOD
+        return (88, 64, 44) if i % 2 else (196, 188, 170)
+    return WOOD_LT if f == "top" else WOOD
 
 
 def perforated(f, i, j, w, h, fi):
@@ -422,8 +429,7 @@ PAINT = {
     "weaving_loom": {"front_post": wood(WOOD_DK, rings=WOOD_LT), "back_post": wood(WOOD_DK, rings=WOOD_LT),
                      "side_rail": wood(WOOD), "foot_rail": wood(WOOD_DK), "beam": wood(WOOD_LT),
                      "warp": threads(YARN, YARN_DK), "warp_back": threads(YARN, YARN_DK),
-                     "heddle": threads(WOOD, YARN), "sword": wood(WOOD), "reed": reed,
-                     "hand_tree": wood(WOOD_LT),
+                     "heddle": threads(WOOD, YARN), "beater": beater,
                      "treadle": wood(WOOD)},
     "silage_barrel": {"staves": staves(WOOD), "hoop": iron, "lid": lid, "handle": iron,
                       "stone": rock},

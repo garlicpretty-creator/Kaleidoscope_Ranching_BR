@@ -341,6 +341,7 @@ def gratin(bid):
 
 
 ROAST, ROAST_DK, ROAST_LT, MEAT_IN = (196, 120, 60), (140, 78, 36), (226, 162, 88), (240, 214, 184)
+CARVED, CARVED_FIBRE = (214, 170, 118), (190, 140, 88)  # roast turkey meat, cooked through
 BONE_END = (240, 232, 214)
 HERB, HERB_DK, CARROT = (92, 150, 62), (60, 108, 44), (230, 128, 44)
 TURKEY_CZ = 1  # the body's front and back halves meet at z = 1; the drumsticks lie in front of it
@@ -362,7 +363,13 @@ def roast_turkey():
 
     def skin(f, x, y, z):
         if is_cut(f, x, z, TURKEY_CZ):
-            return MEAT_IN if rnd(x, y, z, 2) > 20 else mix(MEAT_IN, ROAST_LT, 0.4)  # carved: white meat
+            # carved: cooked meat with fibres, and a rim of skin a pixel deep round the cut
+            across = f in ("east", "west")  # on the x = 0 cut, the section runs along z
+            along = abs(z - TURKEY_CZ) if across else abs(x)
+            body, breast = (3, 2) if across else (4, 3)  # how far each part reaches from the cut line
+            if y > 4 or along > body - 1 or (y > 3 and along > breast - 1):
+                return ROAST_DK
+            return CARVED_FIBRE if rnd(x, y, z, 2) < 25 else CARVED
         if f == "top":
             r = rnd(x, 7, z)
             return ROAST_LT if r > 84 else ROAST_DK if r < 16 else ROAST  # glaze catching the light
@@ -372,12 +379,10 @@ def roast_turkey():
             return mix(ROAST, ROAST_DK, 0.7)  # the folded wing's outline along each flank
         return ROAST if y > 2 else mix(ROAST, ROAST_DK, 0.45)  # darker where it sat in the juices
 
-    # body: a broad lower part, its corners stepped in to round it, and the breast on top, in four
-    # quarters (wings tucked under, painted rather than built, so it stays a bird and not a turtle)
+    # body: a broad lower part and the breast on top, in four quarters (wings tucked under, painted rather than built, so it stays a bird and not a turtle)
     for n, sx, sz in ((1, -1, 1), (2, 1, 1), (3, -1, -1), (4, 1, -1)):
         m.bone(f"piece_{n}", "platter", (0, 1, 0))
-        m.box(f"piece_{n}", *qbox(sx, sz, (0, 4, 0, 2), 1, 4, TURKEY_CZ), skin)
-        m.box(f"piece_{n}", *qbox(sx, sz, (0, 3, 2, 3), 1, 4, TURKEY_CZ), skin)
+        m.box(f"piece_{n}", *qbox(sx, sz, (0, 4, 0, 3), 1, 4, TURKEY_CZ), skin)
         m.box(f"piece_{n}", *qbox(sx, sz, (0, 3, 0, 2), 4, 5, TURKEY_CZ), skin)
     # the drumsticks: a thick leg against the body's front, the bone end raised toward the front
     for n, x in ((5, -3), (6, 1)):

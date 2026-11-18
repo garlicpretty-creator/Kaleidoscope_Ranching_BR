@@ -5,7 +5,7 @@
       "description": {
         "identifier": "geometry.kaleidoscope_ranching.chaff_cutter",
         "texture_width": 64,
-        "texture_height": 128,
+        "texture_height": 64,
         "visible_bounds_width": 2.0,
         "visible_bounds_height": 2.0,
         "visible_bounds_offset": [
@@ -185,17 +185,33 @@
             },
             {
               "origin": [
+                -3,
+                12,
+                -8
+              ],
+              "size": [
+                6,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                57
+              ]
+            },
+            {
+              "origin": [
                 -5,
                 12,
                 -8
               ],
               "size": [
                 1,
-                6,
+                4,
                 2
               ],
               "uv": [
-                0,
+                14,
                 57
               ]
             },
@@ -207,27 +223,11 @@
               ],
               "size": [
                 1,
-                6,
+                4,
                 2
               ],
               "uv": [
-                0,
-                57
-              ]
-            },
-            {
-              "origin": [
-                -6,
-                18,
-                -8
-              ],
-              "size": [
-                12,
-                1,
-                2
-              ],
-              "uv": [
-                6,
+                14,
                 57
               ]
             }
@@ -244,23 +244,23 @@
             {
               "origin": [
                 -4,
-                15,
+                14,
                 -7
               ],
               "size": [
                 8,
-                3,
+                2,
                 1
               ],
               "uv": [
-                34,
+                20,
                 57
               ]
             },
             {
               "origin": [
                 -1,
-                16,
+                15,
                 -8
               ],
               "size": [
@@ -269,7 +269,7 @@
                 1
               ],
               "uv": [
-                52,
+                38,
                 57
               ]
             }
@@ -292,11 +292,11 @@
               ],
               "size": [
                 8,
-                3,
+                2,
                 1
               ],
               "uv": [
-                34,
+                20,
                 57
               ]
             },
@@ -312,7 +312,7 @@
                 1
               ],
               "uv": [
-                52,
+                38,
                 57
               ]
             }
