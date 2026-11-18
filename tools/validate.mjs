@@ -540,7 +540,8 @@ for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) 
       const cubes = lids.cubes ?? [];
       const rows = new Set(cubes.map((c) => c.origin[1]));
       const xs = cubes.map((c) => c.origin[0] + c.size[0] / 2);
-      const mirrored = xs.every((x) => xs.some((o) => Math.abs(o + x - 2 * (lids.pivot?.[0] ?? 0)) < 0.01));
+      // fix_zfight.py may nudge a lid by a few hundredths of a pixel, so allow 0.1.
+      const mirrored = xs.every((x) => xs.some((o) => Math.abs(o + x - 2 * (lids.pivot?.[0] ?? 0)) < 0.1));
       if (cubes.length > 4 || cubes.length % 2 || rows.size > 1 || !mirrored) {
         fail(`${where}: ${lids.name} has ${cubes.length} eyelid(s) on ${rows.size} row(s); only the eyes may use the pupil colour (26, 22, 26) on the head's front faces`);
       }
