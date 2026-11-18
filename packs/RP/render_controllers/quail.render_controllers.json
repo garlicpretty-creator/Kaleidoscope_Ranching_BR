@@ -31,9 +31,6 @@
           "a_tail": "!q.is_baby"
         },
         {
-          "m_curl": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
-        },
-        {
           "a_head": "!q.is_baby"
         },
         {

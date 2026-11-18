@@ -26880,8 +26880,8 @@
             {
               "origin": [
                 -2.5,
-                23.25,
-                -9.0
+                22.75,
+                -7.0
               ],
               "size": [
                 5.0,
@@ -26913,7 +26913,7 @@
                 },
                 "east": {
                   "uv": [
-                    91.0,
+                    63.0,
                     0.0
                   ],
                   "uv_size": [
@@ -26923,22 +26923,22 @@
                   "material_instance": "quail"
                 },
                 "north": {
-                  "uv": [
-                    105.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    4.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
                   "uv": [
                     77.0,
                     0.0
                   ],
                   "uv_size": [
+                    5.0,
+                    4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    49.0,
+                    0.0
+                  ],
+                  "uv_size": [
                     6.0,
                     4.0
                   ],
@@ -26946,7 +26946,7 @@
                 },
                 "south": {
                   "uv": [
-                    117.0,
+                    89.0,
                     0.0
                   ],
                   "uv_size": [
@@ -26960,178 +26960,18 @@
             {
               "origin": [
                 -2.0,
-                23.3,
-                -9.5
-              ],
-              "size": [
-                4.0,
-                2.95,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    35.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    0.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    30.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    72.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    14.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    97.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -2.0,
-                22.75,
+                23.25,
                 -8.0
               ],
               "size": [
                 4.0,
-                1.0,
-                4.95
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    57.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    5.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    67.0,
-                    5.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    -5.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    110.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    50.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    104.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    30.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -2.0,
-                24.25,
-                -2.5
-              ],
-              "size": [
-                4.0,
-                2.0,
+                3.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    15.0,
+                    0.0,
                     26.0
                   ],
                   "uv_size": [
@@ -27142,8 +26982,8 @@
                 },
                 "down": {
                   "uv": [
-                    40.0,
-                    27.0
+                    69.0,
+                    23.0
                   ],
                   "uv_size": [
                     4.0,
@@ -27153,285 +26993,45 @@
                 },
                 "east": {
                   "uv": [
-                    94.0,
+                    4.0,
                     22.0
                   ],
                   "uv_size": [
                     1.0,
-                    2.0
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    54.0,
-                    22.0
+                    59.0,
+                    17.0
                   ],
                   "uv_size": [
                     4.0,
-                    2.0
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    102.0,
+                    0.0,
                     22.0
                   ],
                   "uv_size": [
                     1.0,
-                    2.0
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
-                  "uv": [
-                    49.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    2.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -1.5,
-                25.25,
-                -2.0
-              ],
-              "size": [
-                3.0,
-                0.95,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    64.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
                   "uv": [
                     84.0,
-                    27.0
+                    17.0
                   ],
                   "uv_size": [
-                    3.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    56.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    76.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    40.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    68.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -1.0,
-                26.25,
-                -1.0
-              ],
-              "size": [
-                2.0,
-                1.0,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    95.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    110.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    50.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    18.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    66.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    125.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -1.0,
-                26.25,
-                -9.5
-              ],
-              "size": [
-                2.0,
-                2.0,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    98.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    92.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    98.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    2.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    77.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    2.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    92.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    2.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    86.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    2.0
+                    4.0,
+                    3.0
                   ],
                   "material_instance": "quail"
                 }
@@ -27440,12 +27040,12 @@
             {
               "origin": [
                 -2.0,
-                27.75,
-                -11.0
+                26.75,
+                -6.0
               ],
               "size": [
                 4.0,
-                3.0,
+                1.0,
                 4.0
               ],
               "uv": {
@@ -27453,6 +27053,86 @@
                   "uv": [
                     0.0,
                     17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    116.0,
+                    4.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    -4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    84.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    114.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    94.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    74.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                -2.0,
+                22.25,
+                -6.0
+              ],
+              "size": [
+                4.0,
+                1.0,
+                4.0
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    106.0,
+                    0.0
                   ],
                   "uv_size": [
                     4.0,
@@ -27473,45 +27153,45 @@
                 },
                 "east": {
                   "uv": [
-                    87.0,
-                    17.0
+                    20.0,
+                    26.0
                   ],
                   "uv_size": [
                     4.0,
-                    3.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    77.0,
-                    17.0
+                    64.0,
+                    22.0
                   ],
                   "uv_size": [
                     4.0,
-                    3.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    102.0,
-                    17.0
+                    5.0,
+                    26.0
                   ],
                   "uv_size": [
                     4.0,
-                    3.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    107.0,
-                    17.0
+                    99.0,
+                    22.0
                   ],
                   "uv_size": [
                     4.0,
-                    3.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 }
@@ -27519,79 +27199,159 @@
             },
             {
               "origin": [
-                -1.0,
-                28.25,
-                -13.0
+                -1.5,
+                24.25,
+                -1.0
               ],
               "size": [
+                3.0,
                 2.0,
-                1.0,
-                2.0
+                1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    74.0,
-                    22.0
+                    35.0,
+                    26.0
                   ],
                   "uv_size": [
-                    2.0,
-                    2.0
+                    3.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    80.0,
-                    24.0
+                    43.0,
+                    27.0
                   ],
                   "uv_size": [
-                    2.0,
-                    -2.0
+                    3.0,
+                    -1.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    3.0,
-                    28.0
+                    52.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    1.0,
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    101.0,
-                    26.0
+                    26.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    3.0,
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    21.0,
-                    28.0
+                    62.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    1.0,
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    0.0,
-                    28.0
+                    34.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    3.0,
+                    2.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                -2.0,
+                26.75,
+                -9.5
+              ],
+              "size": [
+                4.0,
+                3.0,
+                3.0
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    89.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    94.0,
+                    20.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    -3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    107.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    74.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    103.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    64.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    3.0
                   ],
                   "material_instance": "quail"
                 }
@@ -27600,8 +27360,8 @@
             {
               "origin": [
                 -0.5,
-                27.75,
-                -12.5
+                27.25,
+                -10.5
               ],
               "size": [
                 1.0,
@@ -27611,8 +27371,8 @@
               "uv": {
                 "up": {
                   "uv": [
-                    80.0,
-                    28.0
+                    81.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27622,8 +27382,8 @@
                 },
                 "down": {
                   "uv": [
-                    26.0,
-                    29.0
+                    85.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27633,8 +27393,8 @@
                 },
                 "east": {
                   "uv": [
-                    54.0,
-                    28.0
+                    87.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27644,8 +27404,8 @@
                 },
                 "north": {
                   "uv": [
-                    44.0,
-                    28.0
+                    91.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27655,8 +27415,8 @@
                 },
                 "west": {
                   "uv": [
-                    58.0,
-                    28.0
+                    93.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27666,8 +27426,8 @@
                 },
                 "south": {
                   "uv": [
-                    46.0,
-                    28.0
+                    99.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27680,74 +27440,74 @@
             {
               "origin": [
                 2.5,
-                24.25,
-                -8.0
+                23.75,
+                -6.0
               ],
               "size": [
                 1.0,
                 3.0,
-                6.0
+                5.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    41.0,
+                    47.0,
                     0.0
                   ],
                   "uv_size": [
                     1.0,
-                    6.0
+                    5.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
+                  "uv": [
+                    45.0,
+                    5.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -5.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    29.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    5.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    115.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
                   "uv": [
                     53.0,
-                    6.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -6.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    30.0,
                     17.0
                   ],
                   "uv_size": [
-                    6.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    0.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    23.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    6.0,
+                    5.0,
                     3.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    18.0,
-                    22.0
+                    121.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27759,133 +27519,53 @@
             },
             {
               "origin": [
-                2.55,
-                24.75,
-                -2.5
+                -3.5,
+                23.75,
+                -6.0
               ],
               "size": [
-                0.9,
                 1.0,
-                1.0
+                3.0,
+                5.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    36.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    38.0,
-                    29.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    60.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    68.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    24.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    72.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -3.0,
-                24.25,
-                -8.0
-              ],
-              "size": [
-                1.0,
-                2.95,
-                6.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    55.0,
+                    47.0,
                     0.0
                   ],
                   "uv_size": [
                     1.0,
-                    6.0
+                    5.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    49.0,
-                    6.0
+                    45.0,
+                    5.0
                   ],
                   "uv_size": [
                     1.0,
-                    -6.0
+                    -5.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    65.0,
+                    29.0,
                     17.0
                   ],
                   "uv_size": [
-                    6.0,
+                    5.0,
                     3.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    28.0,
-                    22.0
+                    115.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
@@ -27895,103 +27575,23 @@
                 },
                 "west": {
                   "uv": [
-                    37.0,
+                    53.0,
                     17.0
                   ],
                   "uv_size": [
-                    6.0,
+                    5.0,
                     3.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    10.0,
-                    22.0
+                    121.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
                     3.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -2.95,
-                24.75,
-                -2.5
-              ],
-              "size": [
-                0.9,
-                1.0,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    36.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    38.0,
-                    29.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    60.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    68.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    24.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    72.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
                   ],
                   "material_instance": "quail"
                 }
@@ -28000,19 +27600,19 @@
             {
               "origin": [
                 0.5,
-                21.3,
-                -6.0
+                21.75,
+                -4.0
               ],
               "size": [
                 1.0,
-                0.9,
+                2.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    52.0,
-                    28.0
+                    97.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -28022,8 +27622,8 @@
                 },
                 "down": {
                   "uv": [
-                    34.0,
-                    29.0
+                    83.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -28033,45 +27633,45 @@
                 },
                 "east": {
                   "uv": [
-                    76.0,
-                    28.0
+                    58.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    30.0,
-                    28.0
+                    50.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    82.0,
-                    28.0
+                    54.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    32.0,
-                    28.0
+                    56.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -28080,8 +27680,8 @@
             {
               "origin": [
                 0.0,
-                21.25,
-                -7.5
+                20.75,
+                -5.0
               ],
               "size": [
                 2.0,
@@ -28091,7 +27691,7 @@
               "uv": {
                 "up": {
                   "uv": [
-                    83.0,
+                    42.0,
                     22.0
                   ],
                   "uv_size": [
@@ -28102,7 +27702,7 @@
                 },
                 "down": {
                   "uv": [
-                    89.0,
+                    45.0,
                     24.0
                   ],
                   "uv_size": [
@@ -28113,8 +27713,8 @@
                 },
                 "east": {
                   "uv": [
-                    9.0,
-                    28.0
+                    54.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -28124,8 +27724,8 @@
                 },
                 "north": {
                   "uv": [
-                    15.0,
-                    28.0
+                    75.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -28135,7 +27735,7 @@
                 },
                 "west": {
                   "uv": [
-                    116.0,
+                    63.0,
                     26.0
                   ],
                   "uv_size": [
@@ -28146,7 +27746,7 @@
                 },
                 "south": {
                   "uv": [
-                    119.0,
+                    57.0,
                     26.0
                   ],
                   "uv_size": [
@@ -28160,19 +27760,19 @@
             {
               "origin": [
                 -1.5,
-                21.3,
-                -6.0
+                21.75,
+                -4.0
               ],
               "size": [
                 1.0,
-                0.9,
+                2.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    52.0,
-                    28.0
+                    97.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -28182,8 +27782,8 @@
                 },
                 "down": {
                   "uv": [
-                    34.0,
-                    29.0
+                    83.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -28193,45 +27793,45 @@
                 },
                 "east": {
                   "uv": [
-                    76.0,
-                    28.0
+                    58.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    30.0,
-                    28.0
+                    50.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    82.0,
-                    28.0
+                    54.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    32.0,
-                    28.0
+                    56.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -28240,8 +27840,8 @@
             {
               "origin": [
                 -2.0,
-                21.25,
-                -7.5
+                20.75,
+                -5.0
               ],
               "size": [
                 2.0,
@@ -28251,7 +27851,7 @@
               "uv": {
                 "up": {
                   "uv": [
-                    83.0,
+                    42.0,
                     22.0
                   ],
                   "uv_size": [
@@ -28262,7 +27862,7 @@
                 },
                 "down": {
                   "uv": [
-                    89.0,
+                    45.0,
                     24.0
                   ],
                   "uv_size": [
@@ -28273,8 +27873,8 @@
                 },
                 "east": {
                   "uv": [
-                    9.0,
-                    28.0
+                    54.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -28284,8 +27884,8 @@
                 },
                 "north": {
                   "uv": [
-                    15.0,
-                    28.0
+                    75.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -28295,7 +27895,7 @@
                 },
                 "west": {
                   "uv": [
-                    116.0,
+                    63.0,
                     26.0
                   ],
                   "uv_size": [
@@ -28306,7 +27906,7 @@
                 },
                 "south": {
                   "uv": [
-                    119.0,
+                    57.0,
                     26.0
                   ],
                   "uv_size": [
@@ -28336,8 +27936,8 @@
             {
               "origin": [
                 -2.5,
-                23.25,
-                -9.0
+                22.75,
+                -7.0
               ],
               "size": [
                 5.0,
@@ -28369,7 +27969,7 @@
                 },
                 "east": {
                   "uv": [
-                    98.0,
+                    70.0,
                     0.0
                   ],
                   "uv_size": [
@@ -28380,7 +27980,7 @@
                 },
                 "north": {
                   "uv": [
-                    111.0,
+                    83.0,
                     0.0
                   ],
                   "uv_size": [
@@ -28391,7 +27991,7 @@
                 },
                 "west": {
                   "uv": [
-                    84.0,
+                    56.0,
                     0.0
                   ],
                   "uv_size": [
@@ -28402,7 +28002,7 @@
                 },
                 "south": {
                   "uv": [
-                    123.0,
+                    95.0,
                     0.0
                   ],
                   "uv_size": [
@@ -28416,16 +28016,118 @@
             {
               "origin": [
                 -2.0,
-                23.3,
-                -9.5
+                23.25,
+                -8.0
               ],
               "size": [
                 4.0,
-                2.95,
+                3.0,
                 1.0
               ],
               "uv": {
                 "up": {
+                  "uv": [
+                    119.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    30.0,
+                    27.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    -1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    2.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    69.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    125.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    79.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                -2.0,
+                26.75,
+                -6.0
+              ],
+              "size": [
+                4.0,
+                1.0,
+                4.0
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    101.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    111.0,
+                    4.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    -4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
                   "uv": [
                     25.0,
                     26.0
@@ -28436,109 +28138,29 @@
                   ],
                   "material_instance": "quail"
                 },
-                "down": {
+                "north": {
                   "uv": [
-                    55.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    20.0,
+                    104.0,
                     22.0
                   ],
                   "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    82.0,
-                    17.0
-                  ],
-                  "uv_size": [
                     4.0,
-                    3.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    12.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    92.0,
-                    17.0
+                    15.0,
+                    26.0
                   ],
                   "uv_size": [
                     4.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -2.0,
-                22.75,
-                -8.0
-              ],
-              "size": [
-                4.0,
-                1.0,
-                4.95
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    72.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    5.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    62.0,
-                    5.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    -5.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    116.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    5.0,
                     1.0
                   ],
                   "material_instance": "quail"
                 },
-                "north": {
+                "south": {
                   "uv": [
                     10.0,
                     26.0
@@ -28548,47 +28170,47 @@
                     1.0
                   ],
                   "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    122.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    45.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
                 }
               }
             },
             {
               "origin": [
                 -2.0,
-                24.25,
-                -2.5
+                22.25,
+                -6.0
               ],
               "size": [
                 4.0,
-                2.0,
-                1.0
+                1.0,
+                4.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    20.0,
-                    26.0
+                    121.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    10.0,
+                    21.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    -4.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    89.0,
+                    22.0
                   ],
                   "uv_size": [
                     4.0,
@@ -28596,58 +28218,36 @@
                   ],
                   "material_instance": "quail"
                 },
-                "down": {
-                  "uv": [
-                    5.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    96.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    2.0
-                  ],
-                  "material_instance": "quail"
-                },
                 "north": {
                   "uv": [
-                    69.0,
+                    124.0,
                     22.0
                   ],
                   "uv_size": [
                     4.0,
-                    2.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    100.0,
+                    79.0,
                     22.0
                   ],
                   "uv_size": [
-                    1.0,
-                    2.0
+                    4.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    59.0,
+                    109.0,
                     22.0
                   ],
                   "uv_size": [
                     4.0,
-                    2.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 }
@@ -28656,158 +28256,78 @@
             {
               "origin": [
                 -1.5,
-                25.25,
-                -2.0
-              ],
-              "size": [
-                3.0,
-                0.95,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    80.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    88.0,
-                    27.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    84.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    60.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    74.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    72.0,
-                    26.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -1.0,
-                26.25,
+                24.25,
                 -1.0
               ],
               "size": [
+                3.0,
                 2.0,
-                1.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    122.0,
+                    39.0,
                     26.0
                   ],
                   "uv_size": [
-                    2.0,
+                    3.0,
                     1.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    107.0,
+                    47.0,
                     27.0
                   ],
                   "uv_size": [
-                    2.0,
+                    3.0,
                     -1.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    86.0,
-                    28.0
+                    60.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    6.0,
-                    28.0
+                    30.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    3.0,
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    42.0,
-                    28.0
+                    48.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    12.0,
-                    28.0
+                    38.0,
+                    22.0
                   ],
                   "uv_size": [
-                    2.0,
-                    1.0
+                    3.0,
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -28816,212 +28336,52 @@
             {
               "origin": [
                 2.5,
-                24.25,
-                -8.0
+                23.75,
+                -6.0
               ],
               "size": [
                 1.0,
                 3.0,
-                6.0
+                5.0
               ],
               "uv": {
                 "up": {
-                  "uv": [
-                    45.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    6.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
                   "uv": [
                     43.0,
-                    6.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -6.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    51.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    6.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    8.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    16.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    6.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    2.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                2.55,
-                24.75,
-                -2.5
-              ],
-              "size": [
-                0.9,
-                1.0,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    78.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    48.0,
-                    29.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    64.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    62.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    70.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    28.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -3.0,
-                24.25,
-                -8.0
-              ],
-              "size": [
-                1.0,
-                2.95,
-                6.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    47.0,
                     0.0
                   ],
                   "uv_size": [
                     1.0,
-                    6.0
+                    5.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    51.0,
-                    6.0
+                    41.0,
+                    5.0
                   ],
                   "uv_size": [
                     1.0,
-                    -6.0
+                    -5.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    58.0,
+                    35.0,
                     17.0
                   ],
                   "uv_size": [
-                    6.0,
+                    5.0,
                     3.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    26.0,
-                    22.0
+                    117.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29031,19 +28391,19 @@
                 },
                 "west": {
                   "uv": [
-                    44.0,
+                    41.0,
                     17.0
                   ],
                   "uv_size": [
-                    6.0,
+                    5.0,
                     3.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    24.0,
-                    22.0
+                    119.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29055,79 +28415,79 @@
             },
             {
               "origin": [
-                -2.95,
-                24.75,
-                -2.5
+                -3.5,
+                23.75,
+                -6.0
               ],
               "size": [
-                0.9,
                 1.0,
-                1.0
+                3.0,
+                5.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    78.0,
-                    28.0
+                    43.0,
+                    0.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    5.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    48.0,
-                    29.0
+                    41.0,
+                    5.0
                   ],
                   "uv_size": [
                     1.0,
-                    -1.0
+                    -5.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    64.0,
-                    28.0
+                    35.0,
+                    17.0
                   ],
                   "uv_size": [
-                    1.0,
-                    1.0
+                    5.0,
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    62.0,
-                    28.0
+                    117.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    70.0,
-                    28.0
+                    41.0,
+                    17.0
                   ],
                   "uv_size": [
-                    1.0,
-                    1.0
+                    5.0,
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    28.0,
-                    28.0
+                    119.0,
+                    17.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    3.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29136,19 +28496,19 @@
             {
               "origin": [
                 0.5,
-                21.3,
-                -6.0
+                21.75,
+                -4.0
               ],
               "size": [
                 1.0,
-                0.9,
+                2.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    52.0,
-                    28.0
+                    97.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29158,8 +28518,8 @@
                 },
                 "down": {
                   "uv": [
-                    34.0,
-                    29.0
+                    83.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29169,45 +28529,45 @@
                 },
                 "east": {
                   "uv": [
-                    76.0,
-                    28.0
+                    58.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    30.0,
-                    28.0
+                    50.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    82.0,
-                    28.0
+                    54.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    32.0,
-                    28.0
+                    56.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29216,8 +28576,8 @@
             {
               "origin": [
                 0.0,
-                21.25,
-                -7.5
+                20.75,
+                -5.0
               ],
               "size": [
                 2.0,
@@ -29227,7 +28587,7 @@
               "uv": {
                 "up": {
                   "uv": [
-                    83.0,
+                    42.0,
                     22.0
                   ],
                   "uv_size": [
@@ -29238,7 +28598,7 @@
                 },
                 "down": {
                   "uv": [
-                    89.0,
+                    45.0,
                     24.0
                   ],
                   "uv_size": [
@@ -29249,8 +28609,8 @@
                 },
                 "east": {
                   "uv": [
-                    9.0,
-                    28.0
+                    54.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -29260,8 +28620,8 @@
                 },
                 "north": {
                   "uv": [
-                    15.0,
-                    28.0
+                    75.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -29271,7 +28631,7 @@
                 },
                 "west": {
                   "uv": [
-                    116.0,
+                    63.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29282,7 +28642,7 @@
                 },
                 "south": {
                   "uv": [
-                    119.0,
+                    57.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29296,19 +28656,19 @@
             {
               "origin": [
                 -1.5,
-                21.3,
-                -6.0
+                21.75,
+                -4.0
               ],
               "size": [
                 1.0,
-                0.9,
+                2.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    52.0,
-                    28.0
+                    97.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29318,8 +28678,8 @@
                 },
                 "down": {
                   "uv": [
-                    34.0,
-                    29.0
+                    83.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29329,45 +28689,45 @@
                 },
                 "east": {
                   "uv": [
-                    76.0,
-                    28.0
+                    58.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    30.0,
-                    28.0
+                    50.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    82.0,
-                    28.0
+                    54.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    32.0,
-                    28.0
+                    56.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29376,8 +28736,8 @@
             {
               "origin": [
                 -2.0,
-                21.25,
-                -7.5
+                20.75,
+                -5.0
               ],
               "size": [
                 2.0,
@@ -29387,7 +28747,7 @@
               "uv": {
                 "up": {
                   "uv": [
-                    83.0,
+                    42.0,
                     22.0
                   ],
                   "uv_size": [
@@ -29398,7 +28758,7 @@
                 },
                 "down": {
                   "uv": [
-                    89.0,
+                    45.0,
                     24.0
                   ],
                   "uv_size": [
@@ -29409,8 +28769,8 @@
                 },
                 "east": {
                   "uv": [
-                    9.0,
-                    28.0
+                    54.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -29420,8 +28780,8 @@
                 },
                 "north": {
                   "uv": [
-                    15.0,
-                    28.0
+                    75.0,
+                    26.0
                   ],
                   "uv_size": [
                     2.0,
@@ -29431,7 +28791,7 @@
                 },
                 "west": {
                   "uv": [
-                    116.0,
+                    63.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29442,7 +28802,7 @@
                 },
                 "south": {
                   "uv": [
-                    119.0,
+                    57.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29472,44 +28832,44 @@
             {
               "origin": [
                 -2.5,
-                23.25,
-                -4.75
+                22.75,
+                -4.0
               ],
               "size": [
                 5.0,
                 4.0,
-                1.75
+                3.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    32.0,
-                    22.0
+                    47.0,
+                    17.0
                   ],
                   "uv_size": [
                     5.0,
-                    1.75
+                    3.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    38.0,
-                    23.75
+                    23.0,
+                    20.0
                   ],
                   "uv_size": [
                     5.0,
-                    -1.75
+                    -3.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    13.0,
+                    19.0,
                     17.0
                   ],
                   "uv_size": [
-                    1.75,
+                    3.0,
                     4.0
                   ],
                   "material_instance": "quail"
@@ -29527,18 +28887,18 @@
                 },
                 "west": {
                   "uv": [
-                    10.25,
+                    15.0,
                     17.0
                   ],
                   "uv_size": [
-                    1.75,
+                    3.0,
                     4.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    123.0,
+                    95.0,
                     0.0
                   ],
                   "uv_size": [
@@ -29552,44 +28912,44 @@
             {
               "origin": [
                 -2.0,
-                22.75,
-                -4.7
+                26.75,
+                -4.0
               ],
               "size": [
                 4.0,
                 1.0,
-                1.65
+                2.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    44.0,
+                    11.0,
                     22.0
                   ],
                   "uv_size": [
                     4.0,
-                    1.75
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    64.0,
-                    23.75
+                    6.0,
+                    24.0
                   ],
                   "uv_size": [
                     4.0,
-                    -1.75
+                    -2.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    113.0,
+                    51.0,
                     26.0
                   ],
                   "uv_size": [
-                    1.75,
+                    2.0,
                     1.0
                   ],
                   "material_instance": "quail"
@@ -29607,18 +28967,18 @@
                 },
                 "west": {
                   "uv": [
-                    104.25,
+                    69.0,
                     26.0
                   ],
                   "uv_size": [
-                    1.75,
+                    2.0,
                     1.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    45.0,
+                    10.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29632,78 +28992,78 @@
             {
               "origin": [
                 -2.0,
-                24.25,
-                -2.5
+                22.25,
+                -3.95
               ],
               "size": [
                 4.0,
-                2.0,
-                1.0
+                1.0,
+                1.95
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    20.0,
-                    26.0
+                    16.0,
+                    22.0
                   ],
                   "uv_size": [
                     4.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    5.0,
-                    27.0
+                    21.0,
+                    24.0
                   ],
                   "uv_size": [
                     4.0,
-                    -1.0
+                    -2.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    96.0,
-                    22.0
+                    60.0,
+                    26.0
                   ],
                   "uv_size": [
-                    1.0,
-                    2.0
+                    2.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    69.0,
-                    22.0
+                    0,
+                    0
                   ],
                   "uv_size": [
-                    4.0,
-                    2.0
+                    16,
+                    16
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    100.0,
-                    22.0
+                    66.0,
+                    26.0
                   ],
                   "uv_size": [
-                    1.0,
-                    2.0
+                    2.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    59.0,
+                    109.0,
                     22.0
                   ],
                   "uv_size": [
                     4.0,
-                    2.0
+                    1.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29712,18 +29072,18 @@
             {
               "origin": [
                 -1.5,
-                25.25,
-                -2.0
+                24.25,
+                -1.0
               ],
               "size": [
                 3.0,
-                0.95,
+                2.0,
                 1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    80.0,
+                    39.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29734,7 +29094,7 @@
                 },
                 "down": {
                   "uv": [
-                    88.0,
+                    47.0,
                     27.0
                   ],
                   "uv_size": [
@@ -29745,45 +29105,45 @@
                 },
                 "east": {
                   "uv": [
-                    84.0,
-                    28.0
+                    60.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    60.0,
-                    26.0
+                    30.0,
+                    22.0
                   ],
                   "uv_size": [
                     3.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    74.0,
-                    28.0
+                    48.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    72.0,
-                    26.0
+                    38.0,
+                    22.0
                   ],
                   "uv_size": [
                     3.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29791,9 +29151,249 @@
             },
             {
               "origin": [
-                -1.0,
-                26.25,
-                -1.0
+                2.5,
+                23.75,
+                -4.0
+              ],
+              "size": [
+                1.0,
+                3.0,
+                3.0
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    127.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    123.0,
+                    20.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    111.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "uv_size": [
+                    16,
+                    16
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    99.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    119.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                -3.5,
+                23.75,
+                -4.0
+              ],
+              "size": [
+                1.0,
+                3.0,
+                3.0
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    127.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    123.0,
+                    20.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    111.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "uv_size": [
+                    16,
+                    16
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    99.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    119.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    3.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                0.5,
+                21.75,
+                -3.9
+              ],
+              "size": [
+                1.0,
+                2.0,
+                0.9
+              ],
+              "uv": {
+                "up": {
+                  "uv": [
+                    97.0,
+                    26.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "down": {
+                  "uv": [
+                    83.0,
+                    27.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -1.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "east": {
+                  "uv": [
+                    58.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    2.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "north": {
+                  "uv": [
+                    50.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    2.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "west": {
+                  "uv": [
+                    54.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    2.0
+                  ],
+                  "material_instance": "quail"
+                },
+                "south": {
+                  "uv": [
+                    56.0,
+                    22.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    2.0
+                  ],
+                  "material_instance": "quail"
+                }
+              }
+            },
+            {
+              "origin": [
+                0.0,
+                20.75,
+                -4.0
               ],
               "size": [
                 2.0,
@@ -29803,7 +29403,7 @@
               "uv": {
                 "up": {
                   "uv": [
-                    122.0,
+                    72.0,
                     26.0
                   ],
                   "uv_size": [
@@ -29814,7 +29414,7 @@
                 },
                 "down": {
                   "uv": [
-                    107.0,
+                    78.0,
                     27.0
                   ],
                   "uv_size": [
@@ -29825,92 +29425,12 @@
                 },
                 "east": {
                   "uv": [
-                    86.0,
-                    28.0
+                    89.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
                     1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    6.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    42.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    12.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    2.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                2.5,
-                24.25,
-                -4.75
-              ],
-              "size": [
-                1.0,
-                3.0,
-                2.75
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    4.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    2.75
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    16.0,
-                    24.75
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -2.75
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    112.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    2.75,
-                    3.0
                   ],
                   "material_instance": "quail"
                 },
@@ -29927,23 +29447,23 @@
                 },
                 "west": {
                   "uv": [
-                    124.25,
-                    17.0
+                    95.0,
+                    26.0
                   ],
                   "uv_size": [
-                    2.75,
-                    3.0
+                    1.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    2.0,
-                    22.0
+                    57.0,
+                    26.0
                   ],
                   "uv_size": [
-                    1.0,
-                    3.0
+                    2.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 }
@@ -29951,20 +29471,20 @@
             },
             {
               "origin": [
-                2.55,
-                24.75,
-                -2.5
+                -1.5,
+                21.75,
+                -3.9
               ],
               "size": [
-                0.9,
                 1.0,
-                1.0
+                2.0,
+                0.9
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    78.0,
-                    28.0
+                    97.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29974,8 +29494,8 @@
                 },
                 "down": {
                   "uv": [
-                    48.0,
-                    29.0
+                    83.0,
+                    27.0
                   ],
                   "uv_size": [
                     1.0,
@@ -29985,45 +29505,45 @@
                 },
                 "east": {
                   "uv": [
-                    64.0,
-                    28.0
+                    58.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "north": {
                   "uv": [
-                    62.0,
-                    28.0
+                    50.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "west": {
                   "uv": [
-                    70.0,
-                    28.0
+                    54.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 },
                 "south": {
                   "uv": [
-                    28.0,
-                    28.0
+                    56.0,
+                    22.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
+                    2.0
                   ],
                   "material_instance": "quail"
                 }
@@ -30031,46 +29551,46 @@
             },
             {
               "origin": [
-                -3.0,
-                24.25,
-                -4.7
+                -2.0,
+                20.75,
+                -4.0
               ],
               "size": [
+                2.0,
                 1.0,
-                2.95,
-                2.7
+                1.0
               ],
               "uv": {
                 "up": {
                   "uv": [
-                    6.0,
-                    22.0
+                    72.0,
+                    26.0
                   ],
                   "uv_size": [
-                    1.0,
-                    2.75
+                    2.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
                 "down": {
                   "uv": [
-                    22.0,
-                    24.75
+                    78.0,
+                    27.0
                   ],
                   "uv_size": [
-                    1.0,
-                    -2.75
+                    2.0,
+                    -1.0
                   ],
                   "material_instance": "quail"
                 },
                 "east": {
                   "uv": [
-                    120.0,
-                    17.0
+                    89.0,
+                    26.0
                   ],
                   "uv_size": [
-                    2.75,
-                    3.0
+                    1.0,
+                    1.0
                   ],
                   "material_instance": "quail"
                 },
@@ -30087,88 +29607,8 @@
                 },
                 "west": {
                   "uv": [
-                    116.25,
-                    17.0
-                  ],
-                  "uv_size": [
-                    2.75,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "south": {
-                  "uv": [
-                    24.0,
-                    22.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    3.0
-                  ],
-                  "material_instance": "quail"
-                }
-              }
-            },
-            {
-              "origin": [
-                -2.95,
-                24.75,
-                -2.5
-              ],
-              "size": [
-                0.9,
-                1.0,
-                1.0
-              ],
-              "uv": {
-                "up": {
-                  "uv": [
-                    78.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "down": {
-                  "uv": [
-                    48.0,
-                    29.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "east": {
-                  "uv": [
-                    64.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "north": {
-                  "uv": [
-                    62.0,
-                    28.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    1.0
-                  ],
-                  "material_instance": "quail"
-                },
-                "west": {
-                  "uv": [
-                    70.0,
-                    28.0
+                    95.0,
+                    26.0
                   ],
                   "uv_size": [
                     1.0,
@@ -30178,11 +29618,11 @@
                 },
                 "south": {
                   "uv": [
-                    28.0,
-                    28.0
+                    57.0,
+                    26.0
                   ],
                   "uv_size": [
-                    1.0,
+                    2.0,
                     1.0
                   ],
                   "material_instance": "quail"
@@ -30533,29 +29973,18 @@
               ],
               "size": [
                 5.0182,
-                0.7864,
+                0.7945,
                 2.5091
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    0.0,
-                    44.0
+                    79.0,
+                    48.0
                   ],
                   "uv_size": [
                     6.0,
-                    3.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    114.0,
-                    42.0
-                  ],
-                  "uv_size": [
-                    6.0,
-                    -3.0
+                    1.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -30570,9 +29999,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    79.0,
+                    72.0,
                     48.0
                   ],
                   "uv_size": [
@@ -30592,14 +30021,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    72.0,
-                    48.0
+                    0.0,
+                    44.0
                   ],
                   "uv_size": [
                     6.0,
-                    1.0
+                    3.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    114.0,
+                    42.0
+                  ],
+                  "uv_size": [
+                    6.0,
+                    -3.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -30928,34 +30368,23 @@
             {
               "origin": [
                 -1.2545,
-                29.4409,
+                29.4327,
                 -21.7455
               ],
               "size": [
                 2.5091,
-                0.7864,
+                0.7945,
                 2.5091
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    57.0,
-                    44.0
+                    43.0,
+                    50.0
                   ],
                   "uv_size": [
                     3.0,
-                    3.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    37.0,
-                    47.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    -3.0
+                    1.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -30970,9 +30399,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    43.0,
+                    79.0,
                     50.0
                   ],
                   "uv_size": [
@@ -30992,14 +30421,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    79.0,
-                    50.0
+                    57.0,
+                    44.0
                   ],
                   "uv_size": [
                     3.0,
-                    1.0
+                    3.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    37.0,
+                    47.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    -3.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -31328,34 +30768,23 @@
             {
               "origin": [
                 1.2545,
-                18.9864,
+                18.9782,
                 -11.2909
               ],
               "size": [
                 0.8364,
-                2.4591,
-                0.7864
+                2.4673,
+                0.7945
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    93.0,
-                    50.0
+                    65.0,
+                    44.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    91.0,
-                    51.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
+                    3.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -31370,9 +30799,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    65.0,
+                    73.0,
                     44.0
                   ],
                   "uv_size": [
@@ -31392,14 +30821,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    73.0,
-                    44.0
+                    93.0,
+                    50.0
                   ],
                   "uv_size": [
                     1.0,
-                    3.0
+                    1.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    91.0,
+                    51.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -1.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -31488,34 +30928,23 @@
             {
               "origin": [
                 -2.5091,
-                18.9864,
+                18.9782,
                 -11.2909
               ],
               "size": [
                 0.8364,
-                2.4591,
-                0.7864
+                2.4673,
+                0.7945
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    93.0,
-                    50.0
+                    65.0,
+                    44.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    91.0,
-                    51.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
+                    3.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -31530,9 +30959,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    65.0,
+                    73.0,
                     44.0
                   ],
                   "uv_size": [
@@ -31552,14 +30981,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    73.0,
-                    44.0
+                    93.0,
+                    50.0
                   ],
                   "uv_size": [
                     1.0,
-                    3.0
+                    1.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    91.0,
+                    51.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -1.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -31989,29 +31429,18 @@
               ],
               "size": [
                 5.0182,
-                0.7864,
+                0.7945,
                 2.5091
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    107.0,
-                    39.0
+                    86.0,
+                    48.0
                   ],
                   "uv_size": [
                     6.0,
-                    3.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    121.0,
-                    42.0
-                  ],
-                  "uv_size": [
-                    6.0,
-                    -3.0
+                    1.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -32026,9 +31455,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    86.0,
+                    93.0,
                     48.0
                   ],
                   "uv_size": [
@@ -32048,14 +31477,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    93.0,
-                    48.0
+                    107.0,
+                    39.0
                   ],
                   "uv_size": [
                     6.0,
-                    1.0
+                    3.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    121.0,
+                    42.0
+                  ],
+                  "uv_size": [
+                    6.0,
+                    -3.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -32464,34 +31904,23 @@
             {
               "origin": [
                 1.2545,
-                18.9864,
+                18.9782,
                 -11.2909
               ],
               "size": [
                 0.8364,
-                2.4591,
-                0.7864
+                2.4673,
+                0.7945
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    93.0,
-                    50.0
+                    65.0,
+                    44.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    91.0,
-                    51.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
+                    3.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -32506,9 +31935,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    65.0,
+                    73.0,
                     44.0
                   ],
                   "uv_size": [
@@ -32528,14 +31957,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    73.0,
-                    44.0
+                    93.0,
+                    50.0
                   ],
                   "uv_size": [
                     1.0,
-                    3.0
+                    1.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    91.0,
+                    51.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -1.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -32624,34 +32064,23 @@
             {
               "origin": [
                 -2.5091,
-                18.9864,
+                18.9782,
                 -11.2909
               ],
               "size": [
                 0.8364,
-                2.4591,
-                0.7864
+                2.4673,
+                0.7945
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    93.0,
-                    50.0
+                    65.0,
+                    44.0
                   ],
                   "uv_size": [
                     1.0,
-                    1.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    91.0,
-                    51.0
-                  ],
-                  "uv_size": [
-                    1.0,
-                    -1.0
+                    3.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -32666,9 +32095,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    65.0,
+                    73.0,
                     44.0
                   ],
                   "uv_size": [
@@ -32688,14 +32117,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    73.0,
-                    44.0
+                    93.0,
+                    50.0
                   ],
                   "uv_size": [
                     1.0,
-                    3.0
+                    1.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    91.0,
+                    51.0
+                  ],
+                  "uv_size": [
+                    1.0,
+                    -1.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -33045,29 +32485,18 @@
               ],
               "size": [
                 5.0182,
-                0.7864,
+                0.7945,
                 2.5091
               ],
               "uv": {
-                "up": {
+                "north": {
                   "uv": [
-                    107.0,
-                    39.0
+                    86.0,
+                    48.0
                   ],
                   "uv_size": [
                     6.0,
-                    3.0
-                  ],
-                  "material_instance": "turkey"
-                },
-                "down": {
-                  "uv": [
-                    121.0,
-                    42.0
-                  ],
-                  "uv_size": [
-                    6.0,
-                    -3.0
+                    1.0
                   ],
                   "material_instance": "turkey"
                 },
@@ -33082,9 +32511,9 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "north": {
+                "south": {
                   "uv": [
-                    86.0,
+                    93.0,
                     48.0
                   ],
                   "uv_size": [
@@ -33104,14 +32533,25 @@
                   ],
                   "material_instance": "turkey"
                 },
-                "south": {
+                "up": {
                   "uv": [
-                    93.0,
-                    48.0
+                    107.0,
+                    39.0
                   ],
                   "uv_size": [
                     6.0,
-                    1.0
+                    3.0
+                  ],
+                  "material_instance": "turkey"
+                },
+                "down": {
+                  "uv": [
+                    121.0,
+                    42.0
+                  ],
+                  "uv_size": [
+                    6.0,
+                    -3.0
                   ],
                   "material_instance": "turkey"
                 }
@@ -33696,15 +33136,59 @@
             {
               "origin": [
                 -1.5,
-                27.5,
+                27.55,
                 -19.0
               ],
               "size": [
                 3.0,
-                10.0,
+                9.95,
                 3.0
               ],
               "uv": {
+                "north": {
+                  "uv": [
+                    85.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    10.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "east": {
+                  "uv": [
+                    81.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    10.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "south": {
+                  "uv": [
+                    77.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    10.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "west": {
+                  "uv": [
+                    89.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    3.0,
+                    10.0
+                  ],
+                  "material_instance": "alpaca"
+                },
                 "up": {
                   "uv": [
                     33.0,
@@ -33726,50 +33210,6 @@
                     -3.0
                   ],
                   "material_instance": "alpaca"
-                },
-                "east": {
-                  "uv": [
-                    81.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    10.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "north": {
-                  "uv": [
-                    85.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    10.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "west": {
-                  "uv": [
-                    89.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    10.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "south": {
-                  "uv": [
-                    77.0,
-                    0.0
-                  ],
-                  "uv_size": [
-                    3.0,
-                    10.0
-                  ],
-                  "material_instance": "alpaca"
                 }
               }
             },
@@ -33785,6 +33225,50 @@
                 4.95
               ],
               "uv": {
+                "north": {
+                  "uv": [
+                    120.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "east": {
+                  "uv": [
+                    108.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    5.0,
+                    4.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "south": {
+                  "uv": [
+                    0.0,
+                    25.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "alpaca"
+                },
+                "west": {
+                  "uv": [
+                    114.0,
+                    17.0
+                  ],
+                  "uv_size": [
+                    5.0,
+                    4.0
+                  ],
+                  "material_instance": "alpaca"
+                },
                 "up": {
                   "uv": [
                     103.0,
@@ -33804,50 +33288,6 @@
                   "uv_size": [
                     4.0,
                     -5.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "east": {
-                  "uv": [
-                    108.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    4.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "north": {
-                  "uv": [
-                    120.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    4.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "west": {
-                  "uv": [
-                    114.0,
-                    17.0
-                  ],
-                  "uv_size": [
-                    5.0,
-                    4.0
-                  ],
-                  "material_instance": "alpaca"
-                },
-                "south": {
-                  "uv": [
-                    0.0,
-                    25.0
-                  ],
-                  "uv_size": [
-                    4.0,
-                    4.0
                   ],
                   "material_instance": "alpaca"
                 }
