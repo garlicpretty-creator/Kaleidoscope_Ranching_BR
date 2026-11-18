@@ -23,6 +23,8 @@
         "eat": "animation.kaleidoscope_ranching.buffalo.eat",
         "drink": "animation.kaleidoscope_ranching.buffalo.drink",
         "petted": "animation.kaleidoscope_ranching.buffalo.petted",
+        "graze": "animation.kaleidoscope_ranching.buffalo.graze",
+        "chew": "animation.kaleidoscope_ranching.buffalo.chew",
         "actions": "controller.animation.kaleidoscope_ranching.buffalo.actions"
       },
       "scripts": {

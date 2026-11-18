@@ -24,6 +24,9 @@ export const AMBIENT = {
   "kaleidoscope_ranching:goose": "mob.chicken.say",
   "kaleidoscope_ranching:buffalo": "mob.cow.say",
   "kaleidoscope_ranching:yak": "mob.cow.say",
+  "kaleidoscope_ranching:quail": "mob.chicken.say",
+  "kaleidoscope_ranching:turkey": "mob.chicken.say",
+  "kaleidoscope_ranching:alpaca": "mob.llama.idle",
   "minecraft:wolf": "mob.wolf.growl",
 };
 

@@ -23,4 +23,14 @@ export const STATION_FRAMES = {
   butter_churn: { bone: "plunger", frames: 4, ticks: 3, cycles: 3 },
   // The wheel turns and the treadle rocks when wool goes on by hand.
   spinning_wheel: { bone: "wheel", frames: 4, ticks: 2, cycles: 4 },
+  // 1.1 追加 方塊動畫 (docs/1.1_追加企劃書.md 四)
+  // The blade comes down once when the chaff cutter's crafting grid opens.
+  chaff_cutter: { bone: "blade", frames: 2, ticks: 4, cycles: 1 },
+  // The crank turns twice when milk goes in by hand.
+  cream_separator: { bone: "crank", frames: 4, ticks: 2, cycles: 2 },
+  // The beater swings in and out three times when yarn goes on by hand.
+  weaving_loom: { bone: "beater", frames: 4, ticks: 2, cycles: 3 },
 };
+
+/** World setting (observation notebook): block animations and particles on or off. */
+export const CFG_BLOCK_FX = "kr:cfg:block_fx";

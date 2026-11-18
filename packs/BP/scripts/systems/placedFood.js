@@ -21,6 +21,7 @@ import { rid } from "../core/ids.js";
 import { give } from "../core/inventory.js";
 import { PLACED_FOODS } from "../data/placedFoods.js";
 import { STATE_CUT } from "./cheeseWheel.js";
+import { STEAM_SECONDS, addFx } from "./blockFx.js";
 
 /** {block id: row} for the dishes eaten in place. */
 export const EATEN = Object.fromEntries(PLACED_FOODS.filter((food) => food.eat).map((food) => [rid(food.block), food]));
@@ -36,6 +37,11 @@ export function leftovers(eaten, blockId) {
 }
 
 export const placedFoodComponent = {
+  // 1.1 追加 方塊動畫: a dish just set down steams for a while (systems/blockFx.js).
+  onPlace({ block }) {
+    if (EATEN[block.typeId]) addFx(block, "steam", { seconds: STEAM_SECONDS });
+  },
+
   onPlayerInteract({ block, player }) {
     const food = EATEN[block.typeId];
     if (!player || !food) return;

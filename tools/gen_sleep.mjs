@@ -47,7 +47,7 @@ const RP = join(root, "packs/RP");
 const POSE = {
   cow: "lie", buffalo: "lie", yak: "lie", sheep: "lie", goat: "lie",
   pig: "side",
-  chicken: "roost", duck: "roost", goose: "roost",
+  chicken: "roost", duck: "roost", goose: "roost", quail: "roost", turkey: "roost",
   rabbit: "curl",
 };
 

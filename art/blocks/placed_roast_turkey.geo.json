@@ -1,0 +1,273 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.placed_roast_turkey",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "platter",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                0,
+                -5
+              ],
+              "size": [
+                12,
+                1,
+                10
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "piece_1",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                1,
+                0
+              ],
+              "size": [
+                3,
+                4,
+                3
+              ],
+              "uv": [
+                44,
+                0
+              ]
+            }
+          ],
+          "parent": "platter"
+        },
+        {
+          "name": "piece_2",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                1,
+                0
+              ],
+              "size": [
+                2,
+                4,
+                3
+              ],
+              "uv": [
+                0,
+                11
+              ]
+            }
+          ],
+          "parent": "platter"
+        },
+        {
+          "name": "piece_3",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                1,
+                1,
+                0
+              ],
+              "size": [
+                3,
+                4,
+                3
+              ],
+              "uv": [
+                10,
+                11
+              ]
+            }
+          ],
+          "parent": "platter"
+        },
+        {
+          "name": "piece_4",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                1,
+                -3
+              ],
+              "size": [
+                3,
+                4,
+                3
+              ],
+              "uv": [
+                22,
+                11
+              ]
+            },
+            {
+              "origin": [
+                -5,
+                1,
+                -4
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                34,
+                11
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                1,
+                -4
+              ],
+              "size": [
+                1,
+                1,
+                1
+              ],
+              "uv": [
+                42,
+                11
+              ]
+            }
+          ],
+          "parent": "platter"
+        },
+        {
+          "name": "piece_5",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                1,
+                -3
+              ],
+              "size": [
+                2,
+                4,
+                3
+              ],
+              "uv": [
+                46,
+                11
+              ]
+            }
+          ],
+          "parent": "platter"
+        },
+        {
+          "name": "piece_6",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                1,
+                1,
+                -3
+              ],
+              "size": [
+                3,
+                4,
+                3
+              ],
+              "uv": [
+                0,
+                18
+              ]
+            },
+            {
+              "origin": [
+                3,
+                1,
+                -4
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                12,
+                18
+              ]
+            },
+            {
+              "origin": [
+                5,
+                1,
+                -4
+              ],
+              "size": [
+                1,
+                1,
+                1
+              ],
+              "uv": [
+                20,
+                18
+              ]
+            }
+          ],
+          "parent": "platter"
+        }
+      ]
+    }
+  ]
+}

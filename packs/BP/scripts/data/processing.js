@@ -172,6 +172,11 @@ export const VANILLA_COOKING = [
   { id: "furnace/cooked_yak_meat", kind: "furnace", input: "yak_meat", output: "cooked_yak_meat" },
   { id: "furnace/cooked_duck_meat", kind: "furnace", input: "duck_meat", output: "cooked_duck_meat" },
   { id: "furnace/cooked_goose_meat", kind: "furnace", input: "goose_meat", output: "cooked_goose_meat" },
+  // 1.1 追加 新動物
+  { id: "furnace/cooked_quail_meat", kind: "furnace", input: "quail_meat", output: "cooked_quail_meat" },
+  { id: "furnace/cooked_turkey_meat", kind: "furnace", input: "turkey_meat", output: "cooked_turkey_meat" },
+  { id: "furnace/cooked_turkey_breast", kind: "furnace", input: "turkey_breast", output: "cooked_turkey_breast" },
+  { id: "furnace/cooked_alpaca_meat", kind: "furnace", input: "alpaca_meat", output: "cooked_alpaca_meat" },
 ];
 
 // Raw/cooked pairs sent to Cookery through `kaleidoscope_cookery:register_wok_meat`.
@@ -180,4 +185,9 @@ export const WOK_MEATS = [
   { raw: "yak_meat", cooked: "cooked_yak_meat" },
   { raw: "duck_meat", cooked: "cooked_duck_meat" },
   { raw: "goose_meat", cooked: "cooked_goose_meat" },
+  // 1.1 追加 新動物
+  { raw: "quail_meat", cooked: "cooked_quail_meat" },
+  { raw: "turkey_meat", cooked: "cooked_turkey_meat" },
+  { raw: "turkey_breast", cooked: "cooked_turkey_breast" },
+  { raw: "alpaca_meat", cooked: "cooked_alpaca_meat" },
 ];

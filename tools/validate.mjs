@@ -517,7 +517,7 @@ for (const path of walk(join(bp, "blocks")).filter((p) => p.endsWith(".json"))) 
 {
   const QUAD = ["leg_fl", "leg_fr", "leg_bl", "leg_br"];
   const BIRD = ["leg_left", "leg_right", "wing_left", "wing_right"];
-  const LIMBS = { cow: QUAD, buffalo: QUAD, yak: QUAD, sheep: QUAD, goat: QUAD, pig: QUAD, rabbit: QUAD, chicken: BIRD, duck: BIRD, goose: BIRD };
+  const LIMBS = { cow: QUAD, buffalo: QUAD, yak: QUAD, sheep: QUAD, goat: QUAD, pig: QUAD, rabbit: QUAD, chicken: BIRD, duck: BIRD, goose: BIRD, quail: BIRD, turkey: BIRD, alpaca: QUAD };
   const geoBones = new Map();
   for (const path of walk(join(rp, "models", "entity")).filter((p) => p.endsWith(".json"))) {
     for (const geo of readJson(path)["minecraft:geometry"] ?? []) geoBones.set(geo.description.identifier, geo.bones ?? []);

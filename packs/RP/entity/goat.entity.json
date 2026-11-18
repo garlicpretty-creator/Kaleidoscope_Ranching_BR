@@ -23,6 +23,8 @@
         "eat": "animation.kaleidoscope_ranching.goat.eat",
         "drink": "animation.kaleidoscope_ranching.goat.drink",
         "petted": "animation.kaleidoscope_ranching.goat.petted",
+        "graze": "animation.kaleidoscope_ranching.goat.graze",
+        "chew": "animation.kaleidoscope_ranching.goat.chew",
         "actions": "controller.animation.kaleidoscope_ranching.goat.actions"
       },
       "scripts": {

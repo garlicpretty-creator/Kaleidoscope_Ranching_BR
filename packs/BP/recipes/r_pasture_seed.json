@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_pasture_seed"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:alfalfa_seeds"
+      },
+      {
+        "item": "minecraft:wheat_seeds"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:pasture_seed",
+      "count": 2
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:pasture_seed"
+      }
+    ]
+  }
+}

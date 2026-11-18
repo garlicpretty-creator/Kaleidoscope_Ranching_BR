@@ -86,6 +86,25 @@
           ]
         }
       }
+    },
+    "animation.kaleidoscope_ranching.sheep.chew": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "4 + math.sin(q.anim_time * 540) * 2",
+            "math.sin(q.anim_time * 270) * 4",
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "4 + math.sin(q.anim_time * 540) * 2",
+            "math.sin(q.anim_time * 270) * 4",
+            0
+          ]
+        }
+      }
     }
   }
 }

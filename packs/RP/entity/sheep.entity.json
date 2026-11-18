@@ -69,6 +69,7 @@
         "drink": "animation.kaleidoscope_ranching.sheep.drink",
         "petted": "animation.kaleidoscope_ranching.sheep.petted",
         "graze": "animation.kaleidoscope_ranching.sheep.graze",
+        "chew": "animation.kaleidoscope_ranching.sheep.chew",
         "actions": "controller.animation.kaleidoscope_ranching.sheep.actions"
       },
       "scripts": {

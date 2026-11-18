@@ -8,7 +8,8 @@
 // - groomProduct:  occasional drop when brushed (M2's species.js decides the actual brush drops).
 // - treat:         favourite treat, owned by M2 (data/species.js).
 // - largeCarcass:  large carcasses do not stack and remember the animal's sex (males yield more).
-// - biomes:        natural spawn biome tags for animals that have no vanilla counterpart.
+// - biomes:        natural spawn biome tags for animals that have no vanilla counterpart
+//                  (descriptive; the spawn rules come from tools/gen_entities.mjs SPAWN).
 // - breedItems:    fed to an adult to put it in love (gestation species only; birds breed through fertilized eggs).
 // - temptItems:    items the animal follows.
 //
@@ -179,6 +180,57 @@ export const ANIMALS = [
     largeCarcass: true,
     maleTrait: "thicker horns, longer coat",
     biomes: ["mountain"],
+  },
+  // 1.1 追加 新動物 (docs/1.1_追加企劃書.md 二)
+  {
+    id: "quail",
+    breedItems: [],
+    temptItems: ["minecraft:wheat_seeds", "mixed_feed", "concentrate_feed"],
+    replaces: null,
+    reproduction: "egg",
+    days: 1,
+    dailyProduct: { item: "quail_egg", via: "nest_box" },
+    eggsPerDay: 2,
+    fertilizedEgg: "fertilized_quail_egg",
+    groomProduct: null,
+    treat: "grain_cake",
+    carcass: "quail_carcass",
+    largeCarcass: false,
+    maleTrait: "chestnut throat",
+    biomes: ["plains", "savanna"],
+  },
+  {
+    id: "turkey",
+    breedItems: [],
+    temptItems: ["minecraft:wheat_seeds", "minecraft:wheat", "mixed_feed", "concentrate_feed"],
+    replaces: null,
+    reproduction: "egg",
+    days: INCUBATION_DAYS,
+    dailyProduct: { item: "turkey_egg", via: "nest_box" },
+    layEvery: 2,
+    fertilizedEgg: "fertilized_turkey_egg",
+    groomProduct: "minecraft:feather",
+    treat: "grain_cake",
+    carcass: "turkey_carcass",
+    largeCarcass: false,
+    maleTrait: "larger, red wattle and breast tuft; fans its tail",
+    biomes: ["forest"],
+  },
+  {
+    id: "alpaca",
+    breedItems: ["minecraft:wheat", "forage", "mixed_feed", "concentrate_feed"],
+    temptItems: ["minecraft:wheat", "forage", "mixed_feed", "concentrate_feed"],
+    replaces: null,
+    reproduction: "gestation",
+    days: GESTATION_DAYS,
+    dailyProduct: null,
+    groomProduct: "alpaca_wool",
+    treat: "alfalfa_cake",
+    carcass: "alpaca_carcass",
+    largeCarcass: true,
+    coldHardy: true,
+    maleTrait: "larger, longer neck fleece; drives hostile mobs away from the pen",
+    biomes: ["mountain", "meadow"],
   },
 ];
 

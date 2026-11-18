@@ -21,6 +21,7 @@
         "eat": "animation.kaleidoscope_ranching.goose.eat",
         "drink": "animation.kaleidoscope_ranching.goose.drink",
         "petted": "animation.kaleidoscope_ranching.goose.petted",
+        "graze": "animation.kaleidoscope_ranching.goose.graze",
         "actions": "controller.animation.kaleidoscope_ranching.goose.actions"
       },
       "scripts": {

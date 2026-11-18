@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "fertilized_turkey_egg",
+    "metalness_emissive_roughness_subsurface": "fertilized_turkey_egg_mers",
+    "normal": "fertilized_turkey_egg_normal"
+  }
+}

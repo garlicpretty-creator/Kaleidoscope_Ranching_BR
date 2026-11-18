@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "pasture_seed",
+    "metalness_emissive_roughness_subsurface": "pasture_seed_mers",
+    "normal": "pasture_seed_normal"
+  }
+}

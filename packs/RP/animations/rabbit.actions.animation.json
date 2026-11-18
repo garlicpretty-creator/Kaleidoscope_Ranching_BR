@@ -85,6 +85,32 @@
           ]
         }
       }
+    },
+    "animation.kaleidoscope_ranching.rabbit.graze": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "18 + math.sin(q.anim_time * 1440) * 3",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "18 + math.sin(q.anim_time * 1440) * 3",
+            0,
+            0
+          ]
+        },
+        "a_ears": {
+          "rotation": [
+            12,
+            0,
+            0
+          ]
+        }
+      }
     }
   }
 }

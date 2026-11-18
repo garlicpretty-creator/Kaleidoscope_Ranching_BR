@@ -259,6 +259,17 @@ def horn_decor():
     return Model("geometry.kaleidoscope_ranching.horn_decor", bones, cubes, 64, 64)
 
 
+def pasture_post():
+    # 1.1 追加: a post with a small sign nailed near the top (stand-in until the hand-made model).
+    bones = [Bone("post", None, (0, 0, 0))]
+    cubes = [
+        Cube("post", "dark_wood", (-1.5, 0, -1.5), (3, 14, 3)),
+        Cube("post", "wood", (-4, 9, -2.5), (8, 4, 1)),
+        Cube("post", "dark_wood", (-2, 14, -2), (4, 1, 4)),
+    ]
+    return Model("geometry.kaleidoscope_ranching.pasture_post", bones, cubes, 32, 32)
+
+
 ALL = {
     "tanning_rack": tanning_rack,
     "meat_grinder": meat_grinder,
@@ -274,4 +285,5 @@ ALL = {
     "pen_gate": pen_gate,
     "pen_gate_top": pen_gate_top,
     "horn_decor": horn_decor,
+    "pasture_post": pasture_post,
 }

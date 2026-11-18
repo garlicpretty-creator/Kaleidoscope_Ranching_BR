@@ -6,8 +6,11 @@
 // ## token and do nothing. A world closed half way through loads with the part
 // ## in some other position, which is still a valid look; the next use resets it.
 
-import { system } from "@minecraft/server";
-import { FRAME_STATE, STATION_FRAMES } from "../data/stationFrames.js";
+import { system, world } from "@minecraft/server";
+import { CFG_BLOCK_FX, FRAME_STATE, STATION_FRAMES } from "../data/stationFrames.js";
+
+/** Block animations and particles (observation notebook settings). */
+export const blockFxEnabled = () => world.getDynamicProperty(CFG_BLOCK_FX) !== false;
 
 const tokens = new Map(); // block key → latest play
 
@@ -30,7 +33,7 @@ function setFrame(dimension, location, typeId, frame) {
 /** Plays the flip-book of the station at `block`, if it has one. Returns false when it has none. */
 export function playFrames(block) {
   const spec = STATION_FRAMES[block.typeId.replace(/^kaleidoscope_ranching:/, "")];
-  if (!spec) return false;
+  if (!spec || !blockFxEnabled()) return false;
   const { dimension, typeId } = block;
   const location = { ...block.location };
   const id = key(block);

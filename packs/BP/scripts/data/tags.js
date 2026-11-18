@@ -17,8 +17,8 @@ export const TAGGED = {
   offal: ["pork_liver", "pig_intestine", "chicken_gizzard", "duck_blood", "goose_liver", "beef_tripe", "cleaned_intestine", "cleaned_tripe"],
   mince: ["pork_mince", "beef_mince", "mutton_mince"],
   fleece: ["yak_hair"],
-  fine_fleece: ["goat_cashmere", "rabbit_fur"],
-  hide: ["raw_hide", "pig_skin"],
+  fine_fleece: ["goat_cashmere", "rabbit_fur", "alpaca_wool"],
+  hide: ["raw_hide", "pig_skin", "alpaca_hide"],
   tallow: ["beef_tallow", "mutton_tallow"],
 };
 

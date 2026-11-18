@@ -512,7 +512,11 @@ class Dimension {
     this.getBlock(location).setPermutation(permutation);
   }
   /** Only `includeTypes` filters are supported. */
-  getBlocks(volume, filter = {}) {
+  /** Players, optionally within maxDistance of location. */
+  getPlayers({ location, maxDistance } = {}) {
+    return this.entities.filter((entity) => entity instanceof Player && entity.isValid !== false && (!location || Math.hypot(entity.location.x - location.x, entity.location.y - location.y, entity.location.z - location.z) <= maxDistance));
+  }
+    getBlocks(volume, filter = {}) {
     const { from, to } = volume;
     const hits = [];
     for (const [key, permutation] of this.blocks) {

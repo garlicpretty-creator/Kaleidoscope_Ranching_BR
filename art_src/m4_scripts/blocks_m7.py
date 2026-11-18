@@ -17,7 +17,7 @@ from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
 from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
-from station_frames import crank, wheel
+from station_frames import crank, crank_z, shift, wheel
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -91,9 +91,9 @@ CREAM_SEPARATOR = [
         ("cream_can", [5, 2, -2], [3, 5, 3]),
         ("milk_jug", [-8, 2, -2], [3, 5, 4]),
         ("crank_axle", [-0.5, 5, -4], [1, 1, 2]),
-        ("crank", [-0.5, 3, -5], [1, 3, 1]),
-        ("grip", [-0.5, 3, -6], [1, 1, 1]),
     ]),
+    # 1.1 追加 方塊動畫: the crank turns when milk goes in (station_frames.py)
+    *crank_z("crank", "frame", -5, 0, 5.5, 2.5, knob_dz=-1),
     ("busy", "frame", [0, 14, 0], [
         ("cream", [-4, 14, -4], [8, 1, 8]),
     ]),
@@ -159,10 +159,11 @@ WEAVING_LOOM = [
         ("warp", [-5, 10, -4], [10, 1, 8]),
         ("warp_back", [-5, 11, 3], [10, 2, 1]),
         ("heddle", [-5, 9, 0], [10, 5, 1]),
-        ("beater", [-5, 8, -3], [10, 4, 1]),
         ("treadle", [-3, 0, -5], [2, 1, 9]),
         ("treadle", [1, 0, -5], [2, 1, 9]),
     ]),
+    # 1.1 追加 方塊動畫: the beater swings in and out when yarn goes on (station_frames.py)
+    *shift("beater", "frame", [("beater", [-5, 8, -3], [10, 4, 1])], [(0, 0, 0), (0, 0, -1), (0, 0, -2), (0, 0, -1)]),
     ("busy", "frame", [0, 10, -5], [
         ("cloth", [-5, 10.5, -4], [10, 1, 1]),
         ("cloth_roll", [-4, 8.5, -6.5], [8, 3, 3]),

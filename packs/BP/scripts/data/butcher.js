@@ -115,6 +115,30 @@ export const BUTCHER_TABLE = {
       { item: "goose_leg", count: [2, 2] },
     ],
   },
+  // 1.1 追加 新動物 (docs/1.1_追加企劃書.md 二)
+  quail_carcass: {
+    cuts: [
+      { item: "minecraft:feather", count: [1, 1], skin: true },
+      { item: "quail_meat", count: [1, 1] },
+    ],
+  },
+  turkey_carcass: {
+    cuts: [
+      { item: "minecraft:feather", count: [3, 3], skin: true },
+      { item: "turkey_leg", count: [2, 2] },
+      { item: "turkey_breast", count: [1, 1] },
+      { item: "turkey_meat", count: [1, 1] },
+      { item: "chicken_frame", count: [1, 1] },
+    ],
+  },
+  alpaca_carcass: {
+    cuts: [
+      { item: "alpaca_wool", count: [2, 2], skin: true, ifUnshorn: true },
+      { item: "alpaca_hide", count: [1, 1], skin: true },
+      { item: "alpaca_meat", count: [3, 3], maleBonus: 1 },
+      { item: "large_bone", count: [1, 1] },
+    ],
+  },
   rabbit_carcass: {
     cuts: [
       { item: "minecraft:rabbit_hide", count: [1, 1], skin: true },

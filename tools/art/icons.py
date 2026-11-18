@@ -301,11 +301,13 @@ def mark_heart(c):
 # --- Item table ---------------------------------------------------------------
 
 MILK = {"cow_milk": (246, 244, 236), "goat_milk": (250, 248, 240), "buffalo_milk": (244, 240, 226), "yak_milk": (240, 230, 206)}
-EGG = {"egg": ((232, 214, 182), None), "duck_egg": ((206, 228, 216), None), "goose_egg": ((246, 244, 236), (210, 206, 196))}
+EGG = {"egg": ((232, 214, 182), None), "duck_egg": ((206, 228, 216), None), "goose_egg": ((246, 244, 236), (210, 206, 196)),
+       "quail_egg": ((226, 214, 190), (96, 74, 54)), "turkey_egg": ((232, 214, 186), (170, 130, 100))}
 CARCASS = {
     "cow": ((170, 60, 56), True), "sheep": ((176, 76, 70), True), "goat": ((168, 72, 66), True), "pig": ((236, 160, 150), True),
     "chicken": ((244, 214, 190), False), "rabbit": ((196, 96, 90), False), "duck": ((236, 200, 176), False),
     "goose": ((240, 214, 190), False), "buffalo": ((150, 52, 50), True), "yak": ((150, 56, 52), True),
+    "quail": ((236, 196, 170), False), "turkey": ((238, 206, 180), False), "alpaca": ((170, 62, 58), True),
 }
 RAW = (196, 70, 64)
 COOKED = (140, 88, 54)
@@ -355,7 +357,12 @@ def draw(item_id):
         meat(c, COOKED, (196, 150, 110))
     elif base.endswith("_meat"):
         meat(c, RAW)
-    elif base in ("chicken_leg", "duck_leg", "goose_leg", "rabbit_leg", "lamb_leg"):
+    elif base == "whole_turkey":
+        # 1.1 追加: a plucked bird, ready for the oven
+        blob(c, (240, 206, 180), 6, 5)
+    elif base == "turkey_breast":
+        meat(c, (236, 186, 166))
+    elif base in ("chicken_leg", "duck_leg", "goose_leg", "rabbit_leg", "lamb_leg", "turkey_leg"):
         drumstick(c, (232, 170, 150) if base != "lamb_leg" else RAW)
     elif base == "chicken_wing":
         drumstick(c, (240, 196, 170))
@@ -369,6 +376,8 @@ def draw(item_id):
         blob(c, (236, 170, 160), 4, 5)
     elif base in ("large_bone", "chicken_frame"):
         bone(c)
+    elif base == "alpaca_hide":
+        sheet(c, (196, 160, 120), (226, 214, 190))
     elif base in ("raw_hide", "pig_skin"):
         sheet(c, (186, 130, 100) if base == "raw_hide" else (238, 176, 166))
     elif base == "sheep_skin":
@@ -379,8 +388,8 @@ def draw(item_id):
         jar(c, (250, 246, 236))
     elif base in ("cattle_horn", "billy_goat_horn"):
         horn(c, (220, 206, 176))
-    elif base in ("down", "yak_hair", "pig_bristle"):
-        fluff(c, {"down": (248, 248, 244), "yak_hair": (70, 56, 46), "pig_bristle": (196, 160, 140)}[base])
+    elif base in ("down", "yak_hair", "pig_bristle", "alpaca_wool"):
+        fluff(c, {"down": (248, 248, 244), "yak_hair": (70, 56, 46), "pig_bristle": (196, 160, 140), "alpaca_wool": (232, 220, 196)}[base])
     elif base in ("manure", "dried_yak_dung"):
         pile(c, (98, 72, 44) if base == "manure" else (150, 124, 88))
     elif base == "food_waste":
@@ -555,6 +564,9 @@ def draw(item_id):
     # --- 1.1 馱袋與奶酒 ---
     elif base == "pack_bag":
         sack(c, (130, 80, 46), (190, 160, 90))
+    elif base == "pasture_seed":
+        # 1.1 追加: a small seed pouch with green and tan seeds spilling out
+        sack(c, (176, 150, 104), (120, 170, 80))
     elif base in ("fresh_milk_bucket", "yak_milk_bucket"):
         c.fill({(x, y) for x in range(3, 13) for y in range(6, 14) if x - 3 >= (y - 6) // 4 and 12 - x >= (y - 6) // 4}, (168, 172, 178))
         c.fill(rect(4, 6, 11, 7), (250, 248, 240) if base == "fresh_milk_bucket" else (244, 226, 170))

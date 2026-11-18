@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "turkey_breast_sandwich",
+    "metalness_emissive_roughness_subsurface": "turkey_breast_sandwich_mers",
+    "normal": "turkey_breast_sandwich_normal"
+  }
+}

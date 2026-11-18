@@ -60,6 +60,7 @@ export const GUIDE_ALSO = {
   milking_pail: ["milk"],
   trough: ["feed"],
   hay_rack: ["feed"],
+  pasture_post: ["feed"],
 };
 
 /**
@@ -93,6 +94,7 @@ const BLOCK_ICONS = {
   salt_lick: M2_FACE("salt_lick"),
   compost_bin: M2_FACE("compost_bin_side"),
   hay_rack: "forage",
+  pasture_post: "pasture_seed",
   nest_box: "fertilized_chicken_egg",
   incubator: "fertilized_duck_egg",
   hitching_post: "lasso",
@@ -122,6 +124,7 @@ const BLOCK_ICONS = {
 const ANIMAL_ICONS = {
   cow: "cow_milk", sheep: "sheep_skin", goat: "goat_milk", pig: "pork_belly", chicken: "fertilized_chicken_egg",
   rabbit: "rabbit_fur", duck: "duck_egg", goose: "goose_egg", buffalo: "buffalo_milk", yak: "yak_milk",
+  quail: "quail_egg", turkey: "turkey_leg", alpaca: "alpaca_wool",
 };
 
 /** Texture path for an item or block id (without namespace), or a texture path as it is. */
@@ -271,6 +274,25 @@ export const GUIDE_TEXT = {
     ["吃穀粒類、鈣質飼料、混合飼料和精飼料；最愛穀物糕。", "Eats grain feed, calcium feed, mixed feed and concentrate; its favorite treat is the Grain Cake."],
     ["繁殖靠受精蛋：巢箱 8 格內有成年公鴨時，蛋有機會受精；受精蛋 2 天孵化。", "Ducks breed through eggs: with an adult drake within 8 blocks of the nest, eggs may be fertilized; they hatch in 2 days."],
   ],
+  // 1.1 追加 新動物
+  quail: [
+    ["新動物，出現在平原與莽原。體型小，不吃草，不放牧。", "A new animal of plains and savannas. Small; it does not graze."],
+    ["母鵪鶉每天在 8 格內的巢箱下 2 顆鵪鶉蛋。", "A female lays two Quail Eggs a day into a Nest Box within 8 blocks."],
+    ["吃穀粒類、鈣質飼料、混合飼料和精飼料。", "Eats grain feed, calcium feed, mixed feed and concentrate."],
+    ["繁殖靠受精蛋：巢箱 8 格內有成年公鵪鶉時，蛋有機會受精；受精蛋只要 1 天就孵化。", "Quail breed through eggs: with an adult cock within 8 blocks of the nest, eggs may be fertilized; they hatch in just 1 day."],
+  ],
+  turkey: [
+    ["新動物，出現在森林。公火雞較大，有紅色肉垂。", "A new animal of forests. The tom is larger, with a red wattle."],
+    ["母火雞每 2 天在 8 格內的巢箱下 1 顆火雞蛋。會在草場吃草，每天 1 格。", "A hen lays one Turkey Egg every two days into a Nest Box within 8 blocks. It grazes on a pasture, 1 grass a day."],
+    ["吃穀粒類、乾草類、鈣質飼料、混合飼料和精飼料。", "Eats grain, hay, calcium feed, mixed feed and concentrate."],
+    ["繁殖靠受精蛋：巢箱 8 格內有成年公火雞時，蛋有機會受精；受精蛋 2 天孵化。", "Turkeys breed through eggs: with an adult tom within 8 blocks of the nest, eggs may be fertilized; they hatch in 2 days."],
+  ],
+  alpaca: [
+    ["新動物，出現在草甸與風蝕丘陵。不怕冷；成年公羊駝會攻擊 8 格內的敵對生物（苦力怕除外），晚上也會守夜。", "A new animal of meadows and windswept hills. It does not mind the cold; an adult male attacks hostile mobs within 8 blocks (not creepers) and keeps watch at night."],
+    ["用剪刀剪毛得 1 到 2 份羊駝毛，不必宰殺；毛一天後長回來。會在草場吃草，每天 3 格。", "Shear it for 1 or 2 Alpaca Wool without harm; the fleece grows back in a day. It grazes on a pasture, 3 grass a day."],
+    ["吃乾草類、青貯料、混合飼料和精飼料。", "Eats hay, silage, mixed feed and concentrate."],
+    ["懷孕 3 天後生下小羊駝。", "A female carries for 3 days before the cria is born."],
+  ],
   goose: [
     ["新動物，出現在平原與河流。成年公鵝會攻擊 8 格內的敵對生物（苦力怕除外），晚上也會守夜：16 格內有敵對生物就醒來。", "A new animal of plains and rivers. An adult gander attacks hostile mobs within 8 blocks (not creepers) and keeps watch at night, waking when one comes within 16."],
     ["母鵝每天在 8 格內的巢箱下 1 顆鵝蛋。好感度 4 心以上的成年鵝每天有 20% 機率掉一根羽絨。", "A female lays one Goose Egg a day into a Nest Box within 8 blocks. An adult with four hearts or more has a 20% chance a day to molt a Down."],
@@ -326,6 +348,12 @@ export const GUIDE_TEXT = {
     ["每天餵 8 格內吃乾草的動物：牛、羊、山羊、水牛、氂牛、兔。雞、鴨、鵝、豬不吃。", "Feeds the grass eaters within 8 blocks every day: cows, sheep, goats, buffalo, yaks and rabbits. Poultry and pigs do not eat from it."],
     ["範圍內也有飼槽時，飼槽先餵。打掉時存量變回乾草塊和小麥。", "When a trough is also in range, the trough feeds first. Broken, it gives its hay back as hay bales and wheat."],
     ["動物入睡時 4 格內有乾草架或地毯、頭上 8 格內有遮蔽，就算睡得好，好感度 +4 點。", "An animal that falls asleep with a hay rack or rug within 4 blocks and a roof within 8 sleeps well: +4 affection points."],
+  ],
+  pasture_post: [
+    ["半徑 8 格內的草方塊就是草場。牛、水牛、氂牛每天吃 3 格草，羊、山羊 2 格，兔、鵝 1 格，幼體吃一半。", "The grass blocks within 8 blocks are its pasture. Cows, buffalo and yaks eat 3 a day, sheep and goats 2, rabbits and geese 1; young ones half."],
+    ["今天還沒吃飽的放牧動物會吃草場的草，等於吃了乾草；範圍內有飼槽或乾草架時先吃那些。豬、雞、鴨不吃草。", "Grazers that have not eaten today eat its grass as if it were hay; troughs and hay racks in range feed them first. Pigs, chickens and ducks do not graze."],
+    ["每吃掉 2 格草，就有 1 格草方塊變成泥土，旁邊的草地會慢慢長回來，也可以撒牧草種子。", "Every 2 grass eaten turns one grass block to dirt; the grass grows back from its neighbours, or sow Pasture Seed."],
+    ["連續 2 天沒有動物吃草就算休養過，那之後第一天在這裡吃飽的動物好感度 +5 點。手持觀察手冊點它可以看今天的草。", "Left ungrazed for two days it is rested: animals that eat there the next day gain 5 affection points. Use the Observation Notebook on it to see today's grass."],
   ],
   nest_box: [
     ["8 格內的成年母雞、母鴨、母鵝每天在這裡下 1 顆蛋。巢箱最多存 16 顆，多的掉在旁邊。", "Adult hens, ducks and geese within 8 blocks lay one egg a day into it. It stores 16; more drop beside it."],
@@ -498,6 +526,10 @@ export const GUIDE_TEXT = {
     ["對成年氂牛使用就裝上，共 15 格。", "Use it on an adult yak to put it on: 15 slots."],
     ["蹲下拿著物品對氂牛互動，整組放進馱袋；不蹲下空手互動，打開清單選一組取出。", "Sneak and use an item on the yak to store the stack; use it with an empty hand, standing, to pick a stack to take out."],
     ["清空後才能取下馱袋。氂牛死亡時馱袋和裡面的東西會掉出來。", "Empty it before taking it off. If the yak dies, the bag and its contents drop."],
+  ],
+  pasture_seed: [
+    ["工作台：苜蓿種子與小麥種子各 1，做出 2 份。", "Crafting table: 1 alfalfa seeds and 1 wheat seeds make 2."],
+    ["對泥土使用，周圍 3×3 的泥土立刻變成草方塊，補回被吃光的草場。", "Use it on dirt to turn the 3×3 patch of dirt around it into grass at once, mending a bare pasture."],
   ],
   feather_duster: [["對蜘蛛網或雪層使用，清掉周圍 3×3 範圍內的同種方塊。耐久度 64。", "Use it on cobwebs or snow layers to clear that block in a 3×3 area. 64 durability."]],
   wool_hat: [["戴在頭盔欄位，護甲 1，耐久度 80。", "Worn in the helmet slot: 1 armor, 80 durability."]],
@@ -778,6 +810,55 @@ export const GUIDE_TEXT = {
     ["用來做氂牛肉燉菜；絞肉機絞成牛絞肉。", "Goes into Yak Meat Stew; the Meat Grinder turns it into Ground Beef."],
   ],
   cooked_yak_meat: [["生氂牛肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw yak cooked in a furnace or the wok. 8 hunger."]],
+  quail_egg: [
+    ["成年母鵪鶉每天在 8 格內的巢箱下 2 顆。", "An adult quail lays two a day into a Nest Box within 8 blocks."],
+    ["工作台：4 顆換 1 顆雞蛋。", "Crafting table: 4 make one egg."],
+  ],
+  fertilized_quail_egg: [
+    ["巢箱 8 格內有成年公鵪鶉時，母鵪鶉的蛋依好感度有機會受精。", "With an adult cock within 8 blocks of the nest, a quail's egg may be fertilized, more often the happier she is."],
+    ["手持點巢箱放回去孵，或放進有熱源的孵化器；1 天孵出小鵪鶉，留下蛋殼。", "Brood it in a nest box or a heated incubator; a chick hatches in 1 day and leaves an eggshell."],
+  ],
+  turkey_egg: [
+    ["成年母火雞每 2 天在 8 格內的巢箱下 1 顆。", "An adult turkey lays one every two days into a Nest Box within 8 blocks."],
+    ["工作台：1 顆換 2 顆雞蛋。", "Crafting table: one makes two eggs."],
+  ],
+  fertilized_turkey_egg: [
+    ["巢箱 8 格內有成年公火雞時，母火雞的蛋依好感度有機會受精。", "With an adult tom within 8 blocks of the nest, a turkey's egg may be fertilized, more often the happier she is."],
+    ["手持點巢箱放回去孵，或放進有熱源的孵化器；2 天孵出小火雞，留下蛋殼。", "Brood it in a nest box or a heated incubator; a poult hatches in 2 days and leaves an eggshell."],
+  ],
+  quail_meat: [
+    ["分切鵪鶉屠體取得。", "Cut from a Quail Carcass."],
+    ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
+  ],
+  cooked_quail_meat: [["生鵪鶉肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw quail cooked in a furnace or the wok. 8 hunger."]],
+  turkey_meat: [
+    ["分切火雞屠體取得。", "Cut from a Turkey Carcass."],
+    ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
+  ],
+  cooked_turkey_meat: [["生火雞肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw turkey cooked in a furnace or the wok. 8 hunger."]],
+  turkey_leg: [["分切火雞屠體取得，一具 2 隻。", "Cut from a Turkey Carcass, 2 each."]],
+  turkey_breast: [
+    ["分切火雞屠體取得，一具 1 塊。", "Cut from a Turkey Carcass, 1 each."],
+    ["熔爐、煙燻爐或營火烤成熟火雞胸；也能在炒鍋直接煎熟。", "Cook it into Cooked Turkey Breast in a furnace, smoker or campfire, or in the wok."],
+  ],
+  whole_turkey: [
+    ["火雞拔完毛（第一刀）、還沒切其他部位時，蹲下空手點屠宰掛架，就能把整隻取下。", "Once a turkey is plucked (the first stroke) and nothing else is cut, sneak and use the Butcher Rack with an empty hand to take it down whole."],
+    ["放進熔爐或煙燻爐烤成烤全火雞。", "Roast it into a Roast Turkey in a furnace or smoker."],
+  ],
+  cooked_turkey_breast: [["火雞胸烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Turkey breast cooked in a furnace or the wok. 8 hunger."]],
+  alpaca_meat: [
+    ["分切羊駝屠體取得，公的多一份。", "Cut from an Alpaca Carcass; a male gives one more."],
+    ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
+  ],
+  cooked_alpaca_meat: [["生羊駝肉烤熟或在炒鍋煎熟。可以吃，8 點飢餓值。", "Raw alpaca cooked in a furnace or the wok. 8 hunger."]],
+  alpaca_wool: [
+    ["用剪刀剪羊駝取得，一次 1 到 2 份；刷毛也有 30% 機率掉落，分切沒剪過毛的羊駝屠體得 2 份。", "Shear an alpaca for 1 or 2; brushing drops one 30% of the time, and an unshorn Alpaca Carcass gives 2."],
+    ["紡車：2 份紡成 2 份絨線。", "Spinning Wheel: 2 spin into 2 fine yarn."],
+  ],
+  alpaca_hide: [
+    ["分切羊駝屠體時剝下。", "Skinned from an Alpaca Carcass."],
+    ["鞣皮架放 1 天變成皮革。", "A day on the Tanning Rack turns it into leather."],
+  ],
   duck_meat: [
     ["分切鴨屠體取得。", "Cut from a Duck Carcass."],
     ["熔爐、煙燻爐或營火烤熟；也能在廚房的炒鍋直接煎熟。", "Cook it in a furnace, smoker or campfire, or straight in Cookery's wok."],
@@ -1054,6 +1135,10 @@ export const GUIDE_TEXT = {
     ["工作台：馬鈴薯、乳酪塊、鮮奶油、碗。", "Crafting table: potato, cheese slice, cream and a bowl."],
     ["放進熔爐或煙燻爐烤成乳酪焗烤。", "Bakes into Cheese Gratin in a furnace or smoker."],
   ],
+  raw_shumai: [
+    ["工作台：1 顆鵪鶉蛋、1 份豬絞肉、1 份生麵團（廚房）。", "Crafting table: 1 quail egg, 1 pork mince and 1 raw dough (Cookery)."],
+    ["放進廚房的蒸籠蒸成鵪鶉蛋燒賣。", "Steam it in Cookery's steamer into Quail Egg Shumai."],
+  ],
   raw_egg_tart: [
     ["工作台：卡士達醬加廚房的生麵團。", "Crafting table: custard and Cookery's raw dough."],
     ["放進熔爐或煙燻爐烤成蛋塔。", "Bakes into an Egg Tart in a furnace or smoker."],
@@ -1163,6 +1248,8 @@ const CONTAINER = {
   "minecraft:bowl": ["碗", "bowl"],
   "minecraft:glass_bottle": ["玻璃瓶", "glass bottle"],
   "kaleidoscope_ranching:horn_cup": ["角杯", "horn cup"],
+  // 1.1 追加: the roast turkey leaves its bones
+  "kaleidoscope_ranching:large_bone": ["大骨", "large bone"],
 };
 
 /** The line for food that can be set down and eaten in place (data/placedFoods.js), or null. */

@@ -26,7 +26,10 @@
           "duck",
           "goose",
           "buffalo",
-          "yak"
+          "yak",
+          "quail",
+          "turkey",
+          "alpaca"
         ],
         "kaleidoscope_ranching:skinned": [
           false,
@@ -88,6 +91,15 @@
           "carcass_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && !q.block_state('kaleidoscope_ranching:skinned')",
           "skinned_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
           "cut_yak": "q.block_state('kaleidoscope_ranching:carcass') == 'yak' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_quail": "q.block_state('kaleidoscope_ranching:carcass') == 'quail' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_quail": "q.block_state('kaleidoscope_ranching:carcass') == 'quail' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_quail": "q.block_state('kaleidoscope_ranching:carcass') == 'quail' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_turkey": "q.block_state('kaleidoscope_ranching:carcass') == 'turkey' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_turkey": "q.block_state('kaleidoscope_ranching:carcass') == 'turkey' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_turkey": "q.block_state('kaleidoscope_ranching:carcass') == 'turkey' && q.block_state('kaleidoscope_ranching:cut')",
+          "carcass_alpaca": "q.block_state('kaleidoscope_ranching:carcass') == 'alpaca' && !q.block_state('kaleidoscope_ranching:skinned')",
+          "skinned_alpaca": "q.block_state('kaleidoscope_ranching:carcass') == 'alpaca' && q.block_state('kaleidoscope_ranching:skinned') && !q.block_state('kaleidoscope_ranching:cut')",
+          "cut_alpaca": "q.block_state('kaleidoscope_ranching:carcass') == 'alpaca' && q.block_state('kaleidoscope_ranching:cut')",
           "dry_1": "(q.block_state('kaleidoscope_ranching:drying') == 0 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1 || q.block_state('kaleidoscope_ranching:drying_mix') == 2 || q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4 || q.block_state('kaleidoscope_ranching:drying_mix') == 5 || q.block_state('kaleidoscope_ranching:drying_mix') == 6)) || q.block_state('kaleidoscope_ranching:drying') == 1 || q.block_state('kaleidoscope_ranching:drying') == 2 || q.block_state('kaleidoscope_ranching:drying') == 3 || q.block_state('kaleidoscope_ranching:drying') == 4",
           "dry_1_dried": "(q.block_state('kaleidoscope_ranching:drying') == 0 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1 || q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4 || q.block_state('kaleidoscope_ranching:drying_mix') == 5)) || (q.block_state('kaleidoscope_ranching:drying') == 1 && (q.block_state('kaleidoscope_ranching:drying_mix') == 2 || q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4 || q.block_state('kaleidoscope_ranching:drying_mix') == 5 || q.block_state('kaleidoscope_ranching:drying_mix') == 6)) || (q.block_state('kaleidoscope_ranching:drying') == 2 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1 || q.block_state('kaleidoscope_ranching:drying_mix') == 5 || q.block_state('kaleidoscope_ranching:drying_mix') == 6)) || (q.block_state('kaleidoscope_ranching:drying') == 3 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1 || q.block_state('kaleidoscope_ranching:drying_mix') == 2 || q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4 || q.block_state('kaleidoscope_ranching:drying_mix') == 5 || q.block_state('kaleidoscope_ranching:drying_mix') == 6)) || (q.block_state('kaleidoscope_ranching:drying') == 4 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1 || q.block_state('kaleidoscope_ranching:drying_mix') == 2))",
           "dry_1_half": "(q.block_state('kaleidoscope_ranching:drying') == 0 && (q.block_state('kaleidoscope_ranching:drying_mix') == 2 || q.block_state('kaleidoscope_ranching:drying_mix') == 6)) || (q.block_state('kaleidoscope_ranching:drying') == 1 && (q.block_state('kaleidoscope_ranching:drying_mix') == 1)) || (q.block_state('kaleidoscope_ranching:drying') == 2 && (q.block_state('kaleidoscope_ranching:drying_mix') == 2 || q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4)) || (q.block_state('kaleidoscope_ranching:drying') == 4 && (q.block_state('kaleidoscope_ranching:drying_mix') == 3 || q.block_state('kaleidoscope_ranching:drying_mix') == 4 || q.block_state('kaleidoscope_ranching:drying_mix') == 5 || q.block_state('kaleidoscope_ranching:drying_mix') == 6))",
@@ -150,6 +162,18 @@
         },
         "yak": {
           "texture": "kr_butcher_rack_yak",
+          "render_method": "alpha_test_single_sided"
+        },
+        "quail": {
+          "texture": "kr_butcher_rack_quail",
+          "render_method": "alpha_test_single_sided"
+        },
+        "turkey": {
+          "texture": "kr_butcher_rack_turkey",
+          "render_method": "alpha_test_single_sided"
+        },
+        "alpaca": {
+          "texture": "kr_butcher_rack_alpaca",
           "render_method": "alpha_test_single_sided"
         }
       },
