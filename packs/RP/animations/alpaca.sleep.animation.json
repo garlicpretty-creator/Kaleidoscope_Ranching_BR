@@ -7,7 +7,7 @@
         "body": {
           "position": [
             0,
-            "q.is_baby ? -7.72 : -10.72",
+            "q.is_baby ? -6.72 : -10.72",
             0
           ]
         },
@@ -18,11 +18,35 @@
             8
           ]
         },
+        "wool_leg_fl": {
+          "scale": [
+            0.8,
+            1,
+            0.8
+          ],
+          "position": [
+            0,
+            0,
+            0.25
+          ]
+        },
         "a_leg_fr": {
           "rotation": [
             90,
             0,
             -8
+          ]
+        },
+        "wool_leg_fr": {
+          "scale": [
+            0.8,
+            1,
+            0.8
+          ],
+          "position": [
+            0,
+            0,
+            0.25
           ]
         },
         "a_leg_bl": {
@@ -32,11 +56,35 @@
             8
           ]
         },
+        "wool_leg_bl": {
+          "scale": [
+            0.8,
+            1,
+            0.8
+          ],
+          "position": [
+            0,
+            0,
+            -0.25
+          ]
+        },
         "a_leg_br": {
           "rotation": [
             -90,
             0,
             -8
+          ]
+        },
+        "wool_leg_br": {
+          "scale": [
+            0.8,
+            1,
+            0.8
+          ],
+          "position": [
+            0,
+            0,
+            -0.25
           ]
         },
         "b_leg_fl": {
@@ -70,13 +118,13 @@
         "wool_coat": {
           "scale": [
             1,
-            0.95,
+            0.83,
             1
           ]
         },
         "head": {
           "rotation": [
-            32,
+            0,
             18,
             0
           ]

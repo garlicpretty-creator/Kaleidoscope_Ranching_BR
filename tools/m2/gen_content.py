@@ -178,6 +178,19 @@ def box(x, y, z, w, h, d):
 # ## minecraft:tick component. They now run on the shared ranch clock
 # ## (scripts/core/blockClock.js), so the block files carry no tick.
 
+def facing():
+    """Block traits and permutations that turn a model toward the player who places it, the same
+    rotation tools/gen_blocks.mjs gives the M3 stations (model north faces the player)."""
+    rotation = {"north": 0, "east": 270, "south": 180, "west": 90}
+    return {
+        "traits": {"minecraft:placement_direction": {"enabled_states": ["minecraft:cardinal_direction"],
+                                                     "y_rotation_offset": 180}},
+        "permutations": [{"condition": f"q.block_state('minecraft:cardinal_direction') == '{d}'",
+                          "components": {"minecraft:transformation": {"rotation": [0, deg, 0]}}}
+                         for d, deg in rotation.items()],
+    }
+
+
 def state(name, lo, hi):
     return {f"{NS}:{name}": {"values": {"min": lo, "max": hi}}}
 
@@ -254,7 +267,9 @@ def block_defs():
     })
     # 1.1 追加 方塊動畫: the blade's two positions (data/stationFrames.js, core/blockFrames.js)
     cutter_model = handmade("chaff_cutter", {f"blade_{n}": f"{q('frame')} == {n}" for n in (0, 1)})
-    B["chaff_cutter"] = dict(states=state("frame", 0, 1) if cutter_model else {}, components={
+    # The model turns to face whoever places it, knife side toward them, as the M3 stations do
+    # (tools/gen_blocks.mjs ROTATION); a frame change keeps the facing (core/blockFrames.js withState).
+    B["chaff_cutter"] = dict(states=state("frame", 0, 1) if cutter_model else {}, **(facing() if cutter_model else {}), components={
         **(cutter_model or full("kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks")),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#8a5a32",
         "minecraft:crafting_table": {"table_name": f"tile.{NS}:chaff_cutter.name",
@@ -635,6 +650,8 @@ def main():
             desc["menu_category"] = {"category": "items"}
         else:
             desc["menu_category"] = {"category": "none"}
+        if d.get("traits"):
+            desc["traits"] = d["traits"]
         if d.get("states"):
             desc["states"] = d["states"]
         comps = {"minecraft:display_name": f"tile.{NS}:{name}.name", **d["components"]}

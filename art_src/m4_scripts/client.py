@@ -31,17 +31,19 @@ SPECIES = {
     },
     # 1.1 追加 新動物 (new_animals.py)
     "quail": {
-        "egg": ("#8A6A4A", "#E8D8B8"), "scale_male": 1.05,
+        "egg": ("#8A6A4A", "#E8D8B8"), "scale_male": 1.1, "scale_female": 0.95, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 90", "leg_right": f"-{SWING} * 90"},
         "wings": True,
     },
     "turkey": {
-        "egg": ("#4A3A2E", "#C82C28"), "scale_male": 1.2,
+        "egg": ("#4A3A2E", "#C82C28"), "scale_male": 1.2, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 60", "leg_right": f"-{SWING} * 60"},
         "wings": True,
     },
     "alpaca": {
-        "egg": ("#E2D6BE", "#7A5A40"), "scale_male": 1.1, "baby_look": True,
+        "egg": ("#E2D6BE", "#7A5A40"), "scale_male": 1.05, "baby_look": True,
+        # the male's neck ruff (m_ruff) is fleece too: shorn with the rest
+        "shorn": ("m_ruff",),
         "walk": {"leg_fl": f"{SWING} * 60", "leg_br": f"{SWING} * 60", "leg_fr": f"-{SWING} * 60", "leg_bl": f"-{SWING} * 60"},
     },
     "buffalo": {
@@ -78,7 +80,7 @@ def main(sid):
     for b in bones:
         for prefix, molang in RULES:
             if b.startswith(prefix):
-                vis.append({b: molang})
+                vis.append({b: f"{molang} && !q.is_sheared" if b in s.get("shorn", ()) else molang})
                 break
     dump(RP / "render_controllers" / f"{sid}.render_controllers.json", {"format_version": "1.8.0", "render_controllers": {
         f"controller.render.{NS}.{sid}": {

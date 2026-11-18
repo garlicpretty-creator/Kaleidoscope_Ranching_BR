@@ -10,6 +10,7 @@ to their models in place of the static part.
   wheel(...)    spinning-wheel spokes, upright cross then diagonal, with the treadle rocking
   crank_z(...)  a crank whose axle runs along z (the cream separator): down, left, up, right
   shift(...)    the same cubes moved by an offset per frame (the loom's beater, the chaff cutter's blade)
+  extra(...)    adds cubes of a frame's own to each frame bone (the cream separator's ribbed bowl)
 """
 
 FRAMES = 4
@@ -71,3 +72,8 @@ def shift(prefix, parent, cubes, offsets):
     return [(f"{prefix}_{i}", parent, [0, 0, 0],
              [(name, [o[0] + dx, o[1] + dy, o[2] + dz], s) for name, o, s in cubes])
             for i, (dx, dy, dz) in enumerate(offsets)]
+
+
+def extra(bones, cubes_of):
+    """The frame bones with cubes_of(frame) added to each."""
+    return [(name, parent, pivot, cubes + cubes_of(i)) for i, (name, parent, pivot, cubes) in enumerate(bones)]

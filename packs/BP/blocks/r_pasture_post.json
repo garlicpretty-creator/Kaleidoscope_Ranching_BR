@@ -42,14 +42,14 @@
       },
       "minecraft:selection_box": {
         "origin": [
-          -2,
+          -4,
           0,
-          -2
+          -3
         ],
         "size": [
-          4,
+          8,
           16,
-          4
+          6
         ]
       },
       "minecraft:destructible_by_mining": {

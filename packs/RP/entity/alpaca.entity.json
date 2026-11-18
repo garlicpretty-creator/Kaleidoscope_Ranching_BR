@@ -22,11 +22,13 @@
         "drink": "animation.kaleidoscope_ranching.alpaca.drink",
         "petted": "animation.kaleidoscope_ranching.alpaca.petted",
         "graze": "animation.kaleidoscope_ranching.alpaca.graze",
+        "spit": "animation.kaleidoscope_ranching.alpaca.spit",
+        "shake": "animation.kaleidoscope_ranching.alpaca.shake",
         "chew": "animation.kaleidoscope_ranching.alpaca.chew",
         "actions": "controller.animation.kaleidoscope_ranching.alpaca.actions"
       },
       "scripts": {
-        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.1 : 1.0)",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.05 : 1.0)",
         "animate": [
           {
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"

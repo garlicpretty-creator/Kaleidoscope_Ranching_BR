@@ -18,6 +18,9 @@
             },
             {
               "graze": "q.property('kaleidoscope_ranching:action') == 'graze'"
+            },
+            {
+              "display": "q.property('kaleidoscope_ranching:action') == 'display'"
             }
           ]
         },
@@ -69,6 +72,17 @@
           "transitions": [
             {
               "done": "!(q.property('kaleidoscope_ranching:action') == 'graze') || q.state_time > 8"
+            }
+          ]
+        },
+        "display": {
+          "animations": [
+            "display"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "done": "!(q.property('kaleidoscope_ranching:action') == 'display') || q.state_time > 5"
             }
           ]
         }

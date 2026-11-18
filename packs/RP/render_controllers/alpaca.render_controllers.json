@@ -40,19 +40,31 @@
           "wool_neck": "!q.is_sheared"
         },
         {
-          "m_ruff": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+          "m_ruff": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male' && !q.is_sheared"
         },
         {
           "a_leg_fl": "!q.is_baby"
         },
         {
+          "wool_leg_fl": "!q.is_sheared"
+        },
+        {
           "a_leg_fr": "!q.is_baby"
+        },
+        {
+          "wool_leg_fr": "!q.is_sheared"
         },
         {
           "a_leg_bl": "!q.is_baby"
         },
         {
+          "wool_leg_bl": "!q.is_sheared"
+        },
+        {
           "a_leg_br": "!q.is_baby"
+        },
+        {
+          "wool_leg_br": "!q.is_sheared"
         },
         {
           "b_torso": "q.is_baby"

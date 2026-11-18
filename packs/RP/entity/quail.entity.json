@@ -21,10 +21,11 @@
         "eat": "animation.kaleidoscope_ranching.quail.eat",
         "drink": "animation.kaleidoscope_ranching.quail.drink",
         "petted": "animation.kaleidoscope_ranching.quail.petted",
+        "dust_bath": "animation.kaleidoscope_ranching.quail.dust_bath",
         "actions": "controller.animation.kaleidoscope_ranching.quail.actions"
       },
       "scripts": {
-        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.05 : 1.0)",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.1 : 0.95)",
         "animate": [
           {
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"
