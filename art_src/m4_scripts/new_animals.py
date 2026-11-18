@@ -39,11 +39,14 @@ def speckle(base, dark, light=None, every=4):
 
 
 def pack(bones, tw):
-    """autouv over a rig whose cubes may be None (bone pivots only); returns bones and sheet size."""
+    """autouv over a rig whose cubes may be None (bone pivots only); returns bones and sheet size.
+    A cube's extras (inflate, rotation) stay after its UV."""
     raw = [(n, p, pv, [(c[0], c[1], c[2]) for c in (cubes or [])]) for n, p, pv, cubes in bones]
     packed, tw, th = autouv(raw, tw)
     th = max(th, tw // 2)
-    return [(n, p, pv, cubes or None) for n, p, pv, cubes in packed], tw, th
+    out = [(n, p, pv, [(*c, *src[3:]) for c, src in zip(new, cubes)] if cubes else None)
+           for (n, p, pv, cubes), (_, _, _, new) in zip(bones, packed)]
+    return out, tw, th
 
 
 def scaled(bones, k):

@@ -17,16 +17,13 @@ tail stay: they are not shorn.
 
 The eyes are painted with boxuv.plain_eyes on cubes held directly by a_head / b_head, so
 gen_sleep finds them and lays eyelids over them. The head bone pivots at the base of the neck;
-eating and drinking tip it 38-62 degrees down, and the short face keeps the muzzle well above
-the trough (check with actions_preview.py).
+eating, drinking and grazing tip it 38-62 degrees down and lower it (tools/gen_actions.mjs has an
+alpaca branch), the muzzle just over the feed, the trough's rim and the grass (check with
+actions_preview.py).
 
 Run with: python art_src/m4_scripts/new_animals.py alpaca   (new_animals.BUILD uses this file)
 """
-from blocks_m3 import autouv
-
-
-def mix(a, b, t):
-    return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
+from new_animals import mix, pack
 
 
 def hsh(*a):
@@ -36,16 +33,6 @@ def hsh(*a):
         for ch in str(x):
             v = ((v ^ ord(ch)) * 16777619) & 0xFFFFFFFF
     return v
-
-
-def pack(bones, tw):
-    """autouv over the rig, keeping each cube's extras (rotation) after its UV."""
-    raw = [(n, p, pv, [(c[0], c[1], c[2]) for c in (cubes or [])]) for n, p, pv, cubes in bones]
-    packed, tw, th = autouv(raw, tw)
-    out = []
-    for (n, p, pv, cubes), (_, _, _, new) in zip(bones, packed):
-        out.append((n, p, pv, [(*c, *src[3:]) for c, src in zip(new, cubes)] if cubes else None))
-    return out, tw, max(th, tw // 2)
 
 
 # --- Rig ----------------------------------------------------------------------------
@@ -71,32 +58,38 @@ def ears(name, x, y, z, size, tilt, pivot_y):
             (name, [-(x + w), y, z], size, {"rotation": [0, 0, tilt], "pivot": [-(x + w / 2), pivot_y, z + size[2] / 2]})]
 
 
+# Heights: the hitbox is 0.9 x 1.7 blocks (27.2 px, tools/gen_entities.mjs) and the male is
+# drawn 1.05 times larger (client.py), so the top of the head (the topknot) stays at 26 px:
+# 27.3 px for the male. Only the ear tips reach past it, as the vanilla llama's do. Vanilla leg
+# length (12 px); the neck carries the head forward of the chest, above the back.
 BONES = [
     ("body", None, [0, 0, 0], None),
     # --- adult ---------------------------------------------------------------------
     # The shorn body: short and deep, painted as clipped fleece.
-    ("a_torso", "body", [0, 15, 0], [("torso", [-4, 11, -6], [8, 7, 13])]),
+    ("a_torso", "body", [0, 14.5, 0], [("torso", [-4, 12, -5], [8, 5, 11])]),
     # The fleece blanket, rounded off on the back by a narrower top layer.
-    ("wool_coat", "a_torso", [0, 15, 0], [
-        ("fleece", [-5, 10, -7.5], [10, 9, 16]),
-        ("fleece_top", [-4, 19, -6.5], [8, 1, 14]),
+    ("wool_coat", "a_torso", [0, 14.5, 0], [
+        ("fleece", [-5, 10.5, -6.5], [10, 7, 14]),
+        ("fleece_top", [-4, 17.5, -5.5], [8, 1, 12]),
     ]),
     # A short fluffy tail, carried low; it stays after shearing.
-    ("a_tail", "body", [0, 17.5, 7.5], [("tail", [-1.5, 14.5, 7], [3, 3.5, 3])]),
-    ("head", "body", [0, 16, -5], None),
-    ("a_head", "head", [0, 16, -5], [
-        ("neck", [-2, 15, -8.5], [4, 10, 4]),
-        ("skull", [-3, 24, -10.5], [6, 5, 5]),
-        ("muzzle", [-1.5, 24, -12.5], [3, 2.5, 2]),
+    ("a_tail", "body", [0, 16, 6.5], [("tail", [-1.5, 13, 6], [3, 3.5, 3])]),
+    # The head bone turns at the base of the neck, low in the chest.
+    ("head", "body", [0, 14, -6], None),
+    ("a_head", "head", [0, 14, -6], [
+        ("neck", [-2, 13, -9], [4, 9, 4]),
+        ("skull", [-3, 20, -11.5], [6, 4, 5]),
+        ("muzzle", [-1.5, 20, -13.5], [3, 2, 2]),
         # the topknot: a pom of fleece over the crown, its fringe just above the eyes
-        ("topknot", [-3.5, 28, -11], [7, 3.5, 6]),
-        *ears("ear", 1.5, 30.5, -7, [2, 4, 1], 12, 30.5),
+        ("topknot", [-3.5, 23, -12], [7, 3, 6]),
+        *ears("ear", 1.5, 23.5, -8.5, [2, 4, 1], 12, 23.5),
     ]),
-    # The fleece round the neck, from the shoulders to the jaw.
-    ("wool_neck", "a_head", [0, 16, -5], [("ruff", [-3, 14, -9.5], [6, 10.5, 6])]),
-    # The male's longer neck fleece: a bib hanging down the front of the neck.
-    ("m_ruff", "wool_neck", [0, 16, -5], [("mane", [-2, 12, -10.5], [4, 9, 1.5])]),
-    *quad("a_", "leg", "warmer", [2, 11, 2], 1, -5.5, 4, 11, 5),
+    # The fleece round the neck, from the chest to the jaw.
+    ("wool_neck", "a_head", [0, 14, -6], [("ruff", [-3, 12.5, -10], [6, 9, 6])]),
+    # The male's longer neck fleece: a bib hanging down the front of the neck. It is also hidden
+    # once sheared (client.py adds !q.is_sheared to its m_ rule).
+    ("m_ruff", "wool_neck", [0, 14, -6], [("mane", [-2, 11, -11], [4, 8, 1.5])]),
+    *quad("a_", "leg", "warmer", [2, 12, 2], 1, -4.5, 3, 12, 5),
     # --- cria: fluffy all over, a big head on a short neck, long legs ------------------
     ("b_torso", "body", [0, 11, 0], [("b_torso", [-3, 8, -4.5], [6, 6, 10])]),
     ("b_tail", "body", [0, 12.5, 5.5], [("b_tail", [-1, 10.5, 5], [2, 2.5, 2])]),

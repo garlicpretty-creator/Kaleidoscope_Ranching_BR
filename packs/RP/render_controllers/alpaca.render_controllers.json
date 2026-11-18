@@ -40,7 +40,7 @@
           "wool_neck": "!q.is_sheared"
         },
         {
-          "m_ruff": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
+          "m_ruff": "!q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male' && !q.is_sheared"
         },
         {
           "a_leg_fl": "!q.is_baby"
