@@ -1,6 +1,6 @@
 // Small helpers with no lifecycle responsibility.
 
-import { system, GameMode, EquipmentSlot, ItemStack, BlockVolume } from "@minecraft/server";
+import { system, GameMode, EquipmentSlot, BlockVolume } from "@minecraft/server";
 import { CARE, TEST_WITH_VANILLA } from "../data/care_config.js";
 import { SPECIES } from "../data/species.js";
 import { FAMILY_LIVESTOCK } from "../data/m1_contract.js";
