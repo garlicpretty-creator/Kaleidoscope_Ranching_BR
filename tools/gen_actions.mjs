@@ -36,6 +36,12 @@ const ACTION = (value) => `q.property('${ACTION_PROPERTY}') == '${value}'`;
 const KEYS = ["eat", "drink", "petted", "graze", "chew", "actions"];
 
 const POULTRY = new Set(["chicken", "duck", "goose", "quail", "turkey"]);
+/**
+ * Poultry too small for the 70° peck to bring the bill to the ground: the head also moves this
+ * far (model pixels, [x, y, z], -z forward) at the bottom of the peck, per head bone. The quail's
+ * bill comes to under half a pixel off the ground; it cannot reach into a trough (accepted).
+ */
+const PECK_REACH = { quail: { head: [0, -2.5, -0.5], b_head: [0, -0.9, -1.5] } };
 /** Animals that graze on a pasture (data/pasture.js). */
 const GRAZERS = new Set(Object.keys(GRAZE).map((typeId) => typeId.split(":")[1]));
 /** Animals whose behaviour pack eats grass blocks itself (minecraft:behavior.eat_block, q.is_grazing): the sheep. */
@@ -70,11 +76,26 @@ function animationsFor(id, bones) {
   const out = {};
 
   if (POULTRY.has(id)) {
-    out.eat = { loop: true, bones: each(H, { rotation: ["math.max(0, math.sin(q.anim_time * 720)) * 70", 0, 0] }) };
+    const PECK = "math.max(0, math.sin(q.anim_time * 720))";
+    const reach = PECK_REACH[id] ?? {};
+    // Adds the reach (PECK_REACH) to each head bone that has one; other poultry are unchanged.
+    const peck = (bones, position) => {
+      for (const [name, r] of Object.entries(reach)) if (bones[name]) bones[name] = { ...bones[name], position: position(r) };
+      return bones;
+    };
+    out.eat = {
+      loop: true,
+      bones: peck(each(H, { rotation: [`${PECK} * 70`, 0, 0] }), (r) => r.map((v) => (v ? `${PECK} * ${v}` : 0))),
+    };
     out.drink = {
       loop: true,
       animation_length: 1.4,
-      bones: each(H, { rotation: { "0.0": [0, 0, 0], "0.35": [70, 0, 0], "0.7": [-40, 0, 0], "1.1": [0, 0, 0] } }),
+      bones: peck(each(H, { rotation: { "0.0": [0, 0, 0], "0.35": [70, 0, 0], "0.7": [-40, 0, 0], "1.1": [0, 0, 0] } }), (r) => ({
+        "0.0": [0, 0, 0],
+        "0.35": r,
+        "0.7": [0, 0, 0],
+        "1.1": [0, 0, 0],
+      })),
     };
     out.petted = {
       loop: true,

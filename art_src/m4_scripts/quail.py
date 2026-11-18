@@ -1,11 +1,16 @@
 """Quail (Japanese / common quail): a plump round body low on short legs, a stub of a tail, a
-small head with a short pointed bill, and barred brown plumage with pale shaft streaks. The cock
-has a chestnut face, throat and breast; the hen a pale breast speckled dark. The chick is a small
-buff ball with dark stripes down its back.
+small head with a short pointed bill, and soft brown plumage with buff shaft streaks running
+lengthwise. The cock has a chestnut face, throat and breast; the hen a pale breast lightly
+speckled. The chick is a buff ball with two soft stripes down its back.
 
 Bones keep the pack's conventions (a_* adult, b_* young; head / wing / leg names match the walk
 written by client.py, the roost pose of tools/gen_sleep.mjs and tools/gen_actions.mjs). The chick's
 head hangs from the body on its own neck pivot (client.py "baby_look" turns it to look about).
+Both heads pivot at the front of the breast, so the peck (gen_actions.mjs, with the quail's
+PECK_REACH offset) swings the bill down in front of the body rather than into it.
+
+Contrast is kept at the duck's and chicken's level: bars and speckles are the base colour mixed
+part way toward dark, never dark itself.
 
 Built by new_animals.py (BUILD["quail"]):
     python art_src/m4_scripts/new_animals.py quail && python art_src/m4_scripts/client.py quail
@@ -18,32 +23,32 @@ TW = 64
 # (bone, parent, pivot, [(cube, origin, size), ...])
 RAW = [
     ("body", None, [0, 0, 0], []),
-    # --- adult: a round loaf 7 wide with the folded wings, 5 high, sitting on short legs ------
+    # --- adult: a round loaf 7 wide with the folded wings, 5 high, on legs showing 1 px -----
     ("a_torso", "body", [0, 4, 0], [
         ("torso", [-2.5, 2, -3], [5, 4, 6]),
         ("breast", [-2, 2.5, -4], [4, 3, 1]),       # the full crop bulging under the head
         ("back", [-2, 6, -2], [4, 1, 4]),           # rounds off the top
-        ("belly", [-2, 1.5, -2], [4, 1, 4]),        # rounds off the underside
     ]),
     # the stub of a tail, drooping off the rump
     ("a_tail", "body", [0, 5, 3], [("tail", [-1.5, 3.5, 3], [3, 2, 1])]),
-    ("head", "body", [0, 6.5, -2.5], []),
-    ("a_head", "head", [0, 6.5, -2.5], [
-        ("head", [-2, 6, -5.5], [4, 3, 3]),
-        ("bill", [-0.5, 6.5, -6.5], [1, 1, 1]),
+    ("head", "body", [0, 6, -4], []),
+    ("a_head", "head", [0, 6, -4], [
+        ("head", [-2, 6, -6.5], [4, 3, 3]),
+        ("bill", [-0.5, 6.5, -7.5], [1, 1, 1]),
     ]),
     ("a_wing_left", "body", [2.5, 6, -2], [("wing", [2.5, 3, -2], [1, 3, 5])]),
     ("a_wing_right", "body", [-2.5, 6, -2], [("wing", [-3.5, 3, -2], [1, 3, 5])]),
     ("a_leg_left", "body", [1, 3, 0.5], [("leg", [0.5, 1, 0], [1, 2, 1]), ("foot", [0, 0, -1], [2, 1, 2])]),
     ("a_leg_right", "body", [-1, 3, 0.5], [("leg", [-1.5, 1, 0], [1, 2, 1]), ("foot", [-2, 0, -1], [2, 1, 2])]),
-    # --- chick: a striped ball with a round head, no tail -------------------------------------
-    ("b_torso", "body", [0, 2.5, 0], [("b_torso", [-2, 1, -2.5], [4, 3, 5])]),
-    ("b_head", "body", [0, 4, -2], [
-        ("b_head", [-1.5, 3, -4], [3, 3, 3]),
-        ("b_bill", [-0.5, 3.5, -5], [1, 1, 1]),
+    # --- chick: a striped ball near the adult's width (the young are drawn at half scale) -----
+    ("b_torso", "body", [0, 3, 0], [("b_torso", [-2.5, 1, -2.5], [5, 4, 5])]),
+    # the head stands a pixel proud of the back, so it still shows turned round in the roost
+    ("b_head", "body", [0, 5, -1.5], [
+        ("b_head", [-2, 4.5, -4.5], [4, 3, 3]),
+        ("b_bill", [-0.5, 5, -5.5], [1, 1, 1]),
     ]),
-    ("b_wing_left", "body", [2, 4, -1], [("b_wing", [2, 2, -1.5], [1, 2, 3])]),
-    ("b_wing_right", "body", [-2, 4, -1], [("b_wing", [-3, 2, -1.5], [1, 2, 3])]),
+    ("b_wing_left", "body", [2.5, 4, -1], [("b_wing", [2.5, 2, -1.5], [1, 2, 3])]),
+    ("b_wing_right", "body", [-2.5, 4, -1], [("b_wing", [-3.5, 2, -1.5], [1, 2, 3])]),
     ("b_leg_left", "body", [1, 1.5, 0], [("b_leg", [0.5, 0, -0.5], [1, 2, 1])]),
     ("b_leg_right", "body", [-1, 1.5, 0], [("b_leg", [-1.5, 0, -0.5], [1, 2, 1])]),
 ]
@@ -66,43 +71,40 @@ def flat(c):
     return lambda f, i, j, w, h, fi: c
 
 
-def hashed(i, j, f, k=0):
-    return (i * 7 + j * 13 + len(f) * 3 + k) % 11
-
-
 BILL = (66, 56, 50)
 LEGS = (214, 166, 132)
-EYE_STRIPE = (64, 46, 32)
 
 
 def looks(sex):
     if sex == "male":
-        return {"base": (146, 98, 58), "dark": (74, 48, 30), "pale": (236, 210, 156),
-                "breast": (184, 100, 54), "throat": (140, 62, 36), "belly": (220, 180, 128),
-                "face": (178, 96, 56), "brow": (244, 232, 206)}
+        return {"base": (146, 100, 62), "dark": (80, 54, 34), "pale": (226, 198, 146),
+                "breast": (184, 102, 56), "throat": (150, 70, 40), "belly": (214, 176, 126),
+                "face": (178, 98, 58), "brow": (222, 202, 168)}
     return {"base": (154, 112, 70), "dark": (80, 56, 36), "pale": (234, 208, 154),
-            "breast": (226, 200, 154), "throat": (238, 222, 188), "belly": (230, 210, 170),
-            "face": (214, 184, 136), "brow": (236, 214, 166)}
+            "breast": (222, 196, 150), "throat": (232, 214, 178), "belly": (226, 204, 164),
+            "face": (210, 180, 134), "brow": (228, 204, 158)}
 
 
 def adult(p, sex):
     L = looks(sex)
-    base, dark, pale = L["base"], L["dark"], L["pale"]
-    mid = mix(base, dark, 0.35)
+    base = L["base"]
+    bar = mix(base, L["dark"], 0.45)      # barring and dashes: never the dark itself
+    streak = mix(base, L["pale"], 0.55)   # buff shaft streaks, lengthwise only
+    shade = mix(base, L["dark"], 0.2)
 
     def back(f, i, j, w, h, fi):
-        """The back from above: two long buff shaft streaks, dark chevrons down the middle."""
+        """From above: two buff shaft streaks running the length, short dashes between."""
         if i in (1, w - 2):
-            return pale
+            return streak
         if 1 < i < w - 2:
-            return dark if j % 2 == 0 else base
-        return mid if j % 3 == 1 else base
+            return bar if (j + i) % 3 == 0 else base
+        return shade if j % 3 == 1 else base
 
     def front(f, i, j, w, h, fi):
-        """The breast: a cock's plain chestnut, a hen's pale buff speckled dark."""
+        """The breast: a cock's plain chestnut, a hen's pale buff lightly speckled."""
         if sex == "male":
-            return L["breast"] if hashed(i, j, f) else mix(L["breast"], dark, 0.2)
-        return mix(dark, L["breast"], 0.35) if (i + 2 * j) % 4 == 1 and j > 0 else L["breast"]
+            return L["breast"] if (i + j) % 4 else mix(L["breast"], L["dark"], 0.15)
+        return mix(L["breast"], L["dark"], 0.3) if (i + 2 * j) % 5 == 1 and j > 0 else L["breast"]
 
     def body(f, i, j, w, h, fi):
         if f == "top":
@@ -111,68 +113,76 @@ def adult(p, sex):
             if fi < 2:
                 return front(f, i, j, w, h, fi)              # the breast wraps round the front
             if j == h - 1:
-                return mix(base, L["belly"], 0.6)
-            return pale if j == 0 else (mid if (fi + j) % 3 == 0 else base)
+                return mix(base, L["belly"], 0.5)
+            if j == 0:
+                return streak
+            return bar if (fi + 2 * j) % 5 == 0 else base
         if f == "south":
-            return pale if j == 0 and i in (1, w - 2) else (mid if (i + j) % 2 else base)
+            return streak if i in (1, w - 2) and j < h - 1 else (shade if j == h - 1 else base)
         if f == "bottom":
             return L["belly"]
         return front(f, i, j, w, h, fi)
 
     p.paint("torso", body)
-    p.paint("back", lambda f, i, j, w, h, fi: back(f, i, j, w, h, fi) if f == "top" else (pale if f in ("east", "west") else base))
+    p.paint("back", lambda f, i, j, w, h, fi: back(f, i, j, w, h, fi) if f == "top" else (streak if f in ("east", "west") else base))
     p.paint("breast", lambda f, i, j, w, h, fi: back(f, i, j, w, h, fi) if f == "top" else front(f, i, j, w, h, fi))
-    p.paint("belly", lambda f, i, j, w, h, fi: L["belly"] if f in ("bottom", "north") else mix(base, L["belly"], 0.6))
-    p.paint("tail", lambda f, i, j, w, h, fi: pale if (f == "top" and i == 1) or (f == "south" and j == 0 and i == 1) else (dark if (i + j) % 2 == 0 else mid))
+    p.paint("tail", lambda f, i, j, w, h, fi: streak if f in ("top", "south") and i == 1 else (bar if (i + j) % 3 == 0 else shade))
 
     def wing(f, i, j, w, h, fi):
-        """Folded wing: a buff streak along the top, barred coverts, dusky primaries behind."""
+        """Folded wing: a buff streak along the top, dashed coverts, dusky primaries behind."""
         if f in ("east", "west"):
             if fi >= w - 1:
-                return mix(base, dark, 0.6) if j else mid    # primaries over the rump
+                return bar                                     # primaries over the rump
             if j == 0:
-                return pale
+                return streak
             if j == 1:
-                return dark if fi % 2 == 1 else base
-            return pale if fi % 2 == 0 and fi else mid
+                return bar if fi % 3 == 1 else base
+            return shade if fi % 3 != 2 else base
         if f == "top":
-            return pale
-        return mid
+            return streak
+        return shade
     p.paint("wing", wing)
+
+    crown = mix(base, L["dark"], 0.55)
+    stripe = mix(base, L["pale"], 0.5)
 
     def head(f, i, j, w, h, fi):
         if f == "top":
-            return mix(pale, base, 0.3) if i in (1, 2) else dark  # the pale crown stripe
+            return stripe if i in (1, 2) else crown            # the pale crown stripe
         if f == "north":
             if j == 0:
-                return mix(pale, base, 0.3) if i in (1, 2) else dark
+                if i in (0, w - 1):
+                    return L["brow"]                           # the eyebrow, over each eye
+                return stripe
             return L["face"] if j == 1 else L["throat"]
         if f in ("east", "west"):
             if j == 0:
-                return L["brow"]                               # the pale eyebrow
+                return L["brow"]
             if j == 1:
-                return L["face"] if fi == 0 else dark           # dark stripe back from the eye
-            return L["throat"] if fi < 2 else mid
+                return L["face"] if fi == 0 else crown          # a stripe back from the eye
+            return L["throat"] if fi < 2 else shade
         if f == "bottom":
             return L["throat"]
-        return dark if j == 0 and i not in (1, 2) else mid    # the nape
+        return crown if j == 0 and i not in (1, 2) else shade  # the nape
     p.paint("head", head)
     plain_eyes(p, "head", 1)
     p.paint("bill", lambda f, i, j, w, h, fi: mix(BILL, (150, 140, 128), 0.3) if f == "top" else BILL)
     p.paint("leg", flat(LEGS), light=False)
-    p.paint("foot", lambda f, i, j, w, h, fi: mix(LEGS, (150, 100, 76), 0.3) if f == "top" and j == 0 else LEGS)
+    p.paint("foot", lambda f, i, j, w, h, fi: mix(LEGS, (150, 100, 76), 0.25) if f == "top" and j == 0 else LEGS)
 
 
 def chick(p):
-    down, stripe, pale = (226, 196, 128), (110, 76, 46), (242, 222, 170)
+    down, pale = (226, 196, 128), (240, 220, 168)
+    stripe = mix(down, (110, 76, 46), 0.5)
+    soft = mix(down, (110, 76, 46), 0.2)
 
     def body(f, i, j, w, h, fi):
         if f == "top":
-            return stripe if i in (0, 2, w - 1) else down       # three dark stripes down the back
+            return stripe if i in (1, w - 2) else (soft if i == w // 2 else down)  # two stripes down the back
         if f in ("east", "west"):
-            return stripe if j == 0 and fi % 2 == 0 else (pale if j == h - 1 else down)
+            return soft if j == 0 else (pale if j == h - 1 else down)
         if f == "south":
-            return stripe if i in (0, 2, w - 1) and j < h - 1 else down
+            return stripe if i in (1, w - 2) and j < 2 else down
         if f in ("north", "bottom"):
             return pale
         return down
@@ -180,14 +190,14 @@ def chick(p):
 
     def head(f, i, j, w, h, fi):
         if f == "top":
-            return stripe if i == 1 else down                   # a dark cap stripe
+            return stripe if i in (1, 2) else down              # a soft cap stripe
         if f in ("east", "west"):
-            return stripe if j == 1 and fi >= 1 else down       # dark streak behind the eye
+            return soft if j == 1 and fi >= 1 else down         # a streak behind the eye
         if f == "north":
-            return mix(down, stripe, 0.4) if j == 0 and i == 1 else down
+            return soft if j == 0 and i in (1, 2) else down
         return down if f != "bottom" else pale
     p.paint("b_head", head)
     plain_eyes(p, "b_head", 1)
     p.paint("b_bill", flat(mix(BILL, (150, 120, 96), 0.4)))
-    p.paint("b_wing", lambda f, i, j, w, h, fi: stripe if f in ("east", "west") and j == 0 else mix(down, stripe, 0.25))
+    p.paint("b_wing", lambda f, i, j, w, h, fi: soft if f in ("east", "west") and j == 0 else mix(down, soft, 0.5))
     p.paint("b_leg", flat(LEGS), light=False)

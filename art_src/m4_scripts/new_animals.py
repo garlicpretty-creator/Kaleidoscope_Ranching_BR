@@ -1,14 +1,16 @@
-"""1.1 追加 新動物 (docs/1.1_追加企劃書.md 二): stand-in models and textures for the quail, the
-turkey and the alpaca, until the hand-made art.
+"""1.1 追加 新動物 (docs/1.1_追加企劃書.md 二): models and textures for the quail, the turkey and
+the alpaca. The turkey and alpaca are stand-ins until the hand-made art.
 
-- quail: its own rig and painting in quail.py.
+- quail: the finished model, its own rig and painting in quail.py (BONES, adult, chick); built
+  from here like the others.
 - turkey: the duck's rig (duck.py BONES) scaled up, repainted. Same bone names, so
   client.py's walk, tools/gen_sleep.mjs (roost) and tools/gen_actions.mjs work unchanged.
 - alpaca: a long-necked quadruped on the yak's conventions (a_*, b_*, legs a_leg_fl..), with its
   fleece in wool_* bones that client.py hides once it is sheared.
 
 Eyes are painted with boxuv.plain_eyes so gen_sleep can lay eyelids over them.
-UVs are packed afresh (blocks_m3.autouv): scaled cubes no longer fit the duck's sheet.
+UVs are packed afresh (blocks_m3.autouv): scaled cubes no longer fit the duck's sheet
+(quail.py packs its own rig the same way).
 
 Run with: python art_src/m4_scripts/new_animals.py [quail|turkey|alpaca ...]
 then python art_src/m4_scripts/client.py <id> for each, and npm run generate.

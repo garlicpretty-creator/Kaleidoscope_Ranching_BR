@@ -31,7 +31,7 @@ SPECIES = {
     },
     # 1.1 追加 新動物 (new_animals.py)
     "quail": {
-        "egg": ("#8A6A4A", "#E8D8B8"), "scale_male": 1.05, "baby_look": True,
+        "egg": ("#8A6A4A", "#E8D8B8"), "scale_male": 1.1, "scale_female": 0.95, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 90", "leg_right": f"-{SWING} * 90"},
         "wings": True,
     },
