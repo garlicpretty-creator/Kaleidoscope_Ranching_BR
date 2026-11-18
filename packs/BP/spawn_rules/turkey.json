@@ -32,10 +32,6 @@
             {
               "test": "has_biome_tag",
               "value": "forest"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "bop_like_forest"
             }
           ]
         }

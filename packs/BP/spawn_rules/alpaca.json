@@ -36,14 +36,6 @@
             {
               "test": "has_biome_tag",
               "value": "extreme_hills"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "bop_like_meadow"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "bop_like_extreme_hills"
             }
           ]
         }

@@ -22,7 +22,8 @@ import { getBlockData, setBlockData } from "../core/blockStore.js";
 import { playAction } from "../core/actions.js";
 import { emitRanchEvent } from "../core/events.js";
 import { rid } from "../core/ids.js";
-import { consumeMainHand, isCreative, mainHand } from "../core/inventory.js";
+import { isBaby } from "../core/animal.js";
+import { consumeMainHand, mainHand } from "../core/inventory.js";
 import { today } from "../core/time.js";
 import { KIND, KIND_TIER } from "../data/feeds.js";
 import { CFG_PASTURE, GRAZED_DAY, PASTURE, PASTURE_GRASS_TAG, grazeOf } from "../data/pasture.js";
@@ -89,14 +90,6 @@ function trample(block, count) {
   }
 }
 
-const isBaby = (e) => {
-  try {
-    return e.hasComponent("minecraft:is_baby");
-  } catch {
-    return false;
-  }
-};
-
 function standsOnGrass(e) {
   try {
     const { x, y, z } = e.location;
@@ -106,10 +99,7 @@ function standsOnGrass(e) {
   }
 }
 
-const isDay = () => {
-  const time = world.getTimeOfDay();
-  return time < 12000;
-};
+const isDay = () => world.getTimeOfDay() < 12000;
 
 /** One clock pass. Returns how many animals it fed (tests). */
 export function tickPasture(block, random = Math.random) {
@@ -187,7 +177,7 @@ export function sowPasture(player, block) {
     }
   }
   if (!sown) return 0;
-  if (!isCreative(player)) consumeMainHand(player, 1);
+  consumeMainHand(player, 1); // not in creative
   block.dimension.playSound("item.bone_meal.use", block.location);
   return sown;
 }

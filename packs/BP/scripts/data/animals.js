@@ -9,8 +9,7 @@
 // - treat:         favourite treat, owned by M2 (data/species.js).
 // - largeCarcass:  large carcasses do not stack and remember the animal's sex (males yield more).
 // - biomes:        natural spawn biome tags for animals that have no vanilla counterpart
-//                  (descriptive; the spawn rules come from tools/gen_entities.mjs SPAWN, which
-//                  also accepts Biomes O' Plenty's `bop_like_<tag>` for each tag).
+//                  (descriptive; the spawn rules come from tools/gen_entities.mjs SPAWN).
 // - breedItems:    fed to an adult to put it in love (gestation species only; birds breed through fertilized eggs).
 // - temptItems:    items the animal follows.
 //

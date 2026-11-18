@@ -50,28 +50,18 @@ export function startVanillaParity() {
     },
   });
 
+  // Shears on an unsheared adult: the sheep gives 1–3 wool of its colour, the alpaca (1.1 追加) 1–2 of its fleece.
+  const fleeceOf = {
+    [SHEEP]: (entity) => new ItemStack(`minecraft:${COLORS[colorOf(entity) & 15]}_wool`, 1 + Math.floor(Math.random() * 3)),
+    [ALPACA]: () => new ItemStack(ALPACA_WOOL, 1 + Math.floor(Math.random() * 2)),
+  };
   registerEntityInteraction({
-    id: "m1:shear_sheep",
+    id: "m1:shear",
     priority: 60,
     match: ({ entity, item }) =>
-      entity.typeId === SHEEP && item?.typeId === "minecraft:shears" && !isBaby(entity) && !entity.hasComponent("minecraft:is_sheared"),
+      Boolean(fleeceOf[entity.typeId]) && item?.typeId === "minecraft:shears" && !isBaby(entity) && !entity.hasComponent("minecraft:is_sheared"),
     handle: ({ player, entity }) => {
-      const wool = `minecraft:${COLORS[colorOf(entity) & 15]}_wool`;
-      const count = 1 + Math.floor(Math.random() * 3);
-      entity.dimension.spawnItem(new ItemStack(wool, count), entity.location);
-      entity.triggerEvent("kaleidoscope_ranching:shear");
-      entity.dimension.playSound("mob.sheep.shear", entity.location);
-      damageMainHand(player);
-    },
-  });
-
-  registerEntityInteraction({
-    id: "m1:shear_alpaca",
-    priority: 60,
-    match: ({ entity, item }) =>
-      entity.typeId === ALPACA && item?.typeId === "minecraft:shears" && !isBaby(entity) && !entity.hasComponent("minecraft:is_sheared"),
-    handle: ({ player, entity }) => {
-      entity.dimension.spawnItem(new ItemStack(ALPACA_WOOL, 1 + Math.floor(Math.random() * 2)), entity.location);
+      entity.dimension.spawnItem(fleeceOf[entity.typeId](entity), entity.location);
       entity.triggerEvent("kaleidoscope_ranching:shear");
       entity.dimension.playSound("mob.sheep.shear", entity.location);
       damageMainHand(player);

@@ -67,8 +67,7 @@ def crank_z(prefix, parent, z, cx, cy, length, knob_dz=0):
 
 
 def shift(prefix, parent, cubes, offsets):
-    """The cubes moved by (dx, dy, dz) in each frame; a cube may also be given per frame as
-    (name, origin, size) lists of the same length as offsets via a callable."""
+    """The cubes moved by (dx, dy, dz) in each frame."""
     return [(f"{prefix}_{i}", parent, [0, 0, 0],
              [(name, [o[0] + dx, o[1] + dy, o[2] + dz], s) for name, o, s in cubes])
             for i, (dx, dy, dz) in enumerate(offsets)]

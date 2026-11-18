@@ -37,14 +37,6 @@
             {
               "test": "has_biome_tag",
               "value": "jungle"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "bop_like_swamp"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "bop_like_jungle"
             }
           ]
         }

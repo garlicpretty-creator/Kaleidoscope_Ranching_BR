@@ -62,11 +62,6 @@ const SPAWN = {
   alpaca: [{ tags: ["meadow", "extreme_hills"], blocks: ["minecraft:grass_block", "minecraft:stone"], weight: 2, herd: [2, 3], density: 3 }],
 };
 
-// ## Biomes O' Plenty (our Bedrock port; see its docs/HANDSHAKE.md) keeps vanilla vegetation
-// ## tags off its biomes and instead tags each one `bop_like_<tag>` for the vanilla biomes it
-// ## replaces, so every tag X above also accepts `bop_like_X`. Without BOP these never match.
-const withBopTags = (tags) => [...tags, ...tags.map((tag) => `bop_like_${tag}`)];
-
 const range = (n) => Array.from({ length: n }, (_, i) => i);
 
 // A gander drives hostile mobs off: adult males only (babies never pick a target).
@@ -483,7 +478,7 @@ for (const [id, rules] of Object.entries(SPAWN)) {
             "minecraft:weight": { default: rule.weight },
             "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
             "minecraft:density_limit": { surface: rule.density },
-            "minecraft:biome_filter": { any_of: withBopTags(rule.tags).map((tag) => ({ test: "has_biome_tag", value: tag })) },
+            "minecraft:biome_filter": { any_of: rule.tags.map((tag) => ({ test: "has_biome_tag", value: tag })) },
           })),
         },
       },
