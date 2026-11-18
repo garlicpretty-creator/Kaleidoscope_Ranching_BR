@@ -80,6 +80,15 @@ UI = {
     "need.water": ("飲水", "饮水", "Water"),
     "need.groom": ("照料", "照料", "Care"),
     "need.clean": ("清潔", "清洁", "Clean"),
+    # 1.1 追加 草場與放牧 (systems/pasture.js)
+    "settings.pasture": ("放牧（草場界樁範圍內的草可以當飼料）", "放牧（草场界桩范围内的草可以当饲料）", "Grazing (grass around a pasture post counts as feed)"),
+    "settings.block_fx": ("方塊動畫與粒子（工作台轉動、煙與熱氣）", "方块动画与粒子（工作台转动、烟与热气）", "Block animations and particles (moving stations, smoke and steam)"),
+    "observe.needs.grazed": ("今天在草場吃草。", "今天在草场吃草。", "Grazed on a pasture today."),
+    "pasture.title": ("草場", "草场", "Pasture"),
+    "pasture.grass": ("今天的草：%s 格，已吃掉 %s 格", "今天的草：%s 格，已吃掉 %s 格", "Today's grass: %s blocks, %s eaten"),
+    "pasture.rested": ("§a休養過：今天在這裡吃飽的動物好感度多加一點。§r", "§a休养过：今天在这里吃饱的动物好感度多加一点。§r", "§aRested: animals that graze here today gain a little more affection.§r"),
+    "pasture.not_rested": ("連續 2 天沒有動物吃草，草場就算休養過。", "连续 2 天没有动物吃草，草场就算休养过。", "Leave it ungrazed for two days to rest it."),
+    "pasture.off": ("放牧已在設定中關閉。", "放牧已在设置中关闭。", "Grazing is turned off in the settings."),
     "roster.title": ("耳標名冊", "耳标名册", "Ear Tag Roster"),
     "roster.count": ("共 %s 隻掛上耳標的動物", "共 %s 只挂上耳标的动物", "%s tagged animals"),
     "roster.empty": ("還沒有掛上耳標的動物。", "还没有挂上耳标的动物。", "No tagged animals yet."),
@@ -269,8 +278,10 @@ def block_defs():
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#5b5b5b",
         f"{NS}:auto_feeder": {},
     })
-    B["chaff_cutter"] = dict(components={
-        **look("chaff_cutter", "kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks"),
+    # 1.1 追加 方塊動畫: the blade's two positions (data/stationFrames.js, core/blockFrames.js)
+    cutter_model = handmade("chaff_cutter", {f"blade_{n}": f"{q('frame')} == {n}" for n in (0, 1)})
+    B["chaff_cutter"] = dict(states=state("frame", 0, 1) if cutter_model else {}, components={
+        **(cutter_model or full("kr_chaff_cutter_top", "kr_chaff_cutter_side", "kr_planks")),
         "minecraft:destructible_by_mining": {"seconds_to_destroy": 2.0}, "minecraft:map_color": "#8a5a32",
         "minecraft:crafting_table": {"table_name": f"tile.{NS}:chaff_cutter.name",
                                      "crafting_tags": [f"{NS}_chaff_cutter"]},

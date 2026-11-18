@@ -79,6 +79,8 @@ const OVERRIDES = {
   lasso: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:lasso": {}, "minecraft:durability": { max_durability: 64 }, "minecraft:cooldown": { category: "kr_lasso", duration: 1 } } },
   feather_duster: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:feather_duster": {}, "minecraft:durability": { max_durability: 64 } } },
   egg_candler: { stack: 1, format: "1.21.90", components: { "kaleidoscope_ranching:egg_candler": {} } },
+  // 1.1 追加 草場與放牧 (systems/pasture.js)
+  pasture_seed: { stack: 64, format: "1.21.90", components: { "kaleidoscope_ranching:pasture_seed": {} } },
   vet_medicine: { stack: 16 },
   soap: { stack: 16 },
   // Tavern shaker drinks (api/tavern.js); drinking gives the bottle back.
@@ -252,6 +254,7 @@ const RECIPES = [
   shapeless("down_pillow", [{ item: rid("down"), count: 3 }, { item: rid("felt") }], "down_pillow"),
   shapeless("down_quilt", [{ item: rid("down"), count: 4 }, { item: rid("plush_cloth"), count: 2 }], "down_quilt"),
   shapeless("lasso", [{ item: rid("oiled_leather"), count: 2 }, { item: "minecraft:string" }], "lasso"),
+  shapeless("pasture_seed", [{ item: rid("alfalfa_seeds") }, { item: "minecraft:wheat_seeds" }], "pasture_seed", 2),
   shapeless("feather_duster", [{ item: "minecraft:feather", count: 3 }, { item: "minecraft:stick" }], "feather_duster"),
   shapeless("felt", [{ item: rid("yarn"), count: 4 }], "felt", 2),
   shapeless("string_from_yarn", [{ item: rid("yarn") }], "minecraft:string"),
@@ -283,6 +286,9 @@ const RECIPES = [
   // Goose eggs work wherever a vanilla egg does
   // (Cookery's egg dishes and the vanilla cake take only minecraft:egg).
   shapeless("egg_from_goose_egg", [{ item: rid("goose_egg") }], "minecraft:egg", 2),
+  // 1.1 追加: four small quail eggs make one vanilla egg; a turkey egg makes two, like the goose's.
+  shapeless("egg_from_quail_egg", [{ item: rid("quail_egg"), count: 4 }], "minecraft:egg"),
+  shapeless("egg_from_turkey_egg", [{ item: rid("turkey_egg") }], "minecraft:egg", 2),
   // Restores the vanilla goat horn, which Ranching's goats no longer drop by ramming.
   shapeless("goat_horn", [{ item: rid("billy_goat_horn") }], "minecraft:goat_horn"),
   // Two horns, not one: one horn alone is the horn cup, and two crafting-table recipes with the same

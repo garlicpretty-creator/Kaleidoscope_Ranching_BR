@@ -249,6 +249,47 @@ export const DISHES = [
     slots: [[r("truffle")], ["minecraft:egg"]],
     look: ["plate", [240, 210, 110]],
   },
+  // 1.1 追加 新動物的料理 (docs/1.1_追加企劃書.md 三)
+  {
+    id: "tea_quail_eggs", zh: "茶葉鵪鶉蛋", en: "Tea Quail Eggs", food: [4, 0.6], station: "stockpot", carrier: BOWL, time: 300,
+    slots: [[r("quail_egg")], [r("quail_egg")], [KC("dried_tea_leaves")]],
+    look: ["bowl", [150, 104, 70]],
+  },
+  {
+    id: "tomato_quail_eggs", zh: "番茄炒鵪鶉蛋", en: "Tomato and Quail Egg Stir-fry", food: [6, 0.6], station: "wok", carrier: BOWL, time: 200,
+    slots: [[r("quail_egg")], [r("quail_egg")], [KC("tomato")]],
+    look: ["bowl", [220, 110, 70]],
+  },
+  {
+    id: "quail_egg_shumai", zh: "鵪鶉蛋燒賣", en: "Quail Egg Shumai", food: [7, 0.7], station: "steamer", carrier: "", time: 300,
+    input: r("raw_shumai"),
+    look: ["plate", [240, 220, 170]],
+  },
+  {
+    id: "pan_fried_quail", zh: "香煎鵪鶉", en: "Pan-fried Quail", food: [7, 0.7], station: "wok", carrier: "", time: 200,
+    slots: [[r("quail_meat")], [r("quail_meat")]],
+    look: ["plate", [176, 112, 64]],
+  },
+  {
+    id: "roast_turkey", zh: "烤全火雞", en: "Roast Turkey", food: [12, 0.85], station: "furnace", carrier: "",
+    input: r("whole_turkey"),
+    look: ["plate", [196, 120, 60]],
+  },
+  {
+    id: "turkey_leg_stew", zh: "火雞腿燉菜", en: "Turkey Leg Stew", food: [10, 0.8], station: "stockpot", carrier: BOWL, time: 600,
+    slots: [[r("turkey_leg")], ["minecraft:potato"], ["minecraft:carrot"]],
+    look: ["bowl", [190, 130, 80]],
+  },
+  {
+    id: "turkey_breast_sandwich", zh: "火雞胸三明治", en: "Turkey Breast Sandwich", food: [8, 0.75], station: "crafting", carrier: "",
+    slots: [[r("cooked_turkey_breast")], ["minecraft:bread"], [KC("lettuce")]],
+    look: ["plate", [226, 190, 130]],
+  },
+  {
+    id: "alpaca_risotto", zh: "羊駝肉燉飯", en: "Alpaca Meat Risotto", food: [9, 0.8], station: "wok", carrier: BOWL, time: 300,
+    slots: [[r("alpaca_meat")], [KC("cooked_rice")]],
+    look: ["bowl", [210, 180, 140]],
+  },
 
   // --- 1.1 起司線 ----------------------------------------------------------------
   {
@@ -331,6 +372,11 @@ export const DISH_PREPS = [
   {
     id: "raw_egg_tart", zh: "蛋塔生料", en: "Unbaked Egg Tart",
     makes: [[r("custard"), KC("raw_dough")]],
+  },
+  // 1.1 追加: the steamer takes one input, so shumai is wrapped first
+  {
+    id: "raw_shumai", zh: "燒賣生料", en: "Unsteamed Shumai",
+    makes: [[r("quail_egg"), r("pork_mince"), KC("raw_dough")]],
   },
   {
     id: "raw_pizza", zh: "披薩生料", en: "Unbaked Pizza",

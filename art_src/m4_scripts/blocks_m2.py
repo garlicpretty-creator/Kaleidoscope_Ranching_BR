@@ -50,9 +50,10 @@ CHAFF_CUTTER = [
         ("guide", [3, 12, -8], [1, 2, 13]),
         ("straw", [-3, 12, -8], [6, 1, 12]),
         ("hinge", [5, 12, 4], [2, 4, 3]),
-        ("blade", [-6, 13, 5], [11, 3, 1]),
-        ("grip", [-8, 14, 4], [2, 1, 3]),
     ]),
+    # 1.1 追加 方塊動畫: the blade comes down when the cutter is opened (station_frames.py)
+    ("blade_0", "cutter", [0, 0, 0], [("blade", [-6, 13, 5], [11, 3, 1]), ("grip", [-8, 14, 4], [2, 1, 3])]),
+    ("blade_1", "cutter", [0, 0, 0], [("blade", [-6, 12, 4], [11, 2, 1]), ("grip", [-8, 12, 3], [2, 1, 3])]),
 ]
 
 FEED_MIXER = [

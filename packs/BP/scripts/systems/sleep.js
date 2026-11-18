@@ -225,7 +225,8 @@ export function checkSleepers() {
       sleepers.delete(id);
       continue;
     }
-    const watchful = animal.typeId === rid("goose") && sexOf(animal) === "male";
+    // The guards (the gander, 1.1 追加 the alpaca male) sleep lightly.
+    const watchful = (animal.typeId === rid("goose") || animal.typeId === rid("alpaca")) && sexOf(animal) === "male";
     if (isLeashed(animal)) wakeUp(animal, "lead");
     else if (hostileNear(animal, watchful ? GOOSE_WATCH_RANGE : HOSTILE_RANGE)) wakeUp(animal, "hostile");
     else if (pushedByPlayer(animal)) wakeUp(animal, "pushed");

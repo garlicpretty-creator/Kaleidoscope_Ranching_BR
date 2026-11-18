@@ -210,12 +210,17 @@ function lay(block, data) {
         (bird) => !isBaby(bird) && sexOf(bird) === "male"
       );
       for (let d = day - days + 1; d <= day; d++) {
+        // 1.1 追加: some birds lay only every few days (the turkey), or more than one egg (the quail).
+        if ((species.layEvery ?? 1) > 1 && d % species.layEvery !== 0) continue;
         const { produces } = production(hen, d);
         if (!produces) continue;
-        const egg = rid(hasMale && Math.random() < fertilizedChance(hen) ? species.fertilizedEgg : species.dailyProduct.item);
+        const clutch = [];
+        for (let n = 0; n < (species.eggsPerDay ?? 1); n++) {
+          clutch.push(rid(hasMale && Math.random() < fertilizedChance(hen) ? species.fertilizedEgg : species.dailyProduct.item));
+        }
         // 1.1 鈣質飼料: a hen that ate calcium feed today may lay one more plain egg.
         const extra = d === day && ateCalciumToday(hen) && Math.random() < CALCIUM_EXTRA_EGG_CHANCE ? 1 : 0;
-        for (const one of extra ? [egg, rid(species.dailyProduct.item)] : [egg]) {
+        for (const one of extra ? [...clutch, rid(species.dailyProduct.item)] : clutch) {
           if (storedCount(data) < NEST_CAPACITY) data.eggs[one] = (data.eggs[one] ?? 0) + 1;
           else block.dimension.spawnItem(new ItemStack(one, 1), at);
         }

@@ -36,7 +36,7 @@ const WOOL_COLORS = [
 // ## The rack's carcass state lists the built-in animals. A carcass from
 // ## another add-on (api/ranchingApi.js) borrows one of those looks: the
 // ## `look` it registered, else a cow for large carcasses and a chicken for small.
-const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak"]);
+const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak", "quail", "turkey", "alpaca"]);
 
 /** Cuts for a carcass (full item id); data saved by older builds used short ids. */
 function cutsOf(carcass) {
@@ -216,7 +216,8 @@ export function rollCut(cut, data) {
   let amount = min + Math.floor(Math.random() * (max - min + 1));
   if (data.male && cut.maleBonus) amount += cut.maleBonus;
   let typeId = rid(cut.item);
-  if (cut.ifUnshorn) typeId = `minecraft:${WOOL_COLORS[(data.wool ?? 0) & 15]}_wool`;
+  // The sheep's wool comes off in its own colour; other fleece (the alpaca's) is its own item.
+  if (cut.ifUnshorn && cut.item === "minecraft:white_wool") typeId = `minecraft:${WOOL_COLORS[(data.wool ?? 0) & 15]}_wool`;
   return amount > 0 ? [{ typeId, amount }] : [];
 }
 
@@ -283,6 +284,27 @@ function cut(block, player, data) {
   setVisual(block, data);
 }
 
+// 1.1 追加 整隻火雞 (docs/1.1_追加企劃書.md 二): once a turkey is plucked and nothing else is cut,
+// sneaking with an empty hand takes it down whole, for the oven, instead of cutting it up.
+const WHOLE = { [rid("turkey_carcass")]: rid("whole_turkey") };
+
+/** Whole bird for a plucked carcass still uncut, or undefined. */
+export function wholeOf(data) {
+  const whole = WHOLE[rid(data.carcass)];
+  if (!whole) return undefined;
+  return data.stroke === skinStrokes(cutsOf(data.carcass)) ? whole : undefined;
+}
+
+function takeWhole(block, player, data) {
+  const whole = wholeOf(data);
+  if (!whole) return false;
+  give(player, whole, 1);
+  clearBlockData(block.dimension, block.location);
+  setVisual(block, null);
+  block.dimension.playSound("dig.cloth", block.location);
+  return true;
+}
+
 /** Drops what is still on a broken rack: the whole carcass, or the remaining cuts. */
 function spill(dimension, location, typeId) {
   const data = takeBlockData(dimension, location, null, typeId);
@@ -339,6 +361,7 @@ export const butcherRackComponent = {
       return;
     }
     if (item && butcherEntry(item.typeId)) return tell(player, "occupied");
+    if (!item && player.isSneaking && takeWhole(block, player, data)) return;
     if (!isBlade(item)) return tell(player, "need_blade");
     cut(block, player, data);
   },

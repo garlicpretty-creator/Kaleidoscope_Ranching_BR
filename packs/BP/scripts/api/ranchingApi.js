@@ -35,6 +35,7 @@ import { isSick, registerRemedy as addRemedy } from "../systems/disease.js";
 import { BLANKET, isAsleep, SLEEP_POSES } from "../systems/sleep.js";
 import { HARNESSED } from "../systems/workAnimals.js";
 import { PACKED } from "../systems/packBag.js";
+import { GRAZED_DAY, setGraze } from "../data/pasture.js";
 
 export const API_VERSION = 1;
 export const PACK_VERSION = "1.1.0";
@@ -47,6 +48,8 @@ export const CAPABILITIES = [
   "query_animal", "care_events",
   // 1.1 (docs/API.md "1.1 新增")
   "recipes_1_1", "butcher_offal", "animal_1_1", "feed_1_1", "remedy", "events_1_1", "query_1_1", "tag_contract",
+  // 1.1 追加 草場與新夥伴 (docs/API.md "草場與新夥伴")
+  "animal_pasture", "events_pasture", "query_pasture",
 ];
 
 /** Most entries of each kind one world session accepts, so a broken add-on cannot grow memory forever. */
@@ -119,6 +122,14 @@ function room(kind, key) {
  *                                            kaleidoscope_ranching:put_on_pack_bag)
  *   coldHardy?: boolean                      no cold nights, like the yak
  *   forage?: { item, chance?, minHearts? }   digs this up in forests, like the pig's truffle
+ *   1.1 追加 (capability animal_pasture), all optional:
+ *   graze?: 1–6                              grass blocks it eats a day on a pasture (young ones half)
+ *   eggsPerDay?: 1–4                         egg animals: eggs a hen lays on a laying day
+ *   layEvery?: 1–7                           egg animals: lays every this many days
+ *   animations?: { eat?, drink?, petted?, graze? }  the add-on's own animation names; Ranching sets the
+ *                                            synced enum property kaleidoscope_ranching:action
+ *                                            ("none" | "eat" | "drink" | "petted" | "graze") and the
+ *                                            add-on's resource pack plays them
  * }
  */
 export function registerAnimal(data) {
@@ -179,8 +190,25 @@ export function registerAnimal(data) {
     row.forage = { item: itemId(forage.item, "forage.item"), chance, minHearts: int(forage.minHearts ?? 5, "forage.minHearts", 0, 5) };
   }
 
+  let graze;
+  if (data.graze !== undefined) graze = int(data.graze, "graze", 1, 6);
+  if (data.eggsPerDay !== undefined || data.layEvery !== undefined) {
+    if (reproduction !== "egg") fail("only egg animals take eggsPerDay or layEvery");
+    if (data.eggsPerDay !== undefined) row.eggsPerDay = int(data.eggsPerDay, "eggsPerDay", 1, 4);
+    if (data.layEvery !== undefined) row.layEvery = int(data.layEvery, "layEvery", 1, 7);
+  }
+  if (data.animations !== undefined) {
+    const animations = object(data.animations, "animations");
+    for (const [key, value] of Object.entries(animations)) {
+      if (!["eat", "drink", "petted", "graze"].includes(key)) fail(`animations.${key} is not an action`);
+      if (typeof value !== "string" || value.length > 128) fail(`animations.${key} must be an animation name`);
+    }
+    row.animations = { ...animations };
+  }
+
   room("animal", id);
   if (!addAnimal(row)) fail("built-in animals cannot be replaced");
+  if (graze !== undefined) setGraze(id, graze);
   registerSpecies(id, { key: id, eats, treat, brushDrops });
   return id;
 }
@@ -300,6 +328,8 @@ export function queryAnimal(data) {
     blanket: entity.getDynamicProperty(BLANKET) === true,
     harness: entity.getDynamicProperty(HARNESSED) === true,
     packBag: entity.getDynamicProperty(PACKED) === true,
+    // 1.1 追加 (capability query_pasture)
+    grazing: entity.getDynamicProperty(GRAZED_DAY) === day,
   });
   if (pregnant) info.dueInDays = due - day;
   const tag = entity.getDynamicProperty("kr:ear_tag");

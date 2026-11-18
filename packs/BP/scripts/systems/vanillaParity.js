@@ -11,6 +11,9 @@ import { registerEntityInteraction } from "../core/interact.js";
 import { consumeMainHand, damageMainHand } from "../core/inventory.js";
 
 const SHEEP = rid("sheep");
+// 1.1 追加: the alpaca is sheared with shears too, for its own fleece.
+const ALPACA = rid("alpaca");
+const ALPACA_WOOL = rid("alpaca_wool");
 // Mirrors minecraft:color for the client (the render controller picks the wool texture from it).
 const WOOL_COLOR = rid("wool_color");
 const PIG = rid("pig");
@@ -47,15 +50,18 @@ export function startVanillaParity() {
     },
   });
 
+  // Shears on an unsheared adult: the sheep gives 1–3 wool of its colour, the alpaca (1.1 追加) 1–2 of its fleece.
+  const fleeceOf = {
+    [SHEEP]: (entity) => new ItemStack(`minecraft:${COLORS[colorOf(entity) & 15]}_wool`, 1 + Math.floor(Math.random() * 3)),
+    [ALPACA]: () => new ItemStack(ALPACA_WOOL, 1 + Math.floor(Math.random() * 2)),
+  };
   registerEntityInteraction({
-    id: "m1:shear_sheep",
+    id: "m1:shear",
     priority: 60,
     match: ({ entity, item }) =>
-      entity.typeId === SHEEP && item?.typeId === "minecraft:shears" && !isBaby(entity) && !entity.hasComponent("minecraft:is_sheared"),
+      Boolean(fleeceOf[entity.typeId]) && item?.typeId === "minecraft:shears" && !isBaby(entity) && !entity.hasComponent("minecraft:is_sheared"),
     handle: ({ player, entity }) => {
-      const wool = `minecraft:${COLORS[colorOf(entity) & 15]}_wool`;
-      const count = 1 + Math.floor(Math.random() * 3);
-      entity.dimension.spawnItem(new ItemStack(wool, count), entity.location);
+      entity.dimension.spawnItem(fleeceOf[entity.typeId](entity), entity.location);
       entity.triggerEvent("kaleidoscope_ranching:shear");
       entity.dimension.playSound("mob.sheep.shear", entity.location);
       damageMainHand(player);

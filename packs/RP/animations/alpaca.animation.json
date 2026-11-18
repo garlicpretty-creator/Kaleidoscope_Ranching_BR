@@ -1,0 +1,73 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.kaleidoscope_ranching.alpaca.walk": {
+      "loop": true,
+      "bones": {
+        "a_leg_fl": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "b_leg_fl": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "a_leg_br": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "b_leg_br": {
+          "rotation": [
+            "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "a_leg_fr": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "b_leg_fr": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "a_leg_bl": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "b_leg_bl": {
+          "rotation": [
+            "-math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed * 60",
+            0,
+            0
+          ]
+        },
+        "b_head": {
+          "rotation": [
+            "q.target_x_rotation",
+            "q.target_y_rotation",
+            0
+          ]
+        }
+      }
+    }
+  }
+}

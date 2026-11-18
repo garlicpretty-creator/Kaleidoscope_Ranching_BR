@@ -23,6 +23,12 @@
           1,
           2,
           3
+        ],
+        "kaleidoscope_ranching:frame": [
+          0,
+          1,
+          2,
+          3
         ]
       }
     },
@@ -33,7 +39,11 @@
           "busy": "q.block_state('kaleidoscope_ranching:busy')",
           "busy_1": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 1",
           "busy_2": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 2",
-          "busy_3": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 3"
+          "busy_3": "q.block_state('kaleidoscope_ranching:busy') && q.block_state('kaleidoscope_ranching:stage') == 3",
+          "beater_0": "q.block_state('kaleidoscope_ranching:frame') == 0",
+          "beater_1": "q.block_state('kaleidoscope_ranching:frame') == 1",
+          "beater_2": "q.block_state('kaleidoscope_ranching:frame') == 2",
+          "beater_3": "q.block_state('kaleidoscope_ranching:frame') == 3"
         }
       },
       "minecraft:display_name": "tile.kaleidoscope_ranching:weaving_loom.name",

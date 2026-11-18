@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "cooked_turkey_breast",
+    "metalness_emissive_roughness_subsurface": "cooked_turkey_breast_mers",
+    "normal": "cooked_turkey_breast_normal"
+  }
+}

@@ -22,6 +22,8 @@ import { HARNESSED, PLOUGHING } from "../systems/workAnimals.js";
 import { PACKED, bagContents, bagOf } from "../systems/packBag.js";
 import { MOULT_MIN_HEARTS, moultOf } from "../systems/moult.js";
 import { forageOf } from "../systems/truffle.js";
+import { CFG_PASTURE, GRAZED_DAY } from "../data/pasture.js";
+import { CFG_BLOCK_FX } from "../data/stationFrames.js";
 
 function mark(ok) {
   return ok ? "§a✔§r" : "§c✘§r";
@@ -55,6 +57,7 @@ export function observe(e) {
   if (cleanNeedEnabled()) needParts.push("  ", T("need.clean"), ` ${mark(n.clean)}`);
   out.push({ rawtext: needParts.map((p) => (typeof p === "string" ? { text: p } : p)) });
   out.push(O(n.all ? "needs.all" : "needs.some"));
+  if (e.getDynamicProperty(GRAZED_DAY) === day) out.push(O("needs.grazed"));
 
   // Health.
   out.push(section("health"));
@@ -195,12 +198,18 @@ function showSettings(player) {
     // 1.1 動物作息 (systems/sleep.js)
     .toggle(T("settings.sleep"), { defaultValue: world.getDynamicProperty(CFG_SLEEP) !== false })
     .toggle(T("settings.disease"), { defaultValue: world.getDynamicProperty("kr:cfg:disease") !== false })
+    // 1.1 追加 草場與放牧 (systems/pasture.js)
+    .toggle(T("settings.pasture"), { defaultValue: world.getDynamicProperty(CFG_PASTURE) !== false })
+    // 1.1 追加 方塊動畫 (core/blockFrames.js, systems/blockFx.js)
+    .toggle(T("settings.block_fx"), { defaultValue: world.getDynamicProperty(CFG_BLOCK_FX) !== false })
     .show(player)
     .then((r) => {
       if (r.canceled) return;
       world.setDynamicProperty(CFG_CLEAN_NEED, !!r.formValues?.[0]);
       world.setDynamicProperty(CFG_SLEEP, !!r.formValues?.[1]);
       world.setDynamicProperty("kr:cfg:disease", !!r.formValues?.[2]);
+      world.setDynamicProperty(CFG_PASTURE, !!r.formValues?.[3]);
+      world.setDynamicProperty(CFG_BLOCK_FX, !!r.formValues?.[4]);
     })
     .catch(() => {});
 }

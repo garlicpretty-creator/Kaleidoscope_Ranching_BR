@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "alpaca_meat",
+    "metalness_emissive_roughness_subsurface": "alpaca_meat_mers",
+    "normal": "alpaca_meat_normal"
+  }
+}

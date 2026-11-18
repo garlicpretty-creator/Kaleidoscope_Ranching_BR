@@ -13,6 +13,8 @@ export const BLOCKS = [
   ["feed_mixer", "飼料攪拌桶", "Feed Mixer", "husbandry", "m2"],
   ["chaff_cutter", "鍘草機", "Chaff Cutter", "husbandry", "m2"],
   ["hay_rack", "乾草架", "Hay Rack", "husbandry"],
+  // 1.1 追加 草場與放牧 (systems/pasture.js)
+  ["pasture_post", "草場界樁", "Pasture Post", "husbandry"],
   ["nest_box", "巢箱", "Nest Box", "husbandry"],
   ["incubator", "孵化器", "Incubator", "husbandry"],
   ["salt_lick", "鹽磚", "Salt Lick", "husbandry", "m2"],
@@ -33,6 +35,7 @@ export const BLOCKS = [
   ["smoked_cheese_wheel", "煙燻乳酪輪", "Smoked Cheese Wheel", "processing"],
   ["placed_pizza", "瑪格麗特披薩", "Margherita Pizza", "processing"],
   ["placed_fondue", "起司火鍋", "Cheese Fondue", "processing"],
+  ["placed_roast_turkey", "烤全火雞", "Roast Turkey", "processing"],
   ["placed_old_duck_soup", "老鴨湯", "Old Duck Soup", "processing"],
   ["placed_braised_brisket", "燉牛腩", "Braised Beef Brisket", "processing"],
   ["placed_yak_stew", "氂牛肉燉菜", "Yak Meat Stew", "processing"],

@@ -66,6 +66,9 @@
   "kaleidoscope_ranching:cheese_wheel": {
     "sound": "cloth"
   },
+  "kaleidoscope_ranching:pasture_post": {
+    "sound": "wood"
+  },
   "kaleidoscope_ranching:vintage_cheese_wheel": {
     "sound": "cloth"
   },
@@ -77,6 +80,9 @@
   },
   "kaleidoscope_ranching:placed_fondue": {
     "sound": "metal"
+  },
+  "kaleidoscope_ranching:placed_roast_turkey": {
+    "sound": "stone"
   },
   "kaleidoscope_ranching:placed_old_duck_soup": {
     "sound": "stone"

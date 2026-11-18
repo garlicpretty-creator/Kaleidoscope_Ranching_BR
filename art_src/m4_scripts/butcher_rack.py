@@ -42,6 +42,10 @@ SPECIES = {
     "duck": ("duck/female", "bird", (240, 202, 170)),
     "goose": ("goose/female", "bird", (246, 220, 190)),
     "rabbit": ("rabbit/brown", "red", (204, 108, 100)),
+    # 1.1 追加 新動物
+    "quail": ("quail/female", "bird", (240, 200, 176)),
+    "turkey": ("turkey/female", "bird", (242, 208, 182)),
+    "alpaca": ("alpaca/female", "red", (172, 66, 60)),
 }
 SKIP_PREFIX = ("m_", "b_", "wool_", "lids_")  # sleeping eyelids (tools/gen_sleep.mjs), males' extras, baby rigs, sheep wool (taken as its own cut)
 SKIP = {"saddle"}

@@ -44,6 +44,8 @@ export const PLACED_FOODS = [
   shared("claypot_rice", "claypot"),
   // Baked in a dish and cut into four.
   shared("cheese_gratin", "dish"),
+  // 1.1 追加: the roast turkey on its platter, six portions; a bone is left
+  { item: "roast_turkey", block: "placed_roast_turkey", shape: "roast", portions: 6, eat: 3, gives: "kaleidoscope_ranching:large_bone" },
   shared("truffle_gratin", "dish"),
   // Drinks put down in their cup, glass or bottle: one serving, drunk in one go for the item's own
   // hunger, and the item's container comes back (tools/test/run.mjs checks both against the item).

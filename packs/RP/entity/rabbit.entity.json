@@ -24,6 +24,7 @@
         "eat": "animation.kaleidoscope_ranching.rabbit.eat",
         "drink": "animation.kaleidoscope_ranching.rabbit.drink",
         "petted": "animation.kaleidoscope_ranching.rabbit.petted",
+        "graze": "animation.kaleidoscope_ranching.rabbit.graze",
         "actions": "controller.animation.kaleidoscope_ranching.rabbit.actions"
       },
       "scripts": {

@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m5_turkey_breast_sandwich"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "kaleidoscope_ranching:cooked_turkey_breast"
+      },
+      {
+        "item": "minecraft:bread"
+      },
+      {
+        "item": "kaleidoscope_cookery:lettuce"
+      }
+    ],
+    "result": {
+      "item": "kaleidoscope_ranching:turkey_breast_sandwich",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:turkey_breast_sandwich"
+      }
+    ]
+  }
+}

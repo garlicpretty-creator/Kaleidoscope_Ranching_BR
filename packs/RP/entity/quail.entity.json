@@ -1,0 +1,52 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:quail",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "female": "textures/entity/ranching/quail/female",
+        "male": "textures/entity/ranching/quail/male",
+        "baby": "textures/entity/ranching/quail/baby"
+      },
+      "geometry": {
+        "default": "geometry.kaleidoscope_ranching.quail"
+      },
+      "animations": {
+        "walk": "animation.kaleidoscope_ranching.quail.walk",
+        "look_at_target": "animation.common.look_at_target",
+        "sleep": "animation.kaleidoscope_ranching.quail.sleep",
+        "eat": "animation.kaleidoscope_ranching.quail.eat",
+        "drink": "animation.kaleidoscope_ranching.quail.drink",
+        "petted": "animation.kaleidoscope_ranching.quail.petted",
+        "actions": "controller.animation.kaleidoscope_ranching.quail.actions"
+      },
+      "scripts": {
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.05 : 1.0)",
+        "animate": [
+          {
+            "walk": "!q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "look_at_target": "!q.property('kaleidoscope_ranching:sleeping') && q.property('kaleidoscope_ranching:action') == 'none' && !q.is_grazing"
+          },
+          {
+            "sleep": "q.property('kaleidoscope_ranching:sleeping')"
+          },
+          {
+            "actions": "!q.property('kaleidoscope_ranching:sleeping')"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.kaleidoscope_ranching.quail"
+      ],
+      "spawn_egg": {
+        "base_color": "#8A6A4A",
+        "overlay_color": "#E8D8B8"
+      }
+    }
+  }
+}

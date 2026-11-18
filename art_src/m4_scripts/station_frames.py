@@ -8,6 +8,8 @@ to their models in place of the static part.
   crank(...)    a crank arm turning about an axle that runs along x: down, forward, up, back
   plunger(...)  a churn dasher pushed down and pulled up again
   wheel(...)    spinning-wheel spokes, upright cross then diagonal, with the treadle rocking
+  crank_z(...)  a crank whose axle runs along z (the cream separator): down, left, up, right
+  shift(...)    the same cubes moved by an offset per frame (the loom's beater, the chaff cutter's blade)
 """
 
 FRAMES = 4
@@ -48,3 +50,24 @@ def wheel(prefix, parent, cx, cy, z, treadle):
         bones.append((f"{prefix}_{i}", parent, [cx, cy, z],
                       [*(diagonal if odd else cross), ("treadle", [tx, ty + odd, tz], size)]))
     return bones
+
+
+def crank_z(prefix, parent, z, cx, cy, length, knob_dz=0):
+    """Arm in the plane z..z+1, turning about the axle centre (cx, cy); a knob at its tip."""
+    bones = []
+    for i, (dx, dy) in enumerate([(0, -1), (-1, 0), (0, 1), (1, 0)]):
+        if dy:
+            arm = ([cx - 0.5, cy - length if dy < 0 else cy, z], [1, length, 1])
+        else:
+            arm = ([cx - length if dx < 0 else cx, cy - 0.5, z], [length, 1, 1])
+        tx, ty = cx + dx * length, cy + dy * length
+        knob = ([tx - 0.5, ty - 0.5, z + knob_dz], [1, 1, 1])
+        bones.append((f"{prefix}_{i}", parent, [cx, cy, z], [("crank", *arm), ("grip", *knob)]))
+    return bones
+
+
+def shift(prefix, parent, cubes, offsets):
+    """The cubes moved by (dx, dy, dz) in each frame."""
+    return [(f"{prefix}_{i}", parent, [0, 0, 0],
+             [(name, [o[0] + dx, o[1] + dy, o[2] + dz], s) for name, o, s in cubes])
+            for i, (dx, dy, dz) in enumerate(offsets)]

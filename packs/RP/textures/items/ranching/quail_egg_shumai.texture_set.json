@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "quail_egg_shumai",
+    "metalness_emissive_roughness_subsurface": "quail_egg_shumai_mers",
+    "normal": "quail_egg_shumai_normal"
+  }
+}

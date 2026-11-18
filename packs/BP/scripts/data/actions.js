@@ -8,10 +8,10 @@
 export const ACTION_PROPERTY = "kaleidoscope_ranching:action";
 
 /** Values of the property; "none" is the resting state. */
-export const ACTIONS = ["none", "eat", "drink", "petted"];
+export const ACTIONS = ["none", "eat", "drink", "petted", "graze"];
 
 /** How long each action plays, in seconds. The client stops it after this too. */
-export const ACTION_SECONDS = { eat: 10, drink: 6, petted: 2.5 };
+export const ACTION_SECONDS = { eat: 10, drink: 6, petted: 2.5, graze: 8 };
 
 /** How close (blocks, level distance) an animal must stand to a trough to be seen eating or drinking. */
 export const ACTION_REACH = 2.5;
