@@ -48,10 +48,10 @@ BUFFALO = [
         *pair("mhorn1", [4, 19, -16], [4, 2, 3], [88, 16]),
         *pair("mhorn2", [8, 20, -15], [3, 2, 3], [102, 16]),
         *pair("mhorn3", [10, 21, -13], [2, 2, 4], [114, 16]),
-        *pair("mhorn4", [10, 23, -10], [1, 2, 2], [68, 24]),
+        *pair("mhorn4", [10, 23, -10], [1, 4, 2], [68, 24]),        # tips flared up
     ]),
     # the bull's heavy crest over the shoulders
-    ("m_hump", "a_torso", [0, 23, -6], [("mhump", [-5, 23, -10], [10, 3, 7], [0, 108])]),
+    ("m_hump", "a_torso", [0, 23, -6], [("mhump", [-5, 23, -10], [10, 5, 7], [0, 108])]),
     *legs("a_", "leg", [4, 12, 4], [0, 32], 2, -9, 5, 12),
     # calf: leggy, short body, big head with a broad slate muzzle and two horn buds
     ("b_torso", "body", [0, 13, 0], [("b_torso", [-4, 10, -6], [8, 7, 12], [0, 64])]),
@@ -80,7 +80,7 @@ YAK = [
     ("head", "body", [0, 19, -9], None),
     ("a_head", "head", [0, 19, -9], [
         ("skull", [-3.5, 13, -15], [7, 7, 6], [60, 9]),
-        ("muzzle", [-2.5, 13, -16], [5, 4, 1], [88, 0]),
+        ("muzzle", [-3, 13, -16], [6, 3, 1], [44, 112]),  # broad and low, dark: not a pale box
         *pair("ear", [3.5, 18, -12], [3, 1, 2], [88, 5]),
         ("forelock", [-3.5, 18, -15.5], [7, 3, 1], [82, 46]),  # shaggy fringe over the brow
         ("beard", [-2.5, 11, -14], [5, 3, 2], [66, 46]),       # hair hanging under the chin
@@ -248,7 +248,24 @@ def yak_adult(p, sex):
     p.paint("skull", skull_fn)
     p.paint("forelock", strands(hair, light, ragged=True))
     p.paint("beard", strands(hair, coat, ragged=True))
-    p.paint("muzzle", muzzle_fn((190, 170, 152) if sex == "female" else (164, 144, 126), (214, 200, 186), (56, 40, 34)))  # nostrils clear of the eye's black (gen_sleep.mjs)
+    # the muzzle: grey-brown hair round a dark moist nose pad (nostrils clear of the eye's black:
+    # gen_sleep.mjs lids whatever matches it), as broad as the cow's
+    lip = (104, 90, 82) if sex == "female" else (88, 76, 70)
+    pad, nostril = (66, 56, 54), (54, 42, 38)
+
+    def yak_muzzle(f, i, j, w, h, fi):
+        if f == "north":
+            if j == 0:
+                return nostril if i in (1, w - 2) else (pad if 1 < i < w - 2 else lip)
+            if j == h - 1 and 0 < i < w - 1:
+                return mix(lip, pad, 0.5)  # mouth line
+            return lip
+        if f == "top":
+            return mix(lip, coat, 0.4)
+        if f == "bottom":
+            return mix(lip, (0, 0, 0), 0.15)
+        return mix(lip, coat, 0.5) if fi > 0 else lip
+    p.paint("muzzle", yak_muzzle)
     p.paint("ear", ear_fn(coat, (176, 140, 124)))
     cream, tip = (232, 222, 200), (96, 86, 74)
     p.paint("horn1", flat(cream))

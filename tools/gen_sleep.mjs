@@ -173,13 +173,21 @@ function roost(bones, A, B, anim) {
   // A long neck (the goose's head bone stands taller than the torso) folds back
   // along the back; a short one turns round and rests the head on the back. Combs and
   // wattles are not neck: a rooster's comb must not make him fold like a goose.
+  // The young's own head bone (when it does not hang from the adult's) is judged the same way:
+  // a gosling's long neck folds back too, so it does not sit up looking awake.
+  const isLong = (head) => {
+    const neckBones = bones.filter((b) => (b.parent === head?.name || b.name === head?.name) && !/comb|wattle|knob|lids_/.test(b.name));
+    const top = Math.max(...neckBones.flatMap((b) => (b.cubes ?? []).map((c) => c.origin[1] + c.size[1])));
+    return top - (head?.pivot?.[1] ?? 0) > 6;
+  };
   const head = bones.find((b) => b.name === headBone(bones, "a"));
-  const neckBones = bones.filter((b) => (b.parent === head?.name || b.name === head?.name) && !/comb|wattle|lids_/.test(b.name));
-  const top = Math.max(...neckBones.flatMap((b) => (b.cubes ?? []).map((c) => c.origin[1] + c.size[1])));
-  const long = top - (head?.pivot?.[1] ?? 0) > 6;
-  anim[head.name] = long ? { rotation: [-105, 0, 0], position: [0, -1, 0] } : { rotation: [0, 155, 0], position: [0, -2.5, 0] };
+  anim[head.name] = isLong(head) ? { rotation: [-105, 0, 0], position: [0, -1, 0] } : { rotation: [0, 155, 0], position: [0, -2.5, 0] };
   const baby = headBone(bones, "b");
-  if (baby) anim[baby] = { rotation: [0, 155, 0], position: [0, -1.5, 0] };
+  if (baby) {
+    anim[baby] = isLong(bones.find((b) => b.name === baby)) ? { rotation: [-100, 0, 0], position: [0, 0.5, 0] } : { rotation: [0, 155, 0], position: [0, -1.5, 0] };
+  }
+  // A goose's bill knob would stand up out of the back once the head is folded onto it.
+  for (const knob of bones.filter((b) => /knob/.test(b.name))) anim[knob.name] = { scale: [0, 0, 0] };
   for (const wing of bones.filter((b) => /wing/.test(b.name))) anim[wing.name] = { rotation: [0, 0, 0] };
 }
 
