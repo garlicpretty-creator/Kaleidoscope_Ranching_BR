@@ -63,15 +63,20 @@ CHAFF_CUTTER = [
 ]
 
 FEED_MIXER = [
+    # 1.3: a hand-cranked mixing trough: a long plank trough between two trestle ends, a paddle shaft
+    # along it through the feed, and the crank outside the right-hand end.
     ("mixer", None, [0, 0, 0], [
-        ("stand", [-7, 0, -7], [14, 1, 14]),
-        ("barrel", [-6, 1, -6], [12, 12, 12]),
-        ("hoop", [-6.5, 3, -6.5], [13, 1, 13]),
-        ("hoop", [-6.5, 10, -6.5], [13, 1, 13]),
-        ("axle", [-0.5, 13, -0.5], [1, 3, 1]),
-        ("paddle", [-4, 13, -0.5], [8, 1, 1]),
-        ("crank", [-0.5, 15, -0.5], [5, 1, 1]),
-        ("knob", [4, 16, -0.5], [1, 2, 1]),
+        ("end", [-7, 0, -5], [1, 13, 10]),
+        ("end", [6, 0, -5], [1, 13, 10]),
+        ("wall", [-6, 5, -5], [12, 6, 1]),
+        ("wall", [-6, 5, 4], [12, 6, 1]),
+        ("feed", [-6, 4, -4], [12, 5, 8]),
+        ("stretcher", [-6, 1, -0.5], [12, 1, 1]),
+        ("shaft", [-7.5, 10, -0.5], [15.5, 1, 1]),
+        ("paddle", [-3, 9, -2], [1, 3, 4]),
+        ("paddle", [2, 9, -2], [1, 3, 4]),
+        ("crank", [7, 10, -0.5], [1, 4, 1]),
+        ("knob", [7, 13, -2.5], [1, 1, 2]),
     ]),
 ]
 
@@ -122,14 +127,19 @@ def chopped(f, i, j, w, h, fi):
     return HAY_DK if r == 0 else (196, 170, 84) if r < 3 else HAY
 
 
-def mixed_top(f, i, j, w, h, fi):
-    """Barrel: staves on the sides; the open top is a wooden rim around mixed feed."""
-    if f == "top":
-        if i in (0, w - 1) or j in (0, h - 1):
-            return WOOD_DK
-        r = (i * 7 + j * 5) % 6
-        return (120, 160, 70) if r == 0 else (220, 190, 120) if r < 3 else (184, 150, 88)
-    return staves(WOOD)(f, i, j, w, h, fi)
+def mixed_feed(f, i, j, w, h, fi):
+    """Mixed feed heaped in the trough: chopped hay, grain and green flecks."""
+    r = (i * 7 + j * 5) % 6
+    return (120, 160, 70) if r == 0 else (220, 190, 120) if r < 3 else (184, 150, 88)
+
+
+def trestle(f, i, j, w, h, fi):
+    """The trough's end boards, with an arch cut out between the two legs (clear pixels)."""
+    if f in ("east", "west") and j >= h - 4 and 2 <= i <= w - 3:
+        return None
+    if f == "bottom" and 2 <= j <= h - 3:
+        return None
+    return wood(WOOD_DK)(f, i, j, w, h, fi)
 
 
 def lumpy(base, dark, light=None):
@@ -155,8 +165,8 @@ PAINT = {
     "chaff_cutter": {"leg": wood(WOOD_DK, rings=WOOD_LT), "brace": wood(WOOD_DK), "chaff": chopped,
                      "table": wood(WOOD), "guide": wood(WOOD_DK), "straw": hay, "upright": wood(WOOD_DK, rings=WOOD_LT),
                      "blade": blade, "grip": wood(WOOD_LT)},
-    "feed_mixer": {"stand": wood(WOOD_DK), "barrel": mixed_top, "hoop": iron, "axle": iron,
-                   "paddle": iron, "crank": iron, "knob": wood(WOOD_LT)},
+    "feed_mixer": {"end": trestle, "wall": wood(WOOD), "feed": mixed_feed, "stretcher": wood(WOOD_DK),
+                   "shaft": iron, "paddle": wood(WOOD_LT), "crank": iron, "knob": wood(WOOD_LT)},
     "compost_bin": {"post": wood(WOOD_DK, rings=WOOD_LT), "floor": wood(WOOD_DK), "slat_fb": wood(WOOD),
                     "slat_s": wood(WOOD),
                     **{f"pile_{n}": lumpy(MANURE, MANURE_DK, (196, 170, 84)) for n in (1, 2, 3, 4)},  # straw flecks

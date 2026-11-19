@@ -233,10 +233,11 @@ const DEFS = {
     loot: "loot_tables/kaleidoscope_ranching/empty.json",
     openable: true,
   },
-  horn_decor: { states: {}, bones: {}, collision: box(-4, 0, -4, 8, 6, 8), selection: box(-4, 0, -4, 8, 6, 8), seconds: 0.5 },
-  // Decoration only: no script component.
-  down_pillow: { states: {}, bones: {}, collision: box(-6, 0, -4, 12, 4, 8), selection: box(-6, 0, -4, 12, 4, 8), seconds: 0.2 },
-  down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 2, 16), selection: box(-8, 0, -8, 16, 2, 16), seconds: 0.2 },
+  // 1.3: horns on a wall plaque standing at the back of the block (art_src/m4_scripts/blocks_m7.py), 14 pixels tall.
+  horn_decor: { states: {}, bones: {}, collision: box(-7, 0, 4, 14, 14, 4), selection: box(-7, 0, 4, 14, 14, 4), seconds: 0.5 },
+  // Decoration only: no script component. 1.3: the puffed pillow is 5 pixels, the folded quilt 3 (blocks_m7.py).
+  down_pillow: { states: {}, bones: {}, collision: box(-6, 0, -4, 12, 5, 8), selection: box(-6, 0, -4, 12, 5, 8), seconds: 0.2 },
+  down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 3, 16), selection: box(-8, 0, -8, 16, 3, 16), seconds: 0.2 },
   hitching_post: {
     component: "hitching_post",
     states: {},

@@ -30,26 +30,26 @@
       },
       "minecraft:collision_box": {
         "origin": [
-          -4,
+          -7,
           0,
-          -4
+          4
         ],
         "size": [
-          8,
-          6,
-          8
+          14,
+          14,
+          4
         ]
       },
       "minecraft:selection_box": {
         "origin": [
-          -4,
+          -7,
           0,
-          -4
+          4
         ],
         "size": [
-          8,
-          6,
-          8
+          14,
+          14,
+          4
         ]
       },
       "minecraft:destructible_by_mining": {
