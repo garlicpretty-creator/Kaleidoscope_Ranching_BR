@@ -43,19 +43,24 @@ BUFFALO = [
         *pair("horn2", [7, 20, -14], [2, 2, 3], [78, 16]),
         *pair("horn3", [7, 22, -12], [1, 2, 1], [76, 24]),
     ]),
+    # the bull's: thick at the root, sweeping far out, then back and up to a point
     ("m_horns", "head", [0, 20, -14], [
         *pair("mhorn1", [4, 19, -16], [4, 2, 3], [88, 16]),
-        *pair("mhorn2", [8, 20, -15], [2, 2, 5], [102, 16]),
-        *pair("mhorn3", [8, 22, -11], [2, 3, 2], [68, 24]),
+        *pair("mhorn2", [8, 20, -15], [3, 2, 3], [102, 16]),
+        *pair("mhorn3", [10, 21, -13], [2, 2, 4], [114, 16]),
+        *pair("mhorn4", [10, 23, -10], [1, 2, 2], [68, 24]),
     ]),
+    # the bull's heavy crest over the shoulders
+    ("m_hump", "a_torso", [0, 23, -6], [("mhump", [-5, 23, -10], [10, 3, 7], [0, 108])]),
     *legs("a_", "leg", [4, 12, 4], [0, 32], 2, -9, 5, 12),
-    # calf: leggy, short body, big head, no horns
+    # calf: leggy, short body, big head with a broad slate muzzle and two horn buds
     ("b_torso", "body", [0, 13, 0], [("b_torso", [-4, 10, -6], [8, 7, 12], [0, 64])]),
     ("b_tail", "body", [0, 16, 6], [("b_tail", [-0.5, 11, 6], [1, 5, 1], [12, 84])]),
     ("b_head", "body", [0, 15, -6], [
         ("b_head", [-3, 13, -11], [6, 6, 5], [40, 64]),
-        ("b_muzzle", [-2, 13, -13], [4, 3, 2], [62, 64]),
-        *pair("b_ear", [3, 18, -8], [2, 1, 2], [62, 69]),
+        ("b_muzzle", [-2.5, 13, -13], [5, 3, 2], [62, 64]),
+        *pair("b_ear", [3, 17, -9], [2, 1, 2], [62, 69]),
+        *pair("b_bud", [2, 19, -10], [1, 1, 1], [76, 64]),
     ]),
     *legs("b_", "b_leg", [3, 10, 3], [0, 84], 1, -5, 2, 10),
 ]
@@ -90,13 +95,15 @@ YAK = [
         *pair("mhorn3", [6, 23, -12.5], [1, 2, 1], [120, 0]),
     ]),
     *legs("a_", "leg", [4, 12, 4], [66, 30], 2, -8, 4, 12),
-    # calf: woolly, compact
+    # calf: dark and shaggy already, a fringe over the brow and a short hair skirt
     ("b_torso", "body", [0, 12, 0], [("b_torso", [-4, 9, -6], [8, 7, 12], [0, 80])]),
+    ("b_skirt", "body", [0, 10, 0], [("b_skirt", [-4.5, 7, -5.5], [9, 3, 11], [0, 112])]),
     ("b_tail", "body", [0, 15, 6], [("b_tail", [-1, 11, 6], [2, 4, 1], [12, 100])]),
     ("b_head", "body", [0, 14, -6], [
         ("b_head", [-3, 12, -11], [6, 6, 5], [40, 80]),
         ("b_muzzle", [-2, 12, -12], [4, 3, 1], [62, 80]),
-        *pair("b_ear", [3, 17, -8], [2, 1, 2], [62, 84]),
+        *pair("b_ear", [3, 16, -8], [2, 1, 2], [62, 84]),
+        ("b_forelock", [-3, 16, -11.5], [6, 2, 1], [72, 80]),
     ]),
     *legs("b_", "b_leg", [3, 9, 3], [0, 100], 1, -5, 2, 9),
 ]
@@ -194,20 +201,32 @@ def buffalo_adult(p, sex):
     p.paint("horn2", horn_fn((134, 124, 108), (112, 102, 90)))
     p.paint("horn3", horn_fn(None, None, tip=(84, 76, 68)))
     p.paint("mhorn1", horn_fn((128, 118, 102), (104, 94, 82)))
-    p.paint("mhorn2", horn_fn((128, 118, 102), (104, 94, 82)))
-    p.paint("mhorn3", horn_fn(None, None, tip=(74, 66, 58)))
+    p.paint("mhorn2", horn_fn((120, 110, 96), (98, 88, 78)))
+    p.paint("mhorn3", horn_fn((100, 92, 80), (84, 76, 66)))
+    p.paint("mhorn4", horn_fn(None, None, tip=(66, 58, 52)))
+    p.paint("mhump", hide_fn(hide, back))
     p.paint("leg", leg_fn(hide, (176, 172, 168), (30, 28, 30)))
     plain_eyes(p, "skull", 3)
 
 
 def buffalo_calf(p):
-    coat = (158, 136, 120)
-    p.paint("b_torso", hide_fn(coat, mix(coat, (0, 0, 0), 0.12), mix(coat, (240, 230, 220), 0.4), 0.05))
-    p.paint("b_tail", lambda f, i, j, w, h, fi: (90, 76, 68) if j >= h - 2 else coat)
-    p.paint("b_head", hide_fn(coat, mix(coat, (0, 0, 0), 0.1), streak=0.04))
-    p.paint("b_muzzle", muzzle_fn((78, 72, 76), (150, 140, 140), (48, 40, 42)))  # slate like its mother's, a shade lighter
-    p.paint("b_ear", ear_fn(coat, (226, 170, 166)))
-    p.paint("b_leg", leg_fn(coat, (206, 196, 186), (64, 56, 52)))
+    """Slate grey-black like its mother from birth, pale socks, a broad dark muzzle, horn buds."""
+    coat = (84, 82, 88)
+    back, belly = mix(coat, (0, 0, 0), 0.18), mix(coat, (200, 196, 196), 0.3)
+    p.paint("b_torso", hide_fn(coat, back, belly, 0.06))
+    p.paint("b_tail", lambda f, i, j, w, h, fi: (40, 38, 42) if j >= h - 2 else coat)
+
+    def head_fn(f, i, j, w, h, fi):
+        if f in ("east", "west") and j == 1 and 1 <= fi <= 2:
+            return mix(coat, (220, 214, 208), 0.35)  # pale brow, as on the adults
+        if f == "north":
+            return coat  # plain front: only the eyes may come near their colours
+        return hide_fn(coat, back, streak=0.05)(f, i, j, w, h, fi)
+    p.paint("b_head", head_fn)
+    p.paint("b_muzzle", muzzle_fn((52, 50, 56), (112, 106, 110), (12, 10, 12)))  # nostrils clear of the eye's black
+    p.paint("b_ear", ear_fn(coat, (150, 124, 124)))
+    p.paint("b_bud", flat((150, 140, 124)))
+    p.paint("b_leg", leg_fn(coat, (176, 172, 168), (40, 36, 38)))
     plain_eyes(p, "b_head", 2)
 
 
@@ -242,15 +261,18 @@ def yak_adult(p, sex):
 
 
 def yak_calf(p):
-    coat = (138, 106, 82)
-    curl = mix(coat, (255, 236, 210), 0.22)
-    woolly = lambda f, i, j, w, h, fi: curl if (i + 2 * j) % 5 == 0 else coat  # tight curly down
-    p.paint("b_torso", woolly)
-    p.paint("b_tail", flat(mix(coat, (0, 0, 0), 0.2)))
-    p.paint("b_head", woolly)
-    p.paint("b_muzzle", muzzle_fn((200, 178, 158), (222, 208, 192), (72, 54, 46)))  # pale tan like the adults', not pink
-    p.paint("b_ear", ear_fn(coat, (226, 172, 160)))
-    p.paint("b_leg", leg_fn(mix(coat, (0, 0, 0), 0.15), None, (52, 42, 36)))
+    """Dark brown and shaggy like the adults: long strands, a fringe over the brow, a ragged
+    hair skirt, a dark nose."""
+    coat = (82, 60, 46)
+    hair, light = mix(coat, (0, 0, 0), 0.22), mix(coat, (255, 236, 210), 0.16)
+    p.paint("b_torso", strands(coat, light))
+    p.paint("b_skirt", strands(hair, coat, ragged=True))
+    p.paint("b_tail", strands(hair, light))
+    p.paint("b_head", lambda f, i, j, w, h, fi: coat if f == "north" else strands(coat, light)(f, i, j, w, h, fi))
+    p.paint("b_forelock", strands(hair, light, ragged=True))
+    p.paint("b_muzzle", muzzle_fn((70, 56, 50), (96, 80, 72), (46, 34, 30)))  # dark nose; nostrils clear of the eye's black
+    p.paint("b_ear", ear_fn(coat, (150, 116, 102)))
+    p.paint("b_leg", leg_fn(hair, None, (40, 32, 28)))
     plain_eyes(p, "b_head", 2)
 
 

@@ -130,7 +130,7 @@
           "parent": "body"
         },
         {
-          "name": "a_head",
+          "name": "a_neck",
           "pivot": [
             0,
             14,
@@ -153,7 +153,18 @@
                 12,
                 21
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "a_head",
+          "pivot": [
+            0,
+            21,
+            -7
+          ],
+          "parent": "a_neck",
+          "cubes": [
             {
               "origin": [
                 -2.95,
@@ -264,12 +275,12 @@
         },
         {
           "name": "a_ear_left",
-          "parent": "a_head",
           "pivot": [
             2.5,
             23.5,
             -8
           ],
+          "parent": "a_head",
           "cubes": [
             {
               "origin": [
@@ -301,12 +312,12 @@
         },
         {
           "name": "a_ear_right",
-          "parent": "a_head",
           "pivot": [
             -2.5,
             23.5,
             -8
           ],
+          "parent": "a_head",
           "cubes": [
             {
               "origin": [
@@ -343,7 +354,7 @@
             14,
             -6
           ],
-          "parent": "a_head",
+          "parent": "a_neck",
           "cubes": [
             {
               "origin": [
@@ -893,11 +904,11 @@
           ]
         },
         {
-          "name": "b_head",
+          "name": "b_neck",
           "pivot": [
             0,
             13,
-            -3.5
+            -5
           ],
           "parent": "body",
           "cubes": [
@@ -916,7 +927,18 @@
                 60,
                 36
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "b_head",
+          "pivot": [
+            0,
+            17.5,
+            -5.5
+          ],
+          "parent": "b_neck",
+          "cubes": [
             {
               "origin": [
                 -2.5,
@@ -969,12 +991,12 @@
         },
         {
           "name": "b_ear_left",
-          "parent": "b_head",
           "pivot": [
             2,
             21.5,
             -5.5
           ],
+          "parent": "b_head",
           "cubes": [
             {
               "origin": [
@@ -1006,12 +1028,12 @@
         },
         {
           "name": "b_ear_right",
-          "parent": "b_head",
           "pivot": [
             -2,
             21.5,
             -5.5
           ],
+          "parent": "b_head",
           "cubes": [
             {
               "origin": [
@@ -1154,8 +1176,8 @@
           "parent": "a_head",
           "pivot": [
             0,
-            14,
-            -6
+            21,
+            -7
           ],
           "cubes": [
             {
@@ -1261,8 +1283,8 @@
           "parent": "b_head",
           "pivot": [
             0,
-            13,
-            -3.5
+            17.5,
+            -5.5
           ],
           "cubes": [
             {
