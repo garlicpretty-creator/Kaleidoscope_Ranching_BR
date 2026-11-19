@@ -67,6 +67,10 @@ const PLACED_SHAPES = {
   wheel: both(-6, 0, -6, 12, 5, 12),
   pizza: both(-8, 0, -8, 16, 3, 16),
   pot: both(-6, 0, -6, 12, 9, 12),
+  // 1.3: the stews in a pot with handles or lugs a pixel past its sides, and the low, wide wok
+  // (art_src/m4_scripts/placed_food.py).
+  lugged: both(-7, 0, -6, 14, 9, 12),
+  wok: both(-8, 0, -7, 16, 8, 14),
   claypot: both(-6, 0, -6, 12, 5, 12),
   dish: both(-7, 0, -5, 14, 4, 10),
   roast: both(-6, 0, -5, 12, 5, 10),
@@ -235,9 +239,10 @@ const DEFS = {
   },
   // 1.3: horns on a wall plaque standing at the back of the block (art_src/m4_scripts/blocks_m7.py), 14 pixels tall.
   horn_decor: { states: {}, bones: {}, collision: box(-7, 0, 4, 14, 14, 4), selection: box(-7, 0, 4, 14, 14, 4), seconds: 0.5 },
-  // Decoration only: no script component. 1.3: the puffed pillow is 5 pixels, the folded quilt 3 (blocks_m7.py).
+  // Decoration only: no script component. 1.3: the puffed pillow is 5 pixels; the quilt is 4 thick with its
+  // folded third reaching 6 (blocks_m7.py), and is walked on at 4.
   down_pillow: { states: {}, bones: {}, collision: box(-6, 0, -4, 12, 5, 8), selection: box(-6, 0, -4, 12, 5, 8), seconds: 0.2 },
-  down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 3, 16), selection: box(-8, 0, -8, 16, 3, 16), seconds: 0.2 },
+  down_quilt: { states: {}, bones: {}, collision: box(-8, 0, -8, 16, 4, 16), selection: box(-8, 0, -8, 16, 6, 16), seconds: 0.2 },
   hitching_post: {
     component: "hitching_post",
     states: {},

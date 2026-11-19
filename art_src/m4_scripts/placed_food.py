@@ -165,9 +165,10 @@ def turn(piece, quarter_turns):
 
 
 # --- 1.3: the stews each in their own vessel -----------------------------------------------------
-# Every vessel holds its food from y 4 (four 1-pixel levels, piece_4 the top one at 7..8) under a rim
-# at 9 pixels, the block's selection box (tools/gen_blocks.mjs `pot`). Walls are one pixel thick
-# round a square inside of half-width `half`; a wall face toward the inside paints as the inside.
+# A vessel function builds the pot and returns (half, floor): the food sits in four 1-pixel levels
+# from y `floor` (piece_4 the top one) in a square inside of half-width `half`. The deep pots hold
+# it from y 4 under a rim at 9 pixels (tools/gen_blocks.mjs `pot`, `lugged`); the wok from y 3
+# under a rim at 8 (`wok`). A wall face toward the inside paints as the inside.
 
 
 def ware(outside, inside, rim, half, band=None):
@@ -213,28 +214,36 @@ WOK, WOK_DK, WOK_LT = (46, 48, 54), (28, 30, 34), (112, 116, 126)
 PORCELAIN, PORCELAIN_DK, COBALT, GILT = (244, 242, 236), (214, 212, 206), (54, 84, 160), (214, 178, 88)
 
 
+DUCK_GLAZE = (62, 46, 38)
+
+
 def clay_pot(m):
-    """砂鍋: a tall sandy clay pot on a narrow foot, black glaze inside and on the lip, a wire band
-    round the belly and two small ears at the rim."""
+    """砂鍋: a tall sandy clay pot on a narrow foot, dark glaze over its upper half and inside, two
+    small ears at the rim."""
     m.bone("pot")
     m.box("pot", [-4, 0, -4], [8, 4, 8], vessel(SANDY_DK, (120, 104, 84), SANDY_DK))
-    walls(m, "pot", 4, 1, 9, ware(speckle(SANDY, mix(SANDY, SANDY_DK, 0.6), 10), GLAZE_BLACK, GLAZE_BLACK, 4,
-                                   band=lambda y: (96, 96, 100) if 4 < y < 5 else None))
+    sandy = speckle(SANDY, mix(SANDY, SANDY_DK, 0.6), 10)
+
+    def outside(x, y, z):
+        if y > 6 or (y > 5 and rnd(x, 0, z, 6) < 45):  # the glaze ends in uneven runs
+            return mix(DUCK_GLAZE, (120, 96, 80), 0.25) if rnd(x, y, z, 7) < 12 else DUCK_GLAZE
+        return sandy(x, y, z)
+    walls(m, "pot", 4, 1, 9, ware(outside, GLAZE_BLACK, mix(DUCK_GLAZE, (150, 120, 96), 0.3), 4))
     for x in (-6, 5):
-        m.box("pot", [x, 7, -1], [1, 1, 2], solid(SANDY_DK), raw=True)
-    return 4
+        m.box("pot", [x, 7, -1], [1, 1, 2], solid(DUCK_GLAZE), raw=True)
+    return 4, 4
 
 
 def iron_pot(m):
-    """鑄鐵鍋: a squat black cast-iron pot on three stubby legs, loop handles at the sides."""
+    """鑄鐵鍋: a tall black cast-iron pot standing on three legs, loop handles at the sides."""
     m.bone("pot")
-    m.box("pot", [-5, 1, -5], [10, 3, 10], vessel(*IRON))
-    walls(m, "pot", 5, 1, 9, ware(speckle(CAST, mix(CAST, CAST_DK, 0.5), 10), CAST_DK, CAST_LT, 5))
-    for x, z in ((-4, -4), (3, -4), (-0.5, 3)):
-        m.box("pot", [x, 0, z], [1, 1, 1], solid(CAST_DK), raw=True)
+    m.box("pot", [-5, 2, -5], [10, 2, 10], vessel(*IRON))
+    walls(m, "pot", 5, 2, 9, ware(speckle(CAST, mix(CAST, CAST_DK, 0.5), 10), CAST_DK, CAST_LT, 5))
+    for x, z in ((-5, -5), (4, -5), (-0.5, 4)):
+        m.box("pot", [x, 0, z], [1, 2, 1], solid(CAST_DK), raw=True)
     for x in (-7, 6):
         m.box("pot", [x, 6, -1.5], [1, 2, 3], lambda f, i, j, w, h, fi: loop_handle(f, i, j, w, h, fi, CAST_LT), raw=True)
-    return 5
+    return 5, 4
 
 
 def casserole(m):
@@ -245,25 +254,31 @@ def casserole(m):
     m.box("pot", [-5, 1, -5], [10, 3, 10], vessel((168, 110, 72), (130, 82, 52), (168, 110, 72)))
     glaze = lambda x, y, z: EARTH_LT if rnd(x, 0, z, 3) < 10 else EARTH_DK if y < 5 and rnd(x, 1, z) < 50 else EARTH
     walls(m, "pot", 5, 4, 9, ware(glaze, EARTH_IN, EARTH_DK, 5))
-    for x in (-8, 6):
-        m.box("pot", [x, 8, -2], [2, 1, 4], solid(EARTH, edge=EARTH_DK), raw=True)
-    return 5
+    for x in (-7, 6):
+        m.box("pot", [x, 8, -2], [1, 1, 4], solid(EARTH, edge=EARTH_DK), raw=True)
+    return 5, 4
 
 
 def wok(m):
-    """鐵鍋: a wide iron wok, its round bottom stepping in to a small ring, with loop handles; flat
-    corn cakes stuck to the inside of the wall, as 鐵鍋燉大鵝 is served."""
+    """鐵鍋: a wide, shallow iron wok sitting low: its round bottom steps out 6, 10, 12, then 14 pixels,
+    the thick rim has its corners cut, loop handles at the sides; flat corn cakes stuck to the inside
+    of the wall, as 鐵鍋燉大鵝 is served."""
     m.bone("pot")
-    m.box("pot", [-2, 0, -2], [4, 1, 4], solid(WOK_DK), raw=True)
-    m.box("pot", [-4, 1, -4], [8, 2, 8], vessel(WOK, WOK_DK, WOK))
-    m.box("pot", [-6, 3, -6], [12, 1, 12], vessel(WOK, WOK_DK, WOK))
-    walls(m, "pot", 6, 4, 9, ware(speckle(WOK, mix(WOK, WOK_DK, 0.5), 12), (70, 72, 80), WOK_LT, 6))
+    m.box("pot", [-3, 0, -3], [6, 1, 6], solid(WOK_DK), raw=True)
+    m.box("pot", [-5, 1, -5], [10, 1, 10], vessel(WOK, WOK_DK, WOK))
+    m.box("pot", [-6, 2, -6], [12, 1, 12], vessel(WOK, WOK_DK, WOK))
+    mat = ware(speckle(WOK, mix(WOK, WOK_DK, 0.5), 12), (70, 72, 80), WOK_LT, 5)
+    walls(m, "pot", 5, 3, 5, mat)  # the lower wall, a pixel thick
+    for z in (-7, 5):  # the flared upper wall, two pixels thick with its corners cut
+        m.box("pot", [-6, 5, z], [12, 3, 2], mat)
+    for x in (-7, 5):
+        m.box("pot", [x, 5, -5], [2, 3, 10], mat)
     for x in (-8, 7):
-        m.box("pot", [x, 7, -1.5], [1, 2, 3], lambda f, i, j, w, h, fi: loop_handle(f, i, j, w, h, fi, WOK_LT), raw=True)
+        m.box("pot", [x, 5, -1.5], [1, 2, 3], lambda f, i, j, w, h, fi: loop_handle(f, i, j, w, h, fi, WOK_LT), raw=True)
     cake = lump((236, 196, 92), (196, 150, 60), 9)
-    m.box("pot", [-6, 6.5, -3], [1, 2, 4], cake)
-    m.box("pot", [-2, 6.5, 5], [4, 2, 1], cake)
-    return 6
+    m.box("pot", [-5, 5, -2], [1, 2, 4], cake)
+    m.box("pot", [-2, 5, 4], [4, 2, 1], cake)
+    return 5, 3
 
 
 def tureen(m):
@@ -276,27 +291,28 @@ def tureen(m):
                                    band=lambda y: COBALT if 5 < y < 7 else None))
     for x in (-6, 5):
         m.box("pot", [x, 6, -1], [1, 2, 2], lambda f, i, j, w, h, fi: COBALT if j == 0 else PORCELAIN, raw=True)
-    return 4
+    return 4, 4
 
 
 def stew(bid, vessel_fn, liquid, liquid_dk, pieces):
     """Four levels of broth in the dish's vessel; each has the dish's pieces, turned a quarter from
     the level below."""
     m = Model(bid)
-    half = vessel_fn(m)
+    half, floor = vessel_fn(m)
     for n in (1, 2, 3, 4):
-        m.bone(f"piece_{n}", "pot", (0, 3 + n, 0))
-        m.box(f"piece_{n}", [-half, 3 + n, -half], [2 * half, 1, 2 * half], broth(liquid, liquid_dk, n))
+        y = floor + n - 1
+        m.bone(f"piece_{n}", "pot", (0, y, 0))
+        m.box(f"piece_{n}", [-half, y, -half], [2 * half, 1, 2 * half], broth(liquid, liquid_dk, n))
         for k, piece in enumerate(pieces):
             x, z, w, d, colour = turn(piece, n - 1)
-            m.box(f"piece_{n}", [x, 3.5 + n, z], [w, 1, d], colour if callable(colour) else lump(colour, liquid_dk, k))
+            m.box(f"piece_{n}", [x, y + 0.5, z], [w, 1, d], colour if callable(colour) else lump(colour, liquid_dk, k))
     m.save()
 
 
 POTATO, CARROT, GREENS, CHILI = (228, 202, 132), (228, 132, 52), (88, 150, 70), (204, 52, 40)
 DUCK, BAMBOO, GOJI = (172, 118, 76), (236, 224, 176), (206, 56, 44)
 BEEF, YAK, RADISH, GOOSE = (98, 48, 32), (84, 44, 34), (238, 232, 214), (208, 150, 84)
-MEATBALL, MEATBALL_DK, BOK_CHOY = (134, 72, 46), (96, 50, 34), (112, 170, 84)
+MEATBALL, MEATBALL_DK = (134, 72, 46), (96, 50, 34)
 
 
 def skin_on(meat, skin, edge):
@@ -317,10 +333,10 @@ def brisket(f, x, y, z):
 
 # block id -> (vessel, broth, broth dark, [(x, z, w, d, colour or material) inside -half..half])
 STEWS = {
-    # 老鴨湯 in a sandy clay pot: a duck leg, bamboo shoots and goji
+    # 老鴨湯 in a sandy clay pot: a skin-on duck leg with its bone end, bamboo shoots and goji
     "placed_old_duck_soup": (clay_pot, (214, 186, 120), (188, 156, 92), [
-        (-3, -3, 3, 3, skin_on((214, 170, 130), DUCK, (150, 98, 60))), (1, -3, 2, 1, BAMBOO),
-        (-2, 1, 1, 2, BAMBOO), (2, 2, 1, 1, GOJI)]),
+        (-3, -3, 3, 3, skin_on((214, 170, 130), DUCK, (150, 98, 60))), (0, -2, 1, 1, (240, 232, 214)),
+        (1, -3, 2, 1, BAMBOO), (-2, 1, 1, 2, BAMBOO), (2, 2, 1, 1, GOJI)]),
     # braised brisket in a cast-iron pot: slabs of brisket, carrot and potato
     "placed_braised_brisket": (iron_pot, (124, 62, 38), (96, 44, 28), [
         (-4, -4, 3, 3, brisket), (0, -3, 3, 3, brisket), (-3, 1, 3, 2, brisket),
@@ -330,29 +346,40 @@ STEWS = {
         (-4, -4, 3, 3, YAK), (1, 0, 3, 3, YAK), (1, -4, 2, 2, RADISH), (-4, 0, 2, 2, POTATO), (-1, 3, 1, 1, GREENS)]),
     # 鐵鍋燉大鵝 in an iron wok: big pieces of goose with their skin, potato, a scatter of greens
     "placed_goose_stew": (wok, (164, 104, 56), (132, 78, 40), [
-        (-5, -5, 4, 3, skin_on((220, 176, 130), GOOSE, (160, 104, 56))), (1, -1, 4, 3, skin_on((220, 176, 130), GOOSE, (160, 104, 56))),
-        (1, -5, 2, 2, POTATO), (-4, 1, 2, 2, POTATO), (-1, 4, 2, 1, GREENS)]),
+        (-4, -4, 3, 3, skin_on((220, 176, 130), GOOSE, (160, 104, 56))), (1, 0, 3, 3, skin_on((220, 176, 130), GOOSE, (160, 104, 56))),
+        (1, -4, 2, 2, POTATO), (-4, 1, 2, 2, POTATO), (-1, 3, 2, 1, GREENS)]),
 }
 
 
 def meatball(f, x, y, z):
+    """A big braised meatball: shaded darker toward its edges so the 4 x 3 x 4 lump reads round."""
+    lx, lz = x - math.floor(x / 4) * 4, z - math.floor(z / 4) * 4  # 0..4 across the ball
+    edge = (lx < 1 or lx > 3) + (lz < 1 or lz > 3)
     if f == "top":
-        return MEATBALL_DK if rnd(x, 5, z) < 30 else MEATBALL
-    return mix(MEATBALL, MEATBALL_DK, 0.5) if rnd(x, y, z) < 40 else MEATBALL
+        if edge == 2:
+            return MEATBALL_DK
+        if edge == 0:
+            return mix(MEATBALL, (236, 190, 140), 0.3) if rnd(x, 5, z) < 35 else MEATBALL
+        return mix(MEATBALL, MEATBALL_DK, 0.4)
+    if f == "bottom":
+        return MEATBALL_DK
+    across = lz if f in ("east", "west") else lx
+    if across < 1 or across > 3:
+        return MEATBALL_DK
+    return mix(MEATBALL, MEATBALL_DK, 0.5) if rnd(x, y, z) < 30 else MEATBALL
 
 
 def lion_head_meatballs():
-    """Four big meatballs, one to a portion, in a brown broth round a bok choy heart, served in a
-    porcelain tureen. Each stands a pixel and a half over its own level, so the next one down already
-    shows its crown."""
+    """Four big round meatballs, one to a portion, in a brown broth, served in a porcelain tureen.
+    Each fills a quarter of the tureen and stands a pixel over its own level, so the next one down
+    already shows its crown; piece_4's top is the tureen's rim at 9 pixels."""
     m = Model("placed_lion_head_meatballs")
     tureen(m)
     liquid, liquid_dk = (212, 164, 96), (184, 134, 72)
     for n, sx, sz in QUARTERS:
         m.bone(f"piece_{n}", "pot", (0, 3 + n, 0))
         m.box(f"piece_{n}", [-4, 3 + n, -4], [8, 1, 8], broth(liquid, liquid_dk, n))
-        m.box(f"piece_{n}", [1 if sx > 0 else -4, 2.5 + n, 1 if sz > 0 else -4], [3, 3, 3], meatball)
-        m.box(f"piece_{n}", [-1, 3.5 + n, -1], [2, 1, 2], lump(BOK_CHOY, liquid_dk, n))
+        m.box(f"piece_{n}", [0 if sx > 0 else -4, 2 + n, 0 if sz > 0 else -4], [4, 3, 4], meatball)
     m.save()
 
 
