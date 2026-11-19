@@ -16,7 +16,10 @@
           "*": true
         },
         {
-          "gear_pack_bag": "q.property('kaleidoscope_ranching:gear_pack_bag') && !q.is_baby"
+          "gear_pack_bag": "q.property('kaleidoscope_ranching:gear_pack_bag') && !q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "gear_pack_bag_male": "q.property('kaleidoscope_ranching:gear_pack_bag') && !q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         }
       ]
     }

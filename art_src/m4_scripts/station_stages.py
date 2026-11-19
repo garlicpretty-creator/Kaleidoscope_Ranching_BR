@@ -19,11 +19,12 @@ Colour plan (start, middle, finished):
                    the whey at the spout goes from milky to clear greenish
   aging_rack       pale fresh wheels, golden wheels, dark amber rind
   fermenting_jar   the cloth cover: clean linen, damp cream, soured yellow
-  pickling_vat     the drop-lid: fresh pale wood, wet wood, dark brine-soaked wood with a salt crust
+  pickling_vat     the drop-lid: fresh pale wood, wet wood, dark brine-soaked wood with a salt crust;
+                   brine round the lid from stage 2, salt crystals on the stone at stage 3
   tanning_rack     raw pink hide, tan half-cured hide, brown leather
   meat_grinder     coarse dark red chunks, mince, fine pink mince
-  ice_cream_churn  thin bluish milk and slush, soft cream with ice, firm vanilla scoops and frost
-  cream_separator  bluish skim-white milk, milk with cream rising, thick yellow cream
+  ice_cream_churn  frost on the ice: two bluish patches, four paler ones, white all round the can
+  cream_separator  milk in the supply bowl three, two, then one pixel deep; cream in the can from stage 2
   spinning_wheel   the bobbin: loose white wool, cream yarn, tight tan yarn
   weaving_loom     bare warp on the beam, plain rough weave, finished linen with red stripes
   silage_barrel    the forage tufts: fresh green, yellow-green, olive-brown silage
@@ -183,26 +184,15 @@ MINCE = (
     mince((226, 142, 136), (236, 164, 158), (244, 214, 206), 14, 30),
 )
 
-# --- ice cream churn: frost on the ice, and the scoop ------------------------------------------
+# --- ice cream churn: frost on the ice -----------------------------------------------------------
 
 FROST = (
     speckled((176, 212, 234), (140, 186, 216), 35),
     speckled((214, 236, 248), (255, 255, 255), 35),
     speckled((246, 252, 255), (226, 242, 250), 25),
 )
-SCOOP = (
-    speckled((230, 236, 238), (214, 224, 232), 30),
-    speckled((248, 240, 216), (220, 238, 248), 25),
-    speckled((250, 226, 160), (255, 244, 206), 30, (236, 204, 130), 10),
-)
 
-# --- cream separator: milk, cream rising, cream -------------------------------------------------
-
-SEPARATED = (
-    speckled((234, 240, 246), (218, 228, 238), 22),
-    speckled((246, 242, 226), (236, 226, 196), 30),
-    speckled((250, 224, 156), (236, 202, 124), 22, (255, 240, 196), 10),
-)
+# (cream separator, pickling vat brine and salt: see STAGE_PAINT below)
 
 # --- spinning wheel: the bobbin -----------------------------------------------------------------
 
@@ -249,17 +239,32 @@ TUFT = (
     speckled((122, 108, 46), (96, 84, 34), 35, (146, 132, 62), 10),
 )
 
+def hidden(f, i, j, w, h, fi):
+    """A stage copy left clear: the cube is there in every stage (tools/validate.mjs wants the same
+    cubes in busy_1..3) but shows only in the stages that paint it."""
+    return None
+
+
+MILK_SKIM = speckled((232, 238, 244), (216, 226, 236), 20)
+CREAM_CAP = (hidden, speckled((248, 240, 212), (255, 250, 232), 25), speckled((250, 222, 140), (236, 200, 116), 25))
+BRINE = speckled((168, 182, 116), (196, 206, 150), 30)
+SALT = speckled((244, 244, 236), (222, 224, 214), 30)
+
 # Content cubes of each station's busy bone and their three paints.
 STAGE_PAINT = {
-    "butter_churn": {"foam": CHURN, "spill": CHURN, "drip": CHURN},
+    "butter_churn": {"foam": CHURN},
     "cheese_press": {"cloth": PRESS_CLOTH, "whey": WHEY},
     "aging_rack": {"wheel": WHEEL, "wheel_s": WHEEL},
     "fermenting_jar": {"cover": JAR_COVER},
-    "pickling_vat": {"droplid": DROPLID},
+    # 1.3: brine rises round the drop-lid from half way; salt crystals on the stone at the end
+    "pickling_vat": {"droplid": DROPLID, "brine_ring": (hidden, BRINE, BRINE), "salt": (hidden, hidden, SALT)},
     "tanning_rack": {"hide": HIDE},
     "meat_grinder": {"mince": MINCE, "strands": MINCE},
-    "ice_cream_churn": {"frost": FROST, "scoop": SCOOP},
-    "cream_separator": {"cream": SEPARATED},
+    # 1.3: frost spreads over the ice: two patches, four, then all round the can
+    "ice_cream_churn": {"frost_a": FROST, "frost_b": (hidden, FROST[1], FROST[2]), "frost_c": (hidden, hidden, FROST[2])},
+    # 1.3: the milk in the supply bowl goes down a pixel a stage; cream gathers in the can
+    "cream_separator": {"milk_hi": (MILK_SKIM, hidden, hidden), "milk_mid": (MILK_SKIM, MILK_SKIM, hidden),
+                        "milk_lo": (MILK_SKIM, MILK_SKIM, MILK_SKIM), "cream_cap": CREAM_CAP},
     "spinning_wheel": {"bobbin": BOBBIN},
     "weaving_loom": {"cloth": CLOTH, "cloth_roll": CLOTH},
     "silage_barrel": {"tuft": TUFT},

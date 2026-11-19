@@ -30,7 +30,7 @@ SHEET = {
     "buffalo": (9, [("female", {}), ("male", {"male": True, "texture": "male"}), ("baby", {"baby": True})]),
     "yak": (9, [("female", {}), ("male", {"male": True, "texture": "male"}), ("baby", {"baby": True})]),
     "duck": (20, [("female", {}), ("male", {"male": True, "texture": "male"}), ("baby", {"baby": True})]),
-    "goose": (16, [("female", {}), ("male", {"male": True, "texture": "male"}), ("baby", {"baby": True})]),
+    "goose": (14, [("female", {}), ("male", {"male": True, "texture": "male"}), ("baby", {"baby": True})]),
 }
 M1 = ["cow", "sheep", "goat", "pig", "chicken", "rabbit"]
 BG = (232, 238, 226)
@@ -41,7 +41,8 @@ def male_scale(animal):
     rig = ROOT / "art" / "animals" / animal / "rig.json"
     if rig.exists():
         return json.loads(rig.read_text(encoding="utf8"))["scale_male"]
-    return 1.15
+    import client
+    return client.SPECIES[animal]["scale_male"]
 
 
 def tile(animal, label, scale, opts):

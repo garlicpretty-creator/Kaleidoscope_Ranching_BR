@@ -113,14 +113,15 @@ def xyz(f, i, j, W, H, D):
     return i + .5, H, D - j - .5
 
 
-def blobs(p, name, shapes, seed):
+def blobs(p, name, shapes, seed, rough=0.22, cell=1):
     """Test for 'inside a marking': the union of ellipsoids (cx, cy, cz, rx, ry, rz) in the
-    cube's own space (see xyz), with a slightly ragged edge."""
+    cube's own space (see xyz), with a ragged edge: `rough` how ragged, `cell` the size of its
+    steps in texels (2: a coarser, more natural outline)."""
     W, H, D = dims(p, name)
 
     def inside(f, i, j):
         x, y, z = xyz(f, i, j, W, H, D)
-        wobble = 1.0 + ((h32(seed, f, i, j) % 100) / 100 - 0.5) * 0.22
+        wobble = 1.0 + ((h32(seed, f, i // cell, j // cell) % 100) / 100 - 0.5) * rough
         return any(((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2 < wobble
                    for cx, cy, cz, rx, ry, rz in shapes)
     return inside
@@ -302,7 +303,7 @@ COW = [
     ("head", "body", [0, 20, -9], None),
     ("a_head", "head", [0, 20, -9], [
         ("skull", [-4, 16, -15], [8, 8, 6]),
-        ("muzzle", [-3, 16, -16], [6, 4, 1]),      # a broad, shallow muzzle: no more than a lip in front of the face
+        ("muzzle", [-3.5, 16, -16], [7, 3, 1]),    # a broad, low muzzle across the bottom of the face
         *pair("ear", [4, 20, -12], [3, 2, 1]),
     ]),
     # horns leave the poll sideways, then turn up, the tips leaning forward
@@ -317,17 +318,21 @@ COW = [
     ("b_tail", "b_torso", [0, 13, 6], [("b_tail", [-0.5, 9, 6], [1, 4, 1])]),
     ("b_head", "body", [0, 13, -6], [
         ("b_skull", [-3, 11, -11], [6, 6, 5]),
-        ("b_muzzle", [-2, 11, -12], [4, 3, 1]),
+        ("b_muzzle", [-2.5, 11, -12], [5, 2, 1]),
         *pair("b_ear", [3, 14, -9], [2, 2, 1]),
     ]),
     *legs("b_", "b_leg", [3, 8, 3], 1, -5, 2),
 ]
 
 # white patches, in the torso's own space (12 wide, 10 high, 18 long): see blobs()
+# Uneven in size and spacing, as on a real pied cow: one large saddle, a few smaller patches
+# and splashes, the white belly showing low on the flanks.
 COW_PATCHES = {
-    "female": [(4, 0, 8, 5.5, 5, 4.5), (12, 5, 3, 3, 4.5, 3.5), (9.5, 0, 17, 5, 5, 3.5), (6, 10, 9, 5, 2.2, 7), (0, 7, 14, 2, 3, 3)],
-    "male": [(7, 0, 11, 6, 4.5, 4), (0, 4, 4, 3, 4, 4), (3, 0, 0, 4, 3, 2.5), (6, 10, 8, 4.5, 2, 6), (12, 7, 15, 2, 3.5, 3.5)],
-    "baby": [(3, 0, 6, 3.5, 3.5, 3), (8, 4, 12, 3, 3, 2.5), (4, 6, 5, 3.5, 1.8, 4), (8, 2, 0, 2.5, 3, 2)],
+    "female": [(3, 0, 8, 6, 4.5, 4.5), (10, 2, 10, 2.5, 3, 3), (12, 6, 3, 2.5, 3.5, 3), (9, 0, 16.5, 4, 4, 3),
+               (6, 10, 9, 5.5, 2.4, 7.5), (0, 7, 14, 2, 3, 2.5), (1, 4, 2.5, 1.5, 1.8, 1.6)],
+    "male": [(7.5, 0, 11, 5.5, 4, 4.5), (0, 4.5, 5, 2.5, 3.5, 3.5), (3, 0, 0.5, 3.5, 3, 2.5), (6, 10, 8, 4.5, 2, 6),
+             (12, 7, 15.5, 2, 3, 3), (12, 2, 6, 1.5, 1.6, 1.8)],
+    "baby": [(3, 0, 6, 3.5, 3, 3.5), (8, 4, 12, 2.5, 3, 2.5), (4, 6, 5, 3.5, 1.8, 4), (8, 1.5, 1, 2, 2, 1.8), (0, 2, 9, 1.5, 1.5, 1.5)],
 }
 
 
@@ -337,7 +342,7 @@ def cow_paint(p, sex):
     back, white = mix(coat, BLACK, 0.12), (240, 236, 228)
     pink, hoof = (232, 180, 172), (46, 36, 30)
     coat_fn, white_fn = fur(coat, back, mix(coat, WHITE, 0.12), "cow"), fur(white, white, (226, 220, 210), "coww", grain=0.03)
-    patch = blobs(p, "torso", COW_PATCHES[adult], "cow")
+    patch = blobs(p, "torso", COW_PATCHES[adult], "cow", rough=0.5, cell=2)
     p.paint("torso", lambda f, i, j, w, h, fi: (white_fn if patch(f, i, j) else coat_fn)(f, i, j, w, h, fi))
     p.paint("udder", lambda f, i, j, w, h, fi: mix(pink, (200, 130, 130), 0.3) if f != "bottom" and j == h - 1 else pink)
     p.paint("teat", flat((214, 136, 140)))
@@ -352,7 +357,24 @@ def cow_paint(p, sex):
             return white
         return coat_fn(f, i, j, w, h, fi)
     p.paint("skull", skull)
-    p.paint("muzzle", muzzle(pink, (112, 70, 70), mouth=(196, 140, 136), nose=mix(pink, WHITE, 0.25)))
+    # the muzzle: pale hair round a moist nose pad, flesh-coloured on the cow, dark on the bull
+    pad = (196, 150, 140) if adult == "female" else (80, 66, 64)
+    nostril = (128, 86, 80) if adult == "female" else (54, 40, 40)  # clear of the eye's black
+    lip = (224, 212, 202)
+
+    def cow_muzzle(f, i, j, w, h, fi):
+        if f == "north":
+            if j == 0:
+                return nostril if i in (1, w - 2) else (pad if 1 < i < w - 2 else lip)
+            if j == h - 1 and 0 < i < w - 1:
+                return mix(lip, pad, 0.45)  # mouth line
+            return lip
+        if f == "top":
+            return mix(lip, pad, 0.3) if 1 < i < w - 2 and j == h - 1 else lip
+        if f == "bottom":
+            return mix(lip, BLACK, 0.1)
+        return mix(lip, coat, 0.35) if fi > 0 else lip
+    p.paint("muzzle", cow_muzzle)
     p.paint("ear", ear_fn(coat, (226, 164, 156)))
     ivory, tip = (236, 226, 200), (96, 82, 66)
     p.paint("fhorn", horn(ivory, mix(ivory, tip, 0.3), False, "x"))
@@ -362,10 +384,10 @@ def cow_paint(p, sex):
     p.paint("horntip", flat(tip))
     p.paint("leg", limb(coat, hoof, white, sock_rows=3, seed="cowleg"))
     eyes(p, "skull", 3)
-    # calf: light tan, white socks and star, pink nose
+    # calf: light tan, white socks and star, a flesh-coloured nose
     calf = (180, 128, 88)
     calf_fn = fur(calf, mix(calf, BLACK, 0.1), mix(calf, WHITE, 0.3), "calf")
-    cpatch = blobs(p, "b_torso", COW_PATCHES["baby"], "calf")
+    cpatch = blobs(p, "b_torso", COW_PATCHES["baby"], "calf", rough=0.5, cell=2)
     p.paint("b_torso", lambda f, i, j, w, h, fi: (white_fn if cpatch(f, i, j) else calf_fn)(f, i, j, w, h, fi))
     p.paint("b_tail", lambda f, i, j, w, h, fi: calf if j < h - 1 else mix(calf, BLACK, 0.3))
 
@@ -375,19 +397,22 @@ def cow_paint(p, sex):
             return white
         return calf_fn(f, i, j, w, h, fi)
     p.paint("b_skull", b_skull)
-    p.paint("b_muzzle", muzzle((242, 198, 188), (150, 96, 92), mouth=(214, 160, 152)))
+    calf_lip, calf_pad = (230, 216, 204), (206, 164, 150)
+    p.paint("b_muzzle", lambda f, i, j, w, h, fi: (
+        ((150, 104, 96) if i in (1, w - 2) else (calf_pad if 1 < i < w - 2 else calf_lip)) if f == "north" and j == 0
+        else mix(calf_lip, calf_pad, 0.4) if f == "north" and j == h - 1 and 0 < i < w - 1
+        else mix(calf_lip, calf, 0.35) if f in ("east", "west") and fi > 0 else calf_lip))
     p.paint("b_ear", ear_fn(calf, (240, 180, 172)))
     p.paint("b_leg", limb(calf, (90, 70, 60), white, sock_rows=2, seed="calfleg"))
     eyes(p, "b_skull", 2)
 
 
-# --- Sheep and goat faces ------------------------------------------------------------
-# A sheep's or goat's face is all of a piece, as in vanilla: the muzzle is a one-pixel step
-# in the face's own colour (a shade darker), with a small dark nose and a mouth line. Pink
-# belongs to the pig's snout and the cow's muzzle only.
+# --- Sheep face ----------------------------------------------------------------------
+# A sheep's face is all of a piece, as in vanilla: the muzzle is a one-pixel step in the
+# face's own colour (a shade darker), with a small dark nose and a mouth line. Pink belongs
+# to the pig's snout only. (The goat has its own long, dark-bridged muzzle: goat_paint.)
 
 SHEEP_NOSE = (92, 74, 70)   # dark grey-brown
-GOAT_NOSE = (76, 68, 64)    # dark grey
 
 
 def ruminant_muzzle(face, nose, stripe=None):
@@ -439,11 +464,13 @@ SHEEP = [
         *pair("ear", [3, 17, -12], [2, 1, 2]),
     ]),
     ("wool_head", "a_head", [0, 19, -11], [("woolcap", [-3.5, 18, -13], [7, 3, 5])]),
-    # a ram's horns curl back, down and forward round the ears
+    # a ram's horns: heavy spirals that leave the poll, curl back, down and forward round
+    # the ears, the tips turning out beside the cheeks
     ("m_horns", "head", [0, 18, -11], [
-        *pair("horn", [3.5, 18, -12], [2, 2, 3]),
-        *pair("hornback", [3.5, 15, -10], [2, 3, 2]),
-        *pair("horncurl", [3.5, 14, -13], [2, 2, 3]),
+        *pair("horn", [3.5, 18, -13], [3, 3, 4]),
+        *pair("hornback", [3.5, 14, -10], [3, 5, 3]),
+        *pair("horncurl", [3.5, 13, -14], [3, 3, 4]),
+        *pair("horntip", [4.5, 14, -15], [2, 2, 1]),
     ]),
     *legs("a_", "leg", [3, 12, 3], 1, -7, 4),
     *wool_cuffs(),
@@ -479,6 +506,7 @@ def sheep_paint(p, sex, wool):
     p.paint("horn", horn(ivory, mix(ivory, deep, 0.3), True, "z"))
     p.paint("hornback", horn(mix(ivory, deep, 0.3), mix(ivory, deep, 0.6), True, "-y"))
     p.paint("horncurl", horn(mix(ivory, deep, 0.6), deep, True, "-z"))
+    p.paint("horntip", flat(mix(deep, BLACK, 0.1)))
     p.paint("leg", limb(face, (62, 50, 44), seed="sheepleg"))
     eyes(p, "face", 2)
     lamb, fleece = (246, 234, 220), mix(wool, WHITE, 0.2)
@@ -496,14 +524,17 @@ def sheep_paint(p, sex, wool):
 
 GOAT = [
     ("body", None, [0, 0, 0], None),
-    ("a_torso", "body", [0, 15, 0], [("torso", [-4, 11, -8], [8, 8, 16])]),
+    # leaner and deeper than a sheep: a narrow, deep barrel on slim legs; the head is carried
+    # a little low (BONE_ROTATION), not held up like a deer's
+    ("a_torso", "body", [0, 15, 0], [("torso", [-3.5, 11, -8], [7, 8, 15])]),
     ("fa_udder", "a_torso", [0, 11, 3], [("udder", [-1.5, 9, 2], [3, 2, 4])]),
-    ("a_tail", "a_torso", [0, 18, 8], [("tail", [-1, 17, 8], [2, 3, 1])]),
-    ("head", "body", [0, 18, -8], None),
-    ("a_head", "head", [0, 18, -8], [
-        ("skull", [-3, 15, -15], [6, 6, 7]),          # a long face
-        ("muzzle", [-2, 15, -16], [4, 3, 1]),         # one pixel proud, in the coat's colour
-        *pair("ear", [3, 17, -11], [3, 2, 1]),
+    # the tail is carried up like a flag: a stub out of the rump, then its tip pointing up
+    ("a_tail", "a_torso", [0, 19, 7], [("tail", [-1, 18, 7], [2, 1, 1]), ("tailtip", [-1, 19, 7], [2, 2, 1])]),
+    ("head", "body", [0, 19, -8], None),
+    ("a_head", "head", [0, 19, -8], [
+        ("skull", [-2.5, 16, -14], [5, 5, 6]),        # a narrow, long face...
+        ("muzzle", [-1.5, 16, -16], [3, 3, 2]),       # ...running out to a narrow muzzle
+        *pair("ear", [2.5, 18, -11], [3, 1, 2]),       # ears held out sideways
     ]),
     # horns rise from the poll and sweep back; the nanny's are short
     ("fa_horns", "head", [0, 21, -10], [*pair("fhorn", [1, 21, -11], [1, 2, 2]), *pair("fhorntip", [1, 22, -9], [1, 1, 1])]),
@@ -512,60 +543,82 @@ GOAT = [
         *pair("mhornmid", [1, 23, -9], [1, 2, 3]),
         *pair("mhorntip", [1, 22, -6], [1, 2, 1]),
     ]),
-    ("m_beard", "head", [0, 15, -15], [("beard", [-1, 12, -15], [2, 3, 1])]),
-    *legs("a_", "leg", [3, 11, 3], 1, -7, 4),
-    ("b_torso", "body", [0, 10, 0], [("b_torso", [-3, 8, -5], [6, 5, 10])]),
-    ("b_tail", "b_torso", [0, 12, 5], [("b_tail", [-0.5, 12, 5], [1, 2, 1])]),
+    # the beard under the chin: a tuft on the nanny, a long one on the billy
+    ("fa_beard", "head", [0, 16, -15], [("fbeard", [-0.5, 14, -15.5], [1, 2, 1])]),
+    ("m_beard", "head", [0, 16, -15], [("beard", [-1, 12, -15.5], [2, 4, 1])]),
+    *legs("a_", "leg", [2, 11, 2], 1, -7, 4),
+    # kid: long slim legs, a short body, the tail already up
+    ("b_torso", "body", [0, 10, 0], [("b_torso", [-2.5, 8, -5], [5, 4, 9])]),
+    ("b_tail", "b_torso", [0, 12, 4], [("b_tail", [-0.5, 12, 3.5], [1, 2, 1])]),
     ("b_head", "body", [0, 12, -5], [
-        ("b_skull", [-2.5, 11, -10], [5, 5, 5]),
-        ("b_muzzle", [-1.5, 11, -11], [3, 2, 1]),
-        *pair("b_ear", [2.5, 13, -7], [2, 1, 1]),
-        *pair("b_bud", [0.5, 16, -7], [1, 1, 1]),
+        ("b_skull", [-2, 11, -9], [4, 4, 4]),
+        ("b_muzzle", [-1, 11, -11], [2, 2, 2]),
+        *pair("b_ear", [2, 13, -7], [2, 1, 1]),
+        *pair("b_bud", [0.5, 15, -7], [1, 1, 1]),
     ]),
-    *legs("b_", "b_leg", [2, 8, 2], 1, -4, 2),
+    *legs("b_", "b_leg", [2, 8, 2], 0.5, -4, 2),
 ]
 
 
 def goat_paint(p, sex):
-    coat = {"female": (236, 228, 214), "male": (206, 194, 178), "baby": (236, 228, 214)}[sex]
-    dark = {"female": (176, 160, 140), "male": (120, 104, 90), "baby": (176, 160, 140)}[sex]
-    belly = mix(coat, WHITE, 0.35)
-    body = hair(coat, dark, belly, "goat")
+    """A brown goat with black points (dorsal stripe, face, beard, lower legs): nothing like
+    the cream of a shorn sheep. The billy darker, the kid lighter."""
+    coat = {"female": (170, 122, 82), "male": (122, 84, 58), "baby": (190, 146, 104)}[sex]
+    black = (54, 42, 36)
+    belly = mix(coat, (236, 220, 196), 0.45)
+    body = hair(coat, mix(coat, BLACK, 0.4), belly, "goat")
 
     def torso(f, i, j, w, h, fi):
         if f == "top" and abs(i - (w - 1) / 2) < 1:
-            return mix(coat, dark, 0.75)  # dorsal stripe
+            return black  # dorsal stripe
         return body(f, i, j, w, h, fi)
     p.paint("torso", torso)
-    p.paint("udder", lambda f, i, j, w, h, fi: (222, 164, 162) if f != "bottom" and j == h - 1 else (236, 190, 184))
-    p.paint("tail", lambda f, i, j, w, h, fi: mix(coat, dark, 0.7) if f in ("south", "top") else coat)
-    head = fur(coat, mix(coat, dark, 0.3), belly, "goathead", grain=0.04, belly_rows=1)
+    p.paint("udder", lambda f, i, j, w, h, fi: (196, 150, 140) if f != "bottom" and j == h - 1 else (214, 172, 160))
+    p.paint("tail", lambda f, i, j, w, h, fi: black if f in ("top", "south") else coat)
+    p.paint("tailtip", flat(black))
+    head = fur(coat, mix(coat, BLACK, 0.2), belly, "goathead", grain=0.04, belly_rows=1)
 
     def skull(f, i, j, w, h, fi):
-        if f == "north" and abs(i - (w - 1) / 2) < 1 and j < h - 1:
-            return mix(coat, dark, 0.45)  # darker stripe down the face
+        if f == "north":
+            return coat  # plain round the eyes: only the eyes may come near their colours
+        if f == "top" and abs(i - (w - 1) / 2) < 1:
+            return black
         return head(f, i, j, w, h, fi)
     p.paint("skull", skull)
-    p.paint("muzzle", ruminant_muzzle(coat, GOAT_NOSE, stripe=mix(coat, dark, 0.45)))
-    p.paint("ear", ear_fn(mix(coat, dark, 0.3), mix(coat, dark, 0.55)))
+
+    pale = mix(coat, (236, 220, 196), 0.3)
+
+    def muzzle_fn(f, i, j, w, h, fi):
+        if f == "north":
+            if j == 0:
+                return (44, 34, 32) if i in (0, w - 1) else black  # dark nose, nostrils clear of the eye's black
+            return mix(pale, black, 0.5) if j == h - 1 else pale  # pale lips, a mouth line
+        if f == "top":
+            return black  # the dark bridge of the nose
+        if f in ("east", "west"):
+            return black if j == 0 else pale  # the dark face stripe running down to the nose
+        return mix(pale, black, 0.2)
+    p.paint("muzzle", muzzle_fn)
+    p.paint("ear", ear_fn(coat, mix(coat, black, 0.6)))
     hbase, htip = (132, 116, 94), (62, 52, 44)
     p.paint("fhorn", horn(hbase, mix(hbase, htip, 0.5), True, "y"))
     p.paint("fhorntip", flat(mix(hbase, htip, 0.8)))
     p.paint("mhorn", horn(hbase, mix(hbase, htip, 0.3), True, "y"))
     p.paint("mhornmid", horn(mix(hbase, htip, 0.3), mix(hbase, htip, 0.7), True, "z"))
     p.paint("mhorntip", flat(htip))
-    p.paint("beard", lambda f, i, j, w, h, fi: mix(coat, dark, 0.45 + 0.25 * ((i + j) % 2)))
-    p.paint("leg", limb(coat, (64, 54, 46), sock=mix(coat, dark, 0.8) if sex == "male" else None, sock_rows=4, seed="goatleg"))
+    p.paint("fbeard", lambda f, i, j, w, h, fi: mix(black, coat, 0.2 * (j % 2)))
+    p.paint("beard", lambda f, i, j, w, h, fi: mix(black, coat, 0.25 * ((i + j) % 2)))
+    p.paint("leg", limb(coat, (40, 32, 28), sock=black, sock_rows=5, seed="goatleg"))
     eyes(p, "skull", 1)
-    kid = (244, 238, 228)
-    kid_fn = fur(kid, mix(kid, (176, 160, 140), 0.3), WHITE, "kid", grain=0.03)
-    p.paint("b_torso", kid_fn)
-    p.paint("b_tail", flat(mix(kid, (176, 160, 140), 0.4)))
-    p.paint("b_skull", kid_fn)
-    p.paint("b_muzzle", ruminant_muzzle(kid, GOAT_NOSE))
-    p.paint("b_ear", ear_fn(mix(kid, (176, 160, 140), 0.3), mix(kid, (176, 160, 140), 0.55)))
-    p.paint("b_bud", flat((190, 176, 150)))
-    p.paint("b_leg", limb(kid, (112, 98, 86), hoof_rows=1, seed="kidleg"))
+    kid, kblack = (196, 152, 110), (92, 70, 56)
+    kid_fn = fur(kid, mix(kid, kblack, 0.3), mix(kid, WHITE, 0.4), "kid", grain=0.03)
+    p.paint("b_torso", lambda f, i, j, w, h, fi: kblack if f == "top" and abs(i - (w - 1) / 2) < 1 else kid_fn(f, i, j, w, h, fi))
+    p.paint("b_tail", flat(kblack))
+    p.paint("b_skull", lambda f, i, j, w, h, fi: kid if f == "north" else kid_fn(f, i, j, w, h, fi))
+    p.paint("b_muzzle", lambda f, i, j, w, h, fi: (64, 50, 44) if f == "north" and j == 0 else (kblack if f in ("top", "east", "west") else mix(kid, kblack, 0.5)))
+    p.paint("b_ear", ear_fn(kid, mix(kid, kblack, 0.6)))
+    p.paint("b_bud", flat((176, 160, 136)))
+    p.paint("b_leg", limb(kid, (70, 56, 48), sock=kblack, sock_rows=3, hoof_rows=1, seed="kidleg"))
     eyes(p, "b_skull", 1)
 
 
@@ -783,7 +836,8 @@ RABBIT = [
     ("a_tail", "a_torso", [0, 5, 5], [("tail", [-1, 4, 5], [2, 2, 1])]),
     ("head", "body", [0, 6, -4], None),
     ("a_head", "head", [0, 6, -4], [("hhead", [-2, 5, -7], [4, 4, 4])]),
-    ("m_cheeks", "head", [0, 6, -5], [("cheeks", [-2.5, 5, -6.5], [5, 2, 3])]),
+    # a buck: heavy jowls that widen the head (and drawn a little larger: scale_male)
+    ("m_cheeks", "head", [0, 6, -5], [("cheeks", [-3, 5, -6.5], [6, 3, 3])]),
     ("a_ears", "head", [0, 9, -4], [*pair("ear", [0.5, 9, -5], [1, 4, 1])]),
     ("a_leg_fl", "body", [1.5, 2, -3.5], [("fleg", [1, 0, -4], [1, 2, 1])]),
     ("a_leg_fr", "body", [-1.5, 2, -3.5], [("fleg", [-2, 0, -4], [1, 2, 1])]),
@@ -865,8 +919,14 @@ SPECIES = {
     "pig": (PIG, variants_standard(pig_paint), {"scale_male": 1.1, "scale_female": 1.0}),
     "chicken": (CHICKEN, variants_standard(chicken_paint), {"scale_male": 1.15, "scale_female": 0.95}),
     "rabbit": (RABBIT, {name: (lambda p, c=dict(coat, variant=name): rabbit_paint(p, c)) for name, coat in RABBIT_COATS},
-               {"scale_male": 1.0, "scale_female": 1.0}),
+               {"scale_male": 1.1, "scale_female": 1.0}),
 }
+
+
+# Bones that rest turned (degrees about x, y, z; a positive x tips the front down). The goat
+# carries its head a little low (horns and beard with it; the eyelids of tools/gen_sleep.mjs
+# hang from a_head and turn too). Animations add to this rest turn.
+BONE_ROTATION = {"goat": {"head": [15, 0, 0]}}
 
 
 def build(sid):
@@ -878,6 +938,9 @@ def build(sid):
         if stale.stem not in variants:
             stale.unlink()
     data = geo(sid, TW, TH, bones, bounds=(2.5, 2.5) if sid in ("cow", "sheep", "goat", "pig") else (1.5, 1.5))
+    for bone in data["minecraft:geometry"][0]["bones"]:
+        if bone["name"] in BONE_ROTATION.get(sid, {}):
+            bone["rotation"] = BONE_ROTATION[sid][bone["name"]]
     (out / f"{sid}.geo.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf8")
     (out / "rig.json").write_text(json.dumps(rig, indent=1) + "\n", encoding="utf8")
     for name, paint in variants.items():

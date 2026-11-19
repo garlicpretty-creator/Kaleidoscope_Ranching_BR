@@ -15,6 +15,9 @@ RULES = [
     # 1.1 追加: the alpaca's fleece, gone once it is sheared (systems/vanillaParity.js)
     ("wool_", "!q.is_sheared"),
 ]
+# The young's own head follows the player only while no action (eating, drinking, grazing,
+# being petted: tools/gen_actions.mjs) moves it, as the adults' look_at_target does.
+IDLE = f"q.property('{NS}:action') == 'none' && !q.is_grazing"
 # Fades with the speed, so a standing animal stands straight and the sleep pose is not offset.
 SWING = "math.cos(q.modified_distance_moved * 38.17) * q.modified_move_speed"
 
@@ -25,7 +28,7 @@ SPECIES = {
         "wings": True,
     },
     "goose": {
-        "egg": ("#EEEEE8", "#E08A2A"), "scale_male": 1.15,
+        "egg": ("#EEEEE8", "#E08A2A"), "scale_male": 1.15, "scale_female": 0.95, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 70", "leg_right": f"-{SWING} * 70"},
         "wings": True,
     },
@@ -103,7 +106,7 @@ def main(sid):
             if name in bones:
                 anim[name] = {"rotation": rot}
     if s.get("baby_look"):
-        anim["b_head"] = {"rotation": ["q.target_x_rotation", "q.target_y_rotation", 0]}
+        anim["b_head"] = {"rotation": [f"({IDLE}) ? q.target_x_rotation : 0", f"({IDLE}) ? q.target_y_rotation : 0", 0]}
     dump(RP / "animations" / f"{sid}.animation.json", {"format_version": "1.8.0", "animations": {
         f"animation.{NS}.{sid}.walk": {"loop": True, "bones": anim}}})
     print(sid, "bones:", bones)

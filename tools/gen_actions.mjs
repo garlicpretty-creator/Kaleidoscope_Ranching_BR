@@ -164,34 +164,35 @@ function animationsFor(id, bones) {
       : { loop: true, bones: each(H, { rotation: ["62 + math.sin(q.anim_time * 720) * 4", 0, 0], position: [0, -2, 0] }) };
   }
   if (id === "alpaca") {
-    // The alpaca's head bone turns at the base of a long neck, so turning it alone leaves the
-    // muzzle nibbling the air. Within the same 38-62° it is also lowered and brought forward
-    // (clear of the front legs): the muzzle just over the feed (5 px) and over the trough's rim
-    // (7 px), and 1-3 px off the grass. The cria (drawn at half size) bends less.
+    // The alpaca bends its neck: the head bone (the base of the neck, in the chest) swings the
+    // neck forward and down, and a_head (the top of the neck) tips the face back toward the
+    // feed, so the face meets the food as a grazing alpaca's does instead of the whole neck
+    // dropping. The muzzle comes to just over the feed (5 px), over the trough's rim (7 px)
+    // and 0-1 px off the grass, the face just short of upright, in front of the forelegs. The cria (b_neck > b_head) is drawn at
+    // half size, so its targets are twice as many model pixels.
     // Check with art_src/m4_scripts/actions_preview.py.
-    const adult = (rotation, position) => (has("head") ? { head: { rotation, position } } : {});
-    const young = (rotation, position) => (has("b_head") ? { b_head: { rotation, position } } : {});
+    const CHEW = (k) => `math.sin(q.anim_time * 720) * ${k}`;
+    const SWAY = "math.sin(q.anim_time * 180) * 4";
+    // `dip` [adult, young]: how far the base of the neck sinks into the chest, so the muzzle
+    // reaches the grass (the neck alone is too short for it).
+    const bend = (neck, face, babyNeck, babyFace, dip = [0, 0]) => ({
+      ...(has("head") ? { head: { rotation: neck, ...(dip[0] ? { position: [0, -dip[0], 0] } : {}) } } : {}),
+      ...(has("a_head") ? { a_head: { rotation: face } } : {}),
+      ...(has("b_neck") ? { b_neck: { rotation: babyNeck, ...(dip[1] ? { position: [0, -dip[1], 0] } : {}) } } : {}),
+      ...(has("b_head") ? { b_head: { rotation: babyFace } } : {}),
+    });
     out.eat = {
       loop: true,
-      bones: {
-        ...adult(["52 + math.sin(q.anim_time * 720) * 4", "math.sin(q.anim_time * 180) * 6", 0], [0, -5.5, -2.5]),
-        ...young(["40 + math.sin(q.anim_time * 720) * 4", "math.sin(q.anim_time * 180) * 6", 0], [0, 0, -1]),
-      },
+      bones: bend([105, SWAY, 0], [`-30 + ${CHEW(5)}`, 0, 0], [70, SWAY, 0], [`-25 + ${CHEW(5)}`, 0, 0]),
     };
     out.drink = {
       loop: true,
-      bones: {
-        ...adult(["56 + math.sin(q.anim_time * 540) * 3", 0, 0], [0, -3, -2.5]),
-        ...young(["38 + math.sin(q.anim_time * 540) * 2", 0, 0], [0, 2.5, -1]),
-      },
+      bones: bend([90, 0, 0], ["-20 + math.sin(q.anim_time * 540) * 3", 0, 0], [55, 0, 0], ["-10 + math.sin(q.anim_time * 540) * 3", 0, 0]),
     };
     if (GRAZERS.has(id)) {
       out.graze = {
         loop: true,
-        bones: {
-          ...adult(["58 + math.sin(q.anim_time * 720) * 4", 0, 0], [0, -8, -2.5]),
-          ...young(["58 + math.sin(q.anim_time * 720) * 4", 0, 0], [0, -5, -1.5]),
-        },
+        bones: bend([125, SWAY, 0], [`-22 + ${CHEW(3)}`, 0, 0], [125, SWAY, 0], [`-28 + ${CHEW(3)}`, 0, 0], [2, 3.5]),
       };
     }
   }

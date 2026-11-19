@@ -38,7 +38,7 @@ import { PACKED } from "../systems/packBag.js";
 import { GRAZED_DAY, setGraze } from "../data/pasture.js";
 
 export const API_VERSION = 1;
-export const PACK_VERSION = "1.2.0";
+export const PACK_VERSION = "1.3.0";
 const NS = "kaleidoscope_ranching";
 const EV = (name) => `${NS}:${name}`;
 

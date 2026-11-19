@@ -23,7 +23,7 @@ from pathlib import Path
 from PIL import Image
 
 from boxuv import Painter
-from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, stone, wood
+from blocks_m4 import WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
 from station_frames import plunger
 
@@ -174,20 +174,21 @@ INCUBATOR = [
 ]
 
 BUTTER_CHURN = [
+    # 1.3: a tall, slim dash churn of narrow staves with two thin hoops; the dasher's T-handle rests
+    # at the top of the block
     ("churn", None, [0, 0, 0], [
-        ("stand", [-5, 0, -5], [10, 1, 10]),
-        ("staves", [-4, 1, -4], [8, 11, 8]),
-        ("hoop", [-4.5, 2, -4.5], [9, 1, 9]),
-        ("hoop", [-4.5, 9, -4.5], [9, 1, 9]),
-        ("lid", [-3, 12, -3], [6, 1, 6]),
+        ("stand", [-4, 0, -4], [8, 1, 8]),
+        ("staves", [-3.5, 1, -3.5], [7, 11, 7]),
+        ("hoop", [-4, 2, -4], [8, 1, 8]),
+        ("hoop", [-4, 10, -4], [8, 1, 8]),
+        ("lid", [-2.5, 12, -2.5], [5, 1, 5]),
     ]),
     # 1.1 工作台互動動畫: the dasher plunges when a batch goes in (station_frames.py)
-    *plunger("plunger", "churn", [("pole", [-0.5, 13, -0.5], [1, 7, 1]), ("handle", [-2.5, 19, -0.5], [5, 1, 1])]),
-    # churning: cream foams up around the dasher and runs down the front
-    ("busy", "churn", [0, 12, 0], [
+    *plunger("plunger", "churn", [("pole", [-0.5, 13, -0.5], [1, 2, 1]), ("handle", [-3, 15, -0.5], [6, 1, 1])],
+             drops=(0, 1.5, 3, 1.5)),
+    # churning: the cream, then butter, works up through the hole in the lid round the dasher
+    ("busy", "churn", [0, 13, 0], [
         ("foam", [-1.5, 13, -1.5], [3, 1, 3]),
-        ("spill", [0, 12, -3.5], [2, 1, 1]),
-        ("drip", [1, 10, -4.5], [1, 2, 1]),
     ]),
 ]
 
@@ -247,48 +248,48 @@ FERMENTING_JAR = [
 ]
 
 
-def hoops(y):
-    return [("hoop_fb", [-7, y, -7], [14, 1, 1]), ("hoop_fb", [-7, y, 6], [14, 1, 1]),
-            ("hoop_s", [-7, y, -6], [1, 1, 12]), ("hoop_s", [6, y, -6], [1, 1, 12])]
-
-
 PICKLING_VAT = [
+    # 1.3: a salt-glazed stoneware crock: grey orange-peel glaze over the shoulders running down onto
+    # ochre clay, a cobalt flower on the front, two lug ears, and brine with vegetables at the mouth
     ("vat", None, [0, 0, 0], [
-        ("floor", [-6, 0, -6], [12, 1, 12]),
-        ("wall_fb", [-6, 1, -6], [12, 9, 1]),
-        ("wall_fb", [-6, 1, 5], [12, 9, 1]),
-        ("wall_s", [-6, 1, -5], [1, 9, 10]),
-        ("wall_s", [5, 1, -5], [1, 9, 10]),
-        *hoops(2), *hoops(7),
-        ("brine", [-5, 1, -5], [10, 7, 10]),
-        ("veg", [-3, 8, -3], [3, 1, 3]),
-        ("veg", [1, 8, 0], [3, 1, 3]),
+        ("foot", [-4, 0, -4], [8, 1, 8]),
+        ("belly", [-6, 1, -5], [12, 8, 10]),
+        ("belly", [-5, 1, -6], [10, 8, 12]),
+        ("shoulder", [-5, 9, -5], [10, 1, 10]),
+        ("mouth", [-4, 10, -4], [8, 1, 8]),
+        ("ear", [-7, 6, -1], [1, 2, 2]),
+        ("ear", [6, 6, -1], [1, 2, 2]),
+        ("veg", [-3, 11, -2], [2, 0.5, 2]),
+        ("veg", [1, 11, 0], [1, 0.5, 2]),
     ]),
-    # pickling: a drop-lid pressed down with a stone
-    ("busy", "vat", [0, 8, 0], [
-        ("droplid", [-5, 8, -5], [10, 1, 10]),
-        ("weight", [-2, 9, -2], [4, 3, 4]),
+    # pickling: a drop-lid pressed down with a stone; brine rises round it, salt crystallises on the stone
+    ("busy", "vat", [0, 11, 0], [
+        ("weight", [-1.5, 12, -1.5], [3, 2, 3]),
+        ("droplid", [-3, 11, -3], [6, 1, 6]),
+        ("brine_ring", [-3.5, 11, -3.5], [7, 0.5, 7]),
+        ("salt", [-1, 14, -1], [1, 0.5, 1]),
+        ("salt", [0.5, 14, 0], [1, 0.5, 1]),
     ]),
 ]
 
 
-# Food waste bin (systems/foodWasteBin.js): an open slatted bucket with its lid propped up at
-# the back; fill_1..fill_4 raise the scraps by the block's `fill` state.
+# Food waste bin (systems/foodWasteBin.js), 1.3: a green enamelled pedal bin, its lid hinged across
+# the middle with the front half folded back over the rear; fill_1..fill_4 raise the scraps by the
+# block's `fill` state. The top is the folded lid at 14 pixels, the block's selection box.
 FOOD_WASTE_BIN = [
     ("bin", None, [0, 0, 0], [
         ("floor", [-5, 0, -5], [10, 1, 10]),
-        ("wall_fb", [-6, 0, -6], [12, 13, 1]),
-        ("wall_fb", [-6, 0, 5], [12, 13, 1]),
-        ("wall_s", [-6, 0, -5], [1, 13, 10]),
-        ("wall_s", [5, 0, -5], [1, 13, 10]),
-        ("band_fb", [-6.5, 2, -6.5], [13, 1, 1]), ("band_fb", [-6.5, 2, 5.5], [13, 1, 1]),
-        ("band_s", [-6.5, 2, -5.5], [1, 1, 11]), ("band_s", [5.5, 2, -5.5], [1, 1, 11]),
-        ("band_fb", [-6.5, 10, -6.5], [13, 1, 1]), ("band_fb", [-6.5, 10, 5.5], [13, 1, 1]),
-        ("band_s", [-6.5, 10, -5.5], [1, 1, 11]), ("band_s", [5.5, 10, -5.5], [1, 1, 11]),
-        ("lid", [-6, 13, 5], [12, 7, 1]),
-        ("lid_grip", [-2, 17, 4], [4, 1, 1]),
+        ("wall_fb", [-6, 0, -6], [12, 12, 1]),
+        ("wall_fb", [-6, 0, 5], [12, 12, 1]),
+        ("wall_s", [-6, 0, -5], [1, 12, 10]),
+        ("wall_s", [5, 0, -5], [1, 12, 10]),
+        ("lid", [-6, 12, 0], [12, 1, 6]),
+        ("flap", [-6, 13, 0], [12, 1, 6]),
+        ("handle", [-7, 9, -1], [1, 1, 2]),
+        ("handle", [6, 9, -1], [1, 1, 2]),
+        ("pedal", [-2, 0, -7], [4, 1, 1]),
     ]),
-    *[(f"fill_{n}", "bin", [0, 1, 0], [(f"scraps_{n}", [-5, 1, -5], [10, 3 * n, 10])]) for n in (1, 2, 3, 4)],
+    *[(f"fill_{n}", "bin", [0, 1, 0], [(f"scraps_{n}", [-5, 1, -5], [10, 2.5 * n, 10])]) for n in (1, 2, 3, 4)],
 ]
 
 
@@ -458,10 +459,80 @@ def glaze(f, i, j, w, h, fi):
     return GLAZE
 
 
-def brine(f, i, j, w, h, fi):
+SALT_GLAZE, SALT_GLAZE_DK, SALT_GLAZE_LT = (152, 150, 138), (118, 116, 106), (194, 192, 180)
+OCHRE, OCHRE_DK, COBALT = (204, 156, 86), (172, 124, 62), (52, 78, 150)
+FLOWER = {(5, 2), (4, 3), (6, 3), (5, 3), (5, 4), (5, 5), (4, 5), (6, 4)}  # a cobalt sprig, front face texels
+
+
+def crock(f, i, j, w, h, fi):
+    """Salt-glazed stoneware: grey orange-peel glaze from the rim down, ending in runs over ochre
+    clay at the foot, a cobalt sprig on the front."""
     if f == "top":
+        return SALT_GLAZE_DK if i in (0, w - 1) or j in (0, h - 1) else SALT_GLAZE
+    if f == "bottom":
+        return OCHRE_DK
+    if h >= 8:
+        if f == "north" and w == 10 and (i, j) in FLOWER:
+            return COBALT
+        edge = 5 + (1 if (i * 5) % 7 < 3 else 0) + (1 if i % 4 == 1 else 0)  # the glaze line, run unevenly
+        if j >= edge:
+            return OCHRE if (i + j) % 5 else OCHRE_DK
+    elif h <= 1 and w > 4:
+        return OCHRE_DK  # the unglazed foot
+    if i == 2:
+        return SALT_GLAZE_LT  # the glaze catching the light
+    return SALT_GLAZE_DK if (i * 7 + j * 3) % 11 == 0 else SALT_GLAZE  # orange-peel pits
+
+
+def churn_lid(f, i, j, w, h, fi):
+    """The churn's lid with the hole the dasher runs through."""
+    if f == "top" and 1 <= i <= w - 2 and 1 <= j <= h - 2 and abs(i - w // 2) <= 1 and abs(j - h // 2) <= 1:
+        return (40, 26, 16)
+    return wood(WOOD_DK)(f, i, j, w, h, fi)
+
+
+def crock_mouth(f, i, j, w, h, fi):
+    """The mouth: a glazed lip round brine."""
+    if f == "top" and 0 < i < w - 1 and 0 < j < h - 1:
         return (174, 186, 120) if (i * 3 + j * 5) % 11 else (206, 214, 160)
-    return (150, 160, 100)
+    return crock(f, i, j, w, h, fi)
+
+
+def pebble(f, i, j, w, h, fi):
+    """A smooth river stone."""
+    if f == "top":
+        return (150, 148, 140) if 0 < i < w - 1 and 0 < j < h - 1 else (126, 124, 118)
+    return (112, 110, 104) if j == h - 1 else (130, 128, 122)
+
+
+BIN, BIN_DK, BIN_LT = (168, 174, 178), (120, 126, 132), (214, 220, 224)
+
+
+def enamel(f, i, j, w, h, fi):
+    """Galvanised sheet: smooth sides with a bright highlight strip, a rolled rim at the top and a
+    darker foot band."""
+    if f in ("top", "bottom"):
+        return BIN_LT if f == "top" else BIN_DK
+    if j == 0:
+        return BIN_LT
+    if j >= h - 1:
+        return BIN_DK
+    if i in (2, 3):
+        return mix(BIN, BIN_LT, 0.7 if i == 2 else 0.35)
+    if i == w - 1:
+        return mix(BIN, BIN_DK, 0.5)
+    return BIN
+
+
+def bin_lid(f, i, j, w, h, fi):
+    """The lid halves: a raised edge and a pressed grip across the middle."""
+    if f == "top":
+        if i in (0, w - 1) or j in (0, h - 1):
+            return BIN_DK
+        if j == h // 2 and 3 <= i <= w - 4:
+            return (96, 100, 106)  # the pressed grip
+        return BIN
+    return BIN_DK
 
 
 def leafy(f, i, j, w, h, fi):
@@ -491,7 +562,7 @@ PAINT = {
                   "pane_fb": glass, "pane_s": glass, "roof": wood(WOOD_DK), "roof_top": wood(WOOD),
                   "lamp": iron, "bulb": glow((255, 214, 96), (255, 170, 60)),
                   "heater": glow((255, 150, 60), (220, 90, 40)), "egg": egg_paint, "egg_tip": egg_paint},
-    "butter_churn": {"stand": wood(WOOD_DK), "staves": staves(WOOD), "hoop": iron, "lid": wood(WOOD_DK),
+    "butter_churn": {"stand": wood(WOOD_DK), "staves": staves(WOOD), "hoop": iron, "lid": churn_lid,
                      "pole": wood(WOOD_LT), "handle": wood(WOOD)},
     "cheese_press": {"board": wood(WOOD), "spout": wood(WOOD_DK), "mould": staves(WOOD_LT, top=CREAM),
                      "band": iron, "follower": wood(WOOD_DK), "upright": wood(WOOD_DK, rings=WOOD_LT),
@@ -501,14 +572,13 @@ PAINT = {
     "fermenting_jar": {"foot": solid(CLAY), "belly": glaze, "shoulder": glaze, "neck": solid(GLAZE_DK),
                        "lid": solid(CLAY, edge=mix(CLAY, (40, 20, 10), 0.25)), "knob": solid(CLAY),
                        "tie": solid((196, 44, 40))},
-    "pickling_vat": {"floor": wood(WOOD_DK), "wall_fb": staves(WOOD), "wall_s": staves(WOOD),
-                     "hoop_fb": iron, "hoop_s": iron, "brine": brine, "veg": leafy,
-                     "weight": stone},
+    "pickling_vat": {"foot": crock, "belly": crock, "shoulder": crock, "mouth": crock_mouth, "ear": crock,
+                     "veg": leafy, "weight": pebble},
 }
 
 PAINT["food_waste_bin"] = {
-    "floor": wood(WOOD_DK), "wall_fb": staves(mix(WOOD, (90, 110, 70), 0.25)), "wall_s": staves(mix(WOOD, (90, 110, 70), 0.25)),
-    "band_fb": iron, "band_s": iron, "lid": wood(WOOD_DK), "lid_grip": iron,
+    "floor": enamel, "wall_fb": enamel, "wall_s": enamel, "lid": bin_lid, "flap": bin_lid,
+    "handle": iron, "pedal": iron,
     **{f"scraps_{n}": scraps for n in (1, 2, 3, 4)},
 }
 
