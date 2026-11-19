@@ -524,9 +524,10 @@ def sheep_paint(p, sex, wool):
 
 GOAT = [
     ("body", None, [0, 0, 0], None),
-    # leaner and deeper than a sheep: a narrow barrel on slim legs
-    ("a_torso", "body", [0, 16, 0], [("torso", [-3.5, 12, -8], [7, 7, 15])]),
-    ("fa_udder", "a_torso", [0, 12, 3], [("udder", [-1.5, 10, 2], [3, 2, 4])]),
+    # leaner and deeper than a sheep: a narrow, deep barrel on slim legs; the head is carried
+    # a little low (BONE_ROTATION), not held up like a deer's
+    ("a_torso", "body", [0, 15, 0], [("torso", [-3.5, 11, -8], [7, 8, 15])]),
+    ("fa_udder", "a_torso", [0, 11, 3], [("udder", [-1.5, 9, 2], [3, 2, 4])]),
     # the tail is carried up like a flag: a stub out of the rump, then its tip pointing up
     ("a_tail", "a_torso", [0, 19, 7], [("tail", [-1, 18, 7], [2, 1, 1]), ("tailtip", [-1, 19, 7], [2, 2, 1])]),
     ("head", "body", [0, 19, -8], None),
@@ -545,7 +546,7 @@ GOAT = [
     # the beard under the chin: a tuft on the nanny, a long one on the billy
     ("fa_beard", "head", [0, 16, -15], [("fbeard", [-0.5, 14, -15.5], [1, 2, 1])]),
     ("m_beard", "head", [0, 16, -15], [("beard", [-1, 12, -15.5], [2, 4, 1])]),
-    *legs("a_", "leg", [2, 12, 2], 1, -7, 4),
+    *legs("a_", "leg", [2, 11, 2], 1, -7, 4),
     # kid: long slim legs, a short body, the tail already up
     ("b_torso", "body", [0, 10, 0], [("b_torso", [-2.5, 8, -5], [5, 4, 9])]),
     ("b_tail", "b_torso", [0, 12, 4], [("b_tail", [-0.5, 12, 3.5], [1, 2, 1])]),
@@ -835,7 +836,7 @@ RABBIT = [
     ("a_tail", "a_torso", [0, 5, 5], [("tail", [-1, 4, 5], [2, 2, 1])]),
     ("head", "body", [0, 6, -4], None),
     ("a_head", "head", [0, 6, -4], [("hhead", [-2, 5, -7], [4, 4, 4])]),
-    # a buck: heavy jowls that widen the head (and drawn larger: scale_male)
+    # a buck: heavy jowls that widen the head (and drawn a little larger: scale_male)
     ("m_cheeks", "head", [0, 6, -5], [("cheeks", [-3, 5, -6.5], [6, 3, 3])]),
     ("a_ears", "head", [0, 9, -4], [*pair("ear", [0.5, 9, -5], [1, 4, 1])]),
     ("a_leg_fl", "body", [1.5, 2, -3.5], [("fleg", [1, 0, -4], [1, 2, 1])]),
@@ -918,8 +919,14 @@ SPECIES = {
     "pig": (PIG, variants_standard(pig_paint), {"scale_male": 1.1, "scale_female": 1.0}),
     "chicken": (CHICKEN, variants_standard(chicken_paint), {"scale_male": 1.15, "scale_female": 0.95}),
     "rabbit": (RABBIT, {name: (lambda p, c=dict(coat, variant=name): rabbit_paint(p, c)) for name, coat in RABBIT_COATS},
-               {"scale_male": 1.2, "scale_female": 1.0}),
+               {"scale_male": 1.1, "scale_female": 1.0}),
 }
+
+
+# Bones that rest turned (degrees about x, y, z; a positive x tips the front down). The goat
+# carries its head a little low (horns and beard with it; the eyelids of tools/gen_sleep.mjs
+# hang from a_head and turn too). Animations add to this rest turn.
+BONE_ROTATION = {"goat": {"head": [15, 0, 0]}}
 
 
 def build(sid):
@@ -931,6 +938,9 @@ def build(sid):
         if stale.stem not in variants:
             stale.unlink()
     data = geo(sid, TW, TH, bones, bounds=(2.5, 2.5) if sid in ("cow", "sheep", "goat", "pig") else (1.5, 1.5))
+    for bone in data["minecraft:geometry"][0]["bones"]:
+        if bone["name"] in BONE_ROTATION.get(sid, {}):
+            bone["rotation"] = BONE_ROTATION[sid][bone["name"]]
     (out / f"{sid}.geo.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf8")
     (out / "rig.json").write_text(json.dumps(rig, indent=1) + "\n", encoding="utf8")
     for name, paint in variants.items():

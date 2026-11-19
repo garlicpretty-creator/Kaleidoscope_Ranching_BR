@@ -16,7 +16,10 @@
           "*": true
         },
         {
-          "gear_harness": "q.property('kaleidoscope_ranching:gear_harness') && !q.is_baby"
+          "gear_harness": "q.property('kaleidoscope_ranching:gear_harness') && !q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "gear_harness_male": "q.property('kaleidoscope_ranching:gear_harness') && !q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         },
         {
           "gear_plough": "q.property('kaleidoscope_ranching:gear_plough') && !q.is_baby"
@@ -25,7 +28,10 @@
           "gear_plough_chains": "q.property('kaleidoscope_ranching:gear_plough') && !q.is_baby && !q.property('kaleidoscope_ranching:sleeping')"
         },
         {
-          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby"
+          "gear_blanket": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && !(q.property('kaleidoscope_ranching:sex') == 'male')"
+        },
+        {
+          "gear_blanket_male": "q.property('kaleidoscope_ranching:gear_blanket') && !q.is_baby && q.property('kaleidoscope_ranching:sex') == 'male'"
         },
         {
           "gear_blanket_baby": "q.property('kaleidoscope_ranching:gear_blanket') && q.is_baby"

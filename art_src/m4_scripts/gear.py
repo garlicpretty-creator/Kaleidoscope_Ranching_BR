@@ -55,9 +55,11 @@ def gear_table():
 class Body:
     """The boxes that make up an animal's trunk, adult or young: (x0, y0, z0, x1, y1, z1)."""
 
-    def __init__(self, bones, baby, bare=False, saddle=False):
+    def __init__(self, bones, baby, bare=False, saddle=False, male=False):
         """`bare`: leave out wool (bones named wool*), as on a sheared sheep. `saddle`: count
-        the saddle as part of the trunk, so cloth goes over it."""
+        the saddle as part of the trunk, so cloth goes over it. `male`: the adult male's trunk
+        (his m_ bones, such as the bull buffalo's hump, in place of the female's fa_ ones); the
+        default is the female's, so nothing of the male's makes gear float on a female."""
         by_name = {b["name"]: b for b in bones}
 
         def chain(name):
@@ -75,6 +77,8 @@ class Body:
             elif any(NOT_BODY.search(n) for n in names):
                 continue
             if bare and any(n.startswith("wool") for n in names):
+                continue
+            if any(n.startswith("fa_" if male else "m_") for n in names):
                 continue
             young = any(n.startswith("b_") for n in names)
             if young != baby:
@@ -335,6 +339,22 @@ BUILD = {"blanket": blanket, "harness": harness, "plough": plough, "pack_bag": p
 # --- Assembly ----------------------------------------------------------------------
 
 
+MALE = f"q.property('{NS}:sex') == 'male'"
+
+
+def sexed(bones, baby):
+    """[(body, extra visibility rule, bone name suffix)]: one fitting for both sexes, or, where
+    the adult male's trunk differs (the bull buffalo's hump), one for the female and one for the
+    male, each shown only on its own sex."""
+    female = Body(bones, baby)
+    if baby:
+        return [(female, "", "")]
+    male = Body(bones, baby, male=True)
+    if male.boxes == female.boxes:
+        return [(female, "", "")]
+    return [(female, f" && !({MALE})", ""), (male, f" && {MALE}", "_male")]
+
+
 def build(animal, kinds, bones):
     """(geometry bones as dicts, part visibility, painter, texture size) for one animal.
     `kinds` are the animal's rows of data/gear.js."""
@@ -366,9 +386,12 @@ def build(animal, kinds, bones):
                     plain.append("!q.is_saddled")
                     groups.append((f"{name}_saddled", body.torso_bone, pivot, blanket(Body(bones, baby, saddle=True), whole=True),
                                    f"{prop(kind)} && {age} && q.is_saddled"))
-                groups.append((name, body.torso_bone, pivot, blanket(body), " && ".join(plain)))
+                for fit_body, rule, suffix in sexed(bones, baby):
+                    groups.append((name + suffix, body.torso_bone, pivot, blanket(fit_body), " && ".join(plain) + rule))
             else:
-                groups.append((name, body.torso_bone, by_name[body.torso_bone]["pivot"], BUILD[kind](body), f"{prop(kind)} && {age}"))
+                for fit_body, rule, suffix in sexed(bones, baby):
+                    groups.append((name + suffix, body.torso_bone, by_name[body.torso_bone]["pivot"], BUILD[kind](fit_body),
+                                   f"{prop(kind)} && {age}{rule}"))
 
     placed, size = fit([c for _, _, _, cubes, _ in groups for c in cubes])
     it = iter(placed)

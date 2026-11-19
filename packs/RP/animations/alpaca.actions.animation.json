@@ -53,14 +53,14 @@
         },
         "b_neck": {
           "rotation": [
-            30,
+            55,
             0,
             0
           ]
         },
         "b_head": {
           "rotation": [
-            "10 + math.sin(q.anim_time * 540) * 3",
+            "-10 + math.sin(q.anim_time * 540) * 3",
             0,
             0
           ]
@@ -105,28 +105,38 @@
       "bones": {
         "head": {
           "rotation": [
-            130,
+            125,
             "math.sin(q.anim_time * 180) * 4",
+            0
+          ],
+          "position": [
+            0,
+            -2,
             0
           ]
         },
         "a_head": {
           "rotation": [
-            "-35 + math.sin(q.anim_time * 720) * 4",
+            "-22 + math.sin(q.anim_time * 720) * 3",
             0,
             0
           ]
         },
         "b_neck": {
           "rotation": [
-            130,
+            125,
             "math.sin(q.anim_time * 180) * 4",
+            0
+          ],
+          "position": [
+            0,
+            -3.5,
             0
           ]
         },
         "b_head": {
           "rotation": [
-            "-40 + math.sin(q.anim_time * 720) * 4",
+            "-28 + math.sin(q.anim_time * 720) * 3",
             0,
             0
           ]

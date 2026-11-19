@@ -6,7 +6,8 @@ Everything is rendered from the files in packs/RP and art/blocks as the game wou
 them: the animal's model with its sleep animation, the gear geometry on the same bones, each
 with its own texture. The mannequin is only a stand-in for the player (flat colours).
 
-Run with: python art_src/m4_scripts/gear_preview.py [out.png]   (default docs/art/gear_preview.png)
+Run with: python art_src/m4_scripts/gear_preview.py [out.png] [row ...]   (default docs/art/gear_preview.png;
+row numbers pick rows, e.g. 7 8 9 the female/male rows of every animal that takes gear)
 """
 import json
 import math
@@ -144,8 +145,9 @@ def render(layers, anim=None, baby=False, yaw=-40, scale=8.0, ground=0.74, backg
 # --- Animals ---------------------------------------------------------------------
 
 
-def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=False, saddled=False):
-    """The animal and its gear layer, with the gear kinds in `worn` switched on."""
+def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=False, saddled=False, male=False):
+    """The animal and its gear layer, with the gear kinds in `worn` switched on. `male`: an
+    adult male, in his skin, with his m_ bones and his own fitting of the gear."""
     entity = load(RP / "entity" / f"{animal}.entity.json")["minecraft:client_entity"]["description"]
     values = {f"q.property('{NS}:gear_{kind}')": "True" for kind in worn}
 
@@ -153,7 +155,7 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=Fal
         e = expr.replace("q.is_baby", str(baby)).replace(f"q.property('{NS}:sleeping')", str(asleep))
         for key, value in values.items():
             e = e.replace(key, value)
-        e = e.replace(f"q.property('{NS}:sex') == 'male'", "False")
+        e = e.replace(f"q.property('{NS}:sex') == 'male'", str(male and not baby))
         e = e.replace("q.is_saddled", str(saddled)).replace("q.is_sheared", str(sheared))
         import re
         e = re.sub(r"q\.property\('[^']+'\)", "False", e)
@@ -180,9 +182,10 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=Fal
     for path in (RP / "render_controllers").glob("*.json"):
         controllers.update(load(path)["render_controllers"])
     textures = entity["textures"]
-    skin = skin or ("baby" if baby and "baby" in textures else "female")
+    look = "baby" if baby else ("male" if male else "female")
+    skin = skin or (look if look in textures else "female")
     if animal == "sheep":
-        skin = "baby_white" if baby else "female_white"
+        skin = f"{look}_white"
     layers = [layer("default", skin, controllers[f"controller.render.{NS}.{animal}"])]
     if worn:
         layers.append(layer("gear", "gear", controllers[f"controller.render.{NS}.{animal}.gear"]))
@@ -190,8 +193,8 @@ def animal_layers(animal, worn, baby=False, asleep=False, skin=None, sheared=Fal
     return layers, anim
 
 
-def animal_tile(animal, worn, baby=False, asleep=False, yaw=-40, scale=8.0, sheared=False, saddled=False):
-    layers, anim = animal_layers(animal, worn, baby, asleep, sheared=sheared, saddled=saddled)
+def animal_tile(animal, worn, baby=False, asleep=False, yaw=-40, scale=8.0, sheared=False, saddled=False, male=False):
+    layers, anim = animal_layers(animal, worn, baby, asleep, sheared=sheared, saddled=saddled, male=male)
     return render(layers, anim, baby, yaw, scale)
 
 
@@ -246,12 +249,30 @@ def held_tile(item, yaw=-25):
 # --- The rack --------------------------------------------------------------------
 
 
-def rack_tile(pieces, yaw=-30):
+def rack_tile(pieces, yaw=-30, stage="half"):
+    """The rack with `pieces` drying, each at `stage` (fresh, half or dried: the dry_<n>_<stage>
+    bones under each piece's dry_<n> bone)."""
     geo = load(ROOT / "art" / "blocks" / "butcher_rack.geo.json")["minecraft:geometry"][0]
     size = (geo["description"]["texture_width"], geo["description"]["texture_height"])
-    shown = lambda name: name == "frame" or (name.startswith("dry_") and int(name[4:]) <= pieces)
+
+    def shown(name):
+        if name == "frame":
+            return True
+        if not name.startswith("dry_"):
+            return False
+        n, *rest = name[4:].split("_")
+        return int(n) <= pieces and (not rest or rest[0] == stage)
     layer = Layer(geo["bones"], Image.open(ROOT / "art" / "blocks" / "butcher_rack.png"), size, shown)
     return render([layer], yaw=yaw, scale=7.5, ground=0.92)
+
+
+def wearers():
+    """[[(animal, its gear kinds but the plough)]] from data/gear.js, two animals a row."""
+    from gear import gear_table
+    table = gear_table()
+    animals = sorted({a for g in table for a in g["animals"]})
+    pairs = [(a, [g["id"] for g in table if a in g["animals"] and g["id"] != "plough"]) for a in animals]
+    return [pairs[i:i + 2] for i in range(0, len(pairs), 2)]
 
 
 def main():
@@ -276,8 +297,12 @@ def main():
          ("yak asleep: pack bag", lambda: animal_tile("yak", ["pack_bag"], asleep=True, scale=7))],
         [("held: wool_hat icon", lambda: held_tile("wool_hat")), ("held: wool_scarf icon", lambda: held_tile("wool_scarf")),
          ("held: leather_apron icon", lambda: held_tile("leather_apron")), ("held: hat icon, back", lambda: held_tile("wool_hat", 155))],
-        [("rack: nothing drying", lambda: rack_tile(0)), ("rack: 1 piece drying", lambda: rack_tile(1)), ("rack: 2 pieces", lambda: rack_tile(2)),
-         ("rack: 4 pieces", lambda: rack_tile(4)), ("rack: 4 pieces, from the side", lambda: rack_tile(4, yaw=-75))],
+        [("rack: nothing drying", lambda: rack_tile(0)), ("rack: 1 piece, fresh", lambda: rack_tile(1, stage="fresh")),
+         ("rack: 2 pieces, half dry", lambda: rack_tile(2)), ("rack: 4 pieces, dried", lambda: rack_tile(4, stage="dried")),
+         ("rack: 4 pieces, from the side", lambda: rack_tile(4, yaw=-75))],
+        # female and male of every animal that takes gear, wearing all of it but the plough
+        *[[(f"{a} {sex}: {' + '.join(kinds)}", lambda a=a, kinds=kinds, m=(sex == "male"): animal_tile(a, kinds, male=m, scale=6.5))
+           for a, kinds in row for sex in ("female", "male")] for row in wearers()],
     ]
     only = sys.argv[2:]
     if only:
