@@ -9,7 +9,8 @@ Shape, as the proposal asks ("較矮、毛較蓬", unlike the vanilla llama):
 
 Bones keep the pack's conventions (client.py, tools/gen_sleep.mjs, tools/gen_actions.mjs,
 tools/validate.mjs): body, head, a_head, b_head, a_torso, b_torso, a_/b_leg_fl..br, a_tail,
-b_tail; the ears are bones of their own (a_/b_ear_left, _right) for the head shake's ear
+b_tail; the necks are bones of their own (1.3: head > a_neck > a_head, b_neck > b_head), so the
+head bends at both ends of the neck; the ears are bones of their own (a_/b_ear_left, _right) for the head shake's ear
 flick (tools/gen_actions.mjs). The fleece is in wool_* bones that the render controller hides once the alpaca is
 sheared (wool_coat over the body, wool_neck round the neck, wool_leg_* the leg warmers); m_ruff
 hangs from wool_neck so a sheared male loses it too. Under the fleece the body, neck and legs are
@@ -17,10 +18,10 @@ painted as short-cropped fleece, so a sheared alpaca looks clipped, not bare. Th
 tail stay: they are not shorn.
 
 The eyes are painted with boxuv.plain_eyes on cubes held directly by a_head / b_head, so
-gen_sleep finds them and lays eyelids over them. The head bone pivots at the base of the neck;
-eating, drinking and grazing tip it 38-62 degrees down and lower it (tools/gen_actions.mjs has an
-alpaca branch), the muzzle just over the feed, the trough's rim and the grass (check with
-actions_preview.py).
+gen_sleep finds them and lays eyelids over them. The head bone pivots at the base of the neck,
+a_head at its top: eating, drinking and grazing swing the neck forward and down from the chest
+and tip the face back toward the feed (tools/gen_actions.mjs has an alpaca branch), the muzzle
+just over the feed, the trough's rim and the grass (check with actions_preview.py).
 
 Run with: python art_src/m4_scripts/new_animals.py alpaca   (new_animals.BUILD uses this file)
 """
@@ -81,10 +82,12 @@ BONES = [
     ]),
     # A short fluffy tail, carried low; it stays after shearing.
     ("a_tail", "body", [0, 16, 6.5], [("tail", [-1.5, 13, 6], [3, 3.5, 3])]),
-    # The head bone turns at the base of the neck, low in the chest.
+    # The head bone turns at the base of the neck, low in the chest, and carries the neck
+    # (a_neck); the skull (a_head) turns again at the top of the neck, so eating and grazing
+    # bend the neck down and tip the face to the feed (tools/gen_actions.mjs alpaca branch).
     ("head", "body", [0, 14, -6], None),
-    ("a_head", "head", [0, 14, -6], [
-        ("neck", [-2, 13, -9], [4, 9, 4]),
+    ("a_neck", "head", [0, 14, -6], [("neck", [-2, 13, -9], [4, 9, 4])]),
+    ("a_head", "a_neck", [0, 21, -7], [
         ("skull", [-3, 20, -11.5], [6, 4, 5]),
         ("muzzle", [-1.5, 20, -13.5], [3, 2, 2]),
         # the topknot: a pom of fleece over the crown, its fringe just above the eyes
@@ -92,7 +95,7 @@ BONES = [
     ]),
     *ears("a_", "a_head", "ear", 1.5, 23.5, -8.5, [2, 4, 1], 12, 23.5),
     # The fleece round the neck, from the chest to the jaw.
-    ("wool_neck", "a_head", [0, 14, -6], [("ruff", [-3, 12.5, -10], [6, 9, 6])]),
+    ("wool_neck", "a_neck", [0, 14, -6], [("ruff", [-3, 12.5, -10], [6, 9, 6])]),
     # The male's longer neck fleece: a bib hanging down the front of the neck. It is also hidden
     # once sheared (client.py adds !q.is_sheared to its m_ rule).
     ("m_ruff", "wool_neck", [0, 14, -6], [("mane", [-2, 11, -11], [4, 8, 1.5])]),
@@ -100,8 +103,9 @@ BONES = [
     # --- cria: fluffy all over, a big head on a short neck, long legs ------------------
     ("b_torso", "body", [0, 11, 0], [("b_torso", [-3, 8, -4.5], [6, 6, 10])]),
     ("b_tail", "body", [0, 12.5, 5.5], [("b_tail", [-1, 10.5, 5], [2, 2.5, 2])]),
-    ("b_head", "body", [0, 13, -3.5], [
-        ("b_neck", [-1.5, 12, -6.5], [3, 6, 3]),
+    # the neck (b_neck) turns at its base, the head (b_head) again at the top of the neck
+    ("b_neck", "body", [0, 13, -5], [("b_neck", [-1.5, 12, -6.5], [3, 6, 3])]),
+    ("b_head", "b_neck", [0, 17.5, -5.5], [
         ("b_skull", [-2.5, 17, -8.5], [5, 4, 4]),
         ("b_muzzle", [-1.5, 17, -10], [3, 2, 1.5]),
         ("b_topknot", [-3, 20, -9], [6, 2.5, 5]),

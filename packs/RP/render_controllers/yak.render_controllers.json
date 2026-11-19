@@ -64,6 +64,9 @@
           "b_torso": "q.is_baby"
         },
         {
+          "b_skirt": "q.is_baby"
+        },
+        {
           "b_tail": "q.is_baby"
         },
         {

@@ -25,7 +25,7 @@
         "actions": "controller.animation.kaleidoscope_ranching.goose.actions"
       },
       "scripts": {
-        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.15 : 1.0)",
+        "scale": "q.is_baby ? 1.0 : (q.property('kaleidoscope_ranching:sex') == 'male' ? 1.25 : 0.95)",
         "animate": [
           {
             "walk": "!q.property('kaleidoscope_ranching:sleeping')"

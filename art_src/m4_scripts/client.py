@@ -25,7 +25,7 @@ SPECIES = {
         "wings": True,
     },
     "goose": {
-        "egg": ("#EEEEE8", "#E08A2A"), "scale_male": 1.15,
+        "egg": ("#EEEEE8", "#E08A2A"), "scale_male": 1.25, "scale_female": 0.95, "baby_look": True,
         "walk": {"leg_left": f"{SWING} * 70", "leg_right": f"-{SWING} * 70"},
         "wings": True,
     },

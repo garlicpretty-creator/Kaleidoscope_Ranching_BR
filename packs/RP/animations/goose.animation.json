@@ -59,6 +59,13 @@
             0,
             "q.is_on_ground || q.is_in_water ? 0 : math.sin(q.life_time * 1600) * 40"
           ]
+        },
+        "b_head": {
+          "rotation": [
+            "q.target_x_rotation",
+            "q.target_y_rotation",
+            0
+          ]
         }
       }
     }

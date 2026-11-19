@@ -34,7 +34,16 @@
           "a_tail": "!q.is_baby"
         },
         {
+          "a_neck": "!q.is_baby"
+        },
+        {
           "a_head": "!q.is_baby"
+        },
+        {
+          "a_ear_left": "!q.is_baby"
+        },
+        {
+          "a_ear_right": "!q.is_baby"
         },
         {
           "wool_neck": "!q.is_sheared"
@@ -73,7 +82,16 @@
           "b_tail": "q.is_baby"
         },
         {
+          "b_neck": "q.is_baby"
+        },
+        {
           "b_head": "q.is_baby"
+        },
+        {
+          "b_ear_left": "q.is_baby"
+        },
+        {
+          "b_ear_right": "q.is_baby"
         },
         {
           "b_leg_fl": "q.is_baby"
