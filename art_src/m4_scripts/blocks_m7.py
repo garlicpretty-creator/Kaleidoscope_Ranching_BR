@@ -15,9 +15,9 @@ from pathlib import Path
 
 from boxuv import Painter
 from blocks_m3 import autouv, corners, geo, solid, staves
-from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, wood
+from blocks_m4 import HAY, HAY_DK, WOOD, WOOD_DK, WOOD_LT, hay, iron, mix, rope, wood
 from station_stages import STAGE_PAINT, stage_paints, staged
-from station_frames import crank, crank_z, extra, shift, wheel
+from station_frames import crank, crank_z, shift, wheel
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -26,10 +26,12 @@ TIN, TIN_DK, TIN_LT = (176, 182, 188), (128, 134, 142), (220, 224, 228)
 MILK, CREAM = (244, 244, 238), (250, 236, 198)
 ICE, ICE_DK, ICE_LT = (188, 222, 240), (140, 186, 216), (236, 248, 252)
 YARN, YARN_DK = (236, 226, 208), (204, 190, 166)
-DOWN, DOWN_DK, PIPING = (246, 244, 238), (222, 220, 216), (142, 170, 204)
-ROCK, ROCK_DK = (128, 126, 122), (96, 94, 92)
+DOWN, DOWN_DK = (248, 245, 236), (206, 198, 184)
+SEAM, STITCH = (214, 200, 176), (196, 184, 162)
+BINDING, LINING, SPRIG = (196, 128, 112), (226, 232, 214), (132, 166, 112)
+FILM, FILM_DK, FILM_LT, TAPE = (60, 96, 64), (40, 66, 46), (132, 172, 134), (230, 228, 216)
+SEP_RED, SEP_RED_DK, SEP_RED_LT = (138, 36, 32), (92, 24, 22), (178, 72, 60)
 HORN, HORN_DK, HORN_TIP = (224, 208, 176), (176, 150, 112), (92, 72, 56)
-BONE = (232, 226, 208)
 
 
 def ring(name, cx, cy, z):
@@ -41,21 +43,28 @@ def ring(name, cx, cy, z):
 
 
 MEAT_GRINDER = [
+    # 1.3: a hand-cranked mincer clamped to the front edge of a plank bench: the barrel runs front to
+    # back with the hopper on top, the cutting plate at the front over a bowl on the ground, a clamp
+    # down the plank's edge and the crank at the back.
     ("stand", None, [0, 0, 0], [
-        ("board", [-7, 0, -5], [14, 2, 10]),
-        ("neck", [-2, 2, -2], [4, 4, 4]),
-        ("barrel", [-4, 6, -2], [8, 4, 4]),
-        ("hopper", [-3, 10, -3], [6, 2, 6]),
-        ("hopper_rim", [-4, 12, -4], [8, 2, 8]),
-        ("plate", [4, 5.5, -2.5], [1, 5, 5]),
-        ("axle", [-6, 7.5, -0.5], [2, 1, 1]),
-        ("bowl", [3, 2, -3], [4, 2, 6]),
+        ("leg", [-6, 0, 0], [2, 3, 6]),
+        ("leg", [4, 0, 0], [2, 3, 6]),
+        ("board", [-7, 3, -1], [14, 2, 8]),
+        ("seat", [-2, 5, -1], [4, 1, 3]),
+        ("clamp", [-1, 2, -2], [2, 4, 1]),
+        ("jaw", [-1, 2, -1], [2, 1, 2]),
+        ("barrel", [-2, 6, -5], [4, 4, 6]),
+        ("plate", [-2.5, 5.5, -6], [5, 5, 1]),
+        ("neck", [-1.5, 10, -3], [3, 1, 3]),
+        ("hopper", [-3, 11, -4.5], [6, 2, 6]),
+        ("axle", [-0.5, 7.5, 1], [1, 1, 2]),
+        ("bowl", [-2.5, 0, -7.5], [5, 2, 4]),
     ]),
     # 1.1 工作台互動動畫: the crank turns when it is used (station_frames.py)
-    *crank("crank", "stand", -7, 8, 0, 4, knob_dx=-1),
-    ("busy", "stand", [0, 4, 0], [
-        ("mince", [3.5, 4, -2.5], [3, 1, 5]),
-        ("strands", [5, 5, -1], [1, 2, 2]),
+    *crank_z("crank", "stand", 3, 0, 8, 2, knob_dz=1),
+    ("busy", "stand", [0, 2, 0], [
+        ("mince", [-2, 1.5, -7], [4, 1, 3]),
+        ("strands", [-1, 2.5, -6.5], [2, 3, 1]),
     ]),
 ]
 
@@ -80,43 +89,47 @@ MILKING_RACK = [
 ]
 
 CREAM_SEPARATOR = [
+    # 1.3: a hand-cranked separator: a red cast-iron pedestal, the separating bowl in its housing with
+    # the skim and cream spouts over a jug and a can, the supply tank on top, the crank at the side.
     ("frame", None, [0, 0, 0], [
-        ("base", [-6, 0, -6], [12, 2, 12]),
-        ("column", [-2, 2, -2], [4, 6, 4]),
-        ("drum", [-4, 8, -4], [8, 3, 8]),
-        ("knob", [-1, 14, -1], [2, 2, 2]),
-        ("spout", [5, 9, -1], [3, 1, 2]),
-        ("spout", [-8, 8, -1], [4, 1, 2]),
-        ("cream_can", [5, 2, -2], [3, 5, 3]),
-        ("milk_jug", [-8, 2, -2], [3, 5, 4]),
-        ("crank_axle", [-0.5, 5, -4], [1, 1, 2]),
+        ("base", [-5, 0, -6], [10, 1, 10]),
+        ("column", [-2, 1, -2], [4, 7, 4]),
+        ("axle", [2, 6, -0.5], [3, 1, 1]),
+        ("housing", [-3, 8, -3], [6, 2, 6]),
+        ("spout", [-2, 8.5, -5], [1, 1, 2]),
+        ("spout", [1, 9, -5], [1, 1, 2]),
+        ("neck", [-1.5, 10, -1.5], [3, 1, 3]),
+        ("bowl", [-3.5, 11, -3.5], [7, 1, 7]),
+        ("tank", [-5, 12, -5], [10, 2, 10]),
+        ("milk_jug", [-3, 1, -6], [2, 4, 2]),
+        ("cream_can", [1, 1, -6], [2, 3, 2]),
     ]),
     # 1.1 追加 方塊動畫: the crank turns when milk goes in (station_frames.py)
-    # and the ribbed bowl on top spins with it: each frame has its own bowl, ribs a pixel further round
-    *extra(crank_z("crank", "frame", -5, 0, 5.5, 3, knob_dz=-1), lambda i: [(f"bowl_{i}", [-5, 11, -5], [10, 3, 10])]),
+    *crank("crank", "frame", 5, 6.5, 0, 3, knob_dx=1),
     ("busy", "frame", [0, 14, 0], [
-        ("cream", [-4, 14, -4], [8, 1, 8]),
+        ("cream", [-4, 13.5, -4], [8, 1, 8]),
     ]),
 ]
 
 ICE_CREAM_CHURN = [
+    # 1.3: a squat wooden tub packed with ice round a tin canister; the gear yoke across the top
+    # turns the dasher, with the crank on its side.
     ("bucket", None, [0, 0, 0], [
-        ("tub", [-5, 0, -5], [10, 10, 10]),
-        ("hoop", [-5.5, 2, -5.5], [11, 1, 11]),
-        ("hoop", [-5.5, 7, -5.5], [11, 1, 11]),
-        ("ice", [-4, 10, -4], [8, 1, 8]),
-        ("can", [-3, 10, -3], [6, 2, 6]),
-        ("bracket", [-6, 8, -1], [1, 5, 2]),
-        ("bracket", [5, 8, -1], [1, 5, 2]),
+        ("tub", [-6, 0, -6], [12, 7, 12]),
+        ("hoop", [-6.5, 1, -6.5], [13, 1, 13]),
+        ("hoop", [-6.5, 5, -6.5], [13, 1, 13]),
+        ("can", [-2.5, 7, -2.5], [5, 4, 5]),
+        ("can_lid", [-2, 11, -2], [4, 1, 4]),
+        ("bracket", [-6, 7, -1], [1, 7, 2]),
+        ("bracket", [5, 7, -1], [1, 7, 2]),
         ("bar", [-5, 12, -1], [10, 1, 2]),
-        ("gear", [-1, 13, -1.5], [2, 2, 3]),
-        ("crank_axle", [6, 12, -0.5], [1, 1, 1]),
+        ("gear", [-1.5, 12, -1.5], [3, 2, 3]),
     ]),
-    *crank("crank", "bucket", 7, 12.5, 0, 3.5),
-    ("busy", "bucket", [0, 10, 0], [
-        ("frost", [-4.5, 11, -4.5], [3, 1, 3]),
-        ("frost", [1.5, 11, 1.5], [3, 1, 3]),
-        ("scoop", [-4, 11, 2], [2, 2, 2]),
+    *crank("crank", "bucket", 6, 12.5, 0, 2.5, knob_dx=1),
+    ("busy", "bucket", [0, 7, 0], [
+        ("frost", [-5, 7, -5], [2, 1, 2]),
+        ("frost", [3, 7, 3], [2, 1, 2]),
+        ("scoop", [-5, 7, 2], [2, 1, 2]),
     ]),
 ]
 
@@ -173,31 +186,37 @@ WEAVING_LOOM = [
 ]
 
 SILAGE_BARREL = [
+    # 1.3: a tall drum sealed in green silage wrap, gathered and tied at the top, on a pallet; while
+    # busy an old tyre weighs the top down and forage pokes out at the edge.
     ("barrel", None, [0, 0, 0], [
-        ("staves", [-6, 0, -6], [12, 13, 12]),
-        ("hoop", [-6.5, 2, -6.5], [13, 1, 13]),
-        ("hoop", [-6.5, 10, -6.5], [13, 1, 13]),
-        ("lid", [-5, 13, -5], [10, 1, 10]),
-        ("handle", [-2, 14, -0.5], [4, 1, 1]),
+        ("pallet", [-6, 0, -6], [12, 1, 12]),
+        ("drum", [-5, 1, -4], [10, 12, 8]),
+        ("drum", [-4, 1, -5], [8, 12, 10]),
+        ("shoulder", [-4, 13, -4], [8, 1, 8]),
+        ("knot", [-1, 14, -1], [2, 1, 2]),
     ]),
     ("busy", "barrel", [0, 14, 0], [
-        ("stone", [-3, 14, -3], [6, 3, 6]),
-        ("tuft", [4, 13, -2], [2, 1, 3]),
-        ("tuft", [-6, 13, -1], [2, 1, 3]),
+        ("tyre", [-3, 14, -3], [6, 2, 6]),
+        ("tuft", [4, 13, -1.5], [1, 1, 3]),
+        ("tuft", [-5, 13, -1.5], [1, 1, 3]),
     ]),
 ]
 
 DOWN_PILLOW = [
+    # 1.3: a plump pillow: a fat middle, thinner gathered ends, and the top puffed up.
     ("pillow", None, [0, 0, 0], [
-        ("body", [-6, 0, -4], [12, 3, 8]),
-        ("puff", [-5, 3, -3], [10, 1, 6]),
+        ("body", [-5, 0, -4], [10, 4, 8]),
+        ("end", [-6, 0.5, -3], [1, 3, 6]),
+        ("end", [5, 0.5, -3], [1, 3, 6]),
+        ("puff", [-4, 4, -3], [8, 1, 6]),
     ]),
 ]
 
 DOWN_QUILT = [
+    # 1.3: a thick quilted comforter, its top third folded back to show the lining.
     ("quilt", None, [0, 0, 0], [
-        ("sheet", [-8, 0, -8], [16, 1, 16]),
-        *[("square", [x, 1, z], [4, 1, 4]) for x in (-7, -2, 3) for z in (-7, -2, 3)],
+        ("sheet", [-8, 0, -8], [16, 2, 16]),
+        ("fold", [-8, 2, 2], [16, 1, 6]),
     ]),
 ]
 
@@ -246,17 +265,21 @@ PEN_GATE_TOP = [
 ]
 
 HORN_DECOR = [
+    # 1.3: a pair of horns on a wooden wall plaque. The plaque stands at the back of the block (+z,
+    # away from whoever placed it), so set against a wall it hangs there.
     ("plaque", None, [0, 0, 0], [
-        ("board", [-4, 0, -3], [8, 1, 6]),
-        ("boss", [-2, 1, -2], [4, 2, 4]),
-        ("horn_root", [-4, 1, -1], [2, 2, 2]),
-        ("horn_root", [2, 1, -1], [2, 2, 2]),
-        ("horn_mid", [-6, 2, -1], [2, 2, 2]),
-        ("horn_mid", [4, 2, -1], [2, 2, 2]),
-        ("horn_rise", [-7, 3, -1], [1, 3, 2]),
-        ("horn_rise", [6, 3, -1], [1, 3, 2]),
-        ("horn_tip", [-7, 6, -0.5], [1, 2, 1]),
-        ("horn_tip", [6, 6, -0.5], [1, 2, 1]),
+        ("foot", [-3, 0, 5], [6, 1, 3]),
+        ("board", [-4, 1, 6], [8, 9, 2]),
+        ("crest", [-3, 10, 6], [6, 1, 2]),
+        ("boss", [-2, 4, 4], [4, 4, 2]),
+        ("horn_root", [-4, 6, 4], [2, 2, 2]),
+        ("horn_root", [2, 6, 4], [2, 2, 2]),
+        ("horn_mid", [-6, 7, 4], [2, 2, 2]),
+        ("horn_mid", [4, 7, 4], [2, 2, 2]),
+        ("horn_rise", [-7, 8, 4.5], [1, 4, 1]),
+        ("horn_rise", [6, 8, 4.5], [1, 4, 1]),
+        ("horn_tip", [-6, 12, 4.5], [1, 2, 1]),
+        ("horn_tip", [5, 12, 4.5], [1, 2, 1]),
     ]),
 ]
 
@@ -288,33 +311,6 @@ def vessel(side, inside, rim=None):
                 return rim or side(f, i, j, w, h, fi)
             return inside(f, i, j, w, h, fi) if callable(inside) else inside
         return side(f, i, j, w, h, fi)
-    return fn
-
-
-def ribbed(phase):
-    """The separator's spinning bowl: tin with a dark rib every fourth pixel round its side, and a
-    bright one beside it; each frame starts the ribs a pixel further round, so the bowl turns."""
-    def fn(f, i, j, w, h, fi):
-        if f in ("top", "bottom"):
-            return cast(TIN, TIN_DK, TIN_LT)(f, i, j, w, h, fi)
-        if j == 0:
-            return TIN_LT
-        k = (i + phase) % 4
-        return STEEL_DK if k == 0 else TIN_LT if k == 1 else TIN
-    return fn
-
-
-def skim(phase):
-    """Inside the bowl: dark milk with one broad pale streak from the middle to the rim, pointing a quarter
-    turn further round each frame (the same way the ribs go), like the hand of a clock."""
-    dx, dz = [(0, 1), (1, 0), (0, -1), (-1, 0)][phase]
-
-    def fn(f, i, j, w, h, fi):
-        px, pz = i + 0.5 - w / 2, h / 2 - j - 0.5
-        along, across = px * dx + pz * dz, px * dz - pz * dx
-        if 0 < along and -1 < across <= 1:
-            return (236, 238, 240)  # two pixels wide, so it shows past the knob
-        return (120, 128, 142)
     return fn
 
 
@@ -351,44 +347,104 @@ def threads(a, b, along="i"):
     return fn
 
 
+def soft(f, i, j, w, h, fi, lit=DOWN, dark=DOWN_DK):
+    """Puffed cloth: bright in the middle of a face, shading off toward its edges."""
+    di = abs(i + 0.5 - w / 2) / (w / 2)
+    dj = abs(j + 0.5 - h / 2) / (h / 2)
+    return mix(lit, dark, min(1.0, max(di, dj) ** 2 * 1.1))
+
+
 def pillow(f, i, j, w, h, fi):
-    edge = i in (0, w - 1) or j in (0, h - 1)
     if f in ("top", "bottom"):
-        return PIPING if edge else (DOWN_DK if (i + j) % 5 == 0 else DOWN)
-    return PIPING if j == h // 2 else (DOWN_DK if j == h - 1 else DOWN)
+        return soft(f, i, j, w, h, fi)
+    if j == 1 and f in ("north", "south") and 0 < i < w - 1:
+        return SEAM  # the piped seam round the middle
+    return mix(DOWN, DOWN_DK, 0.25 + 0.5 * j / max(1, h - 1))
 
 
-def quilt_square(f, i, j, w, h, fi):
+def pillow_end(f, i, j, w, h, fi):
+    """The gathered ends: fine creases running out from the corners."""
+    if f in ("east", "west"):
+        return DOWN_DK if i % 2 else mix(DOWN, DOWN_DK, 0.4)
+    return mix(DOWN, DOWN_DK, 0.5)
+
+
+def quilt_top(f, i, j, w, h, fi):
+    """Quilted down: 5-pixel puffs, each bright in the middle and shading off to soft stitched seams,
+    with a binding round the edge."""
+    if f == "bottom":
+        return LINING
+    if f != "top":
+        return BINDING if j == 0 else mix(DOWN, DOWN_DK, 0.35)
+    if i in (0, w - 1) or j in (0, h - 1):
+        return BINDING
+    a, b = (i - 1) % 5, (j - 1) % 5
+    return soft(f, a, b, 5, 5, fi, DOWN, STITCH)
+
+
+def quilt_fold(f, i, j, w, h, fi):
+    """The folded-back third shows the sprigged lining on top; its front is the rolled edge."""
     if f == "top":
-        if (i, j) in ((1, 1), (2, 2), (1, 2), (2, 1)):
-            return DOWN
-        return mix(DOWN, DOWN_DK, 0.5)
-    return DOWN_DK
-
-
-def quilt_sheet(f, i, j, w, h, fi):
-    if f in ("top", "bottom"):
         if i in (0, w - 1) or j in (0, h - 1):
-            return PIPING
-        return mix(DOWN_DK, PIPING, 0.35)  # stitched channels between the squares
-    return PIPING if j == 0 else DOWN_DK
-
-
-def rock(f, i, j, w, h, fi):
-    r = rnd(f, i, j)
-    if f == "top":
-        return mix(ROCK, (160, 158, 152), (r % 5) / 6)
-    return ROCK_DK if r < 30 or j == h - 1 else ROCK
+            return BINDING
+        return SPRIG if (i * 3 + j * 5) % 7 == 0 else LINING
+    if f == "north":
+        return BINDING if j == 0 else mix(DOWN, DOWN_DK, 0.4)
+    return BINDING
 
 
 def horn(f, i, j, w, h, fi):
     return HORN_DK if (j + i // 2) % 3 == 0 else HORN
 
 
-def lid(f, i, j, w, h, fi):
-    if f == "top" and (i in (0, w - 1) or j in (0, h - 1)):
-        return mix(WOOD_DK, (30, 18, 10), 0.3)
+def plaque(f, i, j, w, h, fi):
+    """The wall board: dark stained wood with a carved border a pixel in from the edge."""
+    if f in ("north", "south") and w > 4 and (i in (1, w - 2) and 0 < j < h - 1 or j in (1, h - 2) and 0 < i < w - 1):
+        return mix(WOOD_DK, (30, 18, 10), 0.45)
     return wood(WOOD_DK)(f, i, j, w, h, fi)
+
+
+def hide_boss(f, i, j, w, h, fi):
+    """The boss the horns are set in, wrapped in hide with a stitched edge."""
+    if i in (0, w - 1) or j in (0, h - 1):
+        return (120, 82, 52) if (i + j) % 2 else (92, 62, 40)
+    return (168, 120, 80) if rnd(f, i, j) > 20 else (148, 104, 68)
+
+
+def film(f, i, j, w, h, fi):
+    """Green silage wrap wound round the drum: overlapping turns running on a slant, a sheen down
+    one side, a white tape band."""
+    if f in ("top", "bottom"):
+        return FILM_DK if (i + j) % 4 == 0 else FILM
+    if j in (h // 2, h // 2 + 1):
+        return TAPE if j == h // 2 else mix(TAPE, FILM_DK, 0.3)
+    base = mix(FILM, FILM_DK, 0.35) if (i + 2 * j) % 11 == 0 else FILM
+    if i == 1:
+        return mix(base, FILM_LT, 0.6)
+    if i == w - 1:
+        return mix(base, FILM_DK, 0.6)
+    return base
+
+
+def gathered(f, i, j, w, h, fi):
+    """The wrap bunched together over the top: pleats running in to the knot."""
+    if f == "top":
+        return FILM_DK if (i + j) % 2 or (i - j) % 3 == 0 else FILM
+    return FILM_DK if i % 2 else FILM
+
+
+def tyre(f, i, j, w, h, fi):
+    if f == "top":
+        if 1 < i < w - 2 and 1 < j < h - 2:
+            return (22, 22, 24)  # the hole
+        return (70, 70, 74) if (i + j) % 3 == 0 else (54, 54, 58)
+    return (40, 40, 44) if (i + j) % 2 else (62, 62, 66)  # tread
+
+
+def pallet(f, i, j, w, h, fi):
+    if f == "top":
+        return mix(WOOD_LT, (30, 18, 10), 0.5) if i % 4 == 3 else WOOD_LT
+    return wood(WOOD)(f, i, j, w, h, fi)
 
 
 def feed_box(f, i, j, w, h, fi):
@@ -405,23 +461,23 @@ def fleece(f, i, j, w, h, fi):
 GATE = {"rail": wood(WOOD), "stile": wood(WOOD_LT), "open_rail": wood(WOOD), "open_stile": wood(WOOD_LT)}
 
 PAINT = {
-    "meat_grinder": {"board": wood(WOOD_DK), "neck": cast(), "barrel": cast(), "hopper": cast(),
-                     "hopper_rim": vessel(cast(), (58, 60, 68), STEEL_LT), "plate": perforated,
-                     "axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
-                     "bowl": vessel(wood(WOOD_LT), mix(WOOD_DK, (30, 18, 10), 0.3))},
+    "meat_grinder": {"leg": wood(WOOD_DK), "board": wood(WOOD), "seat": cast(), "clamp": cast(), "jaw": cast(),
+                     "barrel": cast(), "plate": perforated, "neck": cast(),
+                     "hopper": vessel(cast(), (58, 60, 68), STEEL_LT), "axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
+                     "bowl": vessel(cast(TIN, TIN_DK, TIN_LT), (96, 100, 108), TIN_LT)},
     "milking_rack": {"post": wood(WOOD_DK, rings=WOOD_LT), "rail": wood(WOOD), "yoke": wood(WOOD),
                      "neck_bar": wood(WOOD_LT), "feed_box": feed_box,
                      "pail": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT), "pail_handle": iron,
                      "stool_seat": wood(WOOD_LT), "stool_leg": wood(WOOD_DK)},
-    "cream_separator": {"base": wood(WOOD_DK), "column": cast(), "drum": cast(TIN, TIN_DK, TIN_LT),
-                        **{f"bowl_{i}": vessel(ribbed(i), skim(i), TIN_LT) for i in range(4)},
-                        "knob": wood(WOOD_LT), "spout": cast(TIN, TIN_DK, TIN_LT),
+    "cream_separator": {"base": cast(SEP_RED, SEP_RED_DK, SEP_RED_LT), "column": cast(SEP_RED, SEP_RED_DK, SEP_RED_LT),
+                        "axle": iron, "housing": cast(TIN, TIN_DK, TIN_LT), "spout": cast(TIN, TIN_DK, TIN_LT),
+                        "neck": cast(TIN, TIN_DK, TIN_LT), "bowl": cast(TIN, TIN_DK, TIN_LT), "tank": vessel(cast(TIN, TIN_DK, TIN_LT), (92, 98, 108), TIN_LT),
                         "cream_can": vessel(cast(TIN, TIN_DK, TIN_LT), CREAM, TIN_LT),
                         "milk_jug": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT),
-                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT)},
-    "ice_cream_churn": {"tub": vessel(staves(WOOD), ice, WOOD_DK), "hoop": iron, "ice": ice,
-                        "can": cast(TIN, TIN_DK, TIN_LT), "bracket": cast(), "bar": cast(), "gear": cast(),
-                        "crank_axle": iron, "crank": cast(), "grip": wood(WOOD_LT)},
+                        "crank": cast(), "grip": wood(WOOD_LT)},
+    "ice_cream_churn": {"tub": vessel(staves(WOOD), ice, WOOD_DK), "hoop": iron,
+                        "can": cast(TIN, TIN_DK, TIN_LT), "can_lid": cast(TIN, TIN_DK, TIN_LT), "bracket": cast(),
+                        "bar": cast(), "gear": cast(), "crank": cast(), "grip": wood(WOOD_LT)},
     "spinning_wheel": {"bench": wood(WOOD_DK), "leg": wood(WOOD_DK), "treadle": wood(WOOD),
                        "upright": wood(WOOD), "rim": solid(WOOD_DK), "hub": wood(WOOD_DK, rings=WOOD_LT),
                        "spoke_h": solid(WOOD_LT), "spoke_v": solid(WOOD_LT), "spoke_d": solid(WOOD_LT), "maiden": wood(WOOD),
@@ -431,14 +487,13 @@ PAINT = {
                      "warp": threads(YARN, YARN_DK), "warp_back": threads(YARN, YARN_DK),
                      "heddle": threads(WOOD, YARN), "beater": beater,
                      "treadle": wood(WOOD)},
-    "silage_barrel": {"staves": staves(WOOD), "hoop": iron, "lid": lid, "handle": iron,
-                      "stone": rock},
-    "down_pillow": {"body": pillow, "puff": pillow},
-    "down_quilt": {"sheet": quilt_sheet, "square": quilt_square},
+    "silage_barrel": {"pallet": pallet, "drum": film, "shoulder": gathered, "knot": rope, "tyre": tyre},
+    "down_pillow": {"body": pillow, "end": pillow_end, "puff": pillow},
+    "down_quilt": {"sheet": quilt_top, "fold": quilt_fold},
     "pen_gate": {"post": wood(WOOD_DK, rings=WOOD_LT), "hinge": iron, "latch": iron,
                  "brace": wood(WOOD_DK), "open_brace": wood(WOOD_DK), **GATE},
     "pen_gate_top": {"post_top": wood(WOOD_DK), "cap": wood(WOOD_LT, rings=WOOD_LT), **GATE},
-    "horn_decor": {"board": wood(WOOD_DK), "boss": solid(BONE, edge=mix(BONE, HORN_DK, 0.5)),
+    "horn_decor": {"foot": wood(WOOD), "board": plaque, "crest": plaque, "boss": hide_boss,
                    "horn_root": horn, "horn_mid": horn, "horn_rise": horn, "horn_tip": solid(HORN_TIP)},
 }
 
