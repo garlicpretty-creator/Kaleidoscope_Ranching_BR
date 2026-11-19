@@ -161,7 +161,7 @@ export function guidebookPayload() {
   return {
     api: 1,
     id: GUIDEBOOK_ID,
-    version: "1.2.0",
+    version: "1.3.0",
     order: 200,
     icon: "textures/ui/kr_guidebook", // the series star, as every Kaleidoscope add-on shows in the guidebook list
     titleKey: "title",
