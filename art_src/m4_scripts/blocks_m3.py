@@ -174,23 +174,21 @@ INCUBATOR = [
 ]
 
 BUTTER_CHURN = [
-    # 1.3: a slim dash churn, wider at the foot than at the lid, all inside the block's 16 pixels
+    # 1.3: a tall, slim dash churn of narrow staves with two thin hoops; the dasher's T-handle rests
+    # at the top of the block
     ("churn", None, [0, 0, 0], [
-        ("stand", [-4.5, 0, -4.5], [9, 1, 9]),
-        ("lower", [-4, 1, -4], [8, 5, 8]),
-        ("upper", [-3.5, 6, -3.5], [7, 4, 7]),
-        ("hoop", [-4.5, 2, -4.5], [9, 1, 9]),
-        ("hoop_up", [-4, 8, -4], [8, 1, 8]),
-        ("lid", [-3, 10, -3], [6, 1, 6]),
+        ("stand", [-4, 0, -4], [8, 1, 8]),
+        ("staves", [-3.5, 1, -3.5], [7, 11, 7]),
+        ("hoop", [-4, 2, -4], [8, 1, 8]),
+        ("hoop", [-4, 10, -4], [8, 1, 8]),
+        ("lid", [-2.5, 12, -2.5], [5, 1, 5]),
     ]),
     # 1.1 工作台互動動畫: the dasher plunges when a batch goes in (station_frames.py)
-    *plunger("plunger", "churn", [("pole", [-0.5, 11, -0.5], [1, 4, 1]), ("handle", [-2, 15, -0.5], [4, 1, 1])],
+    *plunger("plunger", "churn", [("pole", [-0.5, 13, -0.5], [1, 2, 1]), ("handle", [-3, 15, -0.5], [6, 1, 1])],
              drops=(0, 1.5, 3, 1.5)),
-    # churning: cream foams up around the dasher and runs down the front
-    ("busy", "churn", [0, 10, 0], [
-        ("foam", [-1.5, 11, -1.5], [3, 1, 3]),
-        ("spill", [0, 10, -3.5], [2, 1, 1]),
-        ("drip", [1, 9, -4], [1, 1, 0.5]),
+    # churning: the cream, then butter, works up through the hole in the lid round the dasher
+    ("busy", "churn", [0, 13, 0], [
+        ("foam", [-1.5, 13, -1.5], [3, 1, 3]),
     ]),
 ]
 
@@ -251,8 +249,8 @@ FERMENTING_JAR = [
 
 
 PICKLING_VAT = [
-    # 1.3: a glazed stoneware crock: a dark brown glaze over the shoulders running down onto the bare
-    # clay of the foot, two lug ears, and brine with vegetables at the mouth
+    # 1.3: a salt-glazed stoneware crock: grey orange-peel glaze over the shoulders running down onto
+    # ochre clay, a cobalt flower on the front, two lug ears, and brine with vegetables at the mouth
     ("vat", None, [0, 0, 0], [
         ("foot", [-4, 0, -4], [8, 1, 8]),
         ("belly", [-6, 1, -5], [12, 8, 10]),
@@ -264,10 +262,13 @@ PICKLING_VAT = [
         ("veg", [-3, 11, -2], [2, 0.5, 2]),
         ("veg", [1, 11, 0], [1, 0.5, 2]),
     ]),
-    # pickling: a drop-lid pressed down with a stone
+    # pickling: a drop-lid pressed down with a stone; brine rises round it, salt crystallises on the stone
     ("busy", "vat", [0, 11, 0], [
-        ("droplid", [-3, 11, -3], [6, 1, 6]),
         ("weight", [-1.5, 12, -1.5], [3, 2, 3]),
+        ("droplid", [-3, 11, -3], [6, 1, 6]),
+        ("brine_ring", [-3.5, 11, -3.5], [7, 0.5, 7]),
+        ("salt", [-1, 14, -1], [1, 0.5, 1]),
+        ("salt", [0.5, 14, 0], [1, 0.5, 1]),
     ]),
 ]
 
@@ -458,25 +459,36 @@ def glaze(f, i, j, w, h, fi):
     return GLAZE
 
 
-CROCK_GLAZE, CROCK_GLAZE_DK, CROCK_GLAZE_LT = (98, 54, 30), (66, 36, 22), (150, 96, 58)
-CROCK_CLAY, CROCK_CLAY_DK = (196, 160, 118), (164, 128, 90)
+SALT_GLAZE, SALT_GLAZE_DK, SALT_GLAZE_LT = (152, 150, 138), (118, 116, 106), (194, 192, 180)
+OCHRE, OCHRE_DK, COBALT = (204, 156, 86), (172, 124, 62), (52, 78, 150)
+FLOWER = {(5, 2), (4, 3), (6, 3), (5, 3), (5, 4), (5, 5), (4, 5), (6, 4)}  # a cobalt sprig, front face texels
 
 
 def crock(f, i, j, w, h, fi):
-    """Stoneware: dark glaze from the rim down, ending in runs over the bare clay of the foot."""
+    """Salt-glazed stoneware: grey orange-peel glaze from the rim down, ending in runs over ochre
+    clay at the foot, a cobalt sprig on the front."""
     if f == "top":
-        return CROCK_GLAZE_DK if i in (0, w - 1) or j in (0, h - 1) else CROCK_GLAZE
+        return SALT_GLAZE_DK if i in (0, w - 1) or j in (0, h - 1) else SALT_GLAZE
     if f == "bottom":
-        return CROCK_CLAY_DK
+        return OCHRE_DK
     if h >= 8:
+        if f == "north" and w == 10 and (i, j) in FLOWER:
+            return COBALT
         edge = 5 + (1 if (i * 5) % 7 < 3 else 0) + (1 if i % 4 == 1 else 0)  # the glaze line, run unevenly
         if j >= edge:
-            return CROCK_CLAY if (i + j) % 5 else CROCK_CLAY_DK
+            return OCHRE if (i + j) % 5 else OCHRE_DK
     elif h <= 1 and w > 4:
-        return CROCK_CLAY_DK  # the unglazed foot
+        return OCHRE_DK  # the unglazed foot
     if i == 2:
-        return mix(CROCK_GLAZE, CROCK_GLAZE_LT, 0.7)  # the glaze catching the light
-    return CROCK_GLAZE
+        return SALT_GLAZE_LT  # the glaze catching the light
+    return SALT_GLAZE_DK if (i * 7 + j * 3) % 11 == 0 else SALT_GLAZE  # orange-peel pits
+
+
+def churn_lid(f, i, j, w, h, fi):
+    """The churn's lid with the hole the dasher runs through."""
+    if f == "top" and 1 <= i <= w - 2 and 1 <= j <= h - 2 and abs(i - w // 2) <= 1 and abs(j - h // 2) <= 1:
+        return (40, 26, 16)
+    return wood(WOOD_DK)(f, i, j, w, h, fi)
 
 
 def crock_mouth(f, i, j, w, h, fi):
@@ -493,21 +505,22 @@ def pebble(f, i, j, w, h, fi):
     return (112, 110, 104) if j == h - 1 else (130, 128, 122)
 
 
-BIN, BIN_DK, BIN_LT = (70, 112, 74), (46, 78, 52), (112, 156, 112)
+BIN, BIN_DK, BIN_LT = (168, 174, 178), (120, 126, 132), (214, 220, 224)
 
 
 def enamel(f, i, j, w, h, fi):
-    """Green enamelled sheet metal: pressed ribs, a bright rim at the top and a dark kick band."""
+    """Galvanised sheet: smooth sides with a bright highlight strip, a rolled rim at the top and a
+    darker foot band."""
     if f in ("top", "bottom"):
         return BIN_LT if f == "top" else BIN_DK
     if j == 0:
         return BIN_LT
-    if j >= h - 2:
+    if j >= h - 1:
         return BIN_DK
-    if i % 4 == 1:
-        return mix(BIN, BIN_LT, 0.5)
-    if i % 4 == 2:
-        return BIN_DK
+    if i in (2, 3):
+        return mix(BIN, BIN_LT, 0.7 if i == 2 else 0.35)
+    if i == w - 1:
+        return mix(BIN, BIN_DK, 0.5)
     return BIN
 
 
@@ -517,8 +530,8 @@ def bin_lid(f, i, j, w, h, fi):
         if i in (0, w - 1) or j in (0, h - 1):
             return BIN_DK
         if j == h // 2 and 3 <= i <= w - 4:
-            return (150, 156, 160)
-        return BIN if (i + j) % 7 else mix(BIN, BIN_LT, 0.4)
+            return (96, 100, 106)  # the pressed grip
+        return BIN
     return BIN_DK
 
 
@@ -549,8 +562,8 @@ PAINT = {
                   "pane_fb": glass, "pane_s": glass, "roof": wood(WOOD_DK), "roof_top": wood(WOOD),
                   "lamp": iron, "bulb": glow((255, 214, 96), (255, 170, 60)),
                   "heater": glow((255, 150, 60), (220, 90, 40)), "egg": egg_paint, "egg_tip": egg_paint},
-    "butter_churn": {"stand": wood(WOOD_DK), "lower": staves(WOOD), "upper": staves(WOOD), "hoop": iron,
-                     "hoop_up": iron, "lid": wood(WOOD_DK), "pole": wood(WOOD_LT), "handle": wood(WOOD)},
+    "butter_churn": {"stand": wood(WOOD_DK), "staves": staves(WOOD), "hoop": iron, "lid": churn_lid,
+                     "pole": wood(WOOD_LT), "handle": wood(WOOD)},
     "cheese_press": {"board": wood(WOOD), "spout": wood(WOOD_DK), "mould": staves(WOOD_LT, top=CREAM),
                      "band": iron, "follower": wood(WOOD_DK), "upright": wood(WOOD_DK, rings=WOOD_LT),
                      "beam": wood(WOOD_DK), "screw": iron, "bar": wood(WOOD_LT), "bar_z": wood(WOOD_LT)},

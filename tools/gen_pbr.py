@@ -60,6 +60,7 @@ MATERIALS = {
     "horn": (0, 0, 115, 30, 1.0),
     "glow": (0, 210, 60, 0, 0.0),
     "matte": (0, 0, 200, 0, 1.5),
+    "plastic": (0, 0, 110, 0, 0.8),  # silage wrap: smooth, a soft sheen
 }
 
 # Texture path under textures/ (no extension) -> base material. First match wins.
@@ -75,6 +76,7 @@ RULES = [
     (r"^blocks/ranching/auto_feeder$", "metal"),
     (r"^blocks/ranching/(meat_grinder|cream_separator|food_waste_bin)$", "metal"),
     (r"^blocks/ranching/(fermenting_jar|pickling_vat)$", "glazed"),
+    (r"^blocks/ranching/silage_barrel$", "plastic"),
     (r"^blocks/ranching/(vintage_|smoked_)?cheese_wheel$", "fat"),
     (r"^blocks/ranching/placed_(pizza|roast_turkey)$", "food"),
     (r"^blocks/ranching/placed_(cheese_gratin|truffle_gratin|claypot_rice|old_duck_soup|yak_stew|lion_head_meatballs|fondue)$", "glazed"),
@@ -118,7 +120,8 @@ RULES = [
 RULES = [(re.compile(p), m) for p, m in RULES]
 
 # Textures whose neutral greys are iron fittings (hoops, hinges, blades, pans).
-METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$)")
+# 1.3: not the silage wrap's tape or the white down of the pillow and quilt, which have no iron.
+METAL_ACCENTS = re.compile(r"^blocks/ranching/(?!(vintage_|smoked_)?cheese_wheel$|placed_pizza$|silage_barrel$|down_pillow$|down_quilt$)")
 GLASS_TEXTURES = re.compile(r"^blocks/ranching/incubator$")
 PLACED_FOOD = re.compile(r"^blocks/ranching/placed_")
 # Placed drinks: every pixel keeps the texture's base material. There is no iron on them, so pale,

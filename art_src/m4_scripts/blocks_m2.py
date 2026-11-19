@@ -63,20 +63,21 @@ CHAFF_CUTTER = [
 ]
 
 FEED_MIXER = [
-    # 1.3: a hand-cranked mixing trough: a long plank trough between two trestle ends, a paddle shaft
-    # along it through the feed, and the crank outside the right-hand end.
+    # 1.3: a hand-cranked mixing trough: a long plank trough on two trestle ends no taller than its
+    # rim, feed heaped above the rim, a paddle shaft along it and a big crank outside the right end.
     ("mixer", None, [0, 0, 0], [
-        ("end", [-7, 0, -5], [1, 13, 10]),
-        ("end", [6, 0, -5], [1, 13, 10]),
+        ("end", [-7, 0, -5], [1, 12, 10]),
+        ("end", [6, 0, -5], [1, 12, 10]),
         ("wall", [-6, 5, -5], [12, 6, 1]),
         ("wall", [-6, 5, 4], [12, 6, 1]),
-        ("feed", [-6, 4, -4], [12, 5, 8]),
+        ("feed", [-6, 4, -4], [12, 7, 8]),
+        ("heap", [-4, 11, -3], [8, 1, 6]),
         ("stretcher", [-6, 1, -0.5], [12, 1, 1]),
-        ("shaft", [-7.5, 10, -0.5], [15.5, 1, 1]),
-        ("paddle", [-3, 9, -2], [1, 3, 4]),
-        ("paddle", [2, 9, -2], [1, 3, 4]),
-        ("crank", [7, 10, -0.5], [1, 4, 1]),
-        ("knob", [7, 13, -2.5], [1, 1, 2]),
+        ("shaft", [-7.5, 11, -0.5], [15.5, 1, 1]),
+        ("paddle", [-3, 10, -2], [1, 3, 4]),
+        ("paddle", [2, 10, -2], [1, 3, 4]),
+        ("crank", [7, 11, -0.5], [1, 3.5, 1]),
+        ("knob", [7, 13.5, -3], [1, 1, 2.5]),
     ]),
 ]
 
@@ -165,7 +166,7 @@ PAINT = {
     "chaff_cutter": {"leg": wood(WOOD_DK, rings=WOOD_LT), "brace": wood(WOOD_DK), "chaff": chopped,
                      "table": wood(WOOD), "guide": wood(WOOD_DK), "straw": hay, "upright": wood(WOOD_DK, rings=WOOD_LT),
                      "blade": blade, "grip": wood(WOOD_LT)},
-    "feed_mixer": {"end": trestle, "wall": wood(WOOD), "feed": mixed_feed, "stretcher": wood(WOOD_DK),
+    "feed_mixer": {"end": trestle, "wall": wood(WOOD), "feed": mixed_feed, "heap": mixed_feed, "stretcher": wood(WOOD_DK),
                    "shaft": iron, "paddle": wood(WOOD_LT), "crank": iron, "knob": wood(WOOD_LT)},
     "compost_bin": {"post": wood(WOOD_DK, rings=WOOD_LT), "floor": wood(WOOD_DK), "slat_fb": wood(WOOD),
                     "slat_s": wood(WOOD),

@@ -11,8 +11,8 @@
 //           per portion (the saturation effect gives twice that as saturation)
 // gives:    handed back with the last portion (the dish's bowl)
 // drink:    drunk rather than eaten (the item's drink animation): the drinking sound
-// shape:    which boxes the block uses (tools/gen_blocks.mjs PLACED_SHAPES): wheel, pizza, pot, fondue,
-//           claypot, dish, and the drinks' goblet, beaker, crock, mug, bottle, tumbler, saucer_bowl;
+// shape:    which boxes the block uses (tools/gen_blocks.mjs PLACED_SHAPES): wheel, pizza, pot, lugged,
+//           wok, fondue, claypot, dish, and the drinks' goblet, beaker, crock, mug, bottle, tumbler, saucer_bowl;
 //           every dish and drink has its own model
 //           (tools/gen_blocks.mjs; art_src/m4_scripts/placed_food.py)
 //
@@ -37,9 +37,9 @@ export const PLACED_FOODS = [
   { item: "cheese_fondue", block: "placed_fondue", shape: "fondue", portions: PORTIONS, eat: 3, gives: "minecraft:bowl" },
   // The big stews (10 to 12 hunger as an item), each in its own pot; the rice in a wide clay pot.
   shared("old_duck_soup", "pot"),
-  shared("braised_brisket", "pot"),
-  shared("yak_stew", "pot"),
-  shared("goose_stew", "pot"),
+  shared("braised_brisket", "lugged"),
+  shared("yak_stew", "lugged"),
+  shared("goose_stew", "wok"),
   shared("lion_head_meatballs", "pot"),
   shared("claypot_rice", "claypot"),
   // Baked in a dish and cut into four.

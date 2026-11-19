@@ -31,6 +31,7 @@ SEAM, STITCH = (214, 200, 176), (196, 184, 162)
 BINDING, LINING, SPRIG = (196, 128, 112), (226, 232, 214), (132, 166, 112)
 FILM, FILM_DK, FILM_LT, TAPE = (60, 96, 64), (40, 66, 46), (132, 172, 134), (230, 228, 216)
 SEP_RED, SEP_RED_DK, SEP_RED_LT = (138, 36, 32), (92, 24, 22), (178, 72, 60)
+BONE_WHITE = (232, 224, 204)
 HORN, HORN_DK, HORN_TIP = (224, 208, 176), (176, 150, 112), (92, 72, 56)
 
 
@@ -44,24 +45,24 @@ def ring(name, cx, cy, z):
 
 MEAT_GRINDER = [
     # 1.3: a hand-cranked mincer clamped to the front edge of a plank bench: the barrel runs front to
-    # back with the hopper on top, the cutting plate at the front over a bowl on the ground, a clamp
-    # down the plank's edge and the crank at the back.
+    # back with a funnel hopper on top, the cutting plate at the front over a bowl on the ground, a
+    # clamp down the plank's edge and the crank turning behind the plank.
     ("stand", None, [0, 0, 0], [
-        ("leg", [-6, 0, 0], [2, 3, 6]),
-        ("leg", [4, 0, 0], [2, 3, 6]),
-        ("board", [-7, 3, -1], [14, 2, 8]),
+        ("leg", [-6, 0, -1], [2, 3, 4]),
+        ("leg", [4, 0, -1], [2, 3, 4]),
+        ("board", [-7, 3, -1], [14, 2, 4]),
         ("seat", [-2, 5, -1], [4, 1, 3]),
         ("clamp", [-1, 2, -2], [2, 4, 1]),
         ("jaw", [-1, 2, -1], [2, 1, 2]),
         ("barrel", [-2, 6, -5], [4, 4, 6]),
         ("plate", [-2.5, 5.5, -6], [5, 5, 1]),
-        ("neck", [-1.5, 10, -3], [3, 1, 3]),
-        ("hopper", [-3, 11, -4.5], [6, 2, 6]),
+        ("neck", [-2, 10, -4], [4, 1, 4]),
+        ("hopper", [-3, 11, -5], [6, 1, 6]),
         ("axle", [-0.5, 7.5, 1], [1, 1, 2]),
         ("bowl", [-2.5, 0, -7.5], [5, 2, 4]),
     ]),
     # 1.1 工作台互動動畫: the crank turns when it is used (station_frames.py)
-    *crank_z("crank", "stand", 3, 0, 8, 2, knob_dz=1),
+    *crank_z("crank", "stand", 3, 0, 8, 3, knob_dz=1),
     ("busy", "stand", [0, 2, 0], [
         ("mince", [-2, 1.5, -7], [4, 1, 3]),
         ("strands", [-1, 2.5, -6.5], [2, 3, 1]),
@@ -90,24 +91,35 @@ MILKING_RACK = [
 
 CREAM_SEPARATOR = [
     # 1.3: a hand-cranked separator: a red cast-iron pedestal, the separating bowl in its housing with
-    # the skim and cream spouts over a jug and a can, the supply tank on top, the crank at the side.
+    # the skim and cream spouts reaching over a jug and a can, the round supply bowl on top with its
+    # tap, the crank at the side.
     ("frame", None, [0, 0, 0], [
         ("base", [-5, 0, -6], [10, 1, 10]),
         ("column", [-2, 1, -2], [4, 7, 4]),
         ("axle", [2, 6, -0.5], [3, 1, 1]),
         ("housing", [-3, 8, -3], [6, 2, 6]),
-        ("spout", [-2, 8.5, -5], [1, 1, 2]),
-        ("spout", [1, 9, -5], [1, 1, 2]),
-        ("neck", [-1.5, 10, -1.5], [3, 1, 3]),
-        ("bowl", [-3.5, 11, -3.5], [7, 1, 7]),
-        ("tank", [-5, 12, -5], [10, 2, 10]),
+        ("spout", [-2, 8.5, -6], [1, 1, 3]),
+        ("spout", [1, 9.5, -6], [1, 1, 3]),
+        ("tap", [-0.5, 10, -0.5], [1, 1, 1]),
+        ("bowl_base", [-3, 11, -3], [6, 1, 6]),
+        ("bowl_fb", [-4, 12, -4], [8, 3, 1]),
+        ("bowl_fb", [-4, 12, 3], [8, 3, 1]),
+        ("bowl_s", [-4, 12, -3], [1, 3, 6]),
+        ("bowl_s", [3, 12, -3], [1, 3, 6]),
         ("milk_jug", [-3, 1, -6], [2, 4, 2]),
         ("cream_can", [1, 1, -6], [2, 3, 2]),
     ]),
     # 1.1 追加 方塊動畫: the crank turns when milk goes in (station_frames.py)
     *crank("crank", "frame", 5, 6.5, 0, 3, knob_dx=1),
-    ("busy", "frame", [0, 14, 0], [
-        ("cream", [-4, 13.5, -4], [8, 1, 8]),
+    # separating: skim milk and cream run from the spouts all through the job; the milk in the supply
+    # bowl goes down a pixel a stage and cream gathers in the can (station_stages.py)
+    ("busy", "frame", [0, 12, 0], [
+        ("skim_stream", [-1.75, 5, -5.75], [0.5, 3.5, 0.5]),
+        ("cream_stream", [1.25, 4, -5.75], [0.5, 5.5, 0.5]),
+        ("milk_lo", [-3, 12, -3], [6, 1, 6]),
+        ("milk_mid", [-3, 13, -3], [6, 1, 6]),
+        ("milk_hi", [-3, 14, -3], [6, 1, 6]),
+        ("cream_cap", [1, 4, -6], [2, 1, 2]),
     ]),
 ]
 
@@ -126,10 +138,16 @@ ICE_CREAM_CHURN = [
         ("gear", [-1.5, 12, -1.5], [3, 2, 3]),
     ]),
     *crank("crank", "bucket", 6, 12.5, 0, 2.5, knob_dx=1),
+    # freezing: frost spreads over the ice, two patches, then four, then all round the can
     ("busy", "bucket", [0, 7, 0], [
-        ("frost", [-5, 7, -5], [2, 1, 2]),
-        ("frost", [3, 7, 3], [2, 1, 2]),
-        ("scoop", [-5, 7, 2], [2, 1, 2]),
+        ("frost_a", [-5, 7, -5], [2, 0.5, 2]),
+        ("frost_a", [3, 7, 3], [2, 0.5, 2]),
+        ("frost_b", [3, 7, -5], [2, 0.5, 2]),
+        ("frost_b", [-5, 7, 3], [2, 0.5, 2]),
+        ("frost_c", [-1, 7, -5], [2, 0.5, 2]),
+        ("frost_c", [-1, 7, 3], [2, 0.5, 2]),
+        ("frost_c", [-5, 7, -1], [2, 0.5, 2]),
+        ("frost_c", [3, 7, -1], [2, 0.5, 2]),
     ]),
 ]
 
@@ -213,10 +231,13 @@ DOWN_PILLOW = [
 ]
 
 DOWN_QUILT = [
-    # 1.3: a thick quilted comforter, its top third folded back to show the lining.
+    # 1.3: a thick quilted comforter, its top edge stepped in a pixel so it reads puffed, the top
+    # third folded back over itself with a rolled edge, showing the lining.
     ("quilt", None, [0, 0, 0], [
-        ("sheet", [-8, 0, -8], [16, 2, 16]),
-        ("fold", [-8, 2, 2], [16, 1, 6]),
+        ("sheet", [-8, 0, -8], [16, 3, 16]),
+        ("top", [-7, 3, -7], [14, 1, 14]),
+        ("fold", [-7, 4, 3], [14, 2, 4]),
+        ("roll", [-7, 4, 2], [14, 1, 1]),
     ]),
 ]
 
@@ -266,20 +287,21 @@ PEN_GATE_TOP = [
 
 HORN_DECOR = [
     # 1.3: a pair of horns on a wooden wall plaque. The plaque stands at the back of the block (+z,
-    # away from whoever placed it), so set against a wall it hangs there.
+    # away from whoever placed it), so set against a wall it hangs there. The horns leave the skull
+    # boss sideways, climb in diagonal steps and turn their tips in toward each other.
     ("plaque", None, [0, 0, 0], [
-        ("foot", [-3, 0, 5], [6, 1, 3]),
-        ("board", [-4, 1, 6], [8, 9, 2]),
-        ("crest", [-3, 10, 6], [6, 1, 2]),
-        ("boss", [-2, 4, 4], [4, 4, 2]),
-        ("horn_root", [-4, 6, 4], [2, 2, 2]),
-        ("horn_root", [2, 6, 4], [2, 2, 2]),
-        ("horn_mid", [-6, 7, 4], [2, 2, 2]),
-        ("horn_mid", [4, 7, 4], [2, 2, 2]),
-        ("horn_rise", [-7, 8, 4.5], [1, 4, 1]),
-        ("horn_rise", [6, 8, 4.5], [1, 4, 1]),
-        ("horn_tip", [-6, 12, 4.5], [1, 2, 1]),
-        ("horn_tip", [5, 12, 4.5], [1, 2, 1]),
+        ("foot", [-4, 0, 5], [8, 1, 3]),
+        ("board", [-6, 1, 6], [12, 9, 2]),
+        ("crest", [-4, 10, 6], [8, 1, 2]),
+        ("boss", [-2, 6, 4], [4, 4, 2]),
+        ("horn_root", [-4, 8, 4.5], [2, 2, 1]),
+        ("horn_root", [2, 8, 4.5], [2, 2, 1]),
+        ("horn_mid", [-6, 9, 4.5], [2, 1, 1]),
+        ("horn_mid", [4, 9, 4.5], [2, 1, 1]),
+        ("horn_rise", [-7, 10, 4.5], [1, 3, 1]),
+        ("horn_rise", [6, 10, 4.5], [1, 3, 1]),
+        ("horn_tip", [-6, 13, 4.5], [1, 1, 1]),
+        ("horn_tip", [5, 13, 4.5], [1, 1, 1]),
     ]),
 ]
 
@@ -386,11 +408,47 @@ def quilt_fold(f, i, j, w, h, fi):
     """The folded-back third shows the sprigged lining on top; its front is the rolled edge."""
     if f == "top":
         if i in (0, w - 1) or j in (0, h - 1):
-            return BINDING
+            return mix(LINING, DOWN_DK, 0.4)
         return SPRIG if (i * 3 + j * 5) % 7 == 0 else LINING
-    if f == "north":
-        return BINDING if j == 0 else mix(DOWN, DOWN_DK, 0.4)
-    return BINDING
+    if f in ("east", "west"):
+        return mix(DOWN, DOWN_DK, 0.5)
+    return mix(LINING, DOWN_DK, 0.25 + 0.4 * j / max(1, h - 1))
+
+
+def quilt_side(f, i, j, w, h, fi):
+    """The quilt's thick sides: the binding at the top edge, the down bulging out below it."""
+    if f == "top":
+        return BINDING
+    if f == "bottom":
+        return LINING
+    if j == 0:
+        return BINDING
+    return mix(DOWN, DOWN_DK, 0.15 + 0.6 * abs(j - h / 2) / h) if i % 5 else STITCH
+
+
+def round_tin(f, i, j, w, h, fi):
+    """The supply bowl's walls: tin shading off at both ends of each side so the bowl reads round."""
+    if f == "top":
+        return TIN_LT
+    if f == "bottom":
+        return TIN_DK
+    if i in (0, w - 1):
+        return mix(TIN_DK, (60, 64, 72), 0.3)
+    if i in (1, w - 2):
+        return TIN_DK if w > 2 else TIN
+    if j == 0:
+        return TIN_LT
+    return TIN if i != 2 else mix(TIN, TIN_LT, 0.6)
+
+
+def funnel(f, i, j, w, h, fi):
+    """The mincer's hopper tray, seen into from above: darker toward the throat in the middle."""
+    if f == "top":
+        d = max(abs(i + 0.5 - w / 2), abs(j + 0.5 - h / 2))
+        if d > w / 2 - 1:
+            return STEEL_LT
+        return mix((112, 116, 126), (30, 30, 36), 1 - d / (w / 2 - 1))
+    return cast()(f, i, j, w, h, fi)
 
 
 def horn(f, i, j, w, h, fi):
@@ -405,10 +463,12 @@ def plaque(f, i, j, w, h, fi):
 
 
 def hide_boss(f, i, j, w, h, fi):
-    """The boss the horns are set in, wrapped in hide with a stitched edge."""
-    if i in (0, w - 1) or j in (0, h - 1):
-        return (120, 82, 52) if (i + j) % 2 else (92, 62, 40)
-    return (168, 120, 80) if rnd(f, i, j) > 20 else (148, 104, 68)
+    """The boss the horns are set in: the bleached top of the skull, a ridge down the middle."""
+    if f == "north" and i in (w // 2 - 1, w // 2) and j > 0:
+        return mix(BONE_WHITE, HORN_DK, 0.35)
+    if j == h - 1 and f != "top":
+        return mix(BONE_WHITE, HORN_DK, 0.5)
+    return BONE_WHITE if rnd(f, i, j) > 15 else mix(BONE_WHITE, HORN_DK, 0.2)
 
 
 def film(f, i, j, w, h, fi):
@@ -462,8 +522,7 @@ GATE = {"rail": wood(WOOD), "stile": wood(WOOD_LT), "open_rail": wood(WOOD), "op
 
 PAINT = {
     "meat_grinder": {"leg": wood(WOOD_DK), "board": wood(WOOD), "seat": cast(), "clamp": cast(), "jaw": cast(),
-                     "barrel": cast(), "plate": perforated, "neck": cast(),
-                     "hopper": vessel(cast(), (58, 60, 68), STEEL_LT), "axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
+                     "barrel": cast(), "plate": perforated, "neck": cast(), "hopper": funnel, "axle": iron, "crank": cast(), "grip": wood(WOOD_LT),
                      "bowl": vessel(cast(TIN, TIN_DK, TIN_LT), (96, 100, 108), TIN_LT)},
     "milking_rack": {"post": wood(WOOD_DK, rings=WOOD_LT), "rail": wood(WOOD), "yoke": wood(WOOD),
                      "neck_bar": wood(WOOD_LT), "feed_box": feed_box,
@@ -471,7 +530,9 @@ PAINT = {
                      "stool_seat": wood(WOOD_LT), "stool_leg": wood(WOOD_DK)},
     "cream_separator": {"base": cast(SEP_RED, SEP_RED_DK, SEP_RED_LT), "column": cast(SEP_RED, SEP_RED_DK, SEP_RED_LT),
                         "axle": iron, "housing": cast(TIN, TIN_DK, TIN_LT), "spout": cast(TIN, TIN_DK, TIN_LT),
-                        "neck": cast(TIN, TIN_DK, TIN_LT), "bowl": cast(TIN, TIN_DK, TIN_LT), "tank": vessel(cast(TIN, TIN_DK, TIN_LT), (92, 98, 108), TIN_LT),
+                        "tap": iron, "bowl_base": vessel(cast(TIN, TIN_DK, TIN_LT), (84, 90, 100), TIN_LT),
+                        "bowl_fb": round_tin, "bowl_s": round_tin, "skim_stream": solid((226, 234, 242)),
+                        "cream_stream": solid((250, 238, 200)),
                         "cream_can": vessel(cast(TIN, TIN_DK, TIN_LT), CREAM, TIN_LT),
                         "milk_jug": vessel(cast(TIN, TIN_DK, TIN_LT), MILK, TIN_LT),
                         "crank": cast(), "grip": wood(WOOD_LT)},
@@ -489,7 +550,7 @@ PAINT = {
                      "treadle": wood(WOOD)},
     "silage_barrel": {"pallet": pallet, "drum": film, "shoulder": gathered, "knot": rope, "tyre": tyre},
     "down_pillow": {"body": pillow, "end": pillow_end, "puff": pillow},
-    "down_quilt": {"sheet": quilt_top, "fold": quilt_fold},
+    "down_quilt": {"sheet": quilt_side, "top": quilt_top, "fold": quilt_fold, "roll": quilt_fold},
     "pen_gate": {"post": wood(WOOD_DK, rings=WOOD_LT), "hinge": iron, "latch": iron,
                  "brace": wood(WOOD_DK), "open_brace": wood(WOOD_DK), **GATE},
     "pen_gate_top": {"post_top": wood(WOOD_DK), "cap": wood(WOOD_LT, rings=WOOD_LT), **GATE},
