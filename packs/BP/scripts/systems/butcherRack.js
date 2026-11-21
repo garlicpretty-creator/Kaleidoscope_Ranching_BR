@@ -40,7 +40,7 @@ const WOOL_COLORS = [
 const LOOKS = new Set(["cow", "sheep", "goat", "pig", "chicken", "rabbit", "duck", "goose", "buffalo", "yak", "quail", "turkey", "alpaca"]);
 
 /** Cuts for a carcass (full item id); data saved by older builds used short ids. */
-function cutsOf(carcass) {
+export function cutsOf(carcass) {
   return butcherEntry(rid(carcass))?.cuts ?? [];
 }
 
@@ -198,7 +198,7 @@ function applies(cut, data) {
 }
 
 /** Index of the next applicable cut at or after `from`, or -1. */
-function nextCut(cuts, data, from) {
+export function nextCut(cuts, data, from) {
   for (let i = from; i < cuts.length; i++) if (applies(cuts[i], data)) return i;
   return -1;
 }
@@ -244,7 +244,8 @@ function setVisual(block, data) {
   block.setPermutation(permutation);
 }
 
-function hang(block, player, item) {
+/** What a carcass item hangs as: { carcass, stroke, male, wool? }, at its first cut. */
+export function carcassData(item) {
   const carcass = item.typeId;
   const data = { carcass, stroke: 0, male: false };
   try {
@@ -253,6 +254,41 @@ function hang(block, player, item) {
     if (typeof wool === "number") data.wool = wool;
   } catch {}
   data.stroke = Math.max(0, nextCut(cutsOf(carcass), data, 0));
+  return data;
+}
+
+/** The carcass item back from hanging data that is still uncut (sex and fleece kept). */
+export function carcassStack(data) {
+  const carcass = new ItemStack(rid(data.carcass), 1);
+  try {
+    carcass.setDynamicProperty(CARCASS_MALE, data.male);
+    if (data.wool !== undefined) carcass.setDynamicProperty(CARCASS_WOOL, data.wool);
+  } catch {}
+  return carcass;
+}
+
+/** Whether hanging data is still a whole carcass (no cut taken yet). */
+export const isUncut = (data) => data.stroke === nextCut(cutsOf(data.carcass), data, 0);
+
+/** Large carcasses (cows, pigs…) hang as a side of meat; small ones (birds, rabbits) as a bird. */
+export function isLargeCarcass(carcass) {
+  const animal = animalByCarcass(rid(carcass));
+  if (animal) return animal.largeCarcass !== false;
+  return lookOf(carcass) !== "chicken";
+}
+
+/** One stroke on hanging data: the player gets its yield, the blade wears. Returns the next
+ *  stroke index, or -1 when the carcass is used up. */
+export function strokeOnce(player, data) {
+  const cuts = cutsOf(data.carcass);
+  for (const { typeId, amount } of rollCut(cuts[data.stroke], data)) give(player, typeId, amount);
+  // 1.1 皮圍裙: a leather apron sometimes spares the blade.
+  if (!(wearing(player, "Chest", "leather_apron") && Math.random() < APRON_SAVE_CHANCE)) damageMainHand(player, DURABILITY_PER_STROKE);
+  return nextCut(cuts, data, data.stroke + 1);
+}
+
+function hang(block, player, item) {
+  const data = carcassData(item);
   consumeMainHand(player);
   setBlockData(block, data);
   setVisual(block, data);
@@ -260,13 +296,9 @@ function hang(block, player, item) {
 }
 
 function cut(block, player, data) {
-  const cuts = cutsOf(data.carcass);
-  for (const { typeId, amount } of rollCut(cuts[data.stroke], data)) give(player, typeId, amount);
-  // 1.1 皮圍裙: a leather apron sometimes spares the blade.
-  if (!(wearing(player, "Chest", "leather_apron") && Math.random() < APRON_SAVE_CHANCE)) damageMainHand(player, DURABILITY_PER_STROKE);
+  const next = strokeOnce(player, data);
   block.dimension.playSound("dig.cloth", block.location);
 
-  const next = nextCut(cuts, data, data.stroke + 1);
   if (next < 0) {
     clearBlockData(block.dimension, block.location);
     setVisual(block, null);
@@ -347,15 +379,15 @@ function spill(dimension, location, typeId) {
     }
     return;
   }
-  if (data.stroke === nextCut(cutsOf(data.carcass), data, 0)) {
-    const carcass = new ItemStack(rid(data.carcass), 1);
-    try {
-      carcass.setDynamicProperty(CARCASS_MALE, data.male);
-      if (data.wool !== undefined) carcass.setDynamicProperty(CARCASS_WOOL, data.wool);
-    } catch {}
-    dimension.spawnItem(carcass, at);
+  if (isUncut(data)) {
+    dimension.spawnItem(carcassStack(data), at);
     return;
   }
+  spillCuts(dimension, data, at);
+}
+
+/** Drops every cut still left on hanging data at `at`. */
+export function spillCuts(dimension, data, at) {
   const cuts = cutsOf(data.carcass);
   for (let i = data.stroke; i >= 0 && i < cuts.length; i = nextCut(cuts, data, i + 1)) {
     for (const { typeId, amount } of rollCut(cuts[i], data)) dropItems(dimension, typeId, amount, at);

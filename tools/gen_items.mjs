@@ -166,6 +166,9 @@ function componentsFor(item) {
   Object.assign(c, overrideComponents, components);
   if (overrideStack) stack = overrideStack;
   if (PLACED_BLOCK.has(item.id)) c["minecraft:block_placer"] = { block: PLACED_BLOCK.get(item.id) };
+  // 1.5 facilities (data/items.js FACILITIES): the item is the block's own item, so the block
+  // shows this icon in the inventory, is picked and drops as it.
+  if (item.category === "facility") c["minecraft:block_placer"] = { block: rid(item.id), replace_block_item: true };
   if (c["minecraft:food"] && !tags.includes("minecraft:is_food")) tags.push("minecraft:is_food");
   // 1.1 標籤契約 (data/tags.js).
   for (const tag of CONTRACT_TAGS.get(item.id) ?? []) if (!tags.includes(tag)) tags.push(tag);
@@ -240,6 +243,12 @@ const RECIPES = [
   shaped("milking_rack", ["F F", "PBP", "P P"], { F: { item: "minecraft:oak_fence" }, P: planks, B: { item: "minecraft:bucket" } }, "milking_rack"),
   shaped("cream_separator", ["III", " B ", "IPI"], { I: { item: "minecraft:iron_ingot" }, B: { item: "minecraft:bucket" }, P: planks }, "cream_separator"),
   shaped("ice_cream_churn", [" S ", "PIP", "PPP"], { S: { item: "minecraft:stick" }, I: { item: "minecraft:ice" }, P: planks }, "ice_cream_churn"),
+  // 1.5 便利企劃 第三階段 (systems/facilities.js). Each grid holds a Ranching item, so none can
+  // match a vanilla or sister-pack recipe.
+  shaped("scratching_post", ["B", "L"], { B: { item: rid("brush") }, L: { tag: "minecraft:logs" } }, "scratching_post"),
+  shaped("nursing_trough", ["PNP", "PPP"], { P: planks, N: { item: rid("nursing_bottle") } }, "nursing_trough"),
+  shaped("carcass_hook_rack", ["NNN", "SRS"], { N: { item: "minecraft:iron_nugget" }, S: { item: "minecraft:stick" }, R: { item: rid("butcher_rack") } }, "carcass_hook_rack"),
+  shaped("milking_stall", ["FRF"], { F: { item: "minecraft:oak_fence" }, R: { item: rid("milking_rack") } }, "milking_stall"),
   shapeless("vintage_cheese_slices", [{ item: rid("vintage_cheese_wheel") }], "vintage_cheese_slice", 5),
   shapeless("smoked_cheese_slices", [{ item: rid("smoked_cheese_wheel") }], "smoked_cheese_slice", 4),
   // 1.1 皮革線、絨毛線、布料線、孵化與飼料線

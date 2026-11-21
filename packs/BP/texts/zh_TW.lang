@@ -230,6 +230,10 @@ item.kaleidoscope_ranching:milking_pail.name=擠奶桶\n§9§o森羅物語樂牧
 item.kaleidoscope_ranching:nursing_bottle.name=奶瓶\n§9§o森羅物語樂牧§r
 item.kaleidoscope_ranching:cowbell.name=牧鈴\n§9§o森羅物語樂牧§r
 item.kaleidoscope_ranching:animal_crate.name=運畜籠\n§9§o森羅物語樂牧§r
+item.kaleidoscope_ranching:scratching_post.name=抓癢柱\n§9§o森羅物語樂牧§r
+item.kaleidoscope_ranching:nursing_trough.name=幼獸飲水槽\n§9§o森羅物語樂牧§r
+item.kaleidoscope_ranching:carcass_hook_rack.name=屠體掛勾架\n§9§o森羅物語樂牧§r
+item.kaleidoscope_ranching:milking_stall.name=多欄擠奶架\n§9§o森羅物語樂牧§r
 item.kaleidoscope_ranching:cream_stew.name=奶油燉菜\n§9§o森羅物語樂牧§r
 item.kaleidoscope_ranching:bone_broth.name=大骨高湯\n§9§o森羅物語樂牧§r
 item.kaleidoscope_ranching:old_duck_soup.name=老鴨湯\n§9§o森羅物語樂牧§r\n§5可放置的食物§r
@@ -345,6 +349,10 @@ tile.kaleidoscope_ranching:down_quilt.name=羽絨被\n§9§o森羅物語樂牧§
 tile.kaleidoscope_ranching:pen_gate.name=畜欄門\n§9§o森羅物語樂牧§r
 tile.kaleidoscope_ranching:pen_gate_top.name=畜欄門（上半）\n§9§o森羅物語樂牧§r
 tile.kaleidoscope_ranching:horn_decor.name=角製掛飾\n§9§o森羅物語樂牧§r
+tile.kaleidoscope_ranching:scratching_post.name=抓癢柱\n§9§o森羅物語樂牧§r
+tile.kaleidoscope_ranching:nursing_trough.name=幼獸飲水槽\n§9§o森羅物語樂牧§r
+tile.kaleidoscope_ranching:carcass_hook_rack.name=屠體掛勾架\n§9§o森羅物語樂牧§r
+tile.kaleidoscope_ranching:milking_stall.name=多欄擠奶架\n§9§o森羅物語樂牧§r
 
 ## catalog
 kaleidoscope_ranching:itemGroup.name.ranching_facilities=牧場設施

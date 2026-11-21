@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "scratching_post",
+    "metalness_emissive_roughness_subsurface": "scratching_post_mers",
+    "normal": "scratching_post_normal"
+  }
+}

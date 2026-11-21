@@ -302,6 +302,52 @@ const DEFS = {
     seconds: 1,
     mapColor: "#6f7a5a",
   },
+  // 1.5 便利企劃 第三階段 (systems/facilities.js, art_src/m4_scripts/blocks_m13.py). Each is placed
+  // by the item of the same id (data/items.js FACILITIES), which carries the icon, so the block
+  // itself stays out of the creative inventory.
+  scratching_post: {
+    component: "scratching_post",
+    states: {},
+    bones: {},
+    collision: box(-4, 0, -4, 8, 16, 8),
+    selection: box(-4, 0, -4, 8, 16, 8),
+    seconds: 1,
+    hidden: true,
+  },
+  // `fill` 0..3: the milk level in the trough.
+  nursing_trough: {
+    component: "nursing_trough",
+    states: { [S("fill")]: [0, 1, 2, 3] },
+    bones: Object.fromEntries([1, 2, 3].map((n) => [`milk_${n}`, `${state("fill")} == ${n}`])),
+    collision: box(-8, 0, -5, 16, 9, 10),
+    selection: box(-8, 0, -5, 16, 9, 10),
+    seconds: 1,
+    hidden: true,
+    mapColor: "#f0eee4",
+  },
+  // hook_<n> 0 empty, 1 a large carcass (bone large_<n>), 2 a small one (small_<n>).
+  carcass_hook_rack: {
+    component: "carcass_hook_rack",
+    states: Object.fromEntries([1, 2, 3, 4].map((n) => [S(`hook_${n}`), [0, 1, 2]])),
+    bones: Object.fromEntries([1, 2, 3, 4].flatMap((n) => [
+      [`large_${n}`, `${state(`hook_${n}`)} == 1`],
+      [`small_${n}`, `${state(`hook_${n}`)} == 2`],
+    ])),
+    collision: box(-8, 0, -2, 16, 16, 4),
+    selection: box(-8, 0, -2, 16, 16, 4),
+    seconds: 1.5,
+    hidden: true,
+  },
+  // The animal stands in the stall: only its floor boards collide.
+  milking_stall: {
+    component: "milking_stall",
+    states: {},
+    bones: {},
+    collision: box(-8, 0, -8, 16, 1, 16),
+    selection: box(-8, 0, -8, 16, 14, 16),
+    seconds: 1.5,
+    hidden: true,
+  },
   ...Object.fromEntries(AUTO_STATIONS.map((id) => [id, stationDef("auto_station", id)])),
   ...Object.fromEntries(STATIONS.map((id) => [id, stationDef("station", id)])),
 };

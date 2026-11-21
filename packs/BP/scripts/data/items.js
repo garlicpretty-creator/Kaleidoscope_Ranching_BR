@@ -284,6 +284,16 @@ const TOOLS = [
   ["manure_fork", "糞叉", "Manure Fork", "tool", "m2"],
 ];
 
+// 1.5 便利企劃 第三階段: placeable facilities with their own icon. Each item places the block of
+// the same id (tools/gen_items.mjs, minecraft:block_placer replace_block_item), so the block shows
+// this icon in the inventory; the block itself is in data/blocks.js.
+const FACILITIES = [
+  ["scratching_post", "抓癢柱", "Scratching Post", "facility"],
+  ["nursing_trough", "幼獸飲水槽", "Nursing Trough", "facility"],
+  ["carcass_hook_rack", "屠體掛勾架", "Carcass Hook Rack", "facility"],
+  ["milking_stall", "多欄擠奶架", "Milking Stall", "facility"],
+];
+
 export const ITEMS = [
   ...MILK,
   ...EGGS,
@@ -306,6 +316,7 @@ export const ITEMS = [
   ...FEED,
   ...TREATS,
   ...TOOLS,
+  ...FACILITIES,
   // M5 dishes and their uncooked steps (data/dishes.js).
   ...DISHES.map((dish) => [dish.id, dish.zh, dish.en, "dish", "m5"]),
   ...DISH_PREPS.map((prep) => [prep.id, prep.zh, prep.en, "prep", "m5"]),

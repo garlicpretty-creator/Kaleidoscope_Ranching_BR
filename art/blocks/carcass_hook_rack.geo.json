@@ -1,0 +1,295 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.carcass_hook_rack",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "rack",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -1.5
+              ],
+              "size": [
+                1,
+                16,
+                3
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                7,
+                0,
+                -1.5
+              ],
+              "size": [
+                1,
+                16,
+                3
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -7,
+                13,
+                -1.5
+              ],
+              "size": [
+                14,
+                3,
+                3
+              ],
+              "uv": [
+                8,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "large_1",
+          "pivot": [
+            -5.25,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6.75,
+                3,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                42,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "small_1",
+          "pivot": [
+            -5.25,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6.75,
+                7,
+                -1
+              ],
+              "size": [
+                3,
+                6,
+                2
+              ],
+              "uv": [
+                54,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "large_2",
+          "pivot": [
+            -1.75,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3.25,
+                3,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                42,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "small_2",
+          "pivot": [
+            -1.75,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3.25,
+                7,
+                -1
+              ],
+              "size": [
+                3,
+                6,
+                2
+              ],
+              "uv": [
+                54,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "large_3",
+          "pivot": [
+            1.75,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.25,
+                3,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                42,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "small_3",
+          "pivot": [
+            1.75,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.25,
+                7,
+                -1
+              ],
+              "size": [
+                3,
+                6,
+                2
+              ],
+              "uv": [
+                54,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "large_4",
+          "pivot": [
+            5.25,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                3.75,
+                3,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                42,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        },
+        {
+          "name": "small_4",
+          "pivot": [
+            5.25,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                3.75,
+                7,
+                -1
+              ],
+              "size": [
+                3,
+                6,
+                2
+              ],
+              "uv": [
+                54,
+                0
+              ]
+            }
+          ],
+          "parent": "rack"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_milking_stall"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "FRF"
+    ],
+    "key": {
+      "F": {
+        "item": "minecraft:oak_fence"
+      },
+      "R": {
+        "item": "kaleidoscope_ranching:milking_rack"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:milking_stall",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:milking_stall"
+      }
+    ]
+  }
+}

@@ -230,6 +230,10 @@ item.kaleidoscope_ranching:milking_pail.name=Milking Pail\n§9§oKaleidoscope Ra
 item.kaleidoscope_ranching:nursing_bottle.name=Nursing Bottle\n§9§oKaleidoscope Ranching§r
 item.kaleidoscope_ranching:cowbell.name=Cowbell\n§9§oKaleidoscope Ranching§r
 item.kaleidoscope_ranching:animal_crate.name=Animal Crate\n§9§oKaleidoscope Ranching§r
+item.kaleidoscope_ranching:scratching_post.name=Scratching Post\n§9§oKaleidoscope Ranching§r
+item.kaleidoscope_ranching:nursing_trough.name=Nursing Trough\n§9§oKaleidoscope Ranching§r
+item.kaleidoscope_ranching:carcass_hook_rack.name=Carcass Hook Rack\n§9§oKaleidoscope Ranching§r
+item.kaleidoscope_ranching:milking_stall.name=Milking Stall\n§9§oKaleidoscope Ranching§r
 item.kaleidoscope_ranching:cream_stew.name=Cream Stew\n§9§oKaleidoscope Ranching§r
 item.kaleidoscope_ranching:bone_broth.name=Bone Broth\n§9§oKaleidoscope Ranching§r
 item.kaleidoscope_ranching:old_duck_soup.name=Old Duck Soup\n§9§oKaleidoscope Ranching§r\n§5Placeable Food§r
@@ -345,6 +349,10 @@ tile.kaleidoscope_ranching:down_quilt.name=Down Quilt\n§9§oKaleidoscope Ranchi
 tile.kaleidoscope_ranching:pen_gate.name=Pen Gate\n§9§oKaleidoscope Ranching§r
 tile.kaleidoscope_ranching:pen_gate_top.name=Pen Gate (top)\n§9§oKaleidoscope Ranching§r
 tile.kaleidoscope_ranching:horn_decor.name=Horn Decoration\n§9§oKaleidoscope Ranching§r
+tile.kaleidoscope_ranching:scratching_post.name=Scratching Post\n§9§oKaleidoscope Ranching§r
+tile.kaleidoscope_ranching:nursing_trough.name=Nursing Trough\n§9§oKaleidoscope Ranching§r
+tile.kaleidoscope_ranching:carcass_hook_rack.name=Carcass Hook Rack\n§9§oKaleidoscope Ranching§r
+tile.kaleidoscope_ranching:milking_stall.name=Milking Stall\n§9§oKaleidoscope Ranching§r
 
 ## catalog
 kaleidoscope_ranching:itemGroup.name.ranching_facilities=Ranch Facilities

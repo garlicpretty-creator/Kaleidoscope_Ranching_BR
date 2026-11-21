@@ -53,6 +53,9 @@
     "kr_butter_churn": {
       "textures": "textures/blocks/ranching/butter_churn"
     },
+    "kr_carcass_hook_rack": {
+      "textures": "textures/blocks/ranching/carcass_hook_rack"
+    },
     "kr_chaff_cutter": {
       "textures": "textures/blocks/ranching/chaff_cutter"
     },
@@ -107,11 +110,17 @@
     "kr_milking_rack": {
       "textures": "textures/blocks/ranching/milking_rack"
     },
+    "kr_milking_stall": {
+      "textures": "textures/blocks/ranching/milking_stall"
+    },
     "kr_nest_box": {
       "textures": "textures/blocks/ranching/nest_box"
     },
     "kr_nest_box_candled": {
       "textures": "textures/blocks/ranching/nest_box_candled"
+    },
+    "kr_nursing_trough": {
+      "textures": "textures/blocks/ranching/nursing_trough"
     },
     "kr_pasture_post": {
       "textures": "textures/blocks/ranching/pasture_post"
@@ -229,6 +238,9 @@
     },
     "kr_rug_black": {
       "textures": "textures/blocks/ranching/rug_black"
+    },
+    "kr_scratching_post": {
+      "textures": "textures/blocks/ranching/scratching_post"
     },
     "kr_silage_barrel": {
       "textures": "textures/blocks/ranching/silage_barrel"

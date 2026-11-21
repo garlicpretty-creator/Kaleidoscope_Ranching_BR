@@ -61,6 +61,9 @@ export const GUIDE_ALSO = {
   trough: ["feed"],
   hay_rack: ["feed"],
   pasture_post: ["feed"],
+  nursing_trough: ["milk"],
+  milking_stall: ["milk"],
+  carcass_hook_rack: ["carcasses"],
 };
 
 /**
@@ -487,6 +490,26 @@ export const GUIDE_TEXT = {
   nursing_bottle: [
     ["對哺乳類的幼體使用，用掉背包裡一瓶奶（先用脫脂奶），還回玻璃瓶。", "Use it on a mammal baby: it uses a bottle of milk from your inventory (skim milk first) and gives the bottle back."],
     ["餵滿 3 次幼體就立刻長大。耐久度 32。", "Three feedings and the baby grows up at once. 32 durability."],
+    ["和原版動物一樣，對幼體用金蒲公英會停止長大，再用一朵恢復；停止長大的幼體不喝奶瓶也不喝幼獸飲水槽。", "As with vanilla animals, a golden dandelion stops a baby growing and another lets it grow again; a baby kept small takes neither the bottle nor the nursing trough."],
+  ],
+  scratching_post: [
+    ["4 格內今天還沒梳理過的樂牧動物，每天會在柱子上蹭一次，算作梳理過，柱邊落下一些毛。", "Ranching animals within 4 blocks that have not been groomed today rub against it once a day: that counts as grooming, and loose fur drifts down the post."],
+    ["吃飽喝足、還沒梳理的動物會自己走過來蹭。沒有毛刷的掉落物，也不會加撫摸的好感。", "Fed and watered animals not yet groomed walk over to it by themselves. It gives no brushing drops."],
+  ],
+  nursing_trough: [
+    ["手持奶點它倒進 1 瓶（還回玻璃瓶），蹲下點倒進整疊；一桶牛奶算 3 份（還回鐵桶）。最多 12 份，槽裡的奶看得出多少。", "Use it holding milk to pour in a bottle (the bottle comes back), or sneak to pour the stack; a milk bucket is 3 portions (the bucket comes back). It holds 12; the level shows in the trough."],
+    ["6 格內哺乳類的幼體每 30 秒各喝 1 份，每喝一次等於用奶瓶餵一次，喝 3 次就長大。", "Every 30 seconds each mammal baby within 6 blocks drinks a portion; each drink counts as a bottle feeding, so three make it grow up."],
+    ["打掉時槽裡的奶會灑掉。", "Broken, the milk in it is lost."],
+  ],
+  carcass_hook_rack: [
+    ["手持屠體點它掛上，最多 4 具，看得到掛在勾上；空手點取下最後掛上的一具，整具還你。", "Use it holding a carcass to hang it, up to 4, each shown on its hook. Use it with an empty hand to take the last one down whole."],
+    ["拿刀、劍或斧點它，切第一具的一刀；蹲下點會一刀接一刀把所有屠體都切完，部位肉直接進背包，每刀扣 1 點耐久度。", "A knife, sword or axe cuts one stroke from the first carcass; used while sneaking, it cuts every carcass through, one stroke after another, the cuts going into your inventory at 1 durability a stroke."],
+    ["打掉時沒切過的屠體整具掉回，切過的掉出剩下的部位。", "Broken, uncut carcasses drop whole and a cut one drops what is left."],
+  ],
+  milking_stall: [
+    ["和擠奶架一樣，牽著成年母牛、母山羊、母水牛或母氂牛點它綁上，一欄一隻；站在欄裡的母畜不綁也會擠。", "Like the milking rack: use it while leading an adult female cow, goat, buffalo or yak to tie her in, one per stall. A female standing in the stall is milked too."],
+    ["並排放就連成一排：整排共用容器，空瓶從任何一欄上方的容器拿，奶放進任何一欄下方的容器。", "Stalls placed side by side make one row that shares its containers: bottles from a container above any stall of the row, milk into a container below any of them."],
+    ["每隻每個遊戲日擠一次，和擠奶桶共用記錄。", "Each female is milked once a game day, on the same record as the pail."],
   ],
   cowbell: [
     ["搖一下，32 格內好感度 3 心以上的樂牧動物會過來，一分鐘內跟著拿牧鈴的你走。", "Ring it: Ranching animals with three hearts or more within 32 blocks come and follow you for a minute."],
@@ -1312,6 +1335,8 @@ const SUB_STATION = SUB_BY("stations");
 const DISH_BY_ID = new Map(DISHES.map((dish) => [dish.id, dish]));
 
 function itemCategory(item) {
+  // 1.5 facilities: the item is the block's own item, so it sits with the block's group.
+  if (item.category === "facility") return SUB_BLOCK.get(BLOCK_BY_ID.get(item.id)?.group);
   if (item.category === "dish") return SUB_STATION.get(DISH_BY_ID.get(item.id).station);
   if (item.category === "prep") return SUB_STATION.get("prep");
   return SUB_ITEM.get(item.category) ?? GROUP_OF.get(item.category);

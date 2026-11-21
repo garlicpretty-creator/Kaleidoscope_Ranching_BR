@@ -71,7 +71,12 @@ export function mark(e, need, extra = {}) {
   if (rec[key] === day) return false;
   e.setDynamicProperty(`kr:${key}`, day);
   for (const [k, v] of Object.entries(extra)) e.setDynamicProperty(`kr:${k}`, v);
-  if ((need === "fed" || need === "water") && isMarkedToday(e, "fed") && isMarkedToday(e, "water")) tryEvent(e, "sated");
+  if ((need === "fed" || need === "water") && isMarkedToday(e, "fed") && isMarkedToday(e, "water")) {
+    tryEvent(e, "sated");
+    // 1.5 抓癢柱: fed and watered but not yet groomed, it goes looking for a scratching post.
+    if (!isMarkedToday(e, "groom")) tryEvent(e, "itchy");
+  }
+  if (need === "groom") tryEvent(e, "groomed");
   return true;
 }
 export function isMarkedToday(e, need) {

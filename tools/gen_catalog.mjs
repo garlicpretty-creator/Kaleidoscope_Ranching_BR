@@ -47,12 +47,14 @@ const errors = [];
 const tabs = new Map(); // category -> groups
 const placed = new Set();
 for (const group of GROUPS) {
+  // A block placed by an item of the same id in this group (1.5 facilities) is listed as that
+  // item, in the block's place.
+  const ownItem = new Set(ITEMS.filter((i) => group.from.includes(i.category)).map((i) => `${NS}:${i.id}`));
   const ids = group.from.includes("blocks")
-    ? BLOCKS.map((b) => `${NS}:${b.id}`).filter((id) => (blockCategory[id] ?? "none") !== "none")
-    : ITEMS.filter((i) => group.from.includes(i.category)).map((i) => `${NS}:${i.id}`);
-  const source = group.from.includes("blocks") ? blockCategory : itemCategory;
+    ? BLOCKS.map((b) => `${NS}:${b.id}`).filter((id) => ownItem.has(id) || (blockCategory[id] ?? "none") !== "none")
+    : [...ownItem];
   for (const id of ids) {
-    const category = source[id];
+    const category = ownItem.has(id) ? itemCategory[id] : blockCategory[id];
     if (!category) errors.push(`${id}: no item or block file`);
     if (!category || category === "none" || category === "own") continue;
     if (placed.has(id)) errors.push(`${id}: in two groups`);

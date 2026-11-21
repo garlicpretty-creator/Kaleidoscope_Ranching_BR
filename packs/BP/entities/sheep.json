@@ -60,6 +60,12 @@
         },
         "minecraft:ageable": {
           "duration": 1200,
+          "pause_growth_items": [
+            "minecraft:golden_dandelion"
+          ],
+          "reset_growth_items": [
+            "minecraft:golden_dandelion"
+          ],
           "grow_up": {
             "event": "kaleidoscope_ranching:grow_up",
             "target": "self"
@@ -146,6 +152,21 @@
             "kaleidoscope_ranching:hay_rack",
             "kaleidoscope_ranching:water_trough",
             "kaleidoscope_ranching:auto_waterer"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:itchy": {
+        "minecraft:behavior.move_to_block": {
+          "priority": 6,
+          "tick_interval": 20,
+          "start_chance": 0.1,
+          "search_range": 16,
+          "search_height": 4,
+          "goal_radius": 1.5,
+          "stay_duration": 60,
+          "target_selection_method": "nearest",
+          "target_blocks": [
+            "kaleidoscope_ranching:scratching_post"
           ]
         }
       },
@@ -520,9 +541,34 @@
         }
       },
       "kaleidoscope_ranching:hungry": {
+        "sequence": [
+          {
+            "remove": {
+              "component_groups": [
+                "kaleidoscope_ranching:itchy"
+              ]
+            }
+          },
+          {
+            "add": {
+              "component_groups": [
+                "kaleidoscope_ranching:seeking"
+              ]
+            }
+          }
+        ]
+      },
+      "kaleidoscope_ranching:itchy": {
         "add": {
           "component_groups": [
-            "kaleidoscope_ranching:seeking"
+            "kaleidoscope_ranching:itchy"
+          ]
+        }
+      },
+      "kaleidoscope_ranching:groomed": {
+        "remove": {
+          "component_groups": [
+            "kaleidoscope_ranching:itchy"
           ]
         }
       },

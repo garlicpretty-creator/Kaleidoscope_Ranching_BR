@@ -1,0 +1,35 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_carcass_hook_rack"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "NNN",
+      "SRS"
+    ],
+    "key": {
+      "N": {
+        "item": "minecraft:iron_nugget"
+      },
+      "S": {
+        "item": "minecraft:stick"
+      },
+      "R": {
+        "item": "kaleidoscope_ranching:butcher_rack"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:carcass_hook_rack",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:carcass_hook_rack"
+      }
+    ]
+  }
+}

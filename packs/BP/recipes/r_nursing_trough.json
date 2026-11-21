@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "kaleidoscope_ranching:m3_nursing_trough"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "PNP",
+      "PPP"
+    ],
+    "key": {
+      "P": {
+        "tag": "minecraft:planks"
+      },
+      "N": {
+        "item": "kaleidoscope_ranching:nursing_bottle"
+      }
+    },
+    "result": {
+      "item": "kaleidoscope_ranching:nursing_trough",
+      "count": 1
+    },
+    "unlock": [
+      {
+        "item": "kaleidoscope_ranching:nursing_trough"
+      }
+    ]
+  }
+}

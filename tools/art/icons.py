@@ -576,6 +576,27 @@ def draw(item_id):
         c.fill(rect(7, 12, 9, 13), (90, 70, 50))
         if base != "horn_cup":
             c.fill(rect(5, 4, 11, 5), (248, 244, 226) if base == "milk_wine" else (240, 216, 150))
+    # 1.5 facilities: stand-ins until a RetroDiffusion icon is picked (tools/art/rd_icons.py).
+    elif base == "scratching_post":
+        c.fill(rect(4, 13, 12, 15), (104, 68, 40))
+        c.fill(rect(6, 2, 10, 13), (150, 100, 60))
+        c.fill(rect(5, 5, 11, 10), (196, 170, 120))
+    elif base == "nursing_trough":
+        c.fill(rect(2, 6, 14, 12), (150, 100, 60))
+        c.fill(rect(3, 6, 13, 8), (244, 244, 238))
+        c.fill(rect(4, 9, 6, 10), (220, 130, 130))
+        c.fill(rect(10, 9, 12, 10), (220, 130, 130))
+    elif base == "carcass_hook_rack":
+        c.fill(rect(1, 2, 15, 4), (104, 68, 40))
+        c.fill(rect(1, 4, 3, 15), (104, 68, 40))
+        c.fill(rect(13, 4, 15, 15), (104, 68, 40))
+        c.fill(rect(4, 5, 7, 12), (186, 70, 66))
+        c.fill(rect(9, 5, 12, 9), (240, 206, 180))
+    elif base == "milking_stall":
+        c.fill(rect(1, 3, 3, 15), (104, 68, 40))
+        c.fill(rect(13, 3, 15, 15), (104, 68, 40))
+        c.fill(rect(3, 5, 13, 7), (150, 100, 60))
+        c.fill(rect(6, 10, 10, 15), (176, 182, 188))
     else:
         raise KeyError(f"no icon template for {item_id}")
 

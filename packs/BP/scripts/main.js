@@ -17,6 +17,7 @@ import "./care_init.js";
 import { connectCareCore } from "./systems/careBridge.js";
 import { startM3 } from "./systems/m3.js";
 import { startM4 } from "./systems/m4.js";
+import { startFacilities } from "./systems/facilities.js";
 
 connectToCookery();
 startCookeryContent();
@@ -43,3 +44,5 @@ connectCareCore();
 // M3: carcasses, butcher rack, milking, nests, processing
 startM3();
 startM4();
+// 1.5: scratching post, nursing trough, carcass hook rack, milking stall
+startFacilities();

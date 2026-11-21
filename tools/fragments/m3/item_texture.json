@@ -473,6 +473,18 @@
     "kr_animal_crate": {
       "textures": "textures/items/ranching/animal_crate"
     },
+    "kr_scratching_post": {
+      "textures": "textures/items/ranching/scratching_post"
+    },
+    "kr_nursing_trough": {
+      "textures": "textures/items/ranching/nursing_trough"
+    },
+    "kr_carcass_hook_rack": {
+      "textures": "textures/items/ranching/carcass_hook_rack"
+    },
+    "kr_milking_stall": {
+      "textures": "textures/items/ranching/milking_stall"
+    },
     "kr_cream_stew": {
       "textures": "textures/items/ranching/cream_stew"
     },

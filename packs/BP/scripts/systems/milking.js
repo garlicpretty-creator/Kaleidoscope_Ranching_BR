@@ -23,6 +23,7 @@ import { emitRanchEvent } from "../core/events.js";
 import { AMBIENT, cue, refuse } from "../core/feedback.js";
 import { isAsleep, wakeUp } from "./sleep.js";
 import { wearing } from "./textiles.js";
+import { isGrowthPaused } from "./growth.js";
 
 const PAIL = rid("milking_pail");
 const BOTTLE = rid("nursing_bottle");
@@ -30,7 +31,7 @@ export const LAST_MILKED_DAY = dp("last_milked_day");
 export const NURSING_FEEDS = dp("nursing_feeds");
 
 // 1.1: skim milk from the cream separator feeds babies too, before whole milk.
-const MILK_FOR_FEEDING = [rid("skim_milk"), ...ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id))];
+export const MILK_FOR_FEEDING = [rid("skim_milk"), ...ITEMS.filter((item) => item.category === "milk").map((item) => rid(item.id))];
 
 
 /** The milk an animal gives (one item: products have no quality grades). */
@@ -94,6 +95,7 @@ function milk(player, animal) {
 }
 
 function nurse(player, baby) {
+  if (isGrowthPaused(baby)) return refuse(player, baby); // a golden dandelion keeps it small
   if (!takeItems(player, MILK_FOR_FEEDING, 1)) return refuse(player); // no milk to give
   give(player, "minecraft:glass_bottle");
   damageMainHand(player);

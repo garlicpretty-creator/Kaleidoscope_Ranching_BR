@@ -9,7 +9,7 @@
 // Plain data: no @minecraft imports (scripts/ARCHITECTURE.md).
 
 export const CATALOG_GROUPS = [
-  { id: "facilities", from: ["blocks"], icon: "trough", zh: "牧場設施", en: "Ranch Facilities" },
+  { id: "facilities", from: ["blocks", "facility"], icon: "trough", zh: "牧場設施", en: "Ranch Facilities" },
   { id: "tools", from: ["tool"], icon: "brush", zh: "牧場工具", en: "Ranch Tools" },
   { id: "feed", from: ["feed", "treat"], icon: "mixed_feed", zh: "飼料與零食", en: "Feed and Treats" },
   { id: "milk", from: ["milk"], icon: "cow_milk", zh: "乳品", en: "Milk" },

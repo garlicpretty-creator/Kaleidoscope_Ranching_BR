@@ -189,7 +189,14 @@ function buildEntity(animal, t) {
     [g("baby")]: {
       "minecraft:is_baby": {},
       "minecraft:scale": { value: 0.5 },
-      "minecraft:ageable": { duration: 1200, grow_up: { event: g("grow_up"), target: "self" } },
+      // 金蒲公英 as in vanilla: one pauses the baby's growth, the next lets it grow on
+      // (systems/growth.js keeps the script's side of it).
+      "minecraft:ageable": {
+        duration: 1200,
+        pause_growth_items: ["minecraft:golden_dandelion"],
+        reset_growth_items: ["minecraft:golden_dandelion"],
+        grow_up: { event: g("grow_up"), target: "self" },
+      },
       "minecraft:behavior.follow_parent": { priority: 5, speed_multiplier: 1.1 },
     },
     [g("adult")]: { ...adult, ...(t.goat ? goatRam() : {}) },
@@ -225,6 +232,23 @@ function buildEntity(animal, t) {
         stay_duration: 60,
         target_selection_method: "nearest",
         target_blocks: ["trough", "hay_rack", "water_trough", "auto_waterer"].map(rid),
+      },
+    },
+    // 1.5 抓癢柱 (systems/facilities.js): once fed and watered (`sated`), an animal not yet
+    // groomed today walks to a scratching post (`itchy`, triggered by care/state.js) until the
+    // post grooms it (`groomed`). Never present together with `seeking`: both carry
+    // move_to_block, and `hungry` takes this one off before it puts `seeking` back.
+    [g("itchy")]: {
+      "minecraft:behavior.move_to_block": {
+        priority: 6,
+        tick_interval: 20,
+        start_chance: 0.1,
+        search_range: 16,
+        search_height: 4,
+        goal_radius: 1.5,
+        stay_duration: 60,
+        target_selection_method: "nearest",
+        target_blocks: [rid("scratching_post")],
       },
     },
   };
@@ -388,7 +412,9 @@ function buildEntity(animal, t) {
     [g("called")]: { sequence: [{ remove: { component_groups: [g("called")] } }, { add: { component_groups: [g("called")] } }] },
     [g("uncalled")]: { remove: { component_groups: [g("called")] } },
     [g("sated")]: { remove: { component_groups: [g("seeking")] } },
-    [g("hungry")]: { add: { component_groups: [g("seeking")] } },
+    [g("hungry")]: { sequence: [{ remove: { component_groups: [g("itchy")] } }, { add: { component_groups: [g("seeking")] } }] },
+    [g("itchy")]: { add: { component_groups: [g("itchy")] } },
+    [g("groomed")]: { remove: { component_groups: [g("itchy")] } },
     [g("fall_asleep")]: { add: { component_groups: [g("sleeping")] }, set_property: { [SLEEPING]: true } },
     [g("wake_up")]: { remove: { component_groups: [g("sleeping")] }, set_property: { [SLEEPING]: false } },
     // M2's ear tag triggers this (data/m1_contract.js EVENT_ADD_EAR_TAG).

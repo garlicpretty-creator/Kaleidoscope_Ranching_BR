@@ -1,0 +1,175 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.kaleidoscope_ranching.milking_stall",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 2.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.75,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "stall",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                0,
+                -8
+              ],
+              "size": [
+                16,
+                1,
+                16
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -8,
+                1,
+                -8
+              ],
+              "size": [
+                2,
+                13,
+                2
+              ],
+              "uv": [
+                0,
+                17
+              ]
+            },
+            {
+              "origin": [
+                -8,
+                1,
+                6
+              ],
+              "size": [
+                2,
+                13,
+                2
+              ],
+              "uv": [
+                0,
+                17
+              ]
+            },
+            {
+              "origin": [
+                6,
+                1,
+                -8
+              ],
+              "size": [
+                2,
+                13,
+                2
+              ],
+              "uv": [
+                0,
+                17
+              ]
+            },
+            {
+              "origin": [
+                6,
+                1,
+                6
+              ],
+              "size": [
+                2,
+                13,
+                2
+              ],
+              "uv": [
+                0,
+                17
+              ]
+            },
+            {
+              "origin": [
+                -7.5,
+                7,
+                -6
+              ],
+              "size": [
+                1,
+                2,
+                12
+              ],
+              "uv": [
+                8,
+                17
+              ]
+            },
+            {
+              "origin": [
+                6.5,
+                7,
+                -6
+              ],
+              "size": [
+                1,
+                2,
+                12
+              ],
+              "uv": [
+                8,
+                17
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                9,
+                -7.5
+              ],
+              "size": [
+                12,
+                4,
+                1
+              ],
+              "uv": [
+                34,
+                17
+              ]
+            },
+            {
+              "origin": [
+                -6,
+                1,
+                -8
+              ],
+              "size": [
+                12,
+                4,
+                3
+              ],
+              "uv": [
+                0,
+                32
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

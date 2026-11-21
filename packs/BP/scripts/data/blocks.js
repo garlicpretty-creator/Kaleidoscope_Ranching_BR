@@ -71,4 +71,10 @@ export const BLOCKS = [
   ["pen_gate", "畜欄門", "Pen Gate", "husbandry"],
   ["pen_gate_top", "畜欄門（上半）", "Pen Gate (top)", "husbandry"],
   ["horn_decor", "角製掛飾", "Horn Decoration", "decoration"],
+  // 1.5 便利企劃 第三階段 (systems/facilities.js): each is placed by the item of the same id
+  // (data/items.js FACILITIES), which carries its icon.
+  ["scratching_post", "抓癢柱", "Scratching Post", "husbandry"],
+  ["nursing_trough", "幼獸飲水槽", "Nursing Trough", "husbandry"],
+  ["carcass_hook_rack", "屠體掛勾架", "Carcass Hook Rack", "processing"],
+  ["milking_stall", "多欄擠奶架", "Milking Stall", "husbandry"],
 ].map(([id, zh, en, group, owner = "ranching"]) => ({ id, zh, en, group, owner }));

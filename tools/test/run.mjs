@@ -2657,10 +2657,12 @@ test("animals look for troughs until they have eaten and drunk, and again the ne
   hold(player, "minecraft:water_bucket");
   waterTroughComponent.onPlayerInteract({ block: water, player, dimension: overworld });
   runBlockClock();
-  assert(!heifer.hasComponent(SEEK), "fed and watered: stops looking");
+  // 1.5: the move_to_block it may still have now is the scratching-post one (`itchy`), never both.
+  assert(!heifer.groups.has(`${NS}:seeking`), "fed and watered: stops looking");
   __skipTime(DAY);
   care.ensureSettled(heifer);
-  assert(heifer.hasComponent(SEEK), "the next day it looks again");
+  assert(heifer.groups.has(`${NS}:seeking`) && heifer.hasComponent(SEEK), "the next day it looks again");
+  assert(!heifer.groups.has(`${NS}:itchy`), "and no longer for the post");
 });
 
 // --- Optional integration: Fishing Voyage ------------------------------------
@@ -4705,6 +4707,237 @@ test("convenience: an empty hand fills the water trough from a cauldron of water
   equal(trough.permutation.getState(`${NS}:water`), 1, "only the water cauldron's last level");
   equal(overworld.getBlock(lava.location).permutation.getState("fill_level"), 6, "lava left alone");
   noText(player, "cauldron");
+});
+
+// --- 1.5 便利企劃 第三階段: facilities (systems/facilities.js) -------------------------
+
+const FAC = await import("../../packs/BP/scripts/systems/facilities.js");
+const GROWTH = await import("../../packs/BP/scripts/systems/growth.js");
+const SCRATCH_POST = COMPONENTS[`${NS}:scratching_post`];
+const NURSING_TROUGH = COMPONENTS[`${NS}:nursing_trough`];
+const HOOK_RACK = COMPONENTS[`${NS}:carcass_hook_rack`];
+const STALL = COMPONENTS[`${NS}:milking_stall`];
+const hooks = (rack) => [1, 2, 3, 4].map((n) => state(rack, `hook_${n}`));
+const freshHookRack = () => place("carcass_hook_rack", at(0), { hook_1: 0, hook_2: 0, hook_3: 0, hook_4: 0 });
+
+test("facilities: each block is placed by its own item, which carries the icon", () => {
+  assert(SCRATCH_POST && NURSING_TROUGH && HOOK_RACK && STALL, "components registered");
+  for (const id of ["scratching_post", "nursing_trough", "carcass_hook_rack", "milking_stall"]) {
+    const item = JSON.parse(readFileSync(new URL(`../../packs/BP/items/r_${id}.json`, import.meta.url), "utf8"))["minecraft:item"];
+    equal(item.components["minecraft:block_placer"]?.block, `${NS}:${id}`, `${id} places its block`);
+    equal(item.components["minecraft:block_placer"]?.replace_block_item, true, `${id} is the block's item`);
+    equal(item.components["minecraft:icon"], `kr_${id}`, `${id} icon`);
+  }
+});
+
+test("scratching post: animals in reach are groomed once a day, with fur and a rub, no text", () => {
+  clearWorld();
+  const player = __newPlayer(at(0, -8));
+  const post = place("scratching_post", at(0));
+  const cow = ranch("cow", 2, "female");
+  const sheep = ranch("sheep", 3, "female");
+  const far = ranch("cow", 9, "female");
+  care.mark(sheep, "groom"); // brushed by hand already
+  overworld.particles = [];
+  overworld.sounds = [];
+  equal(FAC.tickScratchingPost(post), 1, "only the cow needed it");
+  assert(care.isMarkedToday(cow, "groom"), "the cow rubbed against it");
+  assert(!care.isMarkedToday(far, "groom"), "a cow 9 blocks away is not groomed");
+  equal(FAC.tickScratchingPost(post), 0, "nobody left to groom today");
+  assert(overworld.particles.some((p) => p.id === "minecraft:falling_dust_sand_particle"), "loose fur at the post");
+  assert(overworld.sounds.some((s) => s.id === "dig.cloth"), "the rub is heard");
+  equal(cow.getProperty(`${NS}:action`), "petted", "the cow leans into the post");
+  noText(player, "scratching post");
+  __skipTime(DAY);
+  equal(FAC.tickScratchingPost(post), 2, "the next day both in reach rub again");
+});
+
+test("scratching post: a fed and watered animal not yet groomed walks to the post until groomed", () => {
+  const cow = JSON.parse(readJson("packs/BP/entities/cow.json", "utf8"))["minecraft:entity"];
+  const itchy = cow.component_groups[`${NS}:itchy`]?.["minecraft:behavior.move_to_block"];
+  assert(itchy?.target_blocks.includes(`${NS}:scratching_post`), "the itchy group walks to the post");
+  clearWorld();
+  const heifer = ranch("cow", 2, "female");
+  care.mark(heifer, "fed", { fed_tier: 1 });
+  care.mark(heifer, "water");
+  assert(heifer.groups.has(`${NS}:itchy`) && !heifer.groups.has(`${NS}:seeking`), "sated and itchy, never both");
+  const post = place("scratching_post", at(0));
+  FAC.tickScratchingPost(post);
+  assert(!heifer.groups.has(`${NS}:itchy`), "groomed: stops looking for the post");
+  const brushed = ranch("cow", 3, "female");
+  care.mark(brushed, "groom");
+  care.mark(brushed, "fed", { fed_tier: 1 });
+  care.mark(brushed, "water");
+  assert(!brushed.groups.has(`${NS}:itchy`), "already groomed: no need for the post");
+});
+
+test("nursing trough: milk bottles and buckets fill it, the level shows, milk only", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("nursing_trough", at(0), { fill: 0 });
+  hold(player, "minecraft:wheat", 1);
+  use(NURSING_TROUGH, trough, player);
+  refused(player, "not milk");
+  hold(player, `${NS}:cow_milk`, 5);
+  use(NURSING_TROUGH, trough, player);
+  equal(player.inventory.count("minecraft:glass_bottle"), 1, "bottle back");
+  equal(state(trough, "fill"), 1, "a little milk shows");
+  player.isSneaking = true;
+  use(NURSING_TROUGH, trough, player);
+  player.isSneaking = false;
+  equal(player.inventory.count(`${NS}:cow_milk`), 0, "the stack poured");
+  equal(player.inventory.count("minecraft:glass_bottle"), 5, "every bottle back");
+  hold(player, "minecraft:milk_bucket");
+  use(NURSING_TROUGH, trough, player);
+  equal(player.inventory.count("minecraft:bucket"), 1, "bucket back");
+  equal(state(trough, "fill"), 2, "8 of 12 portions");
+  hold(player, "minecraft:milk_bucket");
+  use(NURSING_TROUGH, trough, player);
+  equal(state(trough, "fill"), 3, "11 of 12: the top level");
+  hold(player, "minecraft:milk_bucket");
+  use(NURSING_TROUGH, trough, player);
+  refused(player, "no room for another bucket");
+  noText(player, "nursing trough");
+});
+
+test("nursing trough: babies in reach drink a portion each pass; three drinks grow them up", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("nursing_trough", at(0), { fill: 0 });
+  hold(player, `${NS}:goat_milk`, 5);
+  player.isSneaking = true;
+  use(NURSING_TROUGH, trough, player);
+  player.isSneaking = false;
+  const calf = ranch("cow", 2, "female");
+  calf.triggerEvent(`${NS}:become_baby`);
+  const kid = ranch("goat", 3, "female");
+  kid.triggerEvent(`${NS}:become_baby`);
+  const chick = ranch("chicken", 1, "female");
+  chick.triggerEvent(`${NS}:become_baby`);
+  const adult = ranch("cow", 1, "female");
+  FAC.tickNursingTrough(trough);
+  equal(blockData(trough, {}).portions, 3, "two babies drank one each");
+  assert(isBaby(calf) && isBaby(kid), "one drink is one feeding");
+  FAC.tickNursingTrough(trough);
+  equal(blockData(trough, {}).portions, 1, "two more");
+  FAC.tickNursingTrough(trough);
+  equal(blockData(trough, {}).portions, 0, "the last portion");
+  equal([calf, kid].filter(isBaby).length, 1, "the one that had its third drink grew up");
+  assert(isBaby(chick), "a chick does not nurse");
+  equal(adult.getDynamicProperty(`${NS}:nursing_feeds`), undefined, "adults do not drink");
+  equal(state(trough, "fill"), 0, "an empty trough shows empty");
+  noText(player, "babies drinking");
+});
+
+test("golden dandelion: pauses a Ranching baby like vanilla; paused babies skip the bottle and trough", () => {
+  const cow = JSON.parse(readJson("packs/BP/entities/cow.json", "utf8"))["minecraft:entity"];
+  const ageable = cow.component_groups[`${NS}:baby`]["minecraft:ageable"];
+  assert(ageable.pause_growth_items.includes("minecraft:golden_dandelion"), "pause item");
+  assert(ageable.reset_growth_items.includes("minecraft:golden_dandelion"), "resume item");
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const calf = ranch("cow", 1, "female");
+  calf.triggerEvent(`${NS}:become_baby`);
+  hold(player, "minecraft:golden_dandelion");
+  equal(__interact(player, calf), false, "the engine still handles the flower (and uses it up)");
+  assert(GROWTH.isGrowthPaused(calf), "paused");
+  player.inventory.setItem(1, new ItemStack(`${NS}:cow_milk`, 3));
+  hold(player, `${NS}:nursing_bottle`);
+  __interact(player, calf);
+  equal(player.inventory.count(`${NS}:cow_milk`), 3, "a paused calf takes no bottle");
+  refused(player, "paused calf");
+  const trough = place("nursing_trough", at(3), { fill: 0 });
+  hold(player, "minecraft:milk_bucket");
+  use(NURSING_TROUGH, trough, player);
+  FAC.tickNursingTrough(trough);
+  equal(blockData(trough, {}).portions, 3, "nor drinks at the trough");
+  hold(player, "minecraft:golden_dandelion");
+  __interact(player, calf);
+  assert(!GROWTH.isGrowthPaused(calf), "a second flower lets it grow again");
+  FAC.tickNursingTrough(trough);
+  equal(blockData(trough, {}).portions, 2, "and it drinks again");
+  const adult = ranch("cow", 2, "female");
+  hold(player, "minecraft:golden_dandelion");
+  __interact(player, adult);
+  assert(!GROWTH.isGrowthPaused(adult), "adults are not marked");
+});
+
+test("carcass hook rack: hangs four, shows each, gives the last back whole", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = freshHookRack();
+  for (const [type, sex] of [["cow", "male"], ["chicken", "female"], ["pig", "female"], ["sheep", "female"]]) {
+    player.inventory.setItem(0, carcassFrom(type, sex));
+    use(HOOK_RACK, rack, player);
+  }
+  equal(JSON.stringify(hooks(rack)), "[1,2,1,1]", "large, small, large, large on the hooks");
+  player.inventory.setItem(0, carcassFrom("goat", "female"));
+  use(HOOK_RACK, rack, player);
+  refused(player, "every hook taken");
+  player.inventory.setItem(0, undefined);
+  use(HOOK_RACK, rack, player);
+  equal(player.inventory.count(`${NS}:sheep_carcass`), 1, "the last one back whole");
+  equal(hooks(rack)[3], 0, "its hook empty");
+  breakBlock(HOOK_RACK, rack);
+  equal(dropsOf(`${NS}:cow_carcass`).length, 1, "broken: the cow drops whole");
+  equal(dropsOf(`${NS}:cow_carcass`)[0].item.getDynamicProperty(`${NS}:carcass_male`), true, "still a bull's");
+  equal(dropsOf(`${NS}:chicken_carcass`).length + dropsOf(`${NS}:pig_carcass`).length, 2, "and the others");
+});
+
+test("carcass hook rack: sneaking with a blade cuts every carcass through, stroke by stroke", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = freshHookRack();
+  for (const [type, sex] of [["cow", "female"], ["chicken", "female"]]) {
+    player.inventory.setItem(0, carcassFrom(type, sex));
+    use(HOOK_RACK, rack, player);
+  }
+  hold(player, "minecraft:iron_sword");
+  player.isSneaking = true;
+  overworld.sounds = [];
+  use(HOOK_RACK, rack, player);
+  const strokes = () => overworld.sounds.filter((s) => s.id === "dig.cloth").length;
+  equal(strokes(), 1, "the first stroke at once");
+  use(HOOK_RACK, rack, player);
+  equal(strokes(), 1, "a use mid-run does not cut again");
+  __advance(STROKE_GAP * 60);
+  equal(JSON.stringify(hooks(rack)), "[0,0,0,0]", "both cut through");
+  assert(player.inventory.count("minecraft:beef") > 0, "the cow yielded beef");
+  assert(strokes() > 4, "every stroke heard");
+  noText(player, "hook rack");
+});
+
+test("milking stall: a row of stalls shares one bottle and one milk container", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const stalls = [0, 1, 2].map((x) => place("milking_stall", at(x)));
+  const above = hopperAt({ x: 2, y: 65, z: 0 });
+  const below = hopperAt({ x: 0, y: 63, z: 0 });
+  hopperItems(above).addItem(new ItemStack("minecraft:glass_bottle", 5));
+  equal(FAC.stallRow(stalls[1]).length, 3, "three stalls in the row");
+  const cow = ranch("cow", 1, "female");
+  cow.location = { x: 1.5, y: 64, z: 0.5 }; // standing in the middle stall
+  const goat = ranch("goat", 0, "female");
+  goat.location = { x: 0.5, y: 64, z: 0.5 };
+  const bull = ranch("cow", 2, "male");
+  bull.location = { x: 2.5, y: 64, z: 0.5 };
+  for (const animal of [cow, goat, bull]) {
+    care.setAffection(animal, 100);
+    careFor(animal, 3);
+  }
+  for (const stall of stalls) FAC.tickMilkingStall(stall);
+  equal(hopperItems(below).count(`${NS}:cow_milk`), 1, "the cow's milk below the first stall");
+  equal(hopperItems(below).count(`${NS}:goat_milk`), 1, "the goat's too");
+  equal(hopperItems(above).count("minecraft:glass_bottle"), 3, "bottles from the shared container");
+  for (const stall of stalls) FAC.tickMilkingStall(stall);
+  equal(hopperItems(below).count(`${NS}:cow_milk`) + hopperItems(below).count(`${NS}:goat_milk`), 2, "once a day");
+  // Tying works as on the milking rack.
+  const tied = ranch("cow", 6, "female");
+  tied.getComponent("minecraft:leashable").leashTo(player);
+  STALL.onPlayerInteract({ block: stalls[2], player });
+  __advance(1);
+  equal(FAC.stallAnimal(stalls[2]), tied, "tied to the third stall");
+  noText(player, "milking stall");
 });
 
 // --- Report ---------------------------------------------------------------

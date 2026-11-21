@@ -57,6 +57,10 @@ SOUNDS = {
     "pen_gate": "wood",
     "pen_gate_top": "wood",
     "horn_decor": "bone",
+    "scratching_post": "wood",
+    "nursing_trough": "wood",
+    "carcass_hook_rack": "wood",
+    "milking_stall": "wood",
 }
 
 

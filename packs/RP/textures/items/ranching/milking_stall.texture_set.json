@@ -1,0 +1,8 @@
+{
+  "format_version": "1.21.30",
+  "minecraft:texture_set": {
+    "color": "milking_stall",
+    "metalness_emissive_roughness_subsurface": "milking_stall_mers",
+    "normal": "milking_stall_normal"
+  }
+}

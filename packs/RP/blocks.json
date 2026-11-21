@@ -170,5 +170,17 @@
   },
   "kaleidoscope_ranching:horn_decor": {
     "sound": "bone"
+  },
+  "kaleidoscope_ranching:scratching_post": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:nursing_trough": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:carcass_hook_rack": {
+    "sound": "wood"
+  },
+  "kaleidoscope_ranching:milking_stall": {
+    "sound": "wood"
   }
 }

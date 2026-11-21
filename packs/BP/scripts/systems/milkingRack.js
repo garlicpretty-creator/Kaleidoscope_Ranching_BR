@@ -36,7 +36,9 @@ export function rackAnimal(block) {
   return knot ? ledBy(knot, block.dimension, block.location)[0] : undefined;
 }
 
-function use(block, player) {
+/** Ties the milkable female the player leads to this rack, or hands the tied one back.
+ *  (1.5: the milking stall, systems/facilities.js, is tied the same way.) */
+export function tieOrUntie(block, player) {
   const led = ledBy(player, block.dimension, block.location);
   if (led.length) {
     if (rackAnimal(block)) return refuse(player); // one animal per rack
@@ -54,18 +56,21 @@ function use(block, player) {
 
 /** Milks the tied animal if she has not been milked today. Returns the bottle id, or undefined. */
 export function tickMilkingRack(block) {
-  const animal = rackAnimal(block);
+  return milkInto(rackAnimal(block), block, containerOf(block.above()), containerOf(block.below()));
+}
+
+/** Milks `animal` at `block` if she is ready today: an empty bottle from `above`, her milk into
+ *  `below` (or on top of the block when there is none). Returns the bottle id, or undefined. */
+export function milkInto(animal, block, above, below) {
   if (!animal || !isMilkable(animal)) return undefined;
   const day = today();
   if (animal.getDynamicProperty(LAST_MILKED_DAY) === day) return undefined;
   const { produces } = production(animal, day);
   if (!produces) return undefined;
-  const above = containerOf(block.above());
   if (!above || !takeFrom(above, ["minecraft:glass_bottle"], 1).length) return undefined;
 
   animal.setDynamicProperty(LAST_MILKED_DAY, day);
   const bottle = milkOf(speciesOf(animal));
-  const below = containerOf(block.below());
   if (!below || putInto(below, bottle, 1)) {
     const { x, y, z } = block.location;
     dropItems(block.dimension, bottle, 1, { x: x + 0.5, y: y + 1.2, z: z + 0.5 });
@@ -79,7 +84,7 @@ const brokenType = (event) => event.brokenBlockPermutation?.type?.id;
 
 export const milkingRackComponent = clockBlockEvents({
   onPlayerInteract({ block, player }) {
-    if (player) system.run(() => use(block, player));
+    if (player) system.run(() => tieOrUntie(block, player));
   },
   onPlayerBreak(event) {
     free(event.dimension ?? event.block.dimension, event.block.location, brokenType(event));
