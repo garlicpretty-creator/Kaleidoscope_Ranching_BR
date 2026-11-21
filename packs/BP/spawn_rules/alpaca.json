@@ -18,24 +18,44 @@
           "adjust_for_weather": false
         },
         "minecraft:weight": {
+          "default": 5
+        },
+        "minecraft:herd": {
+          "min_size": 4,
+          "max_size": 6
+        },
+        "minecraft:biome_filter": {
+          "any_of": [
+            {
+              "test": "has_biome_tag",
+              "value": "extreme_hills"
+            }
+          ]
+        }
+      },
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:spawns_on_block_filter": [
+          "minecraft:grass_block",
+          "minecraft:stone"
+        ],
+        "minecraft:brightness_filter": {
+          "min": 7,
+          "max": 15,
+          "adjust_for_weather": false
+        },
+        "minecraft:weight": {
           "default": 2
         },
         "minecraft:herd": {
           "min_size": 2,
-          "max_size": 3
-        },
-        "minecraft:density_limit": {
-          "surface": 3
+          "max_size": 4
         },
         "minecraft:biome_filter": {
           "any_of": [
             {
               "test": "has_biome_tag",
               "value": "meadow"
-            },
-            {
-              "test": "has_biome_tag",
-              "value": "extreme_hills"
             }
           ]
         }

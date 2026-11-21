@@ -42,24 +42,30 @@ const TUNING = {
 
 // Natural spawning for the M4 animals. Biome tags are Bedrock's; a rule applies where any of
 // its tags is present, and an animal may have several rules.
-// ## Weights follow vanilla's rarer animals (horse 4, goat 5; the farm animals are sheep 12,
-// ## chicken 10, pig 10, cow 8). A weight is only a share among the animals of one biome, and
-// ## rivers have no vanilla land animals to share with, so `density` (the cap on this animal
-// ## nearby; vanilla's river squid use 2) is what keeps the numbers down there. Meadows have
-// ## low vanilla weights (sheep 2, donkey 1), hence the yak's separate rule.
+// ## Numbers follow the nearest vanilla animal (owner, 2026-11-21: 樂牧動物生成數量參考原版),
+// ## read from the game's own spawn_rules (vanilla 1.26.50): cow 8 / herd 2-3, chicken 10 / 2-4,
+// ## rabbit 4 / 2-3, goat 5 / 1-3, sheep in meadows 2 / 2-4, llama in extreme hills 5 / 4-6.
+// ## Vanilla animals have no density limit (only the game's animal cap), so none here either;
+// ## `density` stays available for a rule that really needs one.
+//   duck, goose, turkey = chicken; buffalo = cow; quail = rabbit; yak = goat (sheep in meadows);
+//   alpaca = llama (sheep in meadows).
 const YAK_BLOCKS = ["minecraft:grass_block", "minecraft:snow", "minecraft:stone"];
+const CHICKEN = { weight: 10, herd: [2, 4] };
 const SPAWN = {
-  duck: [{ tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], weight: 4, herd: [2, 3], density: 2 }],
-  goose: [{ tags: ["plains", "river"], blocks: ["minecraft:grass_block"], weight: 4, herd: [2, 3], density: 2 }],
-  buffalo: [{ tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 4, herd: [2, 3], density: 3 }],
+  duck: [{ tags: ["river", "swamp"], blocks: ["minecraft:grass_block", "minecraft:sand", "minecraft:mud"], ...CHICKEN }],
+  goose: [{ tags: ["plains", "river"], blocks: ["minecraft:grass_block"], ...CHICKEN }],
+  buffalo: [{ tags: ["swamp", "jungle"], blocks: ["minecraft:grass_block", "minecraft:mud", "minecraft:podzol"], weight: 8, herd: [2, 3] }],
   yak: [
-    { tags: ["mountains", "snowy_slopes", "frozen_peaks"], blocks: YAK_BLOCKS, weight: 3, herd: [2, 3], density: 3 },
-    { tags: ["meadow"], blocks: YAK_BLOCKS, weight: 1, herd: [2, 3], density: 3 },
+    { tags: ["mountains", "snowy_slopes", "frozen_peaks"], blocks: YAK_BLOCKS, weight: 5, herd: [1, 3] },
+    { tags: ["meadow"], blocks: YAK_BLOCKS, weight: 2, herd: [2, 4] },
   ],
   // 1.1 追加 新動物
-  quail: [{ tags: ["plains", "savanna"], blocks: ["minecraft:grass_block"], weight: 4, herd: [2, 4], density: 3 }],
-  turkey: [{ tags: ["forest"], blocks: ["minecraft:grass_block", "minecraft:podzol"], weight: 4, herd: [2, 3], density: 2 }],
-  alpaca: [{ tags: ["meadow", "extreme_hills"], blocks: ["minecraft:grass_block", "minecraft:stone"], weight: 2, herd: [2, 3], density: 3 }],
+  quail: [{ tags: ["plains", "savanna"], blocks: ["minecraft:grass_block"], weight: 4, herd: [2, 3] }],
+  turkey: [{ tags: ["forest"], blocks: ["minecraft:grass_block", "minecraft:podzol"], ...CHICKEN }],
+  alpaca: [
+    { tags: ["extreme_hills"], blocks: ["minecraft:grass_block", "minecraft:stone"], weight: 5, herd: [4, 6] },
+    { tags: ["meadow"], blocks: ["minecraft:grass_block", "minecraft:stone"], weight: 2, herd: [2, 4] },
+  ],
 };
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
@@ -477,7 +483,7 @@ for (const [id, rules] of Object.entries(SPAWN)) {
             "minecraft:brightness_filter": { min: 7, max: 15, adjust_for_weather: false },
             "minecraft:weight": { default: rule.weight },
             "minecraft:herd": { min_size: rule.herd[0], max_size: rule.herd[1] },
-            "minecraft:density_limit": { surface: rule.density },
+            ...(rule.density ? { "minecraft:density_limit": { surface: rule.density } } : {}),
             "minecraft:biome_filter": { any_of: rule.tags.map((tag) => ({ test: "has_biome_tag", value: tag })) },
           })),
         },
