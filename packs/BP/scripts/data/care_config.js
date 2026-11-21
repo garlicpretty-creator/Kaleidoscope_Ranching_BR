@@ -34,6 +34,10 @@ export const CARE = {
   TROUGH_CAPACITY: 15,
   /** Water trough: one bucket = 3 levels, one level used per day in use. */
   WATER_LEVELS_PER_BUCKET: 3,
+  /** Water trough: a water bottle pours in this many levels (up to full). */
+  WATER_LEVELS_PER_BOTTLE: 1,
+  /** Water trough: cauldron fill levels (0–6; a bottle is 2) one trough level takes from a cauldron beside it. */
+  CAULDRON_FILL_PER_LEVEL: 2,
   /** Salt lick: number of days it lasts. */
   SALT_LICK_DAYS: 7,
   /** Compost bin: manure needed and fermentation time (ticks). */

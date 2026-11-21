@@ -323,6 +323,7 @@ export const GUIDE_TEXT = {
     ["拿水桶點它裝滿 3 格水；有動物來喝的那天用掉 1 格，一桶水大約 3 天。", "Fill it with a water bucket: 3 levels. Each day animals drink uses one, so a bucket lasts about 3 days."],
     ["8 格內的樂牧動物從這裡喝水。連續兩天沒喝到水的動物可能生病。", "Ranching animals within 8 blocks drink here. Two days without water can make an animal ill."],
     ["手持豬腸或牛肚點它，用掉 1 格水，洗成洗淨的大腸或洗淨的牛肚。", "Use it holding a Pig Intestine or Beef Tripe to wash it, using one level of water."],
+    ["拿一瓶水點它加 1 格水，還回空瓶。旁邊有裝水的煉藥鍋時，空手點它就從鍋裡舀水，一瓶的水量算 1 格。", "A water bottle adds one level and gives the bottle back. With a cauldron of water beside it, use it with an empty hand to draw from the cauldron: one bottle's worth per level."],
   ],
   auto_waterer: [
     ["只要緊貼著一格水源方塊就不會缺水，不用加水。", "Never runs dry while it touches a water source block; no refilling."],
@@ -403,20 +404,21 @@ export const GUIDE_TEXT = {
   // --- Facilities: processing -----------------------------------------------------------------
   butcher_rack: [
     ["上方要有空間才能放。手持屠體點它掛上，一次一具。", "Needs room above to be placed. Use it holding a carcass to hang it, one at a time."],
-    ["用廚房菜刀、劍或斧點屠體，一刀切下一類部位肉或副產物，直接進背包，每刀扣 1 點耐久度。打掉掛架時，沒切過的屠體整具掉回，切過的掉出剩下的部位。", "Use a kitchen knife, sword or axe on the carcass: each stroke puts one kind of meat or by-product in your inventory and costs 1 durability. Broken, an uncut carcass drops whole, a cut one drops what is left."],
+    ["用廚房菜刀、劍或斧點屠體，一刀切下一類部位肉或副產物，直接進背包，每刀扣 1 點耐久度；蹲下點會一刀接一刀切完剩下的部位。打掉掛架時，沒切過的屠體整具掉回，切過的掉出剩下的部位。", "Use a kitchen knife, sword or axe on the carcass: each stroke puts one kind of meat or by-product in your inventory and costs 1 durability; used while sneaking, it cuts every stroke left, one after another. Broken, an uncut carcass drops whole, a cut one drops what is left."],
     ["空的掛架可以風乾最多 4 件，各自計時，3 天後取下：生香腸 → 臘腸、五花肉 → 臘肉、鴨腿 → 臘鴨腿、牛腱 → 牛肉乾。掛著的肉會一邊風乾一邊變色。", "An empty rack air-dries up to 4 pieces, each on its own clock, ready after 3 days: Raw Sausage → Cured Sausage, Pork Belly → Cured Pork Belly, Duck Leg → Cured Duck Leg, Beef Shank → Beef Jerky. Each piece changes color as it dries."],
     ["風乾中不能掛屠體。身上有漁歌的海鹽時，掛上的那一件用掉一份海鹽，2 天就好。", "No carcass while pieces are drying. Carrying Fishing Voyage's sea salt uses one per piece and dries it in 2 days."],
   ],
   butter_churn: [
     STATION,
     ["2 瓶牛奶、山羊奶或水牛奶 → 奶油（30 秒）；這類奶不到 2 瓶時 → 1 份鮮奶油（15 秒）。2 瓶氂牛奶 → 酥油（30 秒）。", "2 cow, goat or buffalo milk → Butter (30 s); with fewer than 2 of those milks → Cream (15 s). 2 yak milk → Ghee (30 s)."],
-    ["手拿雞蛋點：2 雞蛋、1 瓶任何奶、1 糖 → 2 份卡士達醬（15 秒）。", "Holding an egg: 2 eggs, 1 milk of any kind and 1 sugar → 2 Custard (15 s)."],
-    ["1 鵝肝加 1 奶油 → 鵝肝醬（30 秒）。", "1 goose liver and 1 butter → Goose Liver Pâté (30 s)."],
+    ["手拿雞蛋點：2 雞蛋、1 瓶任何奶、1 糖 → 2 份卡士達醬（15 秒）。1 鵝肝加 1 奶油 → 鵝肝醬（30 秒）。", "Holding an egg: 2 eggs, 1 milk of any kind and 1 sugar → 2 Custard (15 s). 1 goose liver and 1 butter → Goose Liver Pâté (30 s)."],
+    AUTO_STATION,
   ],
   cheese_press: [
     STATION,
     ["3 瓶奶壓半個遊戲日：牛奶 → 新鮮乳酪、山羊奶 → 山羊乳酪、水牛奶 → 莫札瑞拉、氂牛奶 → 曲拉，都附 1 份乳清。", "3 milk for half a game day: cow → Fresh Cheese, goat → Goat Cheese, buffalo → Mozzarella, yak → Chhurpi, each with 1 whey."],
     ["3 份乳清壓四分之一個遊戲日 → 瑞可塔；3 瓶脫脂奶壓半個遊戲日 → 2 塊奶豆腐與 1 份乳清。", "3 whey for a quarter day → Ricotta; 3 skim milk for half a day → 2 Milk Tofu and 1 whey."],
+    AUTO_STATION,
   ],
   aging_rack: [
     STATION,
@@ -426,19 +428,20 @@ export const GUIDE_TEXT = {
   ],
   tanning_rack: [
     STATION,
-    ["生皮或豬皮放 1 天 → 皮革；羊皮 → 皮革加 1 塊白色羊毛；4 張兔子皮 → 1 張皮革。", "Raw hide or pig skin for a day → Leather; sheepskin → leather and a white wool; 4 rabbit hides → 1 leather."],
-    ["1 張皮革加 1 份牛脂或羊脂放 1 天 → 油鞣皮革。", "1 leather and 1 beef or mutton tallow for a day → Oiled Leather."],
+    ["生皮或豬皮放 1 天 → 皮革；羊皮 → 皮革加 1 塊白色羊毛；4 張兔子皮 → 1 張皮革。1 張皮革加 1 份牛脂或羊脂放 1 天 → 油鞣皮革。", "Raw hide or pig skin for a day → Leather; sheepskin → leather and a white wool; 4 rabbit hides → 1 leather. 1 leather and 1 beef or mutton tallow for a day → Oiled Leather."],
     ["樂牧取代了原版的牛，皮革主要從這裡來。", "Ranching replaces the vanilla cow, so this is where leather comes from."],
+    AUTO_STATION,
   ],
   fermenting_jar: [
     STATION,
     ["1 瓶任何奶放 1 個遊戲日 → 優格。", "1 milk of any kind for one game day → Yogurt."],
+    AUTO_STATION,
   ],
   pickling_vat: [
     STATION,
-    ["4 顆鴨蛋、1 顆黏土球放 2 天 → 4 顆鹹鴨蛋。", "4 duck eggs and 1 clay ball for 2 days → 4 Salted Duck Eggs."],
-    ["4 顆鴨蛋、1 塊木炭、1 顆黏土球放 3 天 → 4 顆皮蛋。背包裡有木炭時會先做皮蛋。", "4 duck eggs, 1 charcoal and 1 clay ball for 3 days → 4 Century Eggs. With charcoal in your inventory it makes these first."],
+    ["4 顆鴨蛋、1 顆黏土球放 2 天 → 4 顆鹹鴨蛋。4 顆鴨蛋、1 塊木炭、1 顆黏土球放 3 天 → 4 顆皮蛋；有木炭時會先做皮蛋。", "4 duck eggs and 1 clay ball for 2 days → 4 Salted Duck Eggs. 4 duck eggs, 1 charcoal and 1 clay ball for 3 days → 4 Century Eggs; with charcoal at hand it makes these first."],
     ["裝了漁歌時，4 顆鴨蛋加 1 份海鹽也能做鹹鴨蛋。", "With Fishing Voyage, 4 duck eggs and 1 sea salt also make salted duck eggs."],
+    AUTO_STATION,
   ],
   meat_grinder: [
     ["手持肉點一下，立刻出一份絞肉，不用等：生豬肉 → 豬絞肉；生牛肉、生水牛肉、生氂牛肉 → 牛絞肉；生羊肉 → 羊絞肉。", "Use it holding meat for one mince at once: raw porkchop → Ground Pork; raw beef, buffalo or yak → Ground Beef; raw mutton → Ground Mutton."],
@@ -479,6 +482,7 @@ export const GUIDE_TEXT = {
     ["對成年母牛、母山羊、母水牛或母氂牛使用，每隻每天只能擠一次。", "Use it on an adult female cow, goat, buffalo or yak, once a day each."],
     ["每擠一次要用掉背包裡一個空玻璃瓶，換成一瓶奶。耐久度 128。", "Each milking needs an empty glass bottle from your inventory and fills it. 128 durability."],
     ["生病的動物不產奶。睡著的動物被擠奶會醒來，副手戴皮手套就不會。", "A sick animal gives no milk. Milking wakes a sleeping animal unless you wear Leather Gloves in your off hand."],
+    ["蹲下使用時，把 3 格內今天還能擠奶的母畜一隻接一隻全部擠完，每隻用一個空玻璃瓶，瓶子用完就停。", "Used while sneaking, it milks every female within 3 blocks that still has milk today, one after another, a bottle each, until the bottles run out."],
   ],
   nursing_bottle: [
     ["對哺乳類的幼體使用，用掉背包裡一瓶奶（先用脫脂奶），還回玻璃瓶。", "Use it on a mammal baby: it uses a bottle of milk from your inventory (skim milk first) and gives the bottle back."],

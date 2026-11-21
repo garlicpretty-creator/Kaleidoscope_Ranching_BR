@@ -1,6 +1,7 @@
 // M3: the butcher rack. A carcass is hung on the rack and cut one stroke at a
 // time with a kitchen knife (Cookery's tag), a sword or an axe. Each stroke
 // gives the next entry of data/butcher.js; the last one empties the rack.
+// Sneaking with the blade cuts every stroke left in a row (cutThrough).
 //
 // 1.1 掛架風乾: an empty rack also air-dries up to DRYING_SLOTS pieces
 // (data/processing.js DRYING). Each piece keeps its own start time; using the
@@ -277,6 +278,40 @@ function cut(block, player, data) {
   setVisual(block, data);
 }
 
+// Sneak with a blade: every cut left, one stroke after another (each with its own sound),
+// STROKE_GAP ticks apart. The rack takes no other use until the last stroke; a stroke whose
+// rack, carcass or blade is gone ends the run there.
+export const STROKE_GAP = 5;
+const cutting = new Map(); // racks being cut through: "dimension|x,y,z" → run token
+let runs = 0;
+const rackKey = (block) => `${block.dimension.id}|${block.location.x},${block.location.y},${block.location.z}`;
+
+function cutThrough(block, player, data) {
+  const key = rackKey(block);
+  const dimensionId = block.dimension.id;
+  const location = { ...block.location };
+  const carcass = data.carcass;
+  const token = ++runs;
+  cutting.set(key, token);
+  const end = () => cutting.get(key) === token && cutting.delete(key);
+  const stroke = (current) => {
+    cut(current, player, getBlockData(current));
+    const next = getBlockData(current);
+    if (!next || next.drying || next.carcass !== carcass) return end();
+    system.runTimeout(() => {
+      let here;
+      try {
+        here = world.getDimension(dimensionId).getBlock(location);
+      } catch {}
+      const still = here?.typeId === RACK ? getBlockData(here) : undefined;
+      if (cutting.get(key) !== token) return; // the rack was broken meanwhile
+      if (!still || still.carcass !== carcass || !player.isValid || !isBlade(mainHand(player)?.getItem())) return end();
+      stroke(here);
+    }, STROKE_GAP);
+  };
+  stroke(block);
+}
+
 // 1.1 追加 整隻火雞 (docs/1.1_追加企劃書.md 二): once a turkey is plucked and nothing else is cut,
 // sneaking with an empty hand takes it down whole, for the oven, instead of cutting it up.
 const WHOLE = { [rid("turkey_carcass")]: rid("whole_turkey") };
@@ -336,6 +371,7 @@ export const butcherRackComponent = {
 
   onPlayerInteract({ block, player }) {
     if (!player) return;
+    if (cutting.has(rackKey(block))) return; // being cut through: the strokes are under way
     const item = mainHand(player)?.getItem();
     const data = getBlockData(block);
     if (data?.drying) {
@@ -356,14 +392,17 @@ export const butcherRackComponent = {
     if (item && butcherEntry(item.typeId)) return refuse(player); // a carcass already hangs here
     if (!item && player.isSneaking && takeWhole(block, player, data)) return;
     if (!isBlade(item)) return refuse(player); // needs a blade
+    if (player.isSneaking) return cutThrough(block, player, data);
     cut(block, player, data);
   },
 
   onPlayerBreak({ block, dimension, brokenBlockPermutation }) {
+    cutting.delete(rackKey(block));
     spill(dimension ?? block.dimension, block.location, brokenBlockPermutation?.type?.id);
   },
 
   onBreak({ block, dimension, brokenBlockPermutation }) {
+    cutting.delete(rackKey(block));
     spill(dimension ?? block.dimension, block.location, brokenBlockPermutation?.type?.id);
   },
 };

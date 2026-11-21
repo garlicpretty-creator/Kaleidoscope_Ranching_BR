@@ -4526,6 +4526,187 @@ test("stages: an old-save batch without its stored ticks uses the recipe's time"
   equal(shownStage(press), 2, "7000 of 12000 ticks");
 });
 
+// --- Convenience update, phase 1 --------------------------------------------------------
+
+const { STROKE_GAP } = await import("../../packs/BP/scripts/systems/butcherRack.js");
+const { MILK_GAP } = await import("../../packs/BP/scripts/systems/milking.js");
+
+/** A station between two hoppers, on the block clock as placing it would put it. */
+function stationBetweenHoppers(id) {
+  const station = __place(overworld, { x: 0, y: 64, z: 0 }, `${NS}:${id}`, { [BUSY]: false, [STAGE]: 1 });
+  trackBlock(station);
+  return { station, above: hopperItems(hopperAt({ x: 0, y: 65, z: 0 })), below: hopperItems(hopperAt({ x: 0, y: 63, z: 0 })) };
+}
+
+test("convenience: the churn, press, jar, vat and tanning rack load from above and unload below on the clock", () => {
+  const cases = [
+    ["butter_churn", [["cow_milk", 2]], 600, [["butter", 1]]],
+    ["cheese_press", [["cow_milk", 3]], 12000, [["fresh_cheese", 1], ["whey", 1]]],
+    ["fermenting_jar", [["goat_milk", 1]], DAY, [["yogurt", 1]]],
+    ["pickling_vat", [["duck_egg", 4], ["minecraft:clay_ball", 1]], 2 * DAY, [["salted_duck_egg", 4]]],
+    ["tanning_rack", [["raw_hide", 1]], DAY, [["minecraft:leather", 1]]],
+  ];
+  const full = (id) => (id.includes(":") ? id : `${NS}:${id}`);
+  for (const [id, inputs, ticks, outputs] of cases) {
+    clearWorld();
+    const { station, above, below } = stationBetweenHoppers(id);
+    for (const [item, n] of inputs) above.addItem(new ItemStack(full(item), n));
+    runBlockClock();
+    equal(overworld.getBlock(station.location).permutation.getState(BUSY), true, `${id} started on its own`);
+    for (const [item] of inputs) equal(above.count(full(item)), 0, `${id} took ${item}`);
+    __skipTime(ticks);
+    runBlockClock();
+    for (const [item, n] of outputs) equal(below.count(full(item)), n, `${id} put ${item} below`);
+    equal(overworld.getBlock(station.location).permutation.getState(BUSY), false, `${id} idle again`);
+  }
+});
+
+test("convenience: a batch put in by hand comes out below too; the aging rack is not automated", () => {
+  clearWorld();
+  const player = __newPlayer(at(3));
+  const { station, below } = stationBetweenHoppers("cheese_press");
+  hold(player, `${NS}:whey`, 3);
+  use(STATION, station, player);
+  __skipTime(6000);
+  runBlockClock();
+  equal(below.count(`${NS}:ricotta`), 1, "ricotta below");
+  noText(player, "automation");
+
+  clearWorld();
+  const rack = stationBetweenHoppers("aging_rack");
+  rack.above.addItem(new ItemStack(`${NS}:fresh_cheese`, 4));
+  runBlockClock();
+  equal(overworld.getBlock(rack.station.location).permutation.getState(BUSY), false, "the aging rack waits for a hand");
+  equal(rack.above.count(`${NS}:fresh_cheese`), 4, "cheese left above");
+});
+
+test("convenience: sneaking with a blade cuts the whole carcass, one stroke after another", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("cow", "male"));
+  use(RACK, rack, player);
+  hold(player, "minecraft:iron_sword");
+  player.isSneaking = true;
+  const strokes = () => overworld.sounds.filter((s) => s.id === "dig.cloth").length;
+  overworld.sounds = [];
+  use(RACK, rack, player);
+  equal(strokes(), 1, "the first stroke at once");
+  use(RACK, rack, player); // during the run: ignored, no extra stroke
+  equal(strokes(), 1, "a second use does not cut again");
+  __advance(STROKE_GAP);
+  equal(strokes(), 2, "the next stroke a moment later");
+  __advance(STROKE_GAP * 20);
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "none", "rack emptied");
+  for (const id of ["minecraft:beef", `${NS}:beef_brisket`, `${NS}:large_bone`, `${NS}:cattle_horn`]) {
+    assert(player.inventory.count(id) > 0, `got ${id}`);
+  }
+  assert(strokes() > 3, "every stroke heard");
+  noText(player, "cutting through");
+  // The rack is free again: a normal use hangs the next carcass.
+  player.isSneaking = false;
+  player.inventory.setItem(1, carcassFrom("pig", "female"));
+  player.selectedSlotIndex = 1;
+  use(RACK, rack, player);
+  equal(rack.permutation.getState("kaleidoscope_ranching:carcass"), "pig", "a new carcass hangs");
+});
+
+test("convenience: breaking the rack mid-run stops the strokes; the rest drop once", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const rack = rackAt();
+  player.inventory.setItem(0, carcassFrom("cow", "female"));
+  use(RACK, rack, player);
+  hold(player, "minecraft:iron_sword");
+  player.isSneaking = true;
+  use(RACK, rack, player);
+  breakBlock(RACK, rack);
+  const dropped = overworld.items.length;
+  assert(dropped > 0, "remaining cuts dropped");
+  const before = overworld.sounds.filter((s) => s.id === "dig.cloth").length;
+  __advance(STROKE_GAP * 20);
+  equal(overworld.sounds.filter((s) => s.id === "dig.cloth").length, before, "no stroke after the break");
+  equal(overworld.items.length, dropped, "nothing more dropped");
+});
+
+test("convenience: sneaking with the pail milks every ready female within 3 blocks while bottles last", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const cows = [1, 2, 3].map((x) => ranch("cow", x, "female"));
+  const goat = ranch("goat", 3, "female", 1);
+  const far = ranch("cow", 10, "female");
+  const bull = ranch("cow", 2, "male", 1);
+  for (const animal of [...cows, goat, far, bull]) {
+    care.setAffection(animal, 100);
+    careFor(animal, 3);
+  }
+  player.inventory.setItem(1, new ItemStack("minecraft:glass_bottle", 3));
+  hold(player, `${NS}:milking_pail`);
+  player.isSneaking = true;
+  overworld.sounds = [];
+  __interact(player, cows[0]);
+  const milkings = () => overworld.sounds.filter((s) => s.id === "mob.cow.milk").length;
+  equal(milkings(), 1, "the first at once");
+  __advance(MILK_GAP * 10);
+  equal(milkings(), 3, "one after another, until the bottles ran out");
+  equal(player.inventory.count("minecraft:glass_bottle"), 0, "three bottles used");
+  equal(player.inventory.count(`${NS}:cow_milk`) + player.inventory.count(`${NS}:goat_milk`), 3, "three bottles of milk");
+  player.inventory.setItem(2, new ItemStack("minecraft:glass_bottle", 4));
+  __interact(player, cows[0]); // she is milked already: the one left near her still has milk
+  __advance(MILK_GAP * 10);
+  equal(milkings(), 4, "the fourth female near by");
+  equal(player.inventory.count("minecraft:glass_bottle"), 3, "one more bottle");
+  equal(far.getDynamicProperty("kaleidoscope_ranching:last_milked_day"), undefined, "a cow 10 blocks away is left");
+  equal(bull.getDynamicProperty("kaleidoscope_ranching:last_milked_day"), undefined, "the bull is left");
+  noText(player, "milking all");
+  __interact(player, cows[1]);
+  __advance(MILK_GAP * 10);
+  refused(player, "nobody near has milk left today");
+});
+
+test("convenience: a water bottle adds one level to the water trough and gives the bottle back", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("water_trough", at(2), { water: 0 });
+  const bottle = (effect = "minecraft:water") => {
+    const stack = new ItemStack("minecraft:potion", 1);
+    stack.potion = { potionEffectType: { id: effect } };
+    return stack;
+  };
+  player.inventory.setItem(0, bottle());
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(trough.permutation.getState(`${NS}:water`), 1, "one level");
+  equal(player.inventory.count("minecraft:glass_bottle"), 1, "bottle back");
+  equal(player.inventory.count("minecraft:potion"), 0, "water poured");
+  player.inventory.setItem(0, bottle("minecraft:healing"));
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(trough.permutation.getState(`${NS}:water`), 1, "another potion is not water");
+  hold(player, "minecraft:water_bucket");
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(trough.permutation.getState(`${NS}:water`), 3, "a bucket still fills it");
+  player.inventory.setItem(0, bottle());
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  refused(player, "already full");
+  equal(player.inventory.count("minecraft:potion"), 1, "bottle kept");
+});
+
+test("convenience: an empty hand fills the water trough from a cauldron of water beside it", () => {
+  clearWorld();
+  const player = __newPlayer(at(0));
+  const trough = place("water_trough", at(2), { water: 1 });
+  const cauldron = __place(overworld, { x: 3, y: 64, z: 0 }, "minecraft:cauldron", { fill_level: 6, cauldron_liquid: "water" });
+  player.inventory.setItem(0, undefined);
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(trough.permutation.getState(`${NS}:water`), 3, "filled to the top");
+  equal(overworld.getBlock(cauldron.location).permutation.getState("fill_level"), 2, "two bottles' worth taken");
+  const lava = __place(overworld, { x: 1, y: 64, z: 0 }, "minecraft:cauldron", { fill_level: 6, cauldron_liquid: "lava" });
+  trough.setPermutation(trough.permutation.withState(`${NS}:water`, 0));
+  waterTroughComponent.onPlayerInteract({ block: trough, player, dimension: overworld });
+  equal(trough.permutation.getState(`${NS}:water`), 1, "only the water cauldron's last level");
+  equal(overworld.getBlock(lava.location).permutation.getState("fill_level"), 6, "lava left alone");
+  noText(player, "cauldron");
+});
+
 // --- Report ---------------------------------------------------------------
 
 const failed = results.filter((result) => !result.ok);

@@ -102,6 +102,8 @@ export class ItemStack {
   }
   getComponent(id) {
     if (id === "minecraft:durability") return this.durability;
+    // Potions: tests set `potion` to { potionEffectType: { id } } (a water bottle is "minecraft:water").
+    if (id === "minecraft:potion") return this.potion;
     if (id === "minecraft:food") return this.hasTag("minecraft:is_food") ? { canAlwaysEat: false } : undefined;
     return undefined;
   }
@@ -130,6 +132,7 @@ export class ItemStack {
     copy.dynamic = new Map(this.dynamic);
     copy.lore = this.lore ? [...this.lore] : undefined;
     if (this.durability) copy.durability = { ...this.durability };
+    if (this.potion) copy.potion = this.potion;
     return copy;
   }
   isStackableWith(other) {

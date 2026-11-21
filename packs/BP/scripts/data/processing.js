@@ -106,6 +106,15 @@ PROCESSING_RECIPES.push(
 export const STATIONS = ["butter_churn", "cheese_press", "aging_rack", "fermenting_jar", "pickling_vat", "tanning_rack", "meat_grinder", "ice_cream_churn"];
 /** Stations that also run on the ranch clock with containers above and below (systems/stations.js). */
 export const AUTO_STATIONS = ["cream_separator", "spinning_wheel", "weaving_loom", "silage_barrel"];
+/**
+ * Hand-worked stations that also work on their own, like AUTO_STATIONS: on the ranch clock they
+ * take a recipe's inputs from the container above and put the results into the container below.
+ * They keep their block (component `station`), so only the clock pass differs.
+ * Left out: the aging rack (a batch unloaded when done could never turn vintage, and a container
+ * below takes the campfire's place, so nothing would smoke); the meat grinder and ice cream churn
+ * (cranked, ticks 0: nothing runs on a clock).
+ */
+export const AUTO_HAND_STATIONS = ["butter_churn", "cheese_press", "fermenting_jar", "pickling_vat", "tanning_rack"];
 
 /** Aging-rack outputs that come out smoked over a lit campfire (企劃書 1.1 煙燻乳酪). */
 export const SMOKING = {

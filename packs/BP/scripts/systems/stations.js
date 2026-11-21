@@ -17,6 +17,8 @@
 //   smoked (煙燻乳酪).
 // - Automated stations (AUTO_STATIONS) also run on the ranch clock: they take
 //   inputs from the container above and put outputs into the container below.
+//   Hand-worked stations in AUTO_HAND_STATIONS (churn, press, jar, vat, tanning
+//   rack) do the same on their clock pass; worked by hand they behave as before.
 //
 // Stages (no text on screen, so the block itself shows how far a job has got):
 // - `busy` (bool) is true while a batch sits in the station, as before.
@@ -32,7 +34,7 @@
 //   (ticks 0), so they are not on the clock and show stages only for timed
 //   recipes other add-ons register (timers and uses keep those up to date).
 
-import { AUTO_STATIONS, PROCESSING_RECIPES, SMOKING, STATIONS } from "../data/processing.js";
+import { AUTO_HAND_STATIONS, AUTO_STATIONS, PROCESSING_RECIPES, SMOKING, STATIONS } from "../data/processing.js";
 import { recipeById, recipesForStation } from "../core/content.js";
 import { getBlockData, setBlockData, takeBlockData } from "../core/blockStore.js";
 import { rid, shortId } from "../core/ids.js";
@@ -297,5 +299,9 @@ export function startAutoStations() {
   for (const id of AUTO_STATIONS) defineClockBlock(rid(id), `auto_${id}`, tickAutoStation);
   // Only stations with timed recipes of their own (not the cranked meat grinder and ice cream churn).
   const timed = new Set(PROCESSING_RECIPES.filter((recipe) => recipe.ticks > 0).map((recipe) => recipe.station));
-  for (const id of STATIONS.filter((id) => timed.has(id))) defineClockBlock(rid(id), `station_${id}`, refreshStage);
+  // ## The registry keeps its `station_<id>` name so stations already placed stay on the clock;
+  // ## AUTO_HAND_STATIONS also load from above and unload below (refreshStage is part of that pass).
+  for (const id of STATIONS.filter((id) => timed.has(id))) {
+    defineClockBlock(rid(id), `station_${id}`, AUTO_HAND_STATIONS.includes(id) ? tickAutoStation : refreshStage);
+  }
 }
